@@ -30,8 +30,10 @@ public class Promotion extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String name;
 
+    @Temporal(TemporalType.TIME)
     private LocalDateTime timeStart;
 
+    @Temporal(TemporalType.TIME)
     private LocalDateTime timeEnd;
 
     private BigDecimal value;

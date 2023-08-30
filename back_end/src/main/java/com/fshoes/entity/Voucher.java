@@ -5,6 +5,8 @@ import com.fshoes.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,8 +36,10 @@ public class Voucher extends IntegerEntity {
     private BigDecimal minimumAmount;
     private Integer quantity;
 
+    @Temporal(TemporalType.TIME)
     private LocalDateTime startDate;
 
+    @Temporal(TemporalType.TIME)
     private LocalDateTime endDate;
     private Integer status;
 }
