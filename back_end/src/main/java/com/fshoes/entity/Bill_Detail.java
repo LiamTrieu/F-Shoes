@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.LongEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "bill_detail")
-public class Bill_Detail extends IntegerEntity {
+public class Bill_Detail extends LongEntity {
     private Integer quantity;
 
     private BigDecimal price;

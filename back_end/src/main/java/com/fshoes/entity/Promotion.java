@@ -11,9 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,11 +25,11 @@ public class Promotion extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String name;
 
-    private LocalDateTime timeStart;
+    private Long timeStart;
 
-    private LocalDateTime timeEnd;
+    private Long timeEnd;
 
-    private BigDecimal value;
+    private Integer value;
 
     private Integer status;
 }

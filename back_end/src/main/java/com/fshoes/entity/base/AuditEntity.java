@@ -1,10 +1,13 @@
 package com.fshoes.entity.base;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.util.Calendar;
 
 @Getter
 @Setter
@@ -12,10 +15,10 @@ import java.util.Date;
 public abstract class AuditEntity {
 
     @Column(updatable = false)
-    private Date createdAt;
+    private Long createdAt;
 
     @Column
-    private Date updatedAt;
+    private Long updatedAt;
 
     @Column
     private String createdBy;
@@ -25,15 +28,19 @@ public abstract class AuditEntity {
 
     @PrePersist
     private void onCreate(){
-        this.setCreatedAt(new Date());
-        this.setUpdatedAt(new Date());
+        this.setCreatedAt(getLongDate());
+        this.setUpdatedAt(getLongDate());
         this.setCreatedBy("Nguyen Van A");
         this.setUpdatedBy("Nguyen Van A");
     }
 
     @PreUpdate
     private void onUpdate(){
-        this.setUpdatedAt(new Date());
+        this.setUpdatedAt(getLongDate());
         this.setUpdatedBy("Nguyen Van B");
+    }
+
+    private Long getLongDate() {
+        return Calendar.getInstance().getTimeInMillis();
     }
 }
