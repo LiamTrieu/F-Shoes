@@ -75,9 +75,6 @@ public class Bill extends IntegerEntity {
     @JoinColumn(name = "id_customer", referencedColumnName = "id")
     private Customer customer;
 
-    @ManyToOne
-    @JoinColumn(name = "id_staff", referencedColumnName = "id")
-    private Staff staff;
 
     @ManyToOne
     @JoinColumn(name = "id_voucher", referencedColumnName = "id")

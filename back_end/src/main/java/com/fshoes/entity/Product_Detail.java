@@ -54,4 +54,8 @@ public class Product_Detail extends IntegerEntity {
     @ManyToOne
     @JoinColumn(name = "id_color", referencedColumnName = "id")
     private Color color;
+
+    @ManyToOne
+    @JoinColumn(name = "id_image", referencedColumnName = "id")
+    private Image image;
 }

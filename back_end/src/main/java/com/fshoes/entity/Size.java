@@ -20,7 +20,7 @@ import lombok.Setter;
 @Table(name = "size")
 public class Size extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
-    private String name;
+    private String size;
 
     private Boolean deleted;
 }

@@ -29,4 +29,8 @@ public class Bill_History extends IntegerEntity {
     @ManyToOne
     @JoinColumn(name = "id_bill", referencedColumnName = "id")
     private Bill bill;
+
+    @ManyToOne
+    @JoinColumn(name = "id_staff", referencedColumnName = "id")
+    private Staff staff;
 }
