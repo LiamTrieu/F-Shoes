@@ -19,8 +19,8 @@ import lombok.Setter;
 @Table(name = "color")
 public class Color extends IntegerEntity {
 
-    @Column(length = 10)
+    @Column(length = 20)
     private String code;
 
-    private Boolean deleted;
+    private Boolean deleted = false;
 }

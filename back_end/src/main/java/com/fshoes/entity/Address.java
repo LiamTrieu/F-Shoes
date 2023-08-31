@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.LongEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "address")
-public class Address extends IntegerEntity {
+public class Address extends LongEntity {
 
 
     @Column(length = EntityProperties.LENGTH_NAME)
@@ -34,8 +34,6 @@ public class Address extends IntegerEntity {
 
     @Column(length = EntityProperties.LENGTH_ADDRESS)
     private String specificAddress;
-
-    private Integer status;
 
     @ManyToOne
     @JoinColumn(name = "id_customer", referencedColumnName = "id")

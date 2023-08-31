@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.LongEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "bill_history")
-public class Bill_History extends IntegerEntity {
+public class Bill_History extends LongEntity {
     private Integer statusBill;
 
     @Column(length = EntityProperties.LENGTH_DESCRIPTION)

@@ -1,14 +1,12 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.LongEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -25,7 +22,7 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "bill")
-public class Bill extends IntegerEntity {
+public class Bill extends LongEntity {
 
     @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
@@ -45,16 +42,13 @@ public class Bill extends IntegerEntity {
 
     private BigDecimal moneyAfter;
 
-    @Temporal(TemporalType.DATE)
-    private Date shipDate;
+    private Long shipDate;
 
-    @Temporal(TemporalType.DATE)
-    private Date receiveDate;
+    private Long receiveDate;
 
     private BigDecimal moneyShip;
 
-    @Temporal(TemporalType.DATE)
-    private Date confirmationDate;
+    private Long confirmationDate;
 
     private Boolean type;
 
@@ -63,11 +57,9 @@ public class Bill extends IntegerEntity {
 
     private BigDecimal customerAmount;
 
-    @Temporal(TemporalType.DATE)
-    private Date desiredReceiptDate;
+    private Long desiredReceiptDate;
 
-    @Temporal(TemporalType.DATE)
-    private Date CompleteDate;
+    private Long CompleteDate;
 
     private Integer status;
 
