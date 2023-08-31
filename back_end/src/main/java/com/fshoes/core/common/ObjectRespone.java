@@ -1,16 +1,26 @@
 package com.fshoes.core.common;
 
-import java.util.Objects;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
 public class ObjectRespone {
-    private boolean status = false;
+    private boolean isSuccess = false;
     private String mess;
+    private Object data;
 
-    private Objects objects;
+    public <T> ObjectRespone(T obj) {
+        processReponseObject(obj);
+    }
 
-    public ObjectRespone(Objects objects) {
-        if (objects != null) {
-            status = true;
+    public void processReponseObject(Object obj) {
+        if (obj != null) {
+            this.isSuccess = true;
+            this.data = obj;
         }
     }
 }
