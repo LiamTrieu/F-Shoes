@@ -22,5 +22,5 @@ public class Product extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String name;
 
-    private Boolean deleted;
+    private Boolean deleted = false;
 }

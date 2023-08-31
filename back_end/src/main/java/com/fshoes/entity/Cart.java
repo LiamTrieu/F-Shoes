@@ -1,7 +1,7 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Calendar;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,8 +20,17 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "cart")
-public class Cart extends IntegerEntity {
+public class Cart {
+    @Id
+    private Integer id;
+
     @ManyToOne
     @JoinColumn(name = "id_customer", referencedColumnName = "id")
     private Customer customer;
+
+    private Long createAt = getLongDate();
+
+    private Long getLongDate() {
+        return Calendar.getInstance().getTimeInMillis();
+    }
 }

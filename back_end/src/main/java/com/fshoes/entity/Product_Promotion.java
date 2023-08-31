@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.LongEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,8 +20,9 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "product_promotion")
-public class Product_Promotion extends IntegerEntity {
-    private Integer status;
+public class Product_Promotion extends LongEntity {
+
+    private BigDecimal pricePromotion;
 
     @ManyToOne
     @JoinColumn(name = "id_product_detail", referencedColumnName = "id")

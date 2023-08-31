@@ -11,8 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,7 +23,7 @@ public class Customer extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String fullName;
 
-    private Date dateBirth;
+    private Long dateBirth;
 
     @Column(length = EntityProperties.LENGTH_PHONE)
     private String phoneNumber;
@@ -41,6 +39,6 @@ public class Customer extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String avatar;
 
-    private Integer status;
+    private Integer status = 1;
 
 }

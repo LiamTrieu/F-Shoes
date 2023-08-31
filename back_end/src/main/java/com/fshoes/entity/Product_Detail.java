@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.LongEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,12 +20,13 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "product_detail")
-public class Product_Detail extends IntegerEntity {
+public class Product_Detail extends LongEntity {
     @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
+
     private String price;
 
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     @ManyToOne
     @JoinColumn(name = "id_brand", referencedColumnName = "id")
@@ -54,4 +55,8 @@ public class Product_Detail extends IntegerEntity {
     @ManyToOne
     @JoinColumn(name = "id_color", referencedColumnName = "id")
     private Color color;
+
+    @ManyToOne
+    @JoinColumn(name = "id_image", referencedColumnName = "id")
+    private Image image;
 }
