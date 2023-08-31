@@ -19,8 +19,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "brand")
 public class Brand extends IntegerEntity {
+
     @Column(length = EntityProperties.LENGTH_NAME)
     private String name;
 
-    private Boolean deleted;
+    private Boolean deleted = false;
 }

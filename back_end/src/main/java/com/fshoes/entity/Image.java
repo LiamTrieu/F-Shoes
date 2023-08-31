@@ -24,7 +24,7 @@ public class Image extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String name;
 
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     @ManyToOne
     @JoinColumn(name = "id_product_detail", referencedColumnName = "id")
