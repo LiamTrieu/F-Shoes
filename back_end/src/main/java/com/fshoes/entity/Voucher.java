@@ -36,10 +36,8 @@ public class Voucher extends IntegerEntity {
     private BigDecimal minimumAmount;
     private Integer quantity;
 
-    @Temporal(TemporalType.TIME)
     private LocalDateTime startDate;
 
-    @Temporal(TemporalType.TIME)
     private LocalDateTime endDate;
     private Integer status;
 }

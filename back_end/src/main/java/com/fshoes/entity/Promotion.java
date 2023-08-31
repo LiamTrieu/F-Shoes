@@ -5,8 +5,6 @@ import com.fshoes.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,10 +28,8 @@ public class Promotion extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String name;
 
-    @Temporal(TemporalType.TIME)
     private LocalDateTime timeStart;
 
-    @Temporal(TemporalType.TIME)
     private LocalDateTime timeEnd;
 
     private BigDecimal value;
