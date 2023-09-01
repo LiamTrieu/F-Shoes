@@ -16,7 +16,7 @@ public interface StaffRepositorys extends StaffRepository {
             ", gender, password, avatar from staff", nativeQuery = true)
     Page<StaffRespone> staffProveti(Pageable pageable);
 
-    @Query(value = "select id, full_name, date_birth,phone_number, email" +
+    @Query(value = "select id, full_name, date_birth,phone_number, citizen_id,email" +
             ", gender, password, avatar from staff", nativeQuery = true)
     List<StaffRespone> getAll(StaffRequest request);
 

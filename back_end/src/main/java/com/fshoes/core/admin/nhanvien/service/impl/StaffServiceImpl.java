@@ -48,11 +48,13 @@ public class StaffServiceImpl implements StaffService {
         }
         Staff staff = Staff.builder()
                 .fullName(staffRequest.getFullName())
-//                .dateBirth(staffRequest.getDateBirth())
+                .password(staffRequest.getPassword())
+                .dateBirth(staffRequest.getDateBirth())
                 .phoneNumber(staffRequest.getPhoneNumber())
                 .email(staffRequest.getEmail())
                 .gender(staffRequest.getGender())
                 .avatar(staffRequest.getAvatar())
+                .CitizenId(staffRequest.getCitizenId())
 //                .status(staffRequest.getStatus())
                 .build();
         return repo.save(staff);

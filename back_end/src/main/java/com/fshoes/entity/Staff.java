@@ -24,9 +24,9 @@ public class Staff extends IntegerEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String fullName;
 
-    private Date dateBirth;
+    private Long dateBirth;
 
-//    private String CitizenId;
+    private String CitizenId;
 
     @Column(length = EntityProperties.LENGTH_PHONE)
     private String phoneNumber;

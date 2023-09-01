@@ -2,8 +2,6 @@ package com.fshoes.core.admin.nhanvien.model.respone;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Date;
-
 public interface StaffRespone {
     @Value("#{target.id}")
     Integer getId();
@@ -12,7 +10,7 @@ public interface StaffRespone {
     String getfullName();
 
     @Value("#{target.date_birth}")
-    Date getdateBirth();
+    Long getdateBirth();
 
     @Value("#{target.phone_number}")
     String getphoneNumber();
@@ -29,6 +27,8 @@ public interface StaffRespone {
     @Value("#{target.avatar}")
     String getAvatar();
 
+    @Value("#{target.citizen_id}")
+    String getCitizenId();
 //    @Value("#{target.created_at}")
 //    Long getCreateAt();
 

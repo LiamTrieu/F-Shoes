@@ -15,7 +15,7 @@ public  class StaffRequest {
     @Length(max = 100)
     private String fullName;
 
-    private Date dateBirth;
+    private Long dateBirth;
 
     @NotBlank
     private String phoneNumber;
@@ -31,6 +31,7 @@ public  class StaffRequest {
     @NotBlank
     private String avatar;
 
+    private String CitizenId;
 //    private Integer status;
 
 }
