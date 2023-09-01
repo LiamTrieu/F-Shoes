@@ -7,13 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DiaChiRespone {
-    Integer id;
+    Long id;
     String ten;
     String soDienThoai;
     String email;
     String diaChiCuthe;
 
-    public DiaChiRespone(Address address){
+    public DiaChiRespone(Address address) {
         this.id = address.getId();
         this.ten = address.getName();
         this.soDienThoai = address.getPhoneNumber();
