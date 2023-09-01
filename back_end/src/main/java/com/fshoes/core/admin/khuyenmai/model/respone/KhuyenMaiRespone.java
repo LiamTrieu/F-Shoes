@@ -26,7 +26,6 @@ public class KhuyenMaiRespone {
 
     public KhuyenMaiRespone (Promotion p){
         this.id = p.getId();
-        this.code = p.getCode();
         this.name = p.getName();
         this.timeStart = p.getTimeStart();
         this.timeEnd = p.getTimeEnd();

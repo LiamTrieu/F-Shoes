@@ -42,7 +42,7 @@ public class Staff extends IntegerEntity {
 
     private String avatar;
 
-//    private Integer role = 0;
+    private Integer role = 0;
 
     private Integer status = 1;
 
