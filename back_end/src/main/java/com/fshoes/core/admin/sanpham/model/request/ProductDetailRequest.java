@@ -1,7 +1,6 @@
 package com.fshoes.core.admin.sanpham.model.request;
 
-import com.fshoes.entity.Brand;
-import com.fshoes.entity.Product_Detail;
+import com.fshoes.entity.ProductDetail;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +33,7 @@ public class ProductDetailRequest {
 
     private MultipartFile image;
 
-    public Product_Detail tranDetail(Product_Detail productDetail){
+    public ProductDetail tranDetail(ProductDetail productDetail){
         productDetail.getBrand().setId(Integer.valueOf(idBrand));
         productDetail.getSole().setId(Integer.valueOf(idSole));
         productDetail.getMaterial().setId(Integer.valueOf(idMaterial));

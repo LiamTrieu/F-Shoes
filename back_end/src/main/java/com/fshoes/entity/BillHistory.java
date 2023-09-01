@@ -1,6 +1,8 @@
 package com.fshoes.entity;
 
 import com.fshoes.entity.base.LongEntity;
+import com.fshoes.infrastructure.constant.EntityProperties;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,27 +13,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "bill_detail")
-public class Bill_Detail extends LongEntity {
-    private Integer quantity;
+@Table(name = "bill_history")
+public class BillHistory extends LongEntity {
+    private Integer statusBill;
 
-    private BigDecimal price;
-
-    private Integer status;
+    @Column(length = EntityProperties.LENGTH_DESCRIPTION)
+    private String note;
 
     @ManyToOne
     @JoinColumn(name = "id_bill", referencedColumnName = "id")
     private Bill bill;
 
     @ManyToOne
-    @JoinColumn(name = "id_product_detail", referencedColumnName = "id")
-    private Product_Detail productDetail;
+    @JoinColumn(name = "id_staff", referencedColumnName = "id")
+    private Staff staff;
 }
