@@ -17,37 +17,37 @@ public class DiaChiController {
     @Autowired
     DiaChiService diaChiService;
 
-    public List<DiaChiRespone> seriolizeList(List<Address> lst){
+    public List<DiaChiRespone> seriolizeList(List<Address> lst) {
         List items = new ArrayList();
         for (Address ad : lst) items.add(new DiaChiRespone(ad));
         return items;
     }
 
     @GetMapping("/get-all")
-    public List<?> getAll(){
+    public List<?> getAll() {
         return seriolizeList(diaChiService.getAll());
     }
 
     @GetMapping("/get-page")
-    public List<?> getPage(@RequestParam(defaultValue = "0") int p){
+    public List<?> getPage(@RequestParam(defaultValue = "0") int p) {
         return seriolizeList(diaChiService.getPage(p).toList());
     }
 
 
     @PostMapping("/create")
-    public ResponseEntity<?> add(@RequestBody Address address){
-       String error ="";
-       if (!error.isEmpty()){
+    public ResponseEntity<?> add(@RequestBody Address address) {
+        String error = "";
+        if (!error.isEmpty()) {
             return ResponseEntity.badRequest().body(error);
-       }
-       diaChiService.save(address);
-      return ResponseEntity.ok(new DiaChiRespone(address));
+        }
+        diaChiService.save(address);
+        return ResponseEntity.ok(new DiaChiRespone(address));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Address address){
-        String error ="";
-        if (!error.isEmpty()){
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Address address) {
+        String error = "";
+        if (!error.isEmpty()) {
             return ResponseEntity.badRequest().body(error);
         }
         address.setId(id);
