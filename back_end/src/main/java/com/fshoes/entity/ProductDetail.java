@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "product_detail")
-public class Product_Detail extends LongEntity {
+public class ProductDetail extends LongEntity {
     @Column(length = EntityProperties.LENGTH_CODE, unique = true)
     private String code;
 
