@@ -2,7 +2,7 @@ package com.fshoes.core.admin.hoadon.controller;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
-import com.fshoes.entity.Bill_Detail;
+import com.fshoes.entity.BillDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,23 +25,23 @@ public class HDBillDetailController {
     private HDBillDetailService hdBillDetailService;
 
     @GetMapping("/get-by-idBill/{idBill}")
-    public List<Bill_Detail> getByIdBill(@PathVariable("idBill") Integer idBill) {
+    public List<BillDetail> getByIdBill(@PathVariable("idBill") Integer idBill) {
         return hdBillDetailService.getBill_DetailByBill_Id(idBill);
     }
 
     @PostMapping("/save")
-    public Bill_Detail save(@RequestBody HDBillDetailRequest hdBillDetailRequest) {
+    public BillDetail save(@RequestBody HDBillDetailRequest hdBillDetailRequest) {
         return hdBillDetailService.save(hdBillDetailRequest);
     }
 
     @PutMapping("/update/{id}")
-    public Bill_Detail updateBilldetail(@PathVariable("id") Integer id,
-                                        @RequestBody HDBillDetailRequest hdBillDetailRequest) {
+    public BillDetail updateBilldetail(@PathVariable("id") Integer id,
+                                       @RequestBody HDBillDetailRequest hdBillDetailRequest) {
         return hdBillDetailService.updateBillDetail(id, hdBillDetailRequest);
     }
 
     @GetMapping("/get-by-idBill-and-status/{idBill}")
-    public List<Bill_Detail> getBill_DetailByBill_IdAndStatus(
+    public List<BillDetail> getBill_DetailByBill_IdAndStatus(
             @PathVariable("idBill") Integer idBill,
             @RequestParam("status") Integer status
     ) {

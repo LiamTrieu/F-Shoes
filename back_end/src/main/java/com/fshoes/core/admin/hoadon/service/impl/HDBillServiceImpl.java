@@ -8,7 +8,7 @@ import com.fshoes.core.admin.hoadon.repository.HDBillRepositpory;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.entity.Bill;
-import com.fshoes.entity.Bill_History;
+import com.fshoes.entity.BillHistory;
 import com.fshoes.entity.Customer;
 import com.fshoes.entity.Voucher;
 import com.fshoes.repository.CustomerRepository;
@@ -103,7 +103,7 @@ public class HDBillServiceImpl implements HDBillService {
         Bill bill = hdBillRepositpory.save(billCreat);
 
         //thêm bill history khi tạo hoá đơn - trạng thái: chờ xác nhận
-        Bill_History billHistory = Bill_History.builder()
+        BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
                 .statusBill(bill.getStatus())
                 .build();

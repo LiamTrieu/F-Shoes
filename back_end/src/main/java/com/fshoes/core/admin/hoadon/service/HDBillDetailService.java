@@ -1,17 +1,17 @@
 package com.fshoes.core.admin.hoadon.service;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
-import com.fshoes.entity.Bill_Detail;
+import com.fshoes.entity.BillDetail;
 
 import java.util.List;
 
 public interface HDBillDetailService {
-    Bill_Detail save(HDBillDetailRequest hdBillDetailRequest);
+    BillDetail save(HDBillDetailRequest hdBillDetailRequest);
 
-    List<Bill_Detail> getBill_DetailByBill_Id(Integer idBill);
+    List<BillDetail> getBill_DetailByBill_Id(Integer idBill);
 
-    Bill_Detail updateBillDetail(Integer idBillDetail, HDBillDetailRequest hdBillDetailRequest);
+    BillDetail updateBillDetail(Integer idBillDetail, HDBillDetailRequest hdBillDetailRequest);
 
-    List<Bill_Detail> getBill_DetailByBill_IdAndStatus(Integer idBill, Integer status);
+    List<BillDetail> getBill_DetailByBill_IdAndStatus(Integer idBill, Integer status);
 
 }

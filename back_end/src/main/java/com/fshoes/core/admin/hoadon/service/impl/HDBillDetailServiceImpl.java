@@ -5,8 +5,8 @@ import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepositpory;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.entity.Bill;
-import com.fshoes.entity.Bill_Detail;
-import com.fshoes.entity.Product_Detail;
+import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.ProductDetail;
 import com.fshoes.repository.ProductDetailRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,10 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
 
     @Transactional
     @Override
-    public Bill_Detail save(HDBillDetailRequest hdBillDetailRequest) {
+    public BillDetail save(HDBillDetailRequest hdBillDetailRequest) {
         Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
-        Product_Detail productDetail = productDetailRepository.findById(hdBillDetailRequest.getIdProductDetail()).get();
-        Bill_Detail billDetail = Bill_Detail.builder()
+        ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getIdProductDetail()).get();
+        BillDetail billDetail = BillDetail.builder()
                 .bill(bill)
                 .productDetail(productDetail)
                 .price(hdBillDetailRequest.getPrice())
@@ -42,17 +42,17 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     }
 
     @Override
-    public List<Bill_Detail> getBill_DetailByBill_Id(Integer idBill) {
+    public List<BillDetail> getBill_DetailByBill_Id(Integer idBill) {
         return hdBillDetailRepository.getBill_DetailByBill_Id(idBill);
     }
 
     @Override
-    public Bill_Detail updateBillDetail(Integer idBillDetail, HDBillDetailRequest hdBillDetailRequest) {
+    public BillDetail updateBillDetail(Integer idBillDetail, HDBillDetailRequest hdBillDetailRequest) {
 
-        Bill_Detail billDetail = hdBillDetailRepository.findById(idBillDetail).orElseThrow(() -> new RuntimeException("Khong tim thay bill detail"));
+        BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).orElseThrow(() -> new RuntimeException("Khong tim thay bill detail"));
 
         Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
-        Product_Detail productDetail = productDetailRepository.findById(hdBillDetailRequest.getIdProductDetail()).get();
+        ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getIdProductDetail()).get();
 
         billDetail.setBill(bill);
         billDetail.setProductDetail(productDetail);
@@ -65,7 +65,7 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     }
 
     @Override
-    public List<Bill_Detail> getBill_DetailByBill_IdAndStatus(Integer idBill, Integer status) {
+    public List<BillDetail> getBill_DetailByBill_IdAndStatus(Integer idBill, Integer status) {
         return hdBillDetailRepository.getBill_DetailByBill_IdAndStatus(idBill, status);
     }
 

@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.LongEntity;
+import com.fshoes.entity.base.IntegerEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,15 +17,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "customer_voucher")
-public class Customer_Voucher extends LongEntity {
-    private Integer status = 1;
+@Table(name = "cart_detail")
+public class CartDetail extends IntegerEntity {
+    private Integer quantity;
 
     @ManyToOne
-    @JoinColumn(name = "id_customer", referencedColumnName = "id")
-    private Customer customer;
+    @JoinColumn(name = "id_cart", referencedColumnName = "id")
+    private Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "id_voucher", referencedColumnName = "id")
-    private Voucher voucher;
+    @JoinColumn(name = "id_product_detail", referencedColumnName = "id")
+    private ProductDetail productDetail;
 }
