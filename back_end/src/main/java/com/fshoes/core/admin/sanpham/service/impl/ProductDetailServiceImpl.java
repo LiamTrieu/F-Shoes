@@ -20,7 +20,7 @@ import com.fshoes.entity.Color;
 import com.fshoes.entity.Image;
 import com.fshoes.entity.Material;
 import com.fshoes.entity.Product;
-import com.fshoes.entity.Product_Detail;
+import com.fshoes.entity.ProductDetail;
 import com.fshoes.entity.Size;
 import com.fshoes.entity.Sole;
 import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
@@ -68,7 +68,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private CloudinaryImage cloudinaryImage;
 
     @Override
-    public List<Product_Detail> getAll() {
+    public List<ProductDetail> getAll() {
         return productDetailRepository.findAll();
     }
 
@@ -86,11 +86,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
 
     @Override
-    public Product_Detail addProductDetail(ProductDetailRequest detailReq) {
+    public ProductDetail addProductDetail(ProductDetailRequest detailReq) {
         try {
             String url = cloudinaryImage.uploadImage(detailReq.getImage());
             Image image = imageRepository.save(Image.builder().name(url).build());
-            Product_Detail productDetail = new Product_Detail();
+            ProductDetail productDetail = new ProductDetail();
 
             Brand brand = new Brand();
             brand.setId(Integer.valueOf(detailReq.getIdBrand()));
@@ -126,7 +126,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             productDetail.setAmount(Integer.valueOf(detailReq.getAmount()));
             productDetail.setDeleted(false);
             productDetail.setImage(image);
-            Product_Detail detailSave = productDetailRepository.save(productDetail);
+            ProductDetail detailSave = productDetailRepository.save(productDetail);
             image.setProductDetail(detailSave);
             imageRepository.save(image);
             return productDetail;
@@ -137,12 +137,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public Product_Detail updateProductDetail(ProductDetailRequest productDetailReq, int id) {
+    public ProductDetail updateProductDetail(ProductDetailRequest productDetailReq, int id) {
         try {
-            Product_Detail prdById = productDetailRepository.findById(id).orElseThrow();
+            ProductDetail prdById = productDetailRepository.findById(id).orElseThrow();
             String url = cloudinaryImage.uploadImage(productDetailReq.getImage());
             Image image = imageRepository.save(Image.builder().name(url).build());
-            Product_Detail productDetail = new Product_Detail();
+            ProductDetail productDetail = new ProductDetail();
             productDetail.setImage(image);
             return productDetailRepository.save(productDetail);
         } catch (Exception e) {

@@ -11,25 +11,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "product_promotion")
-public class Product_Promotion extends LongEntity {
-
-    private BigDecimal pricePromotion;
-
-    @ManyToOne
-    @JoinColumn(name = "id_product_detail", referencedColumnName = "id")
-    private Product_Detail productDetail;
+@Table(name = "customer_voucher")
+public class CustomerVoucher extends LongEntity {
+    private Integer status = 1;
 
     @ManyToOne
-    @JoinColumn(name = "id_promotion", referencedColumnName = "id")
-    private Promotion promotion;
+    @JoinColumn(name = "id_customer", referencedColumnName = "id")
+    private Customer customer;
 
+    @ManyToOne
+    @JoinColumn(name = "id_voucher", referencedColumnName = "id")
+    private Voucher voucher;
 }
