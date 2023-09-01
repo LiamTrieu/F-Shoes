@@ -26,12 +26,13 @@ public class Staff extends IntegerEntity {
 
     private Long dateBirth;
 
+    @Column(unique = true)
     private String CitizenId;
 
-    @Column(length = EntityProperties.LENGTH_PHONE)
+    @Column(length = EntityProperties.LENGTH_PHONE, unique = true)
     private String phoneNumber;
 
-    @Column(length = EntityProperties.LENGTH_EMAIL)
+    @Column(length = EntityProperties.LENGTH_EMAIL, unique = true)
     private String email;
 
     private Boolean gender;

@@ -13,5 +13,5 @@ import lombok.Setter;
 public abstract class LongEntity extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 }

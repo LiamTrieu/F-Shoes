@@ -19,10 +19,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "promotion")
 public class Promotion extends IntegerEntity {
-    @Column(length = EntityProperties.LENGTH_CODE)
-    private String code;
 
-    @Column(length = EntityProperties.LENGTH_NAME)
+    @Column(length = EntityProperties.LENGTH_NAME, unique = true)
     private String name;
 
     private Long timeStart;

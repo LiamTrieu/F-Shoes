@@ -3,7 +3,7 @@ use DATN_Website_FShoes;
 
 CREATE TABLE size (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    size FLOAT,
+    size FLOAT UNIQUE NOT NULL,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
@@ -13,7 +13,7 @@ CREATE TABLE size (
 
 CREATE TABLE brand (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL,
+    name NVARCHAR(100) UNIQUE NOT NULL,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
@@ -22,7 +22,7 @@ CREATE TABLE brand (
 );
 CREATE TABLE color (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    code CHAR(20) NOT NULL,
+    code CHAR(20) UNIQUE NOT NULL,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
@@ -31,7 +31,7 @@ CREATE TABLE color (
 );
 CREATE TABLE sole (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL,
+    name NVARCHAR(100) UNIQUE NOT NULL,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
@@ -40,7 +40,7 @@ CREATE TABLE sole (
 );
 CREATE TABLE material (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL,
+    name NVARCHAR(100) UNIQUE NOT NULL,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
@@ -49,7 +49,7 @@ CREATE TABLE material (
 );
 CREATE TABLE category (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL,
+    name NVARCHAR(100) UNIQUE NOT NULL,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
@@ -58,7 +58,7 @@ CREATE TABLE category (
 );
 CREATE TABLE product (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL,
+    name NVARCHAR(100) UNIQUE NOT NULL,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
@@ -67,8 +67,7 @@ CREATE TABLE product (
 );
 CREATE TABLE promotion (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    code CHAR(30) NOT NULL,
-    name NVARCHAR(100) NOT NULL,
+    name NVARCHAR(100) UNIQUE NOT NULL,
     time_start BIGINT NOT NULL,
     time_end BIGINT NOT NULL,
     value INT NOT NULL,
@@ -82,9 +81,9 @@ CREATE TABLE staff (
     id INT AUTO_INCREMENT PRIMARY KEY,
     full_name NVARCHAR(100) NOT NULL,
     date_birth BIGINT NOT NULL,
-    citizen_id VARCHAR(20) NOT NULL,
-    phone_number VARCHAR(10) NOT NULL,
-    email VARCHAR(100) NOT NULL,
+    citizen_id VARCHAR(20) UNIQUE NOT NULL,
+    phone_number VARCHAR(10) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
     gender BOOLEAN NOT NULL,
     password VARCHAR(100) NOT NULL,
     avatar VARCHAR(100),
@@ -99,8 +98,8 @@ CREATE TABLE customer (
     id INT AUTO_INCREMENT PRIMARY KEY,
     full_name NVARCHAR(100) NOT NULL,
     date_birth BIGINT,
-    phone_number VARCHAR(10),
-    email VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(10) UNIQUE,
+    email VARCHAR(100) UNIQUE NOT NULL,
     gender BOOLEAN,
     password VARCHAR(100),
     avatar VARCHAR(100),
@@ -112,7 +111,7 @@ CREATE TABLE customer (
 );
 CREATE TABLE voucher (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    code CHAR(30) NOT NULL,
+    code CHAR(30) UNIQUE NOT NULL,
     name NVARCHAR(100) NOT NULL,
     value DECIMAL(16 , 0 ) NOT NULL,
     maximum_value DECIMAL(16 , 0 ) NOT NULL,
@@ -137,8 +136,9 @@ CREATE TABLE product_detail (
     id_size INT,
     id_color INT,
     id_image INT,
-    code CHAR(30) NOT NULL,
+    code CHAR(30) UNIQUE NOT NULL,
     price DECIMAL(16 , 0 ) NOT NULL,
+    amount INT,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
@@ -282,7 +282,7 @@ CREATE TABLE bill_detail (
 CREATE TABLE cart (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_customer INT,
-    create_at bigint,
+    create_at BIGINT,
     FOREIGN KEY (id_customer)
         REFERENCES customer (id)
 );

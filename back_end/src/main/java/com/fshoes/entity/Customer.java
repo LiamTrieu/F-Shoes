@@ -25,10 +25,10 @@ public class Customer extends IntegerEntity {
 
     private Long dateBirth;
 
-    @Column(length = EntityProperties.LENGTH_PHONE)
+    @Column(length = EntityProperties.LENGTH_PHONE, unique = true)
     private String phoneNumber;
 
-    @Column(length = EntityProperties.LENGTH_EMAIL)
+    @Column(length = EntityProperties.LENGTH_EMAIL, unique = true)
     private String email;
 
     private Boolean gender;
