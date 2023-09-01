@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface StaffRepositorys extends StaffRepository {
-    @Query(value = "select id, full_name, date_birth, phone_number, email" +
+    @Query(value = "select id, full_name, date_birth, citizen_id, phone_number, email" +
             ", gender, password, avatar from staff", nativeQuery = true)
     Page<StaffRespone> staffProveti(Pageable pageable);
 

@@ -65,11 +65,13 @@ public class StaffServiceImpl implements StaffService {
         Staff edit = repo.findById(id).get();
         edit = Staff.builder()
                 .fullName(staffRequest.getFullName())
-//                .dateBirth(staffRequest.getDateBirth())
+                .password(staffRequest.getPassword())
+                .dateBirth(staffRequest.getDateBirth())
                 .phoneNumber(staffRequest.getPhoneNumber())
                 .email(staffRequest.getEmail())
                 .gender(staffRequest.getGender())
                 .avatar(staffRequest.getAvatar())
+                .CitizenId(staffRequest.getCitizenId())
 //                .status(staffRequest.getStatus())
                 .build();
         return repo.save(edit);

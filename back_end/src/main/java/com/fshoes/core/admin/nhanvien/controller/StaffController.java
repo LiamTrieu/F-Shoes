@@ -25,7 +25,7 @@ public class StaffController {
     }
 
     @GetMapping("/show")
-    public ResponseEntity hienthiPageNo(Integer page) {
+    public ResponseEntity hienthiPageNo(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         return new ResponseEntity(service.getStaff(page), HttpStatus.OK);
     }
 
