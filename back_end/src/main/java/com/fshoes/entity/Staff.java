@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,7 +41,7 @@ public class Staff extends IntegerEntity {
 
     private String avatar;
 
-    private Integer role = 0;
+//    private Integer role = 0;
 
     private Integer status = 1;
 
