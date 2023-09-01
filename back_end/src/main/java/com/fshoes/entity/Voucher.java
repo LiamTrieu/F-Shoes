@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "voucher")
 public class Voucher extends IntegerEntity {
-    @Column(length = EntityProperties.LENGTH_CODE)
+    @Column(length = EntityProperties.LENGTH_CODE, unique = true)
     private String code;
 
     @Column(length = EntityProperties.LENGTH_NAME)

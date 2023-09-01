@@ -19,7 +19,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "product")
 public class Product extends IntegerEntity {
-    @Column(length = EntityProperties.LENGTH_NAME)
+    @Column(length = EntityProperties.LENGTH_NAME, unique = true)
     private String name;
 
     private Boolean deleted = false;

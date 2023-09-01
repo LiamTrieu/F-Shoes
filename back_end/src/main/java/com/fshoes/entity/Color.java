@@ -19,7 +19,7 @@ import lombok.Setter;
 @Table(name = "color")
 public class Color extends IntegerEntity {
 
-    @Column(length = 20)
+    @Column(length = 20, unique = true)
     private String code;
 
     private Boolean deleted = false;

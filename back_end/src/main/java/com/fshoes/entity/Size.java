@@ -1,6 +1,7 @@
 package com.fshoes.entity;
 
 import com.fshoes.entity.base.IntegerEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @Table(name = "size")
 public class Size extends IntegerEntity {
 
+    @Column(unique = true)
     private Float size;
 
     private Boolean deleted = false;
