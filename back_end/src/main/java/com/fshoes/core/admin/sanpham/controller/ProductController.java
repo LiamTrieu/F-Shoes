@@ -1,7 +1,7 @@
 package com.fshoes.core.admin.sanpham.controller;
 
-import com.fshoes.core.admin.sanpham.model.request.ColorRequest;
-import com.fshoes.core.admin.sanpham.service.ColorService;
+import com.fshoes.core.admin.sanpham.model.request.ProductRequest;
+import com.fshoes.core.admin.sanpham.service.ProductService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
@@ -17,31 +17,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/color")
+@RequestMapping("/api/product")
 @CrossOrigin("*")
-public class ColorController {
+public class ProductController {
 
     @Autowired
-    private ColorService colorService;
+    private ProductService productService;
 
     @GetMapping("/page")
-    public PageReponse getPageColor(PageableRequest pageableRequest,
+    public PageReponse getPageProduct(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {
-        return new PageReponse<>(colorService.getPage(pageableRequest, textSearch));
+        return new PageReponse<>(productService.getPage(pageableRequest, textSearch));
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getColor(@PathVariable int id){
-        return new ObjectRespone(colorService.getById(id));
+    public ObjectRespone getProduct(@PathVariable int id){
+        return new ObjectRespone(productService.getById(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addColor(@RequestBody ColorRequest colorReq){
-        return new ObjectRespone(colorService.addColor(colorReq));
+    public ObjectRespone addProduct(@RequestBody ProductRequest productReq){
+        return new ObjectRespone(productService.addProduct(productReq));
     }
     @PutMapping ("/update/{id}")
-    public ObjectRespone updateColor(@RequestBody ColorRequest colorReq,
+    public ObjectRespone updateProduct(@RequestBody ProductRequest productReq,
                                         @PathVariable int id){
-        return new ObjectRespone(colorService.updateColor(colorReq, id));
+        return new ObjectRespone(productService.updateProduct(productReq, id));
     }
 }

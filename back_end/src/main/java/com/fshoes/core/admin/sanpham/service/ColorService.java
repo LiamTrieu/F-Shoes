@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.sanpham.service;
 
+import com.fshoes.core.admin.sanpham.model.request.ColorRequest;
 import com.fshoes.core.admin.sanpham.model.respone.ColorResponse;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Color;
@@ -9,13 +10,13 @@ import java.util.List;
 
 public interface ColorService {
 
-    List<ColorResponse> getAll();
+    List<Color> getAll();
 
-    Page<ColorResponse> getPage(PageableRequest pageableRequest);
+    ColorResponse getById(int id);
 
-    Color addColor(String code);
+    Page<ColorResponse> getPage(PageableRequest pageableRequest, String textSearch);
 
-    Color updateColor(String code, int id);
+    Color addColor(ColorRequest colorReq);
 
-    Color chageDeletedColor(boolean deleted, int id);
+    Color updateColor(ColorRequest colorReq, int id);
 }

@@ -1,7 +1,8 @@
 package com.fshoes.core.admin.sanpham.service.impl;
 
+import com.fshoes.core.admin.sanpham.model.request.ColorRequest;
 import com.fshoes.core.admin.sanpham.model.respone.ColorResponse;
-import com.fshoes.core.admin.sanpham.repository.SPColorRepository;
+import com.fshoes.core.admin.sanpham.repository.SpColorRepository;
 import com.fshoes.core.admin.sanpham.service.ColorService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Color;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,40 +19,44 @@ import java.util.List;
 public class ColorServiceImpl implements ColorService {
 
     @Autowired
-    private SPColorRepository colorRepository;
+    private SpColorRepository colorRepository;
 
     @Override
-    public List<ColorResponse> getAll() {
-        return colorRepository.getAllColor();
+    public List<Color> getAll() {
+        return colorRepository.findAll();
     }
 
     @Override
-    public Page<ColorResponse> getPage(PageableRequest pageReq) {
+    public ColorResponse getById(int id) {
+        return colorRepository.getById(id).orElse(null);
+    }
+
+    @Override
+    public Page<ColorResponse> getPage(PageableRequest pageReq, String textSearch) {
         Sort sort = Sort.by("id");
-        Pageable pageable = PageRequest.of(pageReq.getPage()-1, pageReq.getSize(), sort);
-        return colorRepository.getPageColor(pageable);
+        Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
+        return colorRepository.getPageColor(pageable, textSearch);
     }
 
 
     @Override
-    @Transactional
-    public Color addColor(String code) {
-        return colorRepository.save(Color.builder().code(code).build());
+    public Color addColor(ColorRequest colorReq) {
+        try {
+            Color color = colorReq.tranColor(new Color());
+            color.setDeleted(false);
+            return colorRepository.save(color);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
-    @Transactional
-    public Color updateColor(String code, int id) {
-        Color color = colorRepository.findById(id).orElseThrow();
-        color.setCode(code);
-        return colorRepository.save(color);
-    }
-
-    @Override
-    @Transactional
-    public Color chageDeletedColor(boolean deleted, int id) {
-        Color color = colorRepository.findById(id).orElseThrow();
-        color.setDeleted(deleted);
-        return colorRepository.save(color);
+    public Color updateColor(ColorRequest colorReq, int id) {
+        try {
+            Color color = colorRepository.findById(id).orElseThrow();
+            return colorRepository.save(colorReq.tranColor(color));
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

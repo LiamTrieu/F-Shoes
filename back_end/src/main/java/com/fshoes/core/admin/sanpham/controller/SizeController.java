@@ -1,7 +1,7 @@
 package com.fshoes.core.admin.sanpham.controller;
 
-import com.fshoes.core.admin.sanpham.model.request.ColorRequest;
-import com.fshoes.core.admin.sanpham.service.ColorService;
+import com.fshoes.core.admin.sanpham.model.request.SizeRequest;
+import com.fshoes.core.admin.sanpham.service.SizeService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
@@ -17,31 +17,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/color")
+@RequestMapping("/api/size")
 @CrossOrigin("*")
-public class ColorController {
+public class SizeController {
 
     @Autowired
-    private ColorService colorService;
+    private SizeService sizeService;
 
     @GetMapping("/page")
-    public PageReponse getPageColor(PageableRequest pageableRequest,
+    public PageReponse getPageSize(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {
-        return new PageReponse<>(colorService.getPage(pageableRequest, textSearch));
+        return new PageReponse<>(sizeService.getPage(pageableRequest, textSearch));
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getColor(@PathVariable int id){
-        return new ObjectRespone(colorService.getById(id));
+    public ObjectRespone getSize(@PathVariable int id){
+        return new ObjectRespone(sizeService.getById(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addColor(@RequestBody ColorRequest colorReq){
-        return new ObjectRespone(colorService.addColor(colorReq));
+    public ObjectRespone addSize(@RequestBody SizeRequest sizeReq){
+        return new ObjectRespone(sizeService.addSize(sizeReq));
     }
     @PutMapping ("/update/{id}")
-    public ObjectRespone updateColor(@RequestBody ColorRequest colorReq,
+    public ObjectRespone updateSize(@RequestBody SizeRequest sizeReq,
                                         @PathVariable int id){
-        return new ObjectRespone(colorService.updateColor(colorReq, id));
+        return new ObjectRespone(sizeService.updateSize(sizeReq, id));
     }
 }

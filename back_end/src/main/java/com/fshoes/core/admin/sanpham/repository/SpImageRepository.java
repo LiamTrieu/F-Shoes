@@ -1,8 +1,8 @@
 package com.fshoes.core.admin.sanpham.repository;
 
-import com.fshoes.repository.MaterialRepository;
+import com.fshoes.repository.ImageRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SPMaterialRepository extends MaterialRepository {
+public interface SpImageRepository extends ImageRepository {
 }

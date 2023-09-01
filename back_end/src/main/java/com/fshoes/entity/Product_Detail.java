@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,12 +23,14 @@ import lombok.Setter;
 @Entity
 @Table(name = "product_detail")
 public class Product_Detail extends LongEntity {
-    @Column(length = EntityProperties.LENGTH_CODE)
+    @Column(length = EntityProperties.LENGTH_CODE, unique = true)
     private String code;
 
-    private String price;
+    private BigDecimal price;
 
     private Boolean deleted = false;
+
+    private Integer amount;
 
     @ManyToOne
     @JoinColumn(name = "id_brand", referencedColumnName = "id")

@@ -1,7 +1,7 @@
 package com.fshoes.core.admin.sanpham.controller;
 
-import com.fshoes.core.admin.sanpham.model.request.ColorRequest;
-import com.fshoes.core.admin.sanpham.service.ColorService;
+import com.fshoes.core.admin.sanpham.model.request.CategoryRequest;
+import com.fshoes.core.admin.sanpham.service.CategoryService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
@@ -17,31 +17,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/color")
+@RequestMapping("/api/category")
 @CrossOrigin("*")
-public class ColorController {
+public class CategoryController {
 
     @Autowired
-    private ColorService colorService;
+    private CategoryService categoryService;
 
     @GetMapping("/page")
-    public PageReponse getPageColor(PageableRequest pageableRequest,
+    public PageReponse getPageCategory(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {
-        return new PageReponse<>(colorService.getPage(pageableRequest, textSearch));
+        return new PageReponse<>(categoryService.getPage(pageableRequest, textSearch));
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getColor(@PathVariable int id){
-        return new ObjectRespone(colorService.getById(id));
+    public ObjectRespone getCategory(@PathVariable int id){
+        return new ObjectRespone(categoryService.getById(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addColor(@RequestBody ColorRequest colorReq){
-        return new ObjectRespone(colorService.addColor(colorReq));
+    public ObjectRespone addCategory(@RequestBody CategoryRequest categoryReq){
+        return new ObjectRespone(categoryService.addCategory(categoryReq));
     }
     @PutMapping ("/update/{id}")
-    public ObjectRespone updateColor(@RequestBody ColorRequest colorReq,
+    public ObjectRespone updateCategory(@RequestBody CategoryRequest categoryReq,
                                         @PathVariable int id){
-        return new ObjectRespone(colorService.updateColor(colorReq, id));
+        return new ObjectRespone(categoryService.updateCategory(categoryReq, id));
     }
 }
