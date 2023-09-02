@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class VoucherRequest {
+public class AdVoucherRequest {
     @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
 
