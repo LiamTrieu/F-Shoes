@@ -18,46 +18,32 @@ public class KhachHangController {
     KhachHangServiceImpl khachHangService;
 
 
-    public List<KhachHangRespone> seriolizeList(List<Customer> lst){
-        List iteams = new ArrayList();
-        for(Customer cu : lst) iteams.add(new KhachHangRespone(cu));
-        return iteams;
-    }
-
     @GetMapping("/get-all")
-    public List<?> getAll(Model model){
-        return seriolizeList(khachHangService.getAll());
+    public List<?> getAll(Model model) {
+        return khachHangService.seriolizeList(khachHangService.getAll());
     }
 
     @GetMapping("/get-page")
-    public List<?> getPage(@RequestParam( defaultValue = "0")int p){
-        return seriolizeList(khachHangService.getPage(p).toList());
+    public List<?> getPage(@RequestParam(defaultValue = "0") int p, @RequestParam(defaultValue = "2") int pageSize) {
+        return khachHangService.seriolizeList(khachHangService.getPage(p, pageSize).toList());
     }
 
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody Customer cu){
-        String error = "";
-        if(!error.isEmpty()){
-           return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<?> create(@RequestBody Customer cu) {
         khachHangService.save(cu);
-       return ResponseEntity.ok(new KhachHangRespone(cu));
+        return ResponseEntity.ok(new KhachHangRespone(cu));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Customer cu){
-        String error = "";
-        if(!error.isEmpty()){
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Customer cu) {
         cu.setId(id);
         khachHangService.save(cu);
         return ResponseEntity.ok(new KhachHangRespone(cu));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable int id){
+    public void delete(@PathVariable int id) {
         khachHangService.delete(id);
     }
 }
