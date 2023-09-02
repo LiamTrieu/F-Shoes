@@ -6,7 +6,6 @@ import com.fshoes.core.admin.sanpham.service.ProductDetailService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
-import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/productDetail")
@@ -35,19 +36,21 @@ public class ProductDetailController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getProductDetail(@PathVariable int id){
+    public ObjectRespone getProductDetail(@PathVariable Long id) {
         return new ObjectRespone(productDetailService.getById(id));
     }
 
     @PostMapping("/add")
     public ObjectRespone addProductDetail(@ModelAttribute ProductDetailRequest productDetailReq,
-                                          @RequestParam MultipartFile imageFile){
-        productDetailReq.setImage(imageFile);
+                                          @RequestParam List<MultipartFile> imageFiles) {
+        productDetailReq.setImages(imageFiles);
         return new ObjectRespone(productDetailService.addProductDetail(productDetailReq));
     }
     @PutMapping ("/update/{id}")
-    public ObjectRespone updateProductDetail(@RequestBody ProductDetailRequest productDetailReq,
-                                        @PathVariable int id){
+    public ObjectRespone updateProductDetail(@ModelAttribute ProductDetailRequest productDetailReq,
+                                             @RequestParam List<MultipartFile> imageFiles,
+                                             @PathVariable int id){
+        productDetailReq.setImages(imageFiles);
         return new ObjectRespone(productDetailService.updateProductDetail(productDetailReq, id));
     }
 }
