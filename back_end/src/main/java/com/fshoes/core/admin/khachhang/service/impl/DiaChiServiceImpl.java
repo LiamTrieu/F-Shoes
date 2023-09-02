@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.khachhang.service.impl;
 
+import com.fshoes.core.admin.khachhang.model.respone.DiaChiRespone;
 import com.fshoes.core.admin.khachhang.repository.DiaChiRepository;
 import com.fshoes.core.admin.khachhang.service.DiaChiService;
 import com.fshoes.entity.Address;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,5 +45,12 @@ public class DiaChiServiceImpl implements DiaChiService {
         Address address = diaChiRepository.findById(id).orElse(null);
         address.setCustomer(null);
         diaChiRepository.delete(address);
+    }
+
+    @Override
+    public List<DiaChiRespone> seriolizeList(List<Address> lst) {
+        List items = new ArrayList();
+        for (Address ad : lst) items.add(new DiaChiRespone(ad));
+        return items;
     }
 }
