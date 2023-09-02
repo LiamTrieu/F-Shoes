@@ -42,8 +42,8 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     }
 
     @Override
-    public List<BillDetail> getBill_DetailByBill_Id(Integer idBill) {
-        return hdBillDetailRepository.getBill_DetailByBill_Id(idBill);
+    public List<BillDetail> getBillDetailByBillId(Integer idBill) {
+        return hdBillDetailRepository.getBillDetailsByBillId(idBill);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     }
 
     @Override
-    public List<BillDetail> getBill_DetailByBill_IdAndStatus(Integer idBill, Integer status) {
-        return hdBillDetailRepository.getBill_DetailByBill_IdAndStatus(idBill, status);
+    public List<BillDetail> getBillDetailByBillIdAndStatus(Integer idBill, Integer status) {
+        return hdBillDetailRepository.getBillDetailsByBillIdAndStatus(idBill, status);
     }
 
 }

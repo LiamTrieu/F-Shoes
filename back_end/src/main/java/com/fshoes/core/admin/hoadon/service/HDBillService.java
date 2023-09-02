@@ -15,7 +15,7 @@ public interface HDBillService {
 
     Page<HDBillResponse> searchBillByInputText(Integer pageNo, String inputSearch);
 
-    Page<HDBillResponse> getBillByType(Integer pageNo, Boolean type);
+    Page<HDBillResponse> getBillByType(Integer pageNo, String type);
 
     Page<HDBillResponse> getBillByStatus(Integer pageNo, Integer status);
 
@@ -32,6 +32,5 @@ public interface HDBillService {
     Bill cancelOrder(Integer idBill, HDBillRequest hdBillRequest);
 
     Bill getOne(Integer id);
-
 
 }

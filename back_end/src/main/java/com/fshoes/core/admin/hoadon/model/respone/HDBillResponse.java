@@ -10,20 +10,37 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 public class HDBillResponse {
+
     private String code;
+
     private String fullName;
+
     private String phoneNumber;
+
     private String address;
+
     private BigDecimal totalMoney;
+
     private BigDecimal moneyReduced;
+
     private BigDecimal moneyAfter;
+
     private BigDecimal moneyShip;
+
     private Boolean type;
+
     private String note;
+
     private Long createdAt;
+
     private String createdBy;
 
-    public HDBillResponse(String code, String fullName, String phoneNumber, String address, BigDecimal totalMoney, BigDecimal moneyReduced, BigDecimal moneyAfter, BigDecimal moneyShip, Boolean type, String note, Long createdAt, String createdBy) {
+    private Long totalProduct;
+
+    private Integer status;
+
+
+    public HDBillResponse(String code, String fullName, String phoneNumber, String address, BigDecimal totalMoney, BigDecimal moneyReduced, BigDecimal moneyAfter, BigDecimal moneyShip, Boolean type, String note, Long createdAt, String createdBy, Long totalProduct, Integer status) {
         this.code = code;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
@@ -36,5 +53,7 @@ public class HDBillResponse {
         this.note = note;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
+        this.totalProduct = totalProduct;
+        this.status = status;
     }
 }
