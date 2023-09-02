@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.nhanvien.model.request;
 
+import com.fshoes.entity.Staff;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -34,4 +35,13 @@ public  class StaffRequest {
     private String CitizenId;
 //    private Integer status;
 
+    public Staff tranStaff(Staff staff){
+        staff.setFullName(this.fullName);
+        staff.setDateBirth(this.dateBirth);
+        staff.setPhoneNumber(this.phoneNumber);
+        staff.setEmail(this.email);
+        staff.setGender(this.gender);
+        staff.setCitizenId(this.CitizenId);
+        return staff;
+    }
 }

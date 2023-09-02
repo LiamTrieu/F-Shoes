@@ -62,19 +62,12 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Staff update(StaffRequest staffRequest, Integer id) {
-        Staff edit = repo.findById(id).get();
-        edit = Staff.builder()
-                .fullName(staffRequest.getFullName())
-                .password(staffRequest.getPassword())
-                .dateBirth(staffRequest.getDateBirth())
-                .phoneNumber(staffRequest.getPhoneNumber())
-                .email(staffRequest.getEmail())
-                .gender(staffRequest.getGender())
-                .avatar(staffRequest.getAvatar())
-                .CitizenId(staffRequest.getCitizenId())
-//                .status(staffRequest.getStatus())
-                .build();
-        return repo.save(edit);
+        try {
+            Staff staff = repo.findById(id).orElseThrow();
+            return repo.save(staffRequest.tranStaff(staff));
+        }catch (Exception e){
+            return null;
+        }
     }
 
     @Override
