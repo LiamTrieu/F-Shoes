@@ -9,8 +9,8 @@ import java.util.List;
 @Repository
 public interface HDBillDetailRepository extends BillDetailRepository {
 
-    List<BillDetail> getBill_DetailByBill_Id(Integer idBill);
+    List<BillDetail> getBillDetailsByBillId(Integer idBill);
 
-    List<BillDetail> getBill_DetailByBill_IdAndStatus(Integer idBill, Integer status);
+    List<BillDetail> getBillDetailsByBillIdAndStatus(Integer idBill, Integer status);
 
 }

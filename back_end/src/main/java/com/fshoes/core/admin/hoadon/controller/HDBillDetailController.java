@@ -2,7 +2,7 @@ package com.fshoes.core.admin.hoadon.controller;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
-import com.fshoes.entity.BillDetail;
+import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/billDetail")
 @CrossOrigin("*")
@@ -25,27 +23,27 @@ public class HDBillDetailController {
     private HDBillDetailService hdBillDetailService;
 
     @GetMapping("/get-by-idBill/{idBill}")
-    public List<BillDetail> getByIdBill(@PathVariable("idBill") Integer idBill) {
-        return hdBillDetailService.getBill_DetailByBill_Id(idBill);
+    public ObjectRespone getByIdBill(@PathVariable("idBill") Integer idBill) {
+        return new ObjectRespone(hdBillDetailService.getBillDetailByBillId(idBill));
     }
 
     @PostMapping("/save")
-    public BillDetail save(@RequestBody HDBillDetailRequest hdBillDetailRequest) {
-        return hdBillDetailService.save(hdBillDetailRequest);
+    public ObjectRespone save(@RequestBody HDBillDetailRequest hdBillDetailRequest) {
+        return new ObjectRespone(hdBillDetailService.save(hdBillDetailRequest));
     }
 
     @PutMapping("/update/{id}")
-    public BillDetail updateBilldetail(@PathVariable("id") Integer id,
-                                       @RequestBody HDBillDetailRequest hdBillDetailRequest) {
-        return hdBillDetailService.updateBillDetail(id, hdBillDetailRequest);
+    public ObjectRespone updateBilldetail(@PathVariable("id") Integer id,
+                                          @RequestBody HDBillDetailRequest hdBillDetailRequest) {
+        return new ObjectRespone(hdBillDetailService.updateBillDetail(id, hdBillDetailRequest));
     }
 
     @GetMapping("/get-by-idBill-and-status/{idBill}")
-    public List<BillDetail> getBill_DetailByBill_IdAndStatus(
+    public ObjectRespone getBillDetailByBillIdAndStatus(
             @PathVariable("idBill") Integer idBill,
             @RequestParam("status") Integer status
     ) {
-        return hdBillDetailService.getBill_DetailByBill_IdAndStatus(idBill, status);
+        return new ObjectRespone(hdBillDetailService.getBillDetailByBillIdAndStatus(idBill, status));
     }
 
 }
