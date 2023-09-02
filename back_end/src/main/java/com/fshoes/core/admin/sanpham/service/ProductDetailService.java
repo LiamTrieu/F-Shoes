@@ -13,11 +13,11 @@ public interface ProductDetailService {
 
     List<ProductDetail> getAll();
 
-    ProductDetailResponse getById(int id);
+    ProductDetailResponse getById(Long id);
 
     Page<ProductDetailResponse> getPage(PageableRequest pageableRequest, PrdDetailFilterRequest detailFilterReq);
 
-    ProductDetail addProductDetail(ProductDetailRequest productDetailReq);
+    ProductDetailResponse addProductDetail(ProductDetailRequest productDetailReq);
 
-    ProductDetail updateProductDetail(ProductDetailRequest productDetailReq, int id);
+    ProductDetailResponse updateProductDetail(ProductDetailRequest productDetailReq, int id);
 }
