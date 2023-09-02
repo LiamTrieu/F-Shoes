@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface HDBillHistoryRepository extends BillHistoryRepository {
-    List<BillHistory> getBill_HistoriesByBill_Id(Integer idBill);
+    List<BillHistory> getBillHistoriesByBillId(Integer idBill);
 
 }

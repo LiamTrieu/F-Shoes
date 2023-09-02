@@ -1,36 +1,17 @@
 package com.fshoes.core.admin.khuyenmai.model.respone;
 
-import com.fshoes.entity.Promotion;
-import com.fshoes.infrastructure.constant.EntityProperties;
-import jakarta.persistence.Column;
-import lombok.Getter;
-import lombok.Setter;
+public interface KhuyenMaiRespone {
 
-@Getter
-@Setter
-public class KhuyenMaiRespone {
-    private int id;
-    @Column(length = EntityProperties.LENGTH_CODE)
-    private String code;
+    Integer getId();
 
-    @Column(length = EntityProperties.LENGTH_NAME)
-    private String name;
+    String getName();
 
-    private Long timeStart;
+    Long getTimeStart();
 
-    private Long timeEnd;
+    Long getTimeEnd();
 
-    private Integer value;
+    Integer getValue();
 
-    private Integer status;
-
-    public KhuyenMaiRespone (Promotion p){
-        this.id = p.getId();
-        this.name = p.getName();
-        this.timeStart = p.getTimeStart();
-        this.timeEnd = p.getTimeEnd();
-        this.value = p.getValue();
-        this.status = p.getStatus();
-    }
+    Integer getStatus();
 
 }

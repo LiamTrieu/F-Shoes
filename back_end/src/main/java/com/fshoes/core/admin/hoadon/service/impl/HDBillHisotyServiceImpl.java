@@ -20,8 +20,8 @@ public class HDBillHisotyServiceImpl implements HDBillHistoryService {
     private StaffRepository staffRepository;
 
     @Override
-    public List<BillHistory> getBill_HistoriesByBill_Id(Integer idBill) {
-        return hdBillHistoryRepository.getBill_HistoriesByBill_Id(idBill);
+    public List<BillHistory> getBillHistoriesByBillId(Integer idBill) {
+        return hdBillHistoryRepository.getBillHistoriesByBillId(idBill);
     }
 
     @Override
@@ -33,6 +33,5 @@ public class HDBillHisotyServiceImpl implements HDBillHistoryService {
                 .staff(staffRepository.findById(hdBillHistoryRequest.getIdStaff()).get())
                 .build());
     }
-
 
 }

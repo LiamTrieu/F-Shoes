@@ -8,10 +8,10 @@ import java.util.List;
 public interface HDBillDetailService {
     BillDetail save(HDBillDetailRequest hdBillDetailRequest);
 
-    List<BillDetail> getBill_DetailByBill_Id(Integer idBill);
+    List<BillDetail> getBillDetailByBillId(Integer idBill);
 
     BillDetail updateBillDetail(Integer idBillDetail, HDBillDetailRequest hdBillDetailRequest);
 
-    List<BillDetail> getBill_DetailByBill_IdAndStatus(Integer idBill, Integer status);
+    List<BillDetail> getBillDetailByBillIdAndStatus(Integer idBill, Integer status);
 
 }

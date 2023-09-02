@@ -16,10 +16,10 @@ import java.util.Optional;
 public class KhuyenMaiService {
 
     @Autowired
-    KhuyenMaiRepository khuyenMaiRepository;
+    private KhuyenMaiRepository khuyenMaiRepository;
 
-    public List<Promotion> getAll() {
-        return khuyenMaiRepository.findAll();
+    public List<KhuyenMaiRespone> getAll() {
+        return khuyenMaiRepository.getAllKhuyenMai();
     }
 
     public Optional<Promotion> getOne(int id) {

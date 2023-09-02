@@ -6,7 +6,7 @@ import com.fshoes.entity.BillHistory;
 import java.util.List;
 
 public interface HDBillHistoryService {
-    List<BillHistory> getBill_HistoriesByBill_Id(Integer idBill);
+    List<BillHistory> getBillHistoriesByBillId(Integer idBill);
 
     BillHistory save(HDBillHistoryRequest hdBillHistoryRequest);
 
