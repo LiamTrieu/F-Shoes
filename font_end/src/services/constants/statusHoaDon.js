@@ -1,4 +1,4 @@
-const getStatus = (status) => {
+export const getStatus = (status) => {
   switch (status) {
     case 0:
       return "Đã hủy";
@@ -21,5 +21,3 @@ const getStatus = (status) => {
       break;
   }
 };
-
-export function getStatus();
