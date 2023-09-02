@@ -4,14 +4,20 @@ import {
   Avatar,
   Badge,
   Box,
+  Container,
   IconButton,
   SwipeableDrawer,
   Toolbar,
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import AdminMenu from "./AdminMenu";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBarsStaggered,
+  faCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminHeader(props) {
   const [openMenuLg, setOpenMenuLg] = useState(true);
@@ -35,7 +41,7 @@ export default function AdminHeader(props) {
 
   return (
     <Box display="flex" height="100vh">
-      {isMdScreen && openMenuLg && <AdminMenu />}
+      {isMdScreen && <AdminMenu isMenuLg={openMenuLg} />}
       <Box flexGrow={1}>
         <Toolbar
           style={{
@@ -50,14 +56,18 @@ export default function AdminHeader(props) {
             size="large"
             color="inherit"
             sx={{ mr: 2 }}>
-            <MenuIcon />
+            <FontAwesomeIcon
+              icon={faBarsStaggered}
+              rotation={openMenuLg ? 180 : 0}
+              size="xs"
+            />
           </IconButton>
           <SwipeableDrawer
             onOpen={showOpenMenu(true)}
             open={openMenu}
             onClose={showOpenMenu(false)}>
             {!isMdScreen && openMenu && (
-              <AdminMenu isCloseOpenMenu={handleMenuClose} />
+              <AdminMenu isCloseOpenMenu={handleMenuClose} isMenuLg={true} />
             )}
           </SwipeableDrawer>
           <Box flexGrow={1} />
@@ -78,9 +88,11 @@ export default function AdminHeader(props) {
           </Tooltip>
         </Toolbar>
         <Box
-          style={{ overflow: "auto", maxHeight: "90vh" }}
-          sx={{ backgroundColor: "#F9F9F9" }}>
-          {props.children}
+          style={{ overflow: "auto", minHeight: "90vh" }}
+          sx={{ backgroundColor: "#F6F9FC" }}>
+          <Container maxWidth="xl" sx={{ mt: 2 }}>
+            {props.children}
+          </Container>
         </Box>
       </Box>
     </Box>
