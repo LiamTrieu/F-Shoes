@@ -13,19 +13,17 @@ import lombok.Setter;
 public class KhachHangRespone {
     Integer id;
     String avatar;
-    String tenTaiKhoan;
     String email;
-    String hoTen;
-    Long ngayTao;
-    Integer trangThai;
+    String fullName;
+    Long createdAt;
+    Integer status;
 
     public KhachHangRespone(Customer cu){
         this.id = cu.getId();
         this.avatar = cu.getAvatar();
-        this.tenTaiKhoan = cu.getEmail();
         this.email = cu.getEmail();
-        this.hoTen = cu.getFullName();
-        this.ngayTao = cu.getCreatedAt();
-        this.trangThai = cu.getStatus();
+        this.fullName = cu.getFullName();
+        this.createdAt = cu.getCreatedAt();
+        this.status = cu.getStatus();
     }
 }

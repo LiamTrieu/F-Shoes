@@ -13,10 +13,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/dia-chi")
+@CrossOrigin("*")
 public class DiaChiController {
     @Autowired
-    DiaChiService diaChiService;
-
+    private DiaChiService diaChiService;
 
     @GetMapping("/get-all")
     public List<?> getAll() {

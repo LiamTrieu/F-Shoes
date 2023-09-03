@@ -1,86 +1,140 @@
-import { Box, Button, Container, Popper, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Paper,
+  Popper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React from "react";
 // import SearchIcon from "@mui/icons-material/Search";
 import { DataGrid } from "@mui/x-data-grid";
-// import AddIcon from "@mui/icons-material/Add";
+import { Link } from "react-router-dom";
 
-const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "anh", headerName: "Ảnh", width: 110 },
-  { field: "tenTaiKhoan", headerName: "Tên tài khoản", width: 200 },
-  { field: "email", headerName: "Email", width: 200 },
-  {
-    field: "hoTen",
-    headerName: "Họ Tên",
-    width: 200,
-  },
-  {
-    field: "ngayTao",
-    headerName: "Ngày tạo",
-    width: 200,
-  },
-  {
-    field: "trangThai",
-    headerName: "trạng thái",
-    width: 200,
-  },
-  {
-    field: "thaoTac",
-    headerName: "Thao tác",
-    width: 200,
-  },
-];
+function createData(
+  stt,
+  anh,
+  tenTaiKhoan,
+  email,
+  hoTen,
+  ngayTao,
+  trangThai,
+  thaoTac
+) {
+  return { stt, anh, tenTaiKhoan, email, hoTen, ngayTao, trangThai, thaoTac };
+}
 
 const rows = [
-  { id: 1, anh: "anh1", firstName: "Jon", age: 35 },
-  { id: 2, anh: "anh2", firstName: "Cersei", age: 42 },
-  { id: 3, anh: "anh3", firstName: "Jaime", age: 45 },
-  { id: 4, anh: "anh4", firstName: "Arya", age: 16 },
-  { id: 5, anh: "anh5", firstName: "Daenerys", age: null },
-  { id: 6, anh: "anh6", firstName: null, age: 150 },
-  { id: 7, anh: "anh7", firstName: "Ferrara", age: 44 },
-  { id: 8, anh: "anh8", firstName: "Rossini", age: 36 },
-  { id: 9, anh: "anh9", firstName: "Harvey", age: 65 },
+  createData(
+    1,
+    "anh1",
+    "taikhoan1",
+    "taikhoan1@gmail.com",
+    "tai khoan 1",
+    "03-09-2023",
+    "trangthai1",
+    ""
+  ),
+  createData(
+    2,
+    "anh1",
+    "taikhoan1",
+    "taikhoan1@gmail.com",
+    "tai khoan 1",
+    "03-09-2023",
+    "trangthai1",
+    ""
+  ),
+  createData(
+    3,
+    "anh1",
+    "taikhoan1",
+    "taikhoan1@gmail.com",
+    "tai khoan 1",
+    "03-09-2023",
+    "trangthai1",
+    ""
+  ),
+  createData(
+    4,
+    "anh1",
+    "taikhoan1",
+    "taikhoan1@gmail.com",
+    "tai khoan 1",
+    "03-09-2023",
+    "trangthai1",
+    ""
+  ),
 ];
 export default function AdCustomerPage() {
   return (
     <div>
-      <Container maxWidth="xl">
-        <Box sx={{ border: "2px solid black", p: 2 }}>
-          <TextField
-            id="outlined-basic"
-            label="Mã khách hàng"
-            variant="outlined"
-            size="small"
-          />
-          {/* <Button
-            variant="contained"
-            style={{ marginLeft: "10px" }}
-            startIcon={<SearchIcon />}>
-            Tìm kiếm
-          </Button> */}
-          {/* <Button
-            variant="outlined"
-            style={{ float: "right" }}
-            color="success"
-            startIcon={<AddIcon />}>
-            Tạo tài khoản
-          </Button> */}
-        </Box>
-      </Container>
-      <Container maxWidth="xl" sx={{ marginTop: "50px" }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+        <TextField
+          id="outlined-basic"
+          label="Mã khách hàng"
+          variant="outlined"
+          size="small"
         />
-      </Container>
+        <Button
+          variant="contained"
+          style={{ marginLeft: "10px" }}
+          AiOutlineSearch
+        >
+          Tìm kiếm
+        </Button>
+        <Button
+          variant="outlined"
+          style={{ float: "right" }}
+          color="success"
+          component={Link}
+          to="/admin/customer/add"
+        >
+          <Typography sx={{ ml: 1 }}>Tạo khách hàng</Typography>
+        </Button>
+      </Paper>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+        <TableContainer component={Paper} sx={{ width: "100%" }}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>STT</TableCell>
+                <TableCell align="right">Ảnh</TableCell>
+                <TableCell align="right">Tên tài khoản</TableCell>
+                <TableCell align="right">Email</TableCell>
+                <TableCell align="right">Họ tên</TableCell>
+                <TableCell align="right">Ngày tạo</TableCell>
+                <TableCell align="right">trạng thái</TableCell>
+                <TableCell align="right">Thao tác</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow
+                  key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="right">{row.stt}</TableCell>
+                  <TableCell align="right">{row.anh}</TableCell>
+                  <TableCell align="right">{row.tenTaiKhoan}</TableCell>
+                  <TableCell align="right">{row.email}</TableCell>
+                  <TableCell align="right">{row.hoTen}</TableCell>
+                  <TableCell align="right">{row.ngayTao}</TableCell>
+                  <TableCell align="right">{row.trangThai}</TableCell>
+                  <TableCell align="right">{row.thaoTac}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </div>
   );
 }
