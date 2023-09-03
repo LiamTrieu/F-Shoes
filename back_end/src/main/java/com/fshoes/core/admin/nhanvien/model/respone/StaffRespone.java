@@ -29,9 +29,7 @@ public interface StaffRespone {
 
     @Value("#{target.citizen_id}")
     String getCitizenId();
-//    @Value("#{target.created_at}")
-//    Long getCreateAt();
 
-//    @Value("#{target.status}")
-//    String getStatus();
+    @Value("#{target.role}")
+    String getRole();
 }

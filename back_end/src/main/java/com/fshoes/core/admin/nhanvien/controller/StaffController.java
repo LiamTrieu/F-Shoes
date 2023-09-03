@@ -1,7 +1,10 @@
 package com.fshoes.core.admin.nhanvien.controller;
 
+import com.fshoes.core.admin.nhanvien.model.request.SearchStaff;
 import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
 import com.fshoes.core.admin.nhanvien.service.StaffService;
+import com.fshoes.core.common.PageReponse;
+import com.fshoes.core.common.PageableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/staff")
+@RequestMapping("/api/staff")
+@CrossOrigin("*") // chấp nhận yêu cầu từ bên khác
 public class StaffController {
     @Autowired
     private StaffService service;
@@ -19,14 +23,10 @@ public class StaffController {
         return new ResponseEntity(service.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/get-all")
-    public ResponseEntity show(StaffRequest request) {
-        return new ResponseEntity(service.findAll(request), HttpStatus.OK);
-    }
-
-    @GetMapping("/show")
-    public ResponseEntity hienthiPageNo(@RequestParam(value = "page", defaultValue = "0") Integer page) {
-        return new ResponseEntity(service.getStaff(page), HttpStatus.OK);
+    @GetMapping("/page")
+    public PageReponse hienthiPageNo(@ModelAttribute PageableRequest pageableRequest,
+                                     @ModelAttribute SearchStaff search) {
+        return new PageReponse<>(service.searchStaff(pageableRequest, search));
     }
 
     @PostMapping("/add")
@@ -42,11 +42,6 @@ public class StaffController {
     @PutMapping("/update/{id}")
     public ResponseEntity update(@PathVariable("id") Integer id, @RequestBody StaffRequest staffRequest) {
         return new ResponseEntity(service.update(staffRequest, id), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable("id") Integer id) {
-        service.remove(id);
     }
 
 }
