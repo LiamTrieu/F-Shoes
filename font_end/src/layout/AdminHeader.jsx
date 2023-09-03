@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import {
   Avatar,
   Badge,
@@ -11,13 +10,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import AdminMenu from "./AdminMenu";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBarsStaggered,
-  faCaretDown,
-} from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminHeader(props) {
   const [openMenuLg, setOpenMenuLg] = useState(true);
@@ -56,11 +49,11 @@ export default function AdminHeader(props) {
             size="large"
             color="inherit"
             sx={{ mr: 2 }}>
-            <FontAwesomeIcon
-              icon={faBarsStaggered}
+            {/* <FontAwesomeIcon
+              // icon={faBarsStaggered}
               rotation={openMenuLg ? 180 : 0}
               size="xs"
-            />
+            /> */}
           </IconButton>
           <SwipeableDrawer
             onOpen={showOpenMenu(true)}
@@ -74,7 +67,7 @@ export default function AdminHeader(props) {
           <Tooltip title="Thông báo">
             <IconButton size="large" color="inherit">
               <Badge badgeContent={4} color="error">
-                <NotificationsIcon />
+                {/* <NotificationsIcon /> */}
               </Badge>
             </IconButton>
           </Tooltip>
