@@ -11,11 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 // import AddIcon from "@mui/icons-material/Add";
-import MenuButton from "@mui/joy/MenuButton";
+// import MenuButton from "@mui/joy/MenuButton";
 
-import Menu from "@mui/joy/Menu";
-import MenuItem from "@mui/joy/MenuItem";
-import Dropdown from "@mui/joy/Dropdown";
+// import Menu from "@mui/joy/Menu";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -122,7 +120,7 @@ export default function AdPromotionPage() {
             alignItems="center"
             spacing={2}>
             <Typography>Trạng Thái:</Typography>
-            <Dropdown>
+            {/* <Dropdown>
               <MenuButton
                 // endDecorator={<ArrowDropDown />}
                 sx={{ border: "none" }}>
@@ -132,7 +130,7 @@ export default function AdPromotionPage() {
                 <MenuItem>Smaller</MenuItem>
                 <MenuItem>Larger</MenuItem>
               </Menu>
-            </Dropdown>
+            </Dropdown> */}
           </Stack>
         </Box>
       </Paper>

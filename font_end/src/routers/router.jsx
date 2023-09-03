@@ -12,7 +12,7 @@ import AdminHeader from "../layout/AdminHeader";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Outlet />,
+    element: <Navigate to={"/admin"} />,
     errorElement: <div>Trang này không tồn tại</div>,
     children: [{ index: true, element: <Home /> }, ...clientRoute],
   },
