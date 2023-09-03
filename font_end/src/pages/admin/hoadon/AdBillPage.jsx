@@ -21,9 +21,9 @@ import hoaDonApi from "../../../api/admin/hoadon/hoaDonApi";
 import dayjs from "dayjs";
 import { getStatus } from "../../../services/constants/statusHoaDon";
 import Tooltip from "@mui/material/Tooltip";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+// import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faEye } from "@fortawesome/free-solid-svg-icons";
 import {
   // ... các imports khác
   DemoContainer,
@@ -172,7 +172,7 @@ export default function AdBillPage() {
           <Grid xs={2.5} style={{ margin: "20px" }}></Grid>
           <Grid xs={2.5} style={{ margin: "20px" }}>
             <Button sx={{ ml: 1, mt: 2 }} color="success" variant="contained">
-              <AddOutlinedIcon />
+              {/* <AddOutlinedIcon /> */}
               <Typography sx={{ ml: 1 }}>Tạo Hoá đơn</Typography>
             </Button>
           </Grid>
@@ -231,8 +231,7 @@ export default function AdBillPage() {
             <Button
               sx={{ ml: 1, mt: 2 }}
               variant="contained"
-              onClick={() => searchBillByDateRange2(0, rangeDate)}
-            >
+              onClick={() => searchBillByDateRange2(0, rangeDate)}>
               Tìm kiếm
             </Button>
           </Grid>
@@ -250,8 +249,7 @@ export default function AdBillPage() {
                 inputProps={{
                   name: "Trạng thái",
                   id: "hd-select-status",
-                }}
-              >
+                }}>
                 <MenuItem value="-1">Tất cả</MenuItem>
                 <MenuItem value="0">{getStatus(0)}</MenuItem>
                 <MenuItem value="1">{getStatus(1)}</MenuItem>
@@ -278,8 +276,7 @@ export default function AdBillPage() {
                 inputProps={{
                   name: "Loại",
                   id: "hd-select-type",
-                }}
-              >
+                }}>
                 <MenuItem value="-1">Tất cả</MenuItem>
                 <MenuItem value="0">Tại quầy</MenuItem>
                 <MenuItem value="1">Giao hàng</MenuItem>
@@ -330,8 +327,7 @@ export default function AdBillPage() {
                         color: "#fff",
                         borderRadius: "90px",
                         textTransform: "none",
-                      }}
-                    >
+                      }}>
                       {row.type ? "Giao hàng" : "Tại Quầy"}
                     </Button>
                   </TableCell>
@@ -344,8 +340,7 @@ export default function AdBillPage() {
                         color: "#fff",
                         borderRadius: "90px",
                         textTransform: "none",
-                      }}
-                    >
+                      }}>
                       {getStatus(row.status)}
                     </Button>
                   </TableCell>
@@ -353,9 +348,7 @@ export default function AdBillPage() {
                     {" "}
                     <Tooltip title="Xem chi tiết">
                       <Button style={{ color: "#C0C0C0" }}>
-                        <span>
-                          <FontAwesomeIcon icon={faEye} />
-                        </span>
+                        <span>{/* <FontAwesomeIcon icon={faEye} /> */}</span>
                       </Button>
                     </Tooltip>
                   </TableCell>
@@ -369,8 +362,7 @@ export default function AdBillPage() {
             display: "flex",
             justifyContent: "center",
             marginTop: "10px",
-          }}
-        >
+          }}>
           <Pagination
             defaultPage={1}
             page={currentPage}
