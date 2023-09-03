@@ -12,14 +12,26 @@ import {
   Grid,
   TextField,
   Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import hoaDonApi from "../../../api/admin/hoadon/hoaDonApi";
 import dayjs from "dayjs";
 import { getStatus } from "../../../services/constants/statusHoaDon";
 import Tooltip from "@mui/material/Tooltip";
-import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  // ... các imports khác
+  DemoContainer,
+  DemoItem,
+} from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 export default function AdBillPage() {
   const tableRowStyle = {
     "&:hover": {
@@ -34,23 +46,41 @@ export default function AdBillPage() {
   const [inputSearch, setInputSearch] = useState("");
   const [startDate, setStartDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
-
-  //hàm khi thay đổi trang
-  const handlePageChange = (event, newPage) => {
-    setCurrentPage(newPage);
-  };
+  const [statusBill, setStatusBill] = useState(-1);
+  const [typeBill, setTypeBill] = useState(-1);
+  const [rangeDate, setRangeDate] = useState([
+    dayjs(dayjs().format("YYYY-MM-DD")),
+    dayjs(dayjs().format("YYYY-MM-DD")),
+  ]);
 
   useEffect(() => {
     fetchData(currentPage - 1);
-  }, [currentPage]);
+  }, []);
 
-  useEffect(() => {
-    if (inputSearch === undefined || inputSearch === "") {
+  //hàm khi thay đổi trang
+  const handlePageChange = (event, newPage) => {
+    //newPage <=> currentPage được hiển thị ( hiển thị từ 1 <=> pageNo + 1)
+    fetchData(newPage - 1);
+    setCurrentPage(newPage);
+  };
+
+  const handleInputSearch = (e) => {
+    setInputSearch(e.target.value);
+    if (e.target.value === undefined || e.target.value === "") {
       fetchData(currentPage - 1);
     } else {
-      searchByInputtext(0, inputSearch);
+      searchByInputtext(0, e.target.value);
     }
-  }, [inputSearch]);
+  };
+
+  const handleChangeSelectStatusBill = (event) => {
+    setStatusBill(event.target.value);
+  };
+
+  const handleChangeSelectTypeBill = (event) => {
+    setTypeBill(event.target.value);
+  };
+
   const fetchData = (currentPage) => {
     hoaDonApi
       .getPage(currentPage)
@@ -58,11 +88,9 @@ export default function AdBillPage() {
         console.log(response.data.data);
         setListHoaDon(response.data.data);
         setTotalPages(response.data.totalPages);
-        console.log("totalpage: ");
-        console.log();
       })
       .catch((error) => {
-        console.error("Lỗi khi gửi yêu cầu API: ", error);
+        console.error("Lỗi khi gửi yêu cầu API get page: ", error);
       });
   };
 
@@ -75,9 +103,10 @@ export default function AdBillPage() {
         setTotalPages(response.data.totalPages);
       })
       .catch((error) => {
-        console.error("Lỗi khi gửi yêu cầu API  search By ô input: ", error);
+        console.error("Lỗi khi gửi yêu cầu API search By ô input: ", error);
       });
   };
+
   const searchBillByDateRange = (currentPage, startDate, endDate) => {
     // Định dạng startDate và endDate thành dd-mm-yyyy
     const formattedStartDate = dayjs(startDate).format("DD-MM-YYYY");
@@ -95,24 +124,44 @@ export default function AdBillPage() {
       })
       .catch((error) => {
         console.error(
-          "Lỗi khi gửi yêu cầu API tìm kiếm theo kho ngày: ",
+          "Lỗi khi gửi yêu cầu API tìm kiếm theo khoảng ngày: ",
           error
         );
       });
   };
 
+  /////////
+  const searchBillByDateRange2 = (currentPage, rangeDate) => {
+    const startDate = rangeDate[0]; // Phần tử đầu tiên của mảng
+    const endDate = rangeDate[1]; // Phần tử thứ hai của mảng
+
+    console.log("Start Date: ", startDate);
+    console.log("End Date: ", endDate);
+
+    // Định dạng startDate và endDate thành dd-mm-yyyy
+    const formattedStartDate = dayjs(startDate).format("DD-MM-YYYY");
+    const formattedEndDate = dayjs(endDate).format("DD-MM-YYYY");
+
+    // Chuyển đổi thành chuỗi
+    const startDateString = formattedStartDate.toString();
+    const endDateString = formattedEndDate.toString();
+    console.log("String: ");
+    console.log(formattedStartDate);
+    console.log(formattedEndDate);
+  };
+
+  //
+
   return (
-    <div
-      style={{ marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}
-    >
-      <h3>Hoá đơn</h3>
+    <div style={{ fontFamily: "Arial, sans-serif" }}>
+      <h2>Hoá đơn</h2>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={3}>
+          <Grid item xs={5} style={{ margin: "25px", padding: "8px" }}>
             {" "}
             <TextField
               value={inputSearch}
-              onChange={(e) => setInputSearch(e.target.value)}
+              onChange={handleInputSearch}
               id="hd-input-search"
               label="Tìm kiếm"
               type="text"
@@ -120,8 +169,18 @@ export default function AdBillPage() {
               style={{ width: "100%" }} // Đặt chiều rộng là 100%
             />
           </Grid>
-          <Grid xs={0.5}></Grid>
-          <Grid xs={2.3}>
+          <Grid xs={2.5} style={{ margin: "20px" }}></Grid>
+          <Grid xs={2.5} style={{ margin: "20px" }}>
+            <Button sx={{ ml: 1, mt: 2 }} color="success" variant="contained">
+              <AddOutlinedIcon />
+              <Typography sx={{ ml: 1 }}>Tạo Hoá đơn</Typography>
+            </Button>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2}>
+          <Grid xs={2}></Grid>
+          {/* <Grid xs={2}>
             <TextField
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
@@ -136,7 +195,7 @@ export default function AdBillPage() {
               }}
             />
           </Grid>
-          <Grid xs={2.2}>
+          <Grid xs={2}>
             <TextField
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
@@ -150,21 +209,82 @@ export default function AdBillPage() {
                 shrink: true,
               }}
             />
-          </Grid>
+          </Grid> */}
+          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DateRangePicker", "DateRangePicker"]}>
+              <DemoItem label="Controlled picker" component="DateRangePicker">
+                <DateRangePicker
+                  value={rangeDate}
+                  onChange={(newValue) => setRangeDate(newValue)}
+                />
+              </DemoItem>
+            </DemoContainer>
+          </LocalizationProvider> */}
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateRangePicker
+              value={rangeDate}
+              onChange={(newValue) => setRangeDate(newValue)}
+            />
+          </LocalizationProvider>
+
           <Grid xs={1.5}>
             <Button
               sx={{ ml: 1, mt: 2 }}
               variant="contained"
-              onClick={() => searchBillByDateRange(0, startDate, endDate)}
+              onClick={() => searchBillByDateRange2(0, rangeDate)}
             >
               Tìm kiếm
             </Button>
           </Grid>
-          <Grid xs={2.5}>
-            <Button sx={{ ml: 1, mt: 2 }} color="success" variant="contained">
-              <AddOutlinedIcon />
-              <Typography sx={{ ml: 1 }}>Tạo Hoá đơn</Typography>
-            </Button>
+          <Grid xs={2} style={{ marginTop: "15px" }}>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="hd-select-status" shrink>
+                Trạng thái
+              </InputLabel>
+              <Select
+                id="hd-select-status"
+                value={statusBill === null ? "" : statusBill.toString()} // Chuyển giá trị sang chuỗi
+                onChange={handleChangeSelectStatusBill}
+                style={{ height: "40px" }}
+                label="Trạng thái"
+                inputProps={{
+                  name: "Trạng thái",
+                  id: "hd-select-status",
+                }}
+              >
+                <MenuItem value="-1">Tất cả</MenuItem>
+                <MenuItem value="0">{getStatus(0)}</MenuItem>
+                <MenuItem value="1">{getStatus(1)}</MenuItem>
+                <MenuItem value="2">{getStatus(2)}</MenuItem>
+                <MenuItem value="3">{getStatus(3)}</MenuItem>
+                <MenuItem value="4">{getStatus(4)}</MenuItem>
+                <MenuItem value="5">{getStatus(5)}</MenuItem>
+                <MenuItem value="6">{getStatus(6)}</MenuItem>
+                <MenuItem value="7">{getStatus(7)}</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid xs={2} style={{ marginTop: "15px", marginLeft: "25px" }}>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="hd-select-type" shrink>
+                Loại:
+              </InputLabel>
+              <Select
+                id="hd-select-type"
+                value={typeBill === null ? "" : typeBill.toString()} // Chuyển giá trị sang chuỗi
+                onChange={handleChangeSelectTypeBill}
+                style={{ height: "40px" }}
+                label="Loại"
+                inputProps={{
+                  name: "Loại",
+                  id: "hd-select-type",
+                }}
+              >
+                <MenuItem value="-1">Tất cả</MenuItem>
+                <MenuItem value="0">Tại quầy</MenuItem>
+                <MenuItem value="1">Giao hàng</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
       </Paper>
@@ -208,11 +328,11 @@ export default function AdBillPage() {
                       style={{
                         backgroundColor: "#55acee",
                         color: "#fff",
-                        borderRadius: "20px",
+                        borderRadius: "90px",
                         textTransform: "none",
                       }}
                     >
-                      {row.type ? "Tại Quầy" : "Giao hàng"}
+                      {row.type ? "Giao hàng" : "Tại Quầy"}
                     </Button>
                   </TableCell>
 
@@ -222,7 +342,7 @@ export default function AdBillPage() {
                       style={{
                         backgroundColor: "#ffdb58",
                         color: "#fff",
-                        borderRadius: "20px",
+                        borderRadius: "90px",
                         textTransform: "none",
                       }}
                     >
@@ -232,11 +352,11 @@ export default function AdBillPage() {
                   <TableCell align="center">
                     {" "}
                     <Tooltip title="Xem chi tiết">
-                      <span>
-                        <RemoveRedEyeOutlinedIcon
-                          style={{ color: "#C0C0C0" }}
-                        />
-                      </span>
+                      <Button style={{ color: "#C0C0C0" }}>
+                        <span>
+                          <FontAwesomeIcon icon={faEye} />
+                        </span>
+                      </Button>
                     </Tooltip>
                   </TableCell>
                 </TableRow>
@@ -244,7 +364,13 @@ export default function AdBillPage() {
             </TableBody>
           </Table>
         </TableContainer>
-        <div style={{ float: "right", marginTop: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "10px",
+          }}
+        >
           <Pagination
             defaultPage={1}
             page={currentPage}
