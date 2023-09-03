@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.voucher.service;
 
 import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
+import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.entity.Voucher;
 import org.springframework.data.domain.Page;
@@ -20,7 +21,5 @@ public interface AdVoucherService {
 
     Boolean deleteVoucher(Integer id);
 
-    Page<AdVoucherRespone> getSearchVoucherByName(Integer page, String textSearch);
-
-    Page<AdVoucherRespone> getSearchVoucherByDate(Integer page, String sdSearch, String edSearch);
+    Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch adVoucherSearch);
 }

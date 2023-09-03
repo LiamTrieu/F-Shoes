@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.voucher.service.impl;
 
 import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
+import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
@@ -74,20 +75,10 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Page<AdVoucherRespone> getSearchVoucherByName(Integer page, String textSearch) {
+    public Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch voucherSearch) {
         Pageable pageable = PageRequest.of(page, 5);
-        return adVoucherRepository.pageSearchVoucherByName(pageable, textSearch);
+        return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
 
-    @Override
-    public Page<AdVoucherRespone> getSearchVoucherByDate(Integer page, String sdSearch, String edSearch) {
-        Pageable pageable = PageRequest.of(page, 5);
-        if (sdSearch.equals("") && !edSearch.equals("")) {
-            return adVoucherRepository.pageSearchVoucherByEndDate(pageable, edSearch);
-        } else if (!sdSearch.equals("") && edSearch.equals("")) {
-            return adVoucherRepository.pageSearchVoucherByStartDate(pageable, sdSearch);
-        } else {
-            return adVoucherRepository.pageSearchVoucherBetweenDate(pageable, sdSearch, edSearch);
-        }
-    }
+
 }

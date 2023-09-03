@@ -3,34 +3,18 @@ import {
   Container,
   Grid,
   Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import React from "react";
-import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
-
-const columns = [
-  { field: "ma", headerName: "Mã" },
-  { field: "giaTri", headerName: "Giá trị" },
-  { field: "giaTriToiDa", headerName: "Giá trị tối đa" },
-  { field: "choDonToiThieu", headerName: "Cho đơn tối thiểu" },
-  { field: "soLuong", headerName: "Số lượng" },
-  { field: "quyen", headerName: "Quyền" },
-  { field: "trangThai", headerName: "Trạng thái" },
-  { field: "thoiGian", headerName: "Thời Gian" },
-  {
-    field: "",
-    headerName: "Thao tác",
-    width: 100,
-    renderCell: (params) => (
-      <div>
-        <button>Xem chi tiết</button>
-      </div>
-    ),
-  },
-];
 
 const rows = [
   {
@@ -40,6 +24,28 @@ const rows = [
     giaTriToiDa: 1,
     choDonToiThieu: 1,
     soLuong: 1,
+    quyen: 1,
+    trangThai: 1,
+    thoiGian: "9/10/2023 - 10/10/2023",
+  },
+  {
+    id: 2,
+    ma: 4,
+    giaTri: 2,
+    giaTriToiDa: 2,
+    choDonToiThieu: 2,
+    soLuong: 2,
+    quyen: 0,
+    trangThai: 0,
+    thoiGian: "9/10/2023 - 10/10/2023",
+  },
+  {
+    id: 3,
+    ma: 5,
+    giaTri: 3,
+    giaTriToiDa: 3,
+    choDonToiThieu: 3,
+    soLuong: 3,
     quyen: 1,
     trangThai: 1,
     thoiGian: "9/10/2023 - 10/10/2023",
@@ -55,21 +61,14 @@ export default function AdVoucherPage() {
             <Grid item xs={3}>
               <TextField
                 id="outlined"
-                label="Tìm Voucher"
+                label="Nhập mã voucher"
                 type="text"
                 size="small"
               />
             </Grid>
-            <Grid xs={1.5}>
-              <Button sx={{ ml: 1, mt: 2 }} variant="contained">
-                Tìm kiếm
-              </Button>
-            </Grid>
-            <Grid xs={0.5}></Grid>
-            <Grid xs={2.3}>
+            <Grid item xs={2.5}>
               <TextField
-                sx={{ mt: 2 }}
-                id="outlined-basic"
+                id="outlined"
                 label="Từ ngày"
                 type="date"
                 variant="outlined"
@@ -79,10 +78,9 @@ export default function AdVoucherPage() {
                 }}
               />
             </Grid>
-            <Grid xs={2.2}>
+            <Grid item xs={2.5}>
               <TextField
-                sx={{ mt: 2 }}
-                id="outlined-basic"
+                id="outlined"
                 label="Đến ngày"
                 type="date"
                 variant="outlined"
@@ -92,13 +90,10 @@ export default function AdVoucherPage() {
                 }}
               />
             </Grid>
-            <Grid xs={2.5}>
+            <Grid item xs={1.5}></Grid>
+            <Grid item xs={2.5}>
               <Link to={"/admin/voucher/add"}>
-                <Button
-                  sx={{ ml: 1, mt: 2 }}
-                  color="success"
-                  variant="contained"
-                >
+                <Button color="success" variant="contained">
                   <AddIcon />
                   <Typography sx={{ ml: 1 }}>Tạo voucher</Typography>
                 </Button>
@@ -108,17 +103,61 @@ export default function AdVoucherPage() {
         </Paper>
         {/*----------------------------------------------------------------*/}
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 10 },
-              },
-            }}
-            pageSizeOptions={[1, 5, 10]}
-            checkboxSelection
-          />
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">#</TableCell>
+                  <TableCell align="center">Mã</TableCell>
+                  <TableCell align="center">Giá trị</TableCell>
+                  <TableCell align="center">Giá trị tối đa</TableCell>
+                  <TableCell align="center">Điều kiện (tối thiểu)</TableCell>
+                  <TableCell align="center">Số lượng</TableCell>
+                  <TableCell align="center">Quyền</TableCell>
+                  <TableCell align="center">Trạng thái</TableCell>
+                  <TableCell align="center">Thời gian</TableCell>
+                  <TableCell align="center">Thao tác</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row, index) => (
+                  <TableRow
+                    key={row.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell align="center">{row.ma}</TableCell>
+                    <TableCell align="center">{row.giaTri}%</TableCell>
+                    <TableCell align="center">{row.giaTriToiDa}</TableCell>
+                    <TableCell align="center">{row.choDonToiThieu}</TableCell>
+                    <TableCell align="center">{row.soLuong}</TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        color: row.quyen === 0 ? "#00e676" : "#ffea00",
+                        textTransform: "none",
+                      }}
+                    >
+                      {row.quyen === 0 ? "Tất cả" : "Cá nhân"}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        color: row.trangThai === 0 ? "#ff1744" : "#2979ff",
+                        textTransform: "none",
+                      }}
+                    >
+                      {row.trangThai === 0 ? "Hết hạn" : "Còn hạn"}
+                    </TableCell>
+                    <TableCell align="center">{row.thoiGian}</TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Paper>
       </Container>
     </div>
