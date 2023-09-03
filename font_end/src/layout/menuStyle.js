@@ -3,7 +3,6 @@ export const colorText = {
 };
 
 export const customFont = {
-  fontFamily: "Open Sans",
   fontWeight: "bold",
   color: colorText,
   minWith: "10px",

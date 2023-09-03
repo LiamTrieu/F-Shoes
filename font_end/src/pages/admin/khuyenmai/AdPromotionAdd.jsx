@@ -14,11 +14,11 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Modal from "@mui/material/Modal";
-import Menu from "@mui/joy/Menu";
+// import Menu from "@mui/joy/Menu";
 
 // import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
-import Dropdown from "@mui/joy/Dropdown";
-import MenuButton from "@mui/joy/MenuButton/MenuButton";
+// import Dropdown from "@mui/joy/Dropdown";
+// import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { DataGrid } from "@mui/x-data-grid";
 
 const style = {
@@ -192,7 +192,7 @@ export default function AdPromotionAdd() {
               spacing={2}
               sx={{ mt: 3, mb: 3 }}>
               <Typography>Trạng Thái:</Typography>
-              <Dropdown>
+              {/* <Dropdown>
                 <MenuButton
                   // endDecorator={<ArrowDropDown />}
                   sx={{ border: "none" }}>
@@ -203,7 +203,7 @@ export default function AdPromotionAdd() {
                   <MenuItem>Smaller</MenuItem>
                   <MenuItem>Larger</MenuItem>
                 </Menu>
-              </Dropdown>
+              </Dropdown> */}
               <TextField
                 sx={{ mt: 2, width: "30%" }}
                 id="outlined-basic"
