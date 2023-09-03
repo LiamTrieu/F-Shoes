@@ -16,7 +16,7 @@ import Select from "@mui/material/Select";
 import Modal from "@mui/material/Modal";
 import Menu from "@mui/joy/Menu";
 
-import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
+// import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import Dropdown from "@mui/joy/Dropdown";
 import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { DataGrid } from "@mui/x-data-grid";
@@ -145,8 +145,7 @@ export default function AdPromotionAdd() {
                     id="demo-simple-select"
                     value={age}
                     label="Quyền sử dụng"
-                    onChange={handleChange}
-                  >
+                    onChange={handleChange}>
                     <MenuItem value={10}>Ten</MenuItem>
                     <MenuItem value={20}>Twenty</MenuItem>
                     <MenuItem value={30}>Thirty</MenuItem>
@@ -160,8 +159,7 @@ export default function AdPromotionAdd() {
                 variant="contained"
                 color="success"
                 sx={{ float: "left" }}
-                onClick={handleOpen}
-              >
+                onClick={handleOpen}>
                 Chọn
               </Button>
             </Grid>
@@ -172,8 +170,7 @@ export default function AdPromotionAdd() {
               <Button
                 variant="contained"
                 color="success"
-                sx={{ float: "right" }}
-              >
+                sx={{ float: "right" }}>
                 Tạo Mới
               </Button>
             </Grid>
@@ -185,8 +182,7 @@ export default function AdPromotionAdd() {
           open={open}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
+          aria-describedby="modal-modal-description">
           <Box sx={style}>
             <TextField id="standard-basic" label="Search" variant="standard" />
             <Stack
@@ -194,19 +190,16 @@ export default function AdPromotionAdd() {
               justifyContent="center"
               alignItems="center"
               spacing={2}
-              sx={{ mt: 3, mb: 3 }}
-            >
+              sx={{ mt: 3, mb: 3 }}>
               <Typography>Trạng Thái:</Typography>
               <Dropdown>
                 <MenuButton
-                  endDecorator={<ArrowDropDown />}
-                  sx={{ border: "none" }}
-                >
+                  // endDecorator={<ArrowDropDown />}
+                  sx={{ border: "none" }}>
                   Size
                 </MenuButton>
                 <Menu
-                  sx={{ minWidth: 160, "--ListItemDecorator-size": "24px" }}
-                >
+                  sx={{ minWidth: 160, "--ListItemDecorator-size": "24px" }}>
                   <MenuItem>Smaller</MenuItem>
                   <MenuItem>Larger</MenuItem>
                 </Menu>

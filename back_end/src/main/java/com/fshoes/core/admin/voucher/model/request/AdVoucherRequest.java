@@ -31,8 +31,6 @@ public class AdVoucherRequest {
 
     private Long endDate;
 
-    private Integer status;
-
     public Voucher newVoucher(Voucher voucher) {
         voucher.setCode(this.getCode());
         voucher.setName(this.getName());
@@ -43,7 +41,7 @@ public class AdVoucherRequest {
         voucher.setQuantity(this.getQuantity());
         voucher.setStartDate(this.getStartDate());
         voucher.setEndDate(this.getEndDate());
-        voucher.setStatus(this.getStatus());
+        voucher.setStatus(1);
         return voucher;
     }
 }

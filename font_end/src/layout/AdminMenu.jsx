@@ -4,18 +4,19 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import LineAxisIcon from "@mui/icons-material/LineAxis";
+// import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+// import LineAxisIcon from "@mui/icons-material/LineAxis";
 import { Box, Typography } from "@mui/material";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import LoyaltyIcon from "@mui/icons-material/Loyalty";
+// import LocalMallIcon from "@mui/icons-material/LocalMall";
+// import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+// import InventoryIcon from "@mui/icons-material/Inventory";
+// import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+// import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import { Link } from "react-router-dom";
 import { colorText, customFont, customListItem } from "./menuStyle";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleAd } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faRectangleAd } from "@fortawesome/free-solid-svg-icons";
+import { FaAccessibleIcon } from "react-icons/fa";
 
 export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
   const [isMenuProduct, setIsMenuProduct] = useState(
@@ -84,7 +85,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           sx={customListItem}
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            <LineAxisIcon sx={colorText} />
+            {/* <LineAxisIcon sx={colorText} /> */}
           </ListItemIcon>
           <ListItemText
             primaryTypographyProps={customFont}
@@ -97,7 +98,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           to="/admin/bill"
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            <LocalMallIcon sx={colorText} />
+            {/* <LocalMallIcon sx={colorText} /> */}
           </ListItemIcon>
           <ListItemText
             primaryTypographyProps={customFont}
@@ -108,7 +109,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           sx={customListItem}
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            <AddShoppingCartIcon sx={colorText} />
+            {/* <AddShoppingCartIcon sx={colorText} /> */}
           </ListItemIcon>
           <ListItemText
             primaryTypographyProps={customFont}
@@ -119,7 +120,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           sx={customListItem}
           onClick={handleClickOpenMenuProduct}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            <InventoryIcon sx={colorText} />
+            {/* <InventoryIcon sx={colorText} /> */}
           </ListItemIcon>
           <ListItemText
             primaryTypographyProps={customFont}
@@ -131,7 +132,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                 transition: "transform 0.5s ease", // Sử dụng ease để làm cho animation mượt mà hơn
                 transform: `rotate(${isMenuProduct ? 0 : 90}deg)`,
               }}>
-              <NavigateNextIcon />
+              {/* <NavigateNextIcon /> */}
             </Box>
           )}
         </ListItemButton>
@@ -165,7 +166,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           to="/admin/voucher"
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            <FontAwesomeIcon icon={faRectangleAd} size="lg" color="#171717" />
+            {/* <FontAwesomeIcon icon={faRectangleAd} size="lg" color="#171717" /> */}
           </ListItemIcon>
           <ListItemText
             primaryTypographyProps={customFont}
@@ -178,7 +179,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           to="/admin/promotion"
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            <LoyaltyIcon sx={colorText} />
+            {/* <LoyaltyIcon sx={colorText} /> */}
           </ListItemIcon>
           <ListItemText
             primaryTypographyProps={customFont}
@@ -189,7 +190,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           sx={customListItem}
           onClick={handleClickOpenMenuAccount}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            <PeopleAltIcon sx={colorText} />
+            {/* <PeopleAltIcon sx={colorText} /> */}
           </ListItemIcon>
           <ListItemText
             primaryTypographyProps={customFont}
@@ -201,7 +202,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                 transition: "transform 0.5s ease", // Sử dụng ease để làm cho animation mượt mà hơn
                 transform: `rotate(${isMenuAccount ? 0 : 90}deg)`,
               }}>
-              <NavigateNextIcon />
+              {/* <NavigateNextIcon /> */}
             </Box>
           )}
         </ListItemButton>

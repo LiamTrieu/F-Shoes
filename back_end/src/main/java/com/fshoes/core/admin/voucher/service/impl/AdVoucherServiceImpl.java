@@ -5,11 +5,13 @@ import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
+import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Voucher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -75,10 +77,9 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch voucherSearch) {
-        Pageable pageable = PageRequest.of(page, 5);
+    public Page<AdVoucherRespone> getSearchVoucher(PageableRequest pageableRequest, AdVoucherSearch voucherSearch) {
+        Sort sort = Sort.by("id");
+        Pageable pageable = PageRequest.of(pageableRequest.getPage() - 1, pageableRequest.getSize(), sort);
         return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
-
-
 }

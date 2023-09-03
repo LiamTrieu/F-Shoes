@@ -4,8 +4,10 @@ import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
 import com.fshoes.core.common.ObjectRespone;
+import com.fshoes.core.common.PageableRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/voucher")
+@CrossOrigin("*")
 public class AdVoucherController {
     @Autowired
     private AdVoucherService voucherService;
@@ -29,12 +32,12 @@ public class AdVoucherController {
     }
 
     @GetMapping("/view/one/{id}")
-    public ObjectRespone getOneById(@PathVariable Integer id) {
+    public ObjectRespone getOneVoucherById(@PathVariable Integer id) {
         return new ObjectRespone(voucherService.getVoucherById(id));
     }
 
     @GetMapping("/view/page")
-    public ObjectRespone getPageVoucher(@RequestParam(defaultValue = "0", name = "page") Integer page) {
+    public ObjectRespone getPageVoucher(@RequestParam(defaultValue = "0", name = "numberPage") Integer page) {
         return new ObjectRespone(voucherService.getPageVoucher(page));
     }
 
@@ -55,10 +58,10 @@ public class AdVoucherController {
                 new ObjectRespone("Hủy voucher thất bại");
     }
 
-    @GetMapping("/searchByName")
-    public ObjectRespone getSearchVoucherByName(@RequestParam(defaultValue = "0", name = "page") Integer page,
+    @GetMapping("/search")
+    public ObjectRespone getSearchVoucher(@ModelAttribute PageableRequest pageableRequest,
                                                 @ModelAttribute AdVoucherSearch adVoucherSearch) {
-        return new ObjectRespone(voucherService.getSearchVoucher(page, adVoucherSearch));
+        return new ObjectRespone(voucherService.getSearchVoucher(pageableRequest, adVoucherSearch));
     }
 
 }
