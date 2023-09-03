@@ -1,6 +1,6 @@
 package com.fshoes.core.admin.khuyenmai.model.respone;
 
-public interface KhuyenMaiRespone {
+public interface PromotionRespone {
 
     Integer getId();
 

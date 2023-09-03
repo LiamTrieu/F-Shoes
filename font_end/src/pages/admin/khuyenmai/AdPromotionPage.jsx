@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Container from "@mui/material/Container";
 import {
   Box,
@@ -10,10 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-// import AddIcon from "@mui/icons-material/Add";
-// import MenuButton from "@mui/joy/MenuButton";
 
-// import Menu from "@mui/joy/Menu";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -21,6 +18,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 // import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Link } from "react-router-dom";
+// import khuyenMaiApi from "../../../api/admin/khuyenmai/khuyenMaiApi";
+// import axios from "axios";
 
 function createData(STT, Name, Values, permission, status, Time, Action) {
   return { STT, Name, Values, permission, status, Time, Action };
@@ -57,6 +56,23 @@ const rows = [
 ];
 
 export default function AdPromotionPage() {
+  // const [listKhuyenMai, setListKhuyenMai] = useState([]);
+
+  // const loadPromotion = async () => {
+  //   try {
+  //     const getAllKM = await axios.get(
+  //       "http://localhost:8080/api/promotion/get-all"
+  //     );
+  //     console.log(getAllKM.data);
+  //     setListKhuyenMai(getAllKM.data);
+  //   } catch (error) {
+  //     console.error("Lỗi khi tải dữ liệu khuyến mãi:", error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   loadPromotion();
+  // }, []);
+
   return (
     <Container>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: "97%" }}>
@@ -108,7 +124,8 @@ export default function AdPromotionPage() {
                 color="success"
                 variant="contained"
                 component={Link}
-                to="/admin/promotion/add">
+                to="/admin/promotion/add"
+              >
                 {/* <AddIcon /> */}
                 <Typography sx={{ ml: 1 }}>Tạo Khuyến Mại</Typography>
               </Button>
@@ -118,7 +135,8 @@ export default function AdPromotionPage() {
             direction="row"
             justifyContent="center"
             alignItems="center"
-            spacing={2}>
+            spacing={2}
+          >
             <Typography>Trạng Thái:</Typography>
             {/* <Dropdown>
               <MenuButton
@@ -150,19 +168,18 @@ export default function AdPromotionPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {/* {listKhuyenMai.map((promotion, index) => (
                 <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                  <TableCell align="right">{row.STT}</TableCell>
-                  <TableCell align="right">{row.Name}</TableCell>
-                  <TableCell align="right">{row.Values}</TableCell>
-                  <TableCell align="right">{row.permission}</TableCell>
-                  <TableCell align="right">{row.status}</TableCell>
-                  <TableCell align="right">{row.Time}</TableCell>
-                  <TableCell align="right">{row.Action}</TableCell>
+                  key={promotion.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="right">{index + 1}</TableCell>
+                  <TableCell align="right">{promotion.id}</TableCell>
+                  <TableCell align="right">{promotion.name}</TableCell>
+                  <TableCell align="right">{promotion.status}</TableCell>
+                  <TableCell align="right">{promotion.value}</TableCell>
                 </TableRow>
-              ))}
+              ))} */}
             </TableBody>
           </Table>
         </TableContainer>
