@@ -114,8 +114,7 @@ export default function AdVoucherPage() {
               {listVoucher.map((row, index) => (
                 <TableRow
                   key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell align="center">{index + 1}</TableCell>
                   <TableCell align="center">{row.code}</TableCell>
                   <TableCell align="center">{row.name}</TableCell>
@@ -125,8 +124,7 @@ export default function AdVoucherPage() {
                     align="center"
                     sx={{
                       color: row.type === true ? "#00b0ff" : "#ffea00",
-                    }}
-                  >
+                    }}>
                     {row.type === true ? "Tất cả" : "Cá nhân"}
                   </TableCell>
                   <TableCell align="center">{row.minimumAmount}</TableCell>
@@ -137,8 +135,7 @@ export default function AdVoucherPage() {
                     align="center"
                     sx={{
                       color: row.status === 0 ? "#e91e63" : "#357a38",
-                    }}
-                  >
+                    }}>
                     {row.status === 0 ? "Hết hạn" : "Còn hạn"}
                   </TableCell>
                   <TableCell align="right">

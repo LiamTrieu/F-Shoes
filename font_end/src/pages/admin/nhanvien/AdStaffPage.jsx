@@ -1,6 +1,6 @@
 import { Button, Container, Paper, TextField, Table } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from "@mui/icons-material/Add";
+// import SearchIcon from "@mui/icons-material/Search";
+// import AddIcon from "@mui/icons-material/Add";
 
 const columns = [
   {
@@ -62,8 +62,7 @@ const rows = [
 export default function AdStaffPage() {
   return (
     <div
-      style={{ marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}
-    >
+      style={{ marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
       <Container>
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
           <TextField
@@ -75,7 +74,7 @@ export default function AdStaffPage() {
           <Button
             variant="contained"
             style={{ marginLeft: "10px" }}
-            startIcon={<SearchIcon />}
+            // startIcon={<SearchIcon />}
           >
             Tìm kiếm
           </Button>
@@ -83,7 +82,7 @@ export default function AdStaffPage() {
             variant="outlined"
             style={{ float: "right" }}
             color="success"
-            startIcon={<AddIcon />}
+            // startIcon={<AddIcon />}
           >
             Tạo tài khoản
           </Button>
