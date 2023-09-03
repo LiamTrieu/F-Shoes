@@ -1,14 +1,17 @@
 package com.fshoes.core.admin.voucher.service.impl;
 
 import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
+import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
+import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Voucher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,20 +77,9 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Page<AdVoucherRespone> getSearchVoucherByName(Integer page, String textSearch) {
-        Pageable pageable = PageRequest.of(page, 5);
-        return adVoucherRepository.pageSearchVoucherByName(pageable, textSearch);
-    }
-
-    @Override
-    public Page<AdVoucherRespone> getSearchVoucherByDate(Integer page, String sdSearch, String edSearch) {
-        Pageable pageable = PageRequest.of(page, 5);
-        if (sdSearch.equals("") && !edSearch.equals("")) {
-            return adVoucherRepository.pageSearchVoucherByEndDate(pageable, edSearch);
-        } else if (!sdSearch.equals("") && edSearch.equals("")) {
-            return adVoucherRepository.pageSearchVoucherByStartDate(pageable, sdSearch);
-        } else {
-            return adVoucherRepository.pageSearchVoucherBetweenDate(pageable, sdSearch, edSearch);
-        }
+    public Page<AdVoucherRespone> getSearchVoucher(PageableRequest pageableRequest, AdVoucherSearch voucherSearch) {
+        Sort sort = Sort.by("id");
+        Pageable pageable = PageRequest.of(pageableRequest.getPage() - 1, pageableRequest.getSize(), sort);
+        return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
 }

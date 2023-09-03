@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.voucher.repository;
 
+import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.repository.VoucherRepository;
 import org.springframework.data.domain.Page;
@@ -11,32 +12,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AdVoucherRepository extends VoucherRepository {
     @Query(value = """
-            select id, code, name, value, maximum_value as maximumValue,
-            type, minimum_amount as minimumAmount, quantity,
-            start_date as startDate, end_date as endDate, status
-            from voucher where name like %:textSearch%
+            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            v.type, v.minimum_amount as minimumAmount, v.quantity,
+            v.start_date as startDate, v.end_date as endDate, v.status
+            from voucher v
+            where (:#{#AVS.nameSearch} is null  or v.name like %:#{#AVS.nameSearch}%)
+            and (:#{#AVS.startDateSearch} is null or v.start_date >= :#{#AVS.startDateSearch})
+            and (:#{#AVS.endDateSearch} is null or v.end_date <= :#{#AVS.endDateSearch})
             """, nativeQuery = true)
-    Page<AdVoucherRespone> pageSearchVoucherByName(Pageable pageable, @Param("textSearch") String textSeacrh);
+    Page<AdVoucherRespone> pageSearchVoucher(Pageable pageable, @Param("AVS") AdVoucherSearch AVS);
 
-    @Query(value = """
-            select id, code, name, value, maximum_value as maximumValue,
-            type, minimum_amount as minimumAmount, quantity,
-            start_date as startDate, end_date as endDate, status
-            from voucher where start_date >= :sdSearch
-            """, nativeQuery = true)
-    Page<AdVoucherRespone> pageSearchVoucherByStartDate(Pageable pageable, @Param("sdSearch") String sdSearch);
-
-    @Query(value = """
-            select id, code, name, value, maximum_value as maximumValue,
-            type, minimum_amount as minimumAmount, quantity,
-            start_date as startDate, end_date as endDate, status
-            from voucher where end_date <= :edSearch""", nativeQuery = true)
-    Page<AdVoucherRespone> pageSearchVoucherByEndDate(Pageable pageable, @Param("edSearch") String edSearch);
-
-    @Query(value = """
-            select id, code, name, value, maximum_value as maximumValue,
-            type, minimum_amount as minimumAmount, quantity,
-            start_date as startDate, end_date as endDate, status
-            from voucher where start_date >= :sdSearch and end_date <= :edSearch""", nativeQuery = true)
-    Page<AdVoucherRespone> pageSearchVoucherBetweenDate(Pageable pageable, @Param("sdSearch") String sdSearch, @Param("edSearch") String edSearch);
 }

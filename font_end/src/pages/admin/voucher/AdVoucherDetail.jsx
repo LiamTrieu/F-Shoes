@@ -10,20 +10,34 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import voucherApi from "../../../api/admin/voucher/VoucherApi";
 // import PercentIcon from "@mui/icons-material/Percent";
 
-export default function AdVoucherAdd() {
-  const [age, setAge] = React.useState("");
+export default function AdVoucherDetail() {
+  const { id } = useParams();
+  const [voucher, setVoucher] = useState();
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
+  useEffect(() => {
+    fetchData(id);
+  }, []);
+
+  const fetchData = (id) => {
+    voucherApi
+      .getOneVoucherById(id)
+      .then((response) => {
+        console.log(response.data);
+        setVoucher(response.data);
+      })
+      .catch(() => {
+        alert("Error: Không tải được dữ liệu API");
+      });
   };
-
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 1 }}>
-        <h1>Voucher</h1>
+        <h1>Voucher Detail</h1>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
@@ -142,7 +156,7 @@ export default function AdVoucherAdd() {
           <Grid item xs={5}>
             <FormControl size="small" fullWidth>
               <InputLabel>Quyền sử dụng</InputLabel>
-              <Select value={age} label="Quyền sử dụng" onChange={handleChange}>
+              <Select>
                 <MenuItem value={10}>Ten</MenuItem>
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
