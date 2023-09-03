@@ -1,18 +1,10 @@
 import { RouterProvider } from "react-router-dom";
 import router from "./routers/router";
-import { ThemeProvider } from "@emotion/react";
-import { createTheme } from "@mui/material";
 
-function App() {
-  const themeApp = createTheme({
-    typography: { fontFamily: "Open Sans" },
-  });
-
+function App() {  
   return (
     <div className="App">
-      <ThemeProvider theme={themeApp}>
-        <RouterProvider router={router} />
-      </ThemeProvider>
+      <RouterProvider router={router} />
     </div>
   );
 }

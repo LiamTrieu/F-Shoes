@@ -4,19 +4,22 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
-// import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-// import LineAxisIcon from "@mui/icons-material/LineAxis";
 import { Box, Typography } from "@mui/material";
-// import LocalMallIcon from "@mui/icons-material/LocalMall";
-// import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-// import InventoryIcon from "@mui/icons-material/Inventory";
-// import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-// import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import { Link } from "react-router-dom";
-import { colorText, customFont, customListItem } from "./menuStyle";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faRectangleAd } from "@fortawesome/free-solid-svg-icons";
-import { FaAccessibleIcon } from "react-icons/fa";
+import {
+  chageImage,
+  colorBaseAdmin,
+  customFont,
+  customListItem,
+} from "./menuStyle";
+import { AiOutlineDashboard } from "react-icons/ai";
+import { RiBillLine } from "react-icons/ri";
+import { CiMoneyBill } from "react-icons/ci";
+import { GiConverseShoe } from "react-icons/gi";
+import { LiaMoneyCheckAltSolid } from "react-icons/lia";
+import { MdOutlineSell } from "react-icons/md";
+import { IoChevronForwardOutline } from "react-icons/io5";
+import { FiUsers } from "react-icons/fi";
 
 export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
   const [isMenuProduct, setIsMenuProduct] = useState(
@@ -25,10 +28,9 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
   const [isMenuAccount, setIsMenuAccount] = useState(
     localStorage.getItem("isShowAccountMenu") === "true" ? true : false
   );
-  useEffect(() => {
-    localStorage.setItem("isShowProduct", isMenuProduct);
-    localStorage.setItem("isShowAccountMenu", isMenuAccount);
-  }, [isMenuProduct, isMenuAccount]);
+
+  const [menuLg, setMenuLg] = useState(isMenuLg);
+
   const handleClickOpenMenuProduct = () => {
     localStorage.setItem("isShowProduct", !isMenuProduct);
     setIsMenuProduct(!isMenuProduct);
@@ -43,30 +45,57 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
       isCloseOpenMenu(isClose);
     }
   };
+  useEffect(() => {
+    setMenuLg(isMenuLg);
+  }, [isMenuLg]);
+
+  useEffect(() => {
+    localStorage.setItem("isShowProduct", isMenuProduct);
+    localStorage.setItem("isShowAccountMenu", isMenuAccount);
+  }, [isMenuProduct, isMenuAccount]);
+
   return (
     <List
+      onMouseEnter={() => {
+        if (!isMenuLg) {
+          setMenuLg(true);
+        }
+      }}
+      onMouseLeave={() => {
+        if (!isMenuLg) {
+          setMenuLg(false);
+        }
+      }}
       component="nav"
       aria-labelledby="nested-list-subheader"
       sx={{ overflow: "hidden" }}
       subheader={
         <Typography
-          textAlign={"center"}
+          textAlign="center"
           variant="h6"
           sx={{
-            transition: "font-size 0.5s",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             fontFamily: "cursive",
             fontWeight: 900,
             lineHeight: "10vh",
             minHeight: "10vh",
-            fontSize: isMenuLg ? "30px" : "10px",
-            color: colorText.color,
+            maxHeight: "10vh",
           }}>
-          F-Shoes
+          <img
+            style={{
+              transition: "width 0.5s",
+              width: menuLg ? "100px" : "50px",
+            }}
+            src={chageImage.src}
+            alt="logo"
+          />
         </Typography>
       }>
       <Box
         sx={{
-          transition: "width 0.5s",
+          transition: "width 0.5s, min-width 0.5s",
           p: 0,
           overflow: "auto",
           "::-webkit-scrollbar": {
@@ -78,18 +107,24 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
 
           maxHeight: "90vh",
           height: "100vh",
-          minWidth: isMenuLg ? "250px" : "0px",
-          width: isMenuLg ? "10vw" : "73px",
+          minWidth: menuLg ? "250px" : "70px",
+          width: menuLg ? "10vw" : "70px",
         }}>
         <ListItemButton
           sx={customListItem}
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            {/* <LineAxisIcon sx={colorText} /> */}
+            <AiOutlineDashboard
+              style={{ fontSize: "25px", ...colorBaseAdmin.colorText }}
+            />
           </ListItemIcon>
           <ListItemText
-            primaryTypographyProps={customFont}
-            primary={isMenuLg ? "Thống kê" : ""}
+            sx={{ m: 0, p: 0 }}
+            primaryTypographyProps={{
+              ...customFont,
+              ...colorBaseAdmin.colorText,
+            }}
+            primary="Thống kê"
           />
         </ListItemButton>
         <ListItemButton
@@ -98,46 +133,62 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           to="/admin/bill"
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            {/* <LocalMallIcon sx={colorText} /> */}
+            <RiBillLine
+              style={{ fontSize: "25px", ...colorBaseAdmin.colorText }}
+            />
           </ListItemIcon>
           <ListItemText
-            primaryTypographyProps={customFont}
-            primary={isMenuLg ? "Quản lý đơn hàng" : ""}
+            sx={{ m: 0, p: 0 }}
+            primaryTypographyProps={{
+              ...customFont,
+              ...colorBaseAdmin.colorText,
+            }}
+            primary="Quản lý đơn hàng"
           />
         </ListItemButton>
         <ListItemButton
           sx={customListItem}
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            {/* <AddShoppingCartIcon sx={colorText} /> */}
+            <CiMoneyBill
+              style={{ fontSize: "25px", ...colorBaseAdmin.colorText }}
+            />
           </ListItemIcon>
           <ListItemText
-            primaryTypographyProps={customFont}
-            primary={isMenuLg ? "Bán hàng tại quầy" : ""}
+            sx={{ m: 0, p: 0 }}
+            primaryTypographyProps={{
+              ...customFont,
+              ...colorBaseAdmin.colorText,
+            }}
+            primary="Bán hàng tại quầy"
           />
         </ListItemButton>
         <ListItemButton
-          sx={customListItem}
+          sx={{ ...customListItem, mb: 0 }}
           onClick={handleClickOpenMenuProduct}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            {/* <InventoryIcon sx={colorText} /> */}
+            <GiConverseShoe
+              style={{ fontSize: "25px", ...colorBaseAdmin.colorText }}
+            />
           </ListItemIcon>
           <ListItemText
-            primaryTypographyProps={customFont}
-            primary={isMenuLg ? "Quản lý sản phẩm" : ""}
+            sx={{ m: 0, p: 0 }}
+            primaryTypographyProps={{
+              ...customFont,
+              ...colorBaseAdmin.colorText,
+            }}
+            primary="Quản lý sản phẩm"
           />
-          {isMenuLg && (
-            <Box
-              sx={{
-                transition: "transform 0.5s ease", // Sử dụng ease để làm cho animation mượt mà hơn
-                transform: `rotate(${isMenuProduct ? 0 : 90}deg)`,
-              }}>
-              {/* <NavigateNextIcon /> */}
-            </Box>
-          )}
+          <IoChevronForwardOutline
+            style={{
+              ...colorBaseAdmin.colorText,
+              transition: "transform 0.5s ease",
+              transform: `rotate(${isMenuProduct ? 0 : 90}deg)`,
+            }}
+          />
         </ListItemButton>
-        {isMenuLg && (
-          <Collapse in={isMenuProduct} timeout="auto" unmountOnExit>
+        {menuLg && (
+          <Collapse in={isMenuProduct} timeout={500}>
             <List component="div" disablePadding>
               <ListItemButton
                 sx={customListItem}
@@ -145,7 +196,11 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                 to="/admin/product"
                 onClick={() => handleCloseOpenMenu(false)}>
                 <ListItemText
-                  primaryTypographyProps={customFont}
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
                   primary="&nbsp;	&bull; &nbsp; &nbsp; Sản phẩm"
                 />
               </ListItemButton>
@@ -153,7 +208,11 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                 sx={customListItem}
                 onClick={() => handleCloseOpenMenu(false)}>
                 <ListItemText
-                  primaryTypographyProps={customFont}
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
                   primary="&nbsp;	&bull; &nbsp; &nbsp; Thuộc tính"
                 />
               </ListItemButton>
@@ -166,11 +225,17 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           to="/admin/voucher"
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            {/* <FontAwesomeIcon icon={faRectangleAd} size="lg" color="#171717" /> */}
+            <LiaMoneyCheckAltSolid
+              style={{ fontSize: "25px", ...colorBaseAdmin.colorText }}
+            />
           </ListItemIcon>
           <ListItemText
-            primaryTypographyProps={customFont}
-            primary={isMenuLg ? "Voucher" : ""}
+            sx={{ m: 0, p: 0 }}
+            primaryTypographyProps={{
+              ...customFont,
+              ...colorBaseAdmin.colorText,
+            }}
+            primary="Voucher"
           />
         </ListItemButton>
         <ListItemButton
@@ -179,35 +244,45 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
           to="/admin/promotion"
           onClick={() => handleCloseOpenMenu(false)}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            {/* <LoyaltyIcon sx={colorText} /> */}
+            <MdOutlineSell
+              style={{ fontSize: "25px", ...colorBaseAdmin.colorText }}
+            />
           </ListItemIcon>
           <ListItemText
-            primaryTypographyProps={customFont}
-            primary={isMenuLg ? "Khuyến mãi" : ""}
+            sx={{ m: 0, p: 0 }}
+            primaryTypographyProps={{
+              ...customFont,
+              ...colorBaseAdmin.colorText,
+            }}
+            primary="Khuyến mãi"
           />
         </ListItemButton>
         <ListItemButton
-          sx={customListItem}
+          sx={{ ...customListItem, mb: 0 }}
           onClick={handleClickOpenMenuAccount}>
           <ListItemIcon sx={{ minWidth: "40px" }}>
-            {/* <PeopleAltIcon sx={colorText} /> */}
+            <FiUsers
+              style={{ fontSize: "25px", ...colorBaseAdmin.colorText }}
+            />
           </ListItemIcon>
           <ListItemText
-            primaryTypographyProps={customFont}
-            primary={isMenuLg ? "Tài khoản" : ""}
+            sx={{ m: 0, p: 0 }}
+            primaryTypographyProps={{
+              ...customFont,
+              ...colorBaseAdmin.colorText,
+            }}
+            primary="Tài khoản"
           />
-          {isMenuLg && (
-            <Box
-              sx={{
-                transition: "transform 0.5s ease", // Sử dụng ease để làm cho animation mượt mà hơn
-                transform: `rotate(${isMenuAccount ? 0 : 90}deg)`,
-              }}>
-              {/* <NavigateNextIcon /> */}
-            </Box>
-          )}
+          <IoChevronForwardOutline
+            style={{
+              ...colorBaseAdmin.colorText,
+              transition: "transform 0.5s ease",
+              transform: `rotate(${isMenuAccount ? 0 : 90}deg)`,
+            }}
+          />
         </ListItemButton>
-        {isMenuLg && (
-          <Collapse in={isMenuAccount} timeout="auto" unmountOnExit>
+        {menuLg && (
+          <Collapse in={isMenuAccount} timeout={500}>
             <List component="div" disablePadding>
               <ListItemButton
                 sx={customListItem}
@@ -215,17 +290,25 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                 to="/admin/staff"
                 onClick={() => handleCloseOpenMenu(false)}>
                 <ListItemText
-                  primaryTypographyProps={customFont}
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
                   primary="&nbsp;	&bull; &nbsp; &nbsp; Nhân viên"
                 />
               </ListItemButton>
               <ListItemButton
-                sx={customListItem}
+                sx={{ ...customListItem, pb: 0 }}
                 component={Link}
                 to="/admin/customer"
                 onClick={() => handleCloseOpenMenu(false)}>
                 <ListItemText
-                  primaryTypographyProps={customFont}
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
                   primary="&nbsp;	&bull; &nbsp; &nbsp; Khách hàng"
                 />
               </ListItemButton>
