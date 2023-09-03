@@ -1,9 +1,11 @@
 package com.fshoes.core.admin.nhanvien.service.impl;
 
+import com.fshoes.core.admin.nhanvien.model.request.SearchStaff;
 import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
 import com.fshoes.core.admin.nhanvien.model.respone.StaffRespone;
 import com.fshoes.core.admin.nhanvien.repository.StaffRepositorys;
 import com.fshoes.core.admin.nhanvien.service.StaffService;
+import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Staff;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +28,17 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public List<StaffRespone> findAll(StaffRequest request) {
-        return repo.getAll(request);
-    }
-
-    @Override
     public Page<StaffRespone> getStaff(Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
         return repo.staffProveti(pageable);
+    }
+
+    @Override
+    public Page<StaffRespone> searchStaff(PageableRequest pageableRequest, SearchStaff searchStaff) {
+        int page = pageableRequest.getPage() < 1 ? 0 : pageableRequest.getPage() - 1;
+        Pageable pageable = PageRequest.of(page, pageableRequest.getSize());
+
+        return repo.searchStaff(searchStaff, pageable);
     }
 
     @Override
@@ -55,6 +60,7 @@ public class StaffServiceImpl implements StaffService {
                 .gender(staffRequest.getGender())
                 .avatar(staffRequest.getAvatar())
                 .CitizenId(staffRequest.getCitizenId())
+                .role(staffRequest.getRole())
 //                .status(staffRequest.getStatus())
                 .build();
         return repo.save(staff);
@@ -65,13 +71,8 @@ public class StaffServiceImpl implements StaffService {
         try {
             Staff staff = repo.findById(id).orElseThrow();
             return repo.save(staffRequest.tranStaff(staff));
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
-    }
-
-    @Override
-    public void remove(Integer id) {
-        repo.delete(repo.findById(id).get());
     }
 }

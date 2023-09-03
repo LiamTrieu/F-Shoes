@@ -6,5 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SearchStaff {
-    private String fullName;
+    private Integer searchMa;
+
+    private String searchTen;
+
 }
