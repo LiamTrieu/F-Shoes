@@ -1,8 +1,8 @@
 import { Box, Button, Container, Popper, TextField } from "@mui/material";
 import React from "react";
-import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import { DataGrid } from "@mui/x-data-grid";
-import AddIcon from "@mui/icons-material/Add";
+// import AddIcon from "@mui/icons-material/Add";
 
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
@@ -53,21 +53,19 @@ export default function AdCustomerPage() {
             variant="outlined"
             size="small"
           />
-          <Button
+          {/* <Button
             variant="contained"
             style={{ marginLeft: "10px" }}
-            startIcon={<SearchIcon />}
-          >
+            startIcon={<SearchIcon />}>
             Tìm kiếm
-          </Button>
-          <Button
+          </Button> */}
+          {/* <Button
             variant="outlined"
             style={{ float: "right" }}
             color="success"
-            startIcon={<AddIcon />}
-          >
+            startIcon={<AddIcon />}>
             Tạo tài khoản
-          </Button>
+          </Button> */}
         </Box>
       </Container>
       <Container maxWidth="xl" sx={{ marginTop: "50px" }}>

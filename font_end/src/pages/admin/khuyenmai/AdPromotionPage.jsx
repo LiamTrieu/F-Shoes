@@ -10,19 +10,18 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+// import AddIcon from "@mui/icons-material/Add";
 import MenuButton from "@mui/joy/MenuButton";
 
 import Menu from "@mui/joy/Menu";
 import MenuItem from "@mui/joy/MenuItem";
-import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import Dropdown from "@mui/joy/Dropdown";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+// import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Link } from "react-router-dom";
 
 function createData(STT, Name, Values, permission, status, Time, Action) {
@@ -36,8 +35,8 @@ const rows = [
     "7%",
     "Công Khai",
     "Đang hoạt động",
-    "21:10;10.10-10-2022",
-    <RemoveRedEyeIcon />
+    "21:10;10.10-10-2022"
+    // <RemoveRedEyeIcon />
   ),
   createData(
     1,
@@ -45,8 +44,8 @@ const rows = [
     "7%",
     "Công Khai",
     "Đang hoạt động",
-    "21:10;10.10-10-2022",
-    <RemoveRedEyeIcon />
+    "21:10;10.10-10-2022"
+    // <RemoveRedEyeIcon />
   ),
   createData(
     1,
@@ -54,8 +53,8 @@ const rows = [
     "7%",
     "Công Khai",
     "Đang hoạt động",
-    "21:10;10.10-10-2022",
-    <RemoveRedEyeIcon />
+    "21:10;10.10-10-2022"
+    // <RemoveRedEyeIcon />
   ),
 ];
 
@@ -111,9 +110,8 @@ export default function AdPromotionPage() {
                 color="success"
                 variant="contained"
                 component={Link}
-                to="/admin/promotion/add"
-              >
-                <AddIcon />
+                to="/admin/promotion/add">
+                {/* <AddIcon /> */}
                 <Typography sx={{ ml: 1 }}>Tạo Khuyến Mại</Typography>
               </Button>
             </Grid>
@@ -122,14 +120,12 @@ export default function AdPromotionPage() {
             direction="row"
             justifyContent="center"
             alignItems="center"
-            spacing={2}
-          >
+            spacing={2}>
             <Typography>Trạng Thái:</Typography>
             <Dropdown>
               <MenuButton
-                endDecorator={<ArrowDropDown />}
-                sx={{ border: "none" }}
-              >
+                // endDecorator={<ArrowDropDown />}
+                sx={{ border: "none" }}>
                 Size
               </MenuButton>
               <Menu sx={{ minWidth: 160, "--ListItemDecorator-size": "24px" }}>
@@ -159,8 +155,7 @@ export default function AdPromotionPage() {
               {rows.map((row) => (
                 <TableRow
                   key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell align="right">{row.STT}</TableCell>
                   <TableCell align="right">{row.Name}</TableCell>
                   <TableCell align="right">{row.Values}</TableCell>

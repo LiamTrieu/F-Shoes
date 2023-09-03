@@ -11,7 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import React from "react";
-import PercentIcon from "@mui/icons-material/Percent";
+// import PercentIcon from "@mui/icons-material/Percent";
 
 export default function AdVoucherAdd() {
   const [age, setAge] = React.useState("");
@@ -53,7 +53,7 @@ export default function AdVoucherAdd() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PercentIcon />
+                      {/* <PercentIcon /> */}
                     </InputAdornment>
                   ),
                 }}
@@ -89,7 +89,7 @@ export default function AdVoucherAdd() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PercentIcon />
+                      {/* <PercentIcon /> */}
                     </InputAdornment>
                   ),
                 }}
@@ -159,8 +159,7 @@ export default function AdVoucherAdd() {
                 <Select
                   value={age}
                   label="Quyền sử dụng"
-                  onChange={handleChange}
-                >
+                  onChange={handleChange}>
                   <MenuItem value={10}>Ten</MenuItem>
                   <MenuItem value={20}>Twenty</MenuItem>
                   <MenuItem value={30}>Thirty</MenuItem>
@@ -170,8 +169,7 @@ export default function AdVoucherAdd() {
             <Grid item xs={3}>
               <Button
                 sx={{ mt: 3, width: 150, float: "left" }}
-                variant="contained"
-              >
+                variant="contained">
                 Chọn
               </Button>
             </Grid>

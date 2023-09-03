@@ -6,7 +6,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+// import AddIcon from "@mui/icons-material/Add";
 import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
@@ -97,9 +97,8 @@ export default function AdVoucherPage() {
                 <Button
                   sx={{ ml: 1, mt: 2 }}
                   color="success"
-                  variant="contained"
-                >
-                  <AddIcon />
+                  variant="contained">
+                  {/* <AddIcon /> */}
                   <Typography sx={{ ml: 1 }}>Tạo voucher</Typography>
                 </Button>
               </Link>
