@@ -14,28 +14,19 @@ const voucherApi = {
     return axios.get(urlPageVoucher);
   },
   addVoucher: (adVoucherRequest) => {
-    const urlAddVoucher = {
-      url: `${urlVoucher}/api/voucher/add`,
-      body: adVoucherRequest,
-    };
-    return axios.get(urlAddVoucher);
+    const urlAddVoucher = `${urlVoucher}/api/voucher/add`;
+    return axios.post(urlAddVoucher, adVoucherRequest);
   },
   updateVoucher: (id, adVoucherRequest) => {
-    const urlUpdateVoucher = {
-      url: `${urlVoucher}/api/voucher/update/${id}`,
-      body: adVoucherRequest,
-    };
-    return axios.get(urlUpdateVoucher);
+    const urlUpdateVoucher = `${urlVoucher}/api/voucher/update/${id}`;
+    return axios.put(urlUpdateVoucher, adVoucherRequest);
   },
   deleteVoucher: (id) => {
     const urlDeleteVoucher = `${urlVoucher}/api/voucher/delete/${id}`;
-    return axios.get(urlDeleteVoucher);
+    return axios.delete(urlDeleteVoucher);
   },
   searchVoucher: (pageableRequest, adVoucherSearch) => {
-    const urlSearchVoucher = {
-      url: `${urlVoucher}/api/voucher/search`,
-      body: { pageableRequest, adVoucherSearch },
-    };
+    const urlSearchVoucher = `${urlVoucher}/api/voucher/search?startDateSearch=${adVoucherSearch.startDateSearch}&endDateSearch=${adVoucherSearch.endDateSearch}&pageSearch=${pageableRequest}&nameSearch=${adVoucherSearch.nameSearch}`;
     return axios.get(urlSearchVoucher);
   },
 };

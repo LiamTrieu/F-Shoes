@@ -59,9 +59,9 @@ public class AdVoucherController {
     }
 
     @GetMapping("/search")
-    public ObjectRespone getSearchVoucher(@ModelAttribute PageableRequest pageableRequest,
+    public ObjectRespone getSearchVoucher(@RequestParam(defaultValue = "0", name = "pageSearch") Integer page,
                                                 @ModelAttribute AdVoucherSearch adVoucherSearch) {
-        return new ObjectRespone(voucherService.getSearchVoucher(pageableRequest, adVoucherSearch));
+        return new ObjectRespone(voucherService.getSearchVoucher(page, adVoucherSearch));
     }
 
 }
