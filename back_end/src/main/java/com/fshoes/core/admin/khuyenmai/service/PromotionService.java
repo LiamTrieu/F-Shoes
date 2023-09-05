@@ -24,7 +24,7 @@ public interface PromotionService {
      Promotion addKhuyenMai(Promotion promotion);
      Promotion updateKhuyenMai(Promotion promotion, int id);
 
-     Page<Promotion> KMPage(int page, int pageSize);
+     Page<Promotion> KMPage(int page);
 
      Page<PromotionRespone> searchByName(Integer page, Integer pageSize, String Name) ;
 

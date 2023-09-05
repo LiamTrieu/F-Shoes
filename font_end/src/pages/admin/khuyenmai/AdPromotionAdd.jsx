@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -20,6 +20,8 @@ import Modal from "@mui/material/Modal";
 // import Dropdown from "@mui/joy/Dropdown";
 // import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { DataGrid } from "@mui/x-data-grid";
+import khuyenMaiApi from "../../../api/admin/khuyenmai/khuyenMaiApi";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -69,6 +71,30 @@ const rows = [
 export default function AdPromotionAdd() {
   const [age, setAge] = React.useState("");
 
+  let navigate = useNavigate();
+
+  const [addPromotionRe, setAddPromotionRe] = useState({
+    name: "",
+    value: "",
+    type: true,
+    status: "0",
+    timeStart: "2022",
+    timeEnd: "2022",
+  });
+
+  const { name, value, type, status, timeStart, timeEnd } = addPromotionRe;
+
+  const handleInputChange = (e) => {
+    setAddPromotionRe({ ...addPromotionRe, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = (e) => {
+    khuyenMaiApi.addPromotion(e);
+    console.log("add thành công");
+    console.log(addPromotionRe);
+    navigate("/admin/promotion");
+  };
+
   const handleChange = (event) => {
     setAge(event.target.value);
   };
@@ -91,6 +117,9 @@ export default function AdPromotionAdd() {
                 variant="outlined"
                 size="large"
                 sx={{ width: "100%" }}
+                name="name"
+                value={name}
+                onChange={(e) => handleInputChange(e)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -100,6 +129,9 @@ export default function AdPromotionAdd() {
                 variant="outlined"
                 size="large"
                 sx={{ width: "100%" }}
+                name="value"
+                value={value}
+                onChange={(e) => handleInputChange(e)}
               />
             </Grid>
           </Grid>
@@ -116,6 +148,9 @@ export default function AdPromotionAdd() {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                name="timeStart"
+                // value={timeStart}
+                // onChange={(e) => handleInputChange(e)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -129,6 +164,9 @@ export default function AdPromotionAdd() {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                name="timeEnd"
+                // value={timeEnd}
+                // onChange={(e) => handleInputChange(e)}
               />
             </Grid>
           </Grid>
@@ -145,7 +183,8 @@ export default function AdPromotionAdd() {
                     id="demo-simple-select"
                     value={age}
                     label="Quyền sử dụng"
-                    onChange={handleChange}>
+                    onChange={handleChange}
+                  >
                     <MenuItem value={10}>Ten</MenuItem>
                     <MenuItem value={20}>Twenty</MenuItem>
                     <MenuItem value={30}>Thirty</MenuItem>
@@ -159,7 +198,8 @@ export default function AdPromotionAdd() {
                 variant="contained"
                 color="success"
                 sx={{ float: "left" }}
-                onClick={handleOpen}>
+                onClick={handleOpen}
+              >
                 Chọn
               </Button>
             </Grid>
@@ -170,7 +210,9 @@ export default function AdPromotionAdd() {
               <Button
                 variant="contained"
                 color="success"
-                sx={{ float: "right" }}>
+                sx={{ float: "right" }}
+                onClick={() => onSubmit(addPromotionRe)}
+              >
                 Tạo Mới
               </Button>
             </Grid>
@@ -182,7 +224,8 @@ export default function AdPromotionAdd() {
           open={open}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
+          aria-describedby="modal-modal-description"
+        >
           <Box sx={style}>
             <TextField id="standard-basic" label="Search" variant="standard" />
             <Stack
@@ -190,7 +233,8 @@ export default function AdPromotionAdd() {
               justifyContent="center"
               alignItems="center"
               spacing={2}
-              sx={{ mt: 3, mb: 3 }}>
+              sx={{ mt: 3, mb: 3 }}
+            >
               <Typography>Trạng Thái:</Typography>
               {/* <Dropdown>
                 <MenuButton

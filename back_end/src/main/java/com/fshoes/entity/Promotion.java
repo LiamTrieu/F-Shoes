@@ -27,6 +27,8 @@ public class Promotion extends IntegerEntity {
 
     private Long timeEnd;
 
+    private Boolean type;
+
     private Integer value;
 
     private Integer status;

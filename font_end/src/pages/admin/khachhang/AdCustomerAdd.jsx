@@ -1,18 +1,28 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React, { useState } from "react";
+import { Box, Button, Grid, Paper, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import khachHangApi from "../../../api/admin/khachhang/KhachHangApi";
+import { useNavigate } from "react-router-dom";
 
 export default function AdCustomerAdd() {
+  const navigate = useNavigate();
+  const [khachHang, setKhachHang] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    dateBirth: "",
+    avatar: "",
+  });
+  const onSubmit = (khachHang) => {
+    khachHangApi.addKhachHang(khachHang).then(() => {
+      alert("thành công");
+      navigate("/admin/customer");
+    });
+  };
+
   const setSelectImage = useState(null);
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -33,45 +43,45 @@ export default function AdCustomerAdd() {
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12} md={6}>
               <TextField
-                id="outlined-basic"
-                label="Tên Khách hàng"
-                variant="outlined"
-                size="large"
-                sx={{ width: "100%" }}
+                placeholder="Tên khách hàng"
+                type="text"
+                size="small"
+                fullWidth
+                onChange={(e) =>
+                  setKhachHang({ ...khachHang, fullName: e.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                id="outlined-basic"
-                label="Email"
-                variant="outlined"
-                size="large"
-                sx={{ width: "100%" }}
+                placeholder="Email"
+                type="text"
+                size="small"
+                fullWidth
+                onChange={(e) =>
+                  setKhachHang({ ...khachHang, email: e.target.value })
+                }
               />
             </Grid>
           </Grid>
-
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12} md={6}>
               <TextField
-                id="outlined-basic"
-                label="Ngày sinh"
-                type="date"
-                variant="outlined"
-                size="large"
-                sx={{ width: "100%" }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                placeholder="Số điện thoại"
+                type="text"
+                size="small"
+                fullWidth
+                onChange={(e) =>
+                  setKhachHang({ ...khachHang, phoneNumber: e.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                id="outlined-basic"
-                label="Địa chỉ"
-                variant="outlined"
-                size="large"
-                sx={{ width: "83%" }}
+                placeholder="Địa chỉ"
+                style={{ width: "82%" }}
+                type="text"
+                size="small"
               />
               <Button
                 variant="contained"
@@ -80,6 +90,16 @@ export default function AdCustomerAdd() {
               >
                 Chọn
               </Button>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
+            <Grid item xs={12} md={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={["DatePicker"]}>
+                  <DatePicker label="Ngày sinh" />
+                </DemoContainer>
+              </LocalizationProvider>
             </Grid>
             <Grid item xs={12} md={6}>
               <h3>Chọn ảnh khách hàng</h3>
@@ -94,6 +114,7 @@ export default function AdCustomerAdd() {
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12}>
               <Button
+                onClick={() => onSubmit(khachHang)}
                 variant="contained"
                 color="success"
                 sx={{ float: "right" }}

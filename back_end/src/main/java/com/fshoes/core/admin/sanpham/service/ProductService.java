@@ -19,4 +19,6 @@ public interface ProductService {
     Product addProduct(ProductRequest productReq);
 
     Product updateProduct(ProductRequest productReq, int id);
+
+    Product chageDeleted(int id, boolean isDeleted);
 }

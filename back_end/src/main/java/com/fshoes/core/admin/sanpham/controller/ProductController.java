@@ -44,4 +44,10 @@ public class ProductController {
                                         @PathVariable int id){
         return new ObjectRespone(productService.updateProduct(productReq, id));
     }
+
+    @PutMapping("/deleted/{id}")
+    public ObjectRespone deletedProduct(@RequestBody boolean isDeleted,
+                                        @PathVariable int id) {
+        return new ObjectRespone(productService.chageDeleted(id,isDeleted));
+    }
 }

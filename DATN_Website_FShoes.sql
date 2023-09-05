@@ -303,15 +303,21 @@ CREATE TABLE cart_detail (
 CREATE TABLE transaction (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_bill BIGINT,
+    id_staff INT,
     type BOOLEAN DEFAULT 0,
     total_money DECIMAL(16 , 0 ),
+    payment_method INT,
+    note NVARCHAR(250),
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
     updated_by NVARCHAR(100),
     deleted BOOLEAN DEFAULT 0,
+    status INT,
     FOREIGN KEY (id_bill)
-        REFERENCES bill (id)
+        REFERENCES bill (id),
+    FOREIGN KEY (id_staff)
+        REFERENCES staff (id)
 );
 
 

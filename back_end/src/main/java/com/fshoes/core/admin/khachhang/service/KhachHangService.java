@@ -10,13 +10,14 @@ public interface KhachHangService {
 
      List<Customer> getAll();
 
-    Page<Customer> getPage(int p, int pagesize);
+    Page<KhachHangRespone> getPage(int p);
 
-    void save(Customer cu);
+    Page<KhachHangRespone> findKhachHangByName(int p, String textSearch );
+
+    Customer save(Customer cu);
 
     void delete(int id );
 
     Customer getOne(int id);
 
-    public List<KhachHangRespone> seriolizeList(List<Customer> lst);
 }

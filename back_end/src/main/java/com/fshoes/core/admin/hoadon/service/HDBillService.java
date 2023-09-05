@@ -33,4 +33,6 @@ public interface HDBillService {
 
     Bill getOne(Integer id);
 
+    Page<HDBillResponse> getBillByStatusAndType(Integer pageNo, String status, String type);
+
 }
