@@ -25,9 +25,9 @@ export default function AdCustomerPage() {
 
   const fetchData = (currentPage) => {
     staffApi
-      .getPages(currentPage)
+      .searchAndGetPageStaff(currentPage)
       .then((response) => {
-        setListStaff(response.data.data.content);
+        setListStaff(response.data.data);
         setCurrentPage(response.data.number);
         setToTalPages(response.data.totalPages);
       })
@@ -78,20 +78,28 @@ export default function AdCustomerPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {listStaff.map((row, index) => (
-                <TableRow
-                  key={row.fullName}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell align="right">{index + 1}</TableCell>
-                  <TableCell align="right">{row.avatar}</TableCell>
-                  <TableCell align="right">{row.fullName}</TableCell>
-                  <TableCell align="right">{row.email}</TableCell>
-                  <TableCell align="right">{row.email}</TableCell>
-                  <TableCell align="right">{row.status}</TableCell>
-                  <TableCell align="right"></TableCell>
+              {listStaff && listStaff.length > 0 ? (
+                listStaff.map((row, index) => (
+                  <TableRow
+                    key={row.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell align="right">{index + 1}</TableCell>
+                    <TableCell align="right">{row.avatar}</TableCell>
+                    <TableCell align="right">{row.fullName}</TableCell>
+                    <TableCell align="right">{row.email}</TableCell>
+                    <TableCell align="right">{row.date_birth}</TableCell>
+                    <TableCell align="right">{row.status}</TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7}>
+                    Không có dữ liệu để hiển thị.
+                  </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </TableContainer>
