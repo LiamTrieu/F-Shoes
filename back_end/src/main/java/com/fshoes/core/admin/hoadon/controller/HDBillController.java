@@ -110,4 +110,13 @@ public class HDBillController {
         return new ObjectRespone(hdBillService.getOne(id));
     }
 
+    @GetMapping("/get-by-status-and-type")
+    public PageReponse getBillByStatusAngType(
+            @RequestParam(value = "pageNo", defaultValue = "0") Integer pageNo,
+            @RequestParam(value = "status") String status,
+            @RequestParam(value = "type") String type
+    ) {
+        return new PageReponse<>(hdBillService.getBillByStatusAndType(pageNo, status, type));
+    }
+
 }

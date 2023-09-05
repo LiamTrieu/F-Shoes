@@ -1,6 +1,6 @@
 package com.fshoes.core.admin.hoadon.controller;
 
-import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
+import com.fshoes.core.admin.hoadon.service.HDTransactionService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/billHistory")
+@RequestMapping("/api/transaction")
 @CrossOrigin("*")
-public class HDBillHistoryController {
+public class HDTransactionController {
 
     @Autowired
-    private HDBillHistoryService hdBillHistoryService;
+    private HDTransactionService hdTransactionService;
 
     @GetMapping("/get-by-idBill/{idBill}")
-    public ObjectRespone getByIdBill(@PathVariable("idBill") Integer idBill) {
-        return new ObjectRespone(hdBillHistoryService.getBillHistoriesByBillId(idBill));
+    public ObjectRespone getTransactionByIdBill(@PathVariable("idBill") Integer idBill) {
+        return new ObjectRespone(hdTransactionService.getTransactionByBillId(idBill));
     }
 
 }

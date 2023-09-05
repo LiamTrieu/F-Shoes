@@ -13,12 +13,13 @@ import java.math.BigDecimal;
 @Repository
 public interface HDBillRepositpory extends BillRepository {
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
-            "(b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
             "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
             "LEFT JOIN Customer c ON b.customer.id = c.id " +
             "GROUP BY " +
+            "b.id," +
             "b.code, " +
             "c.fullName, " +
             "c.phoneNumber, " +
@@ -39,12 +40,13 @@ public interface HDBillRepositpory extends BillRepository {
     Boolean existsByCode(String code);
 
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
-            "(b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
             "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
             "LEFT JOIN Customer c ON b.customer.id = c.id " +
             "GROUP BY " +
+            "b.id," +
             "b.code, " +
             "c.fullName, " +
             "c.phoneNumber, " +
@@ -62,7 +64,7 @@ public interface HDBillRepositpory extends BillRepository {
     Page<HDBillResponse> getAllBillOrderByTotalMoney(Pageable pageable);
 
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
-            "(b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
             "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
@@ -74,6 +76,7 @@ public interface HDBillRepositpory extends BillRepository {
             "OR (c.phoneNumber IS NOT NULL AND c.phoneNumber LIKE CONCAT('%', :inputSearch, '%')) " +
             "OR (c.email IS NOT NULL AND c.email LIKE CONCAT('%', :inputSearch, '%')) " +
             "GROUP BY " +
+            "b.id," +
             "b.code, " +
             "c.fullName, " +
             "c.phoneNumber, " +
@@ -91,15 +94,17 @@ public interface HDBillRepositpory extends BillRepository {
     Page<HDBillResponse> searchBillByInputText(Pageable pageable, @Param("inputSearch") String inputSearch);
 
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
-            "(b.code, b.fullName, b.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
             "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
+            "LEFT JOIN Customer c ON b.customer.id = c.id " +
             "WHERE b.type = :type " +
             "GROUP BY " +
+            "b.id," +
             "b.code, " +
-            "b.fullName, " +
-            "b.phoneNumber, " +
+            "c.fullName, " +
+            "c.phoneNumber, " +
             "b.address, " +
             "b.totalMoney, " +
             "b.moneyReduced, " +
@@ -114,15 +119,17 @@ public interface HDBillRepositpory extends BillRepository {
     Page<HDBillResponse> getBillByType(Pageable pageable, @Param("type") Boolean type);
 
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
-            "(b.code, b.fullName, b.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
             "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
+            "LEFT JOIN Customer c ON b.customer.id = c.id " +
             "WHERE b.status = :status " +
             "GROUP BY " +
+            "b.id," +
             "b.code, " +
-            "b.fullName, " +
-            "b.phoneNumber, " +
+            "c.fullName, " +
+            "c.phoneNumber, " +
             "b.address, " +
             "b.totalMoney, " +
             "b.moneyReduced, " +
@@ -137,15 +144,17 @@ public interface HDBillRepositpory extends BillRepository {
     Page<HDBillResponse> getBillByStatus(Pageable pageable, @Param("status") Integer status);
 
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
-            "(b.code, b.fullName, b.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
             "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
+            "LEFT JOIN Customer c ON b.customer.id = c.id " +
             "WHERE b.createdAt >= :startDate AND b.createdAt <= :endDate " +
             "GROUP BY " +
+            "b.id," +
             "b.code, " +
-            "b.fullName, " +
-            "b.phoneNumber, " +
+            "c.fullName, " +
+            "c.phoneNumber, " +
             "b.address, " +
             "b.totalMoney, " +
             "b.moneyReduced, " +
@@ -164,15 +173,17 @@ public interface HDBillRepositpory extends BillRepository {
     );
 
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
-            "(b.code, b.fullName, b.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
             "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
+            "LEFT JOIN Customer c ON b.customer.id = c.id " +
             "WHERE b.totalMoney >= :minPrice AND b.totalMoney <= :maxPrice " +
             "GROUP BY " +
+            "b.id," +
             "b.code, " +
-            "b.fullName, " +
-            "b.phoneNumber, " +
+            "c.fullName, " +
+            "c.phoneNumber, " +
             "b.address, " +
             "b.totalMoney, " +
             "b.moneyReduced, " +
@@ -191,15 +202,18 @@ public interface HDBillRepositpory extends BillRepository {
     );
 
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
-            "(b.code, b.fullName, b.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
             "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
-            "WHERE b.status = :status AND b.createdAt >= :startDate AND b.createdAt <= :endDate " +
+            "LEFT JOIN Customer c ON b.customer.id = c.id " +
+            "WHERE b.status = :status " +
+            "AND (b.createdAt >= :startDate AND b.createdAt <= :endDate) " +
             "GROUP BY " +
+            "b.id," +
             "b.code, " +
-            "b.fullName, " +
-            "b.phoneNumber, " +
+            "c.fullName, " +
+            "c.phoneNumber, " +
             "b.address, " +
             "b.totalMoney, " +
             "b.moneyReduced, " +
@@ -216,6 +230,35 @@ public interface HDBillRepositpory extends BillRepository {
             @Param("status") Integer status,
             @Param("startDate") Long startDate,
             @Param("endDate") Long endDate
+    );
+
+    @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
+            "(b.id, b.code, c.fullName, c.phoneNumber, b.address, b.totalMoney, b.moneyReduced," +
+            "b.moneyAfter, b.moneyShip, b.type, b.note, b.createdAt, b.createdBy, sum(bt.quantity), b.status)  " +
+            "FROM Bill b " +
+            "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
+            "LEFT JOIN Customer c ON b.customer.id = c.id " +
+            "WHERE (:status IS NULL OR b.status = :status) AND (:type IS NULL OR :type = true AND b.type = true OR :type = false AND b.type = false) \n" +
+            "GROUP BY " +
+            "b.id," +
+            "b.code, " +
+            "c.fullName, " +
+            "c.phoneNumber, " +
+            "b.address, " +
+            "b.totalMoney, " +
+            "b.moneyReduced, " +
+            "b.moneyAfter, " +
+            "b.moneyShip, " +
+            "b.type, " +
+            "b.note, " +
+            "b.createdAt, " +
+            "b.createdBy, " +
+            "b.status " +
+            "ORDER BY b.createdAt DESC")
+    Page<HDBillResponse> getBillByStatusAndType(
+            Pageable pageable,
+            @Param("status") Integer status,
+            @Param("type") Boolean type
     );
 
 }
