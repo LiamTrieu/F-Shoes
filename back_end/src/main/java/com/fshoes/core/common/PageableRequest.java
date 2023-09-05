@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageableRequest {
-    private int page = 0;
+    private int page = 1;
     private int size = 1;
 }

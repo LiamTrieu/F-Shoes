@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react'
 import {
   Avatar,
   Badge,
@@ -6,140 +6,134 @@ import {
   Container,
   IconButton,
   SwipeableDrawer,
-  ThemeProvider,
   Toolbar,
   Tooltip,
-  createTheme,
+  Typography,
   useMediaQuery,
-} from "@mui/material";
-import AdminMenu from "./AdminMenu";
-import { AiOutlineMenuFold } from "react-icons/ai";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { MdOutlineModeNight, MdOutlineLightMode } from "react-icons/md";
-import { colorBaseAdmin } from "./menuStyle";
-import chageDarkMode from "../services/common/chageDarkMode";
+} from '@mui/material'
+import AdminMenu from './AdminMenu'
+import { AiOutlineMenuFold } from 'react-icons/ai'
+import { IoMdNotificationsOutline } from 'react-icons/io'
+import { MdOutlineModeNight, MdOutlineLightMode } from 'react-icons/md'
+import { colorBaseAdmin } from './menuStyle'
+import ThemeAdmin from '../services/theme/ThemeAdmin'
 
-export default function AdminHeader(props) {
-  const [darkMode, setDarkMode] = useState(false);
-  const themeMode = createTheme({
-    typography: { fontFamily: "Open Sans" },
-    palette: {
-      mode: darkMode ? "dark" : "light",
-      background: {
-        default: darkMode ? "#1F263C" : "#FFFFFF",
-        paper: darkMode ? "#1F263C" : "#FFFFFF",
-      },
-      text: {
-        primary: darkMode ? "#d2d2e8" : "#333333",
-      },
-    },
-  });
-  const [openMenuLg, setOpenMenuLg] = useState(true);
-  const [openMenu, setOpenMenu] = useState(false);
-  const isMdScreen = useMediaQuery("(min-width: 992px)");
+export default function AdminHeader({ children }) {
+  const adminMode = localStorage.getItem('admim-dark-mode') === 'true'
+  const [darkMode, setDarkMode] = useState(adminMode)
+
+  useEffect(() => {
+    localStorage.setItem('admim-dark-mode', darkMode)
+  }, [darkMode])
+
+  const [openMenuLg, setOpenMenuLg] = useState(true)
+  const [openMenu, setOpenMenu] = useState(false)
+  const isMdScreen = useMediaQuery('(min-width: 1055px)')
 
   const showOpenMenu = (open) => (event) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
+    if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return
     }
-    setOpenMenu(open);
-  };
+    setOpenMenu(open)
+  }
 
   const handleMenuClose = (isClose) => {
-    setOpenMenu(isClose);
-  };
+    setOpenMenu(isClose)
+  }
 
   return (
-    <ThemeProvider theme={themeMode}>
-      <Box display="flex" height="100vh" sx={colorBaseAdmin.colorBgNav}>
+    <ThemeAdmin darkMode={darkMode}>
+      <Box display="flex" height="100vh" sx={{ ...colorBaseAdmin.colorBgNav }}>
         {isMdScreen && <AdminMenu isMenuLg={openMenuLg} />}
         <Box flexGrow={1}>
           <Toolbar
             style={{
-              minHeight: "10vh",
-              boxShadow: "0 1px 2px 0 rgba(0,0,0,.05)",
+              minHeight: '10vh',
+              boxShadow: '0 1px 2px 0 rgba(0,0,0,.05)',
             }}>
             <IconButton
-              color="inherit"
+              color="layout.colorText"
               onClick={() => {
-                if (isMdScreen) setOpenMenuLg(!openMenuLg);
-                else setOpenMenu(!openMenu);
+                if (isMdScreen) setOpenMenuLg(!openMenuLg)
+                else setOpenMenu(!openMenu)
               }}
               sx={{
                 transform: `rotate(${openMenuLg ? 0 : 180}deg)`,
               }}>
-              <AiOutlineMenuFold
-                style={{ fontSize: "25px", ...colorBaseAdmin.colorText }}
+              <Box
+                component={AiOutlineMenuFold}
+                sx={{ fontSize: '25px', ...colorBaseAdmin.colorText }}
               />
             </IconButton>
-            {openMenu && (
-              <SwipeableDrawer
-                onOpen={showOpenMenu(true)}
-                open={openMenu}
-                onClose={showOpenMenu(false)}>
-                {!isMdScreen && openMenu && (
-                  <AdminMenu
-                    isCloseOpenMenu={handleMenuClose}
-                    isMenuLg={true}
-                  />
-                )}
-              </SwipeableDrawer>
-            )}
+            <SwipeableDrawer
+              transitionDuration={500}
+              onOpen={showOpenMenu(true)}
+              open={openMenu}
+              onClose={showOpenMenu(false)}>
+              {!isMdScreen && openMenu && (
+                <AdminMenu isCloseOpenMenu={handleMenuClose} isMenuLg={true} />
+              )}
+            </SwipeableDrawer>
             <Box flexGrow={1} />
-            <Tooltip title={darkMode ? "Chế độ tối" : "Chế độ sáng"}>
+            <Tooltip title={darkMode ? 'Chế độ tối' : 'Chế độ sáng'}>
               <IconButton
+                color="theme."
                 size="small"
-                color="inherit"
                 onClick={() => {
-                  setDarkMode(!darkMode);
-                  chageDarkMode(darkMode);
+                  setDarkMode(!darkMode)
                 }}>
                 {darkMode ? (
-                  <MdOutlineModeNight
-                    style={{ ...colorBaseAdmin.colorText, fontSize: "23px" }}
+                  <Box
+                    component={MdOutlineModeNight}
+                    sx={{ fontSize: '25px', ...colorBaseAdmin.colorText }}
                   />
                 ) : (
-                  <MdOutlineLightMode
-                    style={{ ...colorBaseAdmin.colorText, fontSize: "23px" }}
+                  <Box
+                    component={MdOutlineLightMode}
+                    sx={{ fontSize: '25px', ...colorBaseAdmin.colorText }}
                   />
                 )}
               </IconButton>
             </Tooltip>
             <Tooltip title="Thông báo">
-              <IconButton size="small" color="inherit" sx={{ m: 1.5 }}>
+              <IconButton size="small" color="layout.colorText" sx={{ m: 1.5 }}>
                 <Badge variant="dot" invisible={false} color="error">
-                  <IoMdNotificationsOutline
-                    style={{ ...colorBaseAdmin.colorText, fontSize: "23px" }}
+                  <Box
+                    component={IoMdNotificationsOutline}
+                    sx={{ fontSize: '25px', ...colorBaseAdmin.colorText }}
                   />
                 </Badge>
               </IconButton>
             </Tooltip>
             <Tooltip title="Tài khoản">
               <IconButton size="small">
-                <Avatar
-                  src={require("../assets/image/image.png")}
-                  sx={{ width: 35, height: 35 }}
-                />
+                <Avatar src={require('../assets/image/image.png')} sx={{ width: 35, height: 35 }} />
               </IconButton>
             </Tooltip>
           </Toolbar>
 
-          <Container
+          <Box
             maxWidth="xl"
             sx={{
+              transition: 'width 0.5s maxidth 0.5s',
               ...colorBaseAdmin.colorBg,
-              overflow: "auto",
-              minHeight: "90vh",
-              pt: 2,
+              overflow: 'auto',
+              '::-webkit-scrollbar': {
+                width: '2px',
+              },
+              '::-webkit-scrollbar-thumb': {
+                background: 'rgba(76,78,100,0.4)',
+              },
+              maxHeight: '90vh',
+              minHeight: '90vh',
+              maxWidth: isMdScreen ? '95vw' : '100vw',
+              pt: 1,
+              pb: 7,
             }}>
-            {props.children}
-          </Container>
+            <Container>{children}</Container>
+          </Box>
         </Box>
       </Box>
-    </ThemeProvider>
-  );
+    </ThemeAdmin>
+  )
 }

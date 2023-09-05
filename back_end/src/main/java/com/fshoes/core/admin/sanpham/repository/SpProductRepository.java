@@ -14,9 +14,9 @@ import java.util.Optional;
 @Repository
 public interface SpProductRepository extends ProductRepository {
 
-    @Query(value = "select id, name, deleted from product where name like %:textSearch%", nativeQuery = true)
+    @Query(value = "select id, name, deleted, created_at as createAt from product where name like %:textSearch%", nativeQuery = true)
     Page<ProductResponse> getPageProduct(Pageable pageable,@Param("textSearch") String textSeacrh);
 
-    @Query(value = "select id, name, deleted from product where id = :id", nativeQuery = true)
+    @Query(value = "select id, name, deleted, created_at as createAt from product where id = :id", nativeQuery = true)
     Optional<ProductResponse> getById(@Param("id") int id);
 }

@@ -33,10 +33,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductResponse> getPage(PageableRequest pageReq, String textSearch) {
-        Sort sort = Sort.by("id");
+        Sort sort = Sort.by("id").reverse();
         Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
-        return productRepository.getPageProduct(pageable, textSearch);
+        Page<ProductResponse> page = productRepository.getPageProduct(pageable, textSearch);
+        if (pageReq.getPage() > page.getTotalPages() && page.getTotalPages() > 0) {
+            pageReq.setPage(page.getTotalPages());
+            pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
+            page = productRepository.getPageProduct(pageable, textSearch);
+        }
+
+        return page;
     }
+
 
 
     @Override
@@ -54,6 +62,17 @@ public class ProductServiceImpl implements ProductService {
         try {
             Product product = productRepository.findById(id).orElseThrow();
             return productRepository.save(productReq.tranProduct(product));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Product chageDeleted(int id, boolean isDeleted) {
+        try {
+            Product product = productRepository.findById(id).orElseThrow();
+            product.setDeleted(isDeleted);
+            return productRepository.save(product);
         } catch (Exception e) {
             return null;
         }
