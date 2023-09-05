@@ -5,21 +5,19 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import khachHangApi from "../../../api/admin/khachhang/KhachHangApi";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-export default function AdCustomerAdd() {
-  const navigate = useNavigate();
-  const [khachHang, setKhachHang] = useState({
-    fullName: "",
-    email: "",
-    phoneNumber: "",
-    dateBirth: "",
-    avatar: "",
-  });
-  const onSubmit = (khachHang) => {
-    khachHangApi.addKhachHang(khachHang).then(() => {
-      alert("thành công");
-      navigate("/admin/customer");
+export default function AdCustomerDetail() {
+  const { id } = useParams();
+  const [khachHang, setKhachHang] = useState([]);
+
+  useEffect(() => {
+    loadData(id);
+  }, []);
+
+  const loadData = (id) => {
+    khachHangApi.getOne(id).then((response) => {
+      setKhachHang(response.data);
     });
   };
 
@@ -44,41 +42,43 @@ export default function AdCustomerAdd() {
             <Grid item xs={12} md={6}>
               <TextField
                 placeholder="Tên khách hàng"
+                variant="outlined"
+                id="outlined-basic"
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) =>
-                  setKhachHang({ ...khachHang, fullName: e.target.value })
-                }
+                value={khachHang.data?.fullName}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
+                id="outlined-basic"
                 placeholder="Email"
+                variant="outlined"
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) =>
-                  setKhachHang({ ...khachHang, email: e.target.value })
-                }
+                value={khachHang.data?.email}
               />
             </Grid>
           </Grid>
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12} md={6}>
               <TextField
+                id="outlined-basic"
                 placeholder="Số điện thoại"
+                variant="outlined"
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) =>
-                  setKhachHang({ ...khachHang, phoneNumber: e.target.value })
-                }
+                value={khachHang.data?.phoneNumber}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
+                id="outlined-basic"
                 placeholder="Địa chỉ"
+                variant="outlined"
                 style={{ width: "82%" }}
                 type="text"
                 size="small"
@@ -114,7 +114,6 @@ export default function AdCustomerAdd() {
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12}>
               <Button
-                onClick={() => onSubmit(khachHang)}
                 variant="contained"
                 color="success"
                 sx={{ float: "right" }}

@@ -2,6 +2,7 @@ package com.fshoes.core.admin.khachhang.controller;
 
 import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.service.impl.KhachHangServiceImpl;
+import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,27 +22,35 @@ public class KhachHangController {
 
 
     @GetMapping("/get-all")
-    public List<?> getAll(Model model) {
-        return khachHangService.seriolizeList(khachHangService.getAll());
+    public List<?> getAll() {
+        return khachHangService.getAll();
     }
 
     @GetMapping("/get-page")
-    public PageReponse getPage(@RequestParam(defaultValue = "0") int p, @RequestParam(defaultValue = "2") int pageSize) {
-        return new PageReponse<>(khachHangService.getPage(p, pageSize));
+    public ObjectRespone getPage(@RequestParam(defaultValue = "0") int p) {
+        return new ObjectRespone(khachHangService.getPage(p));
     }
 
+    @GetMapping("/search")
+    public ObjectRespone search(@RequestParam(defaultValue = "0") int p,
+                                @RequestParam(defaultValue = "") String textSearch) {
+        return new ObjectRespone(khachHangService.findKhachHangByName(p,textSearch));
+    }
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody Customer customer) {
+    public ObjectRespone create(@RequestBody Customer customer) {
         customer.setStatus(1);
-        khachHangService.save(customer);
-        return ResponseEntity.ok(new KhachHangRespone(customer));
+        return new ObjectRespone(khachHangService.save(customer));
+    }
+
+    @GetMapping("/get-one/{id}")
+    public ObjectRespone getOne(@PathVariable int id) {
+        return new ObjectRespone(khachHangService.getOne(id));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Customer customer) {
+    public ObjectRespone update(@PathVariable int id, @RequestBody Customer customer) {
         customer.setId(id);
-        khachHangService.save(customer);
-        return ResponseEntity.ok(new KhachHangRespone(customer));
+        return new ObjectRespone(khachHangService.save(customer));
     }
 
     @DeleteMapping("/delete/{id}")
