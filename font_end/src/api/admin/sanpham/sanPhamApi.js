@@ -1,13 +1,22 @@
-import axios from "axios";
+import axiosClient from '../../axios'
 
 const sanPhamApi = {
-  get: () => {
-    const url = `/product`;
-    return axios.get(url);
+  get: (filter) => {
+    const url = `/product/page`
+    return axiosClient.get(url, { params: filter })
   },
-  updateSanPham: (sanpham) => {
-    const url = `/product`;
-    return axios.put(url, sanpham);
+  deleted: (id, isDeleted) => {
+    const url = `/product/deleted/${id}`
+    return axiosClient.put(url, isDeleted)
   },
-};
-export default sanPhamApi;
+  add: (product) => {
+    const url = `/product/add`
+    return axiosClient.post(url, product)
+  },
+  update: (id, product) => {
+    const url = `/product/update/${id}`
+    console.log(url)
+    return axiosClient.put(url, product)
+  },
+}
+export default sanPhamApi

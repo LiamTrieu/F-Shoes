@@ -4,4 +4,5 @@ public interface ProductResponse {
     Integer getId();
     String getName();
     Boolean getDeleted();
+    Long getCreateAt();
 }
