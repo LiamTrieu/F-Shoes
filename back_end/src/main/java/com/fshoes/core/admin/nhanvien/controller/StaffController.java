@@ -23,9 +23,9 @@ public class StaffController {
         return new ResponseEntity(service.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/page")
-    public PageReponse hienthiPageNo(@ModelAttribute PageableRequest pageableRequest,
-                                     @ModelAttribute SearchStaff search) {
+    @GetMapping("/search-getPage")
+    public PageReponse hienthiPageNo(@ModelAttribute(name = "page") PageableRequest pageableRequest,
+                                     @ModelAttribute(name = "searchTen") SearchStaff search) {
         return new PageReponse<>(service.searchStaff(pageableRequest, search));
     }
 

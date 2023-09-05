@@ -1,106 +1,109 @@
-import { Button, Container, Paper, TextField, Table } from "@mui/material";
-// import SearchIcon from "@mui/icons-material/Search";
-// import AddIcon from "@mui/icons-material/Add";
+import {
+  Button,
+  TextField,
+  Table,
+  Typography,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+} from "@mui/material";
+import { Link } from "react-router-dom";
+import staffApi from "../../../api/admin/nhanvien/nhanVienApi";
+import { useEffect, useState } from "react";
 
-const columns = [
-  {
-    title: "STT",
-    dataIndex: "stt",
-    key: "stt",
-  },
-  {
-    title: "ID",
-    dataIndex: "id",
-    key: "id",
-  },
-  {
-    title: "Ảnh",
-    dataIndex: "image",
-    key: "image",
-  },
-  {
-    title: "Tên tài khoản",
-    dataIndex: "accountName",
-    key: "accountName",
-  },
-  {
-    title: "Tên tài khoản",
-    dataIndex: "accountName",
-    key: "accountName",
-  },
-  {
-    title: "Email",
-    dataIndex: "email",
-    key: "email",
-  },
-  {
-    title: "Họ và tên",
-    dataIndex: "fullName",
-    key: "fullName",
-  },
-  {
-    title: "Ngày tạo",
-    dataIndex: "createdAt",
-    key: "createdAt",
-  },
-  {
-    title: "Trạng thái",
-    dataIndex: "status",
-    key: "status",
-  },
-];
+export default function AdCustomerPage() {
+  const [listStaff, setListStaff] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setToTalPages] = useState(0);
 
-const rows = [
-  {
-    stt: 1,
-    id: 1,
-    image: "Ảnh 1",
-    accountName: "Trang",
-  },
-];
+  useEffect(() => {
+    fetchData(currentPage - 1);
+  }, [currentPage]);
 
-export default function AdStaffPage() {
+  const fetchData = (currentPage) => {
+    staffApi
+      .searchAndGetPageStaff(currentPage)
+      .then((response) => {
+        setListStaff(response.data.data);
+        setCurrentPage(response.data.number);
+        setToTalPages(response.data.totalPages);
+      })
+      .catch(() => {
+        alert("Error: Không tải dữ liệu API");
+      });
+  };
+
   return (
-    <div
-      style={{ marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
-      <Container>
-        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-          <TextField
-            id="outlined-basic"
-            label="Tên Nhân Viên"
-            variant="outlined"
-            size="small"
-          />
-          <Button
-            variant="contained"
-            style={{ marginLeft: "10px" }}
-            // startIcon={<SearchIcon />}
-          >
-            Tìm kiếm
-          </Button>
-          <Button
-            variant="outlined"
-            style={{ float: "right" }}
-            color="success"
-            // startIcon={<AddIcon />}
-          >
-            Tạo tài khoản
-          </Button>
-        </Paper>
-      </Container>
-      <Container sx={{ marginTop: "50px" }}>
-        <Table
-          dataSource={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
+    <div>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+        <TextField
+          id="outlined-basic"
+          label="Tên Nhân Viên"
+          variant="outlined"
+          size="small"
         />
-      </Container>
+        <Button
+          variant="contained"
+          style={{ marginLeft: "10px" }}
+          AiOutlineSearch
+        >
+          Tìm kiếm
+        </Button>
+        <Button
+          variant="outlined"
+          style={{ float: "right" }}
+          color="success"
+          component={Link}
+          to="/admin/staff/add"
+        >
+          <Typography sx={{ ml: 1 }}>Tạo Nhân Viên</Typography>
+        </Button>
+      </Paper>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+        <TableContainer component={Paper} sx={{ width: "100%" }}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>STT</TableCell>
+                <TableCell align="right">Ảnh</TableCell>
+                <TableCell align="right">Tên tài khoản</TableCell>
+                <TableCell align="right">Email</TableCell>
+                <TableCell align="right">Họ tên</TableCell>
+                <TableCell align="right">Ngày tạo</TableCell>
+                <TableCell align="right">Trạng thái</TableCell>
+                <TableCell align="right">Thao tác</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {listStaff && listStaff.length > 0 ? (
+                listStaff.map((row, index) => (
+                  <TableRow
+                    key={row.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell align="right">{index + 1}</TableCell>
+                    <TableCell align="right">{row.avatar}</TableCell>
+                    <TableCell align="right">{row.fullName}</TableCell>
+                    <TableCell align="right">{row.email}</TableCell>
+                    <TableCell align="right">{row.date_birth}</TableCell>
+                    <TableCell align="right">{row.status}</TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7}>
+                    Không có dữ liệu để hiển thị.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </div>
   );
 }

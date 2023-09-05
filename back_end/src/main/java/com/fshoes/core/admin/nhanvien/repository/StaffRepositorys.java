@@ -22,9 +22,8 @@ public interface StaffRepositorys extends StaffRepository {
             ", gender, password, avatar, role from staff", nativeQuery = true)
     List<StaffRespone> getAll(StaffRequest request);
 
-    @Query(value = "select id, full_name, date_birth,phone_number, citizen_id,email" +
-            ", gender, password, avatar, role from staff where " +
-            "id like  %:#{#x.searchMa}% OR :#{#x.searchMa} IS NULL OR :#{#x.searchMa} LIKE ''" +
-            "full_name like  %:#{#x.searchTen}% OR :#{#x.searchTen} IS NULL OR :#{#x.searchTen} LIKE ''", nativeQuery = true)
+    @Query(value = "SELECT id, full_name, date_birth, phone_number, citizen_id, email, gender, password, avatar, role FROM staff " +
+            "WHERE (id LIKE %:#{#x.searchMa}% OR :#{#x.searchMa} IS NULL OR :#{#x.searchMa} LIKE '') " +
+            "AND (full_name LIKE %:#{#x.searchTen}% OR :#{#x.searchTen} IS NULL OR :#{#x.searchTen} LIKE '')", nativeQuery = true)
     Page<StaffRespone> searchStaff(@Param("x") SearchStaff x, Pageable pageable);
 }
