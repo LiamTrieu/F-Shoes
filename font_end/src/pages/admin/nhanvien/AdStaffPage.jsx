@@ -9,6 +9,7 @@ import {
   TableCell,
   TableBody,
   Paper,
+  Pagination,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import staffApi from "../../../api/admin/nhanvien/nhanVienApi";
@@ -128,6 +129,14 @@ export default function AdCustomerPage() {
               )}
             </TableBody>
           </Table>
+          <Pagination
+        simple
+        current={currentPage + 1}
+        onChange={(value) => {
+          setCurrentPage(value - 1);
+        }}
+        total={totalPages * 10}
+      />
         </TableContainer>
       </Paper>
     </div>
