@@ -1,9 +1,8 @@
 import {
-  Box,
   Button,
-  Container,
+  Grid,
+  Pagination,
   Paper,
-  Popper,
   Table,
   TableBody,
   TableCell,
@@ -13,83 +12,55 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
-// import SearchIcon from "@mui/icons-material/Search";
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import khachHangApi from "../../../api/admin/khachhang/KhachHangApi";
+// import SearchIcon from "@mui/icons-material/Search";
 
-function createData(
-  stt,
-  anh,
-  tenTaiKhoan,
-  email,
-  hoTen,
-  ngayTao,
-  trangThai,
-  thaoTac
-) {
-  return { stt, anh, tenTaiKhoan, email, hoTen, ngayTao, trangThai, thaoTac };
-}
-
-const rows = [
-  createData(
-    1,
-    "anh1",
-    "taikhoan1",
-    "taikhoan1@gmail.com",
-    "tai khoan 1",
-    "03-09-2023",
-    "trangthai1",
-    ""
-  ),
-  createData(
-    2,
-    "anh1",
-    "taikhoan1",
-    "taikhoan1@gmail.com",
-    "tai khoan 1",
-    "03-09-2023",
-    "trangthai1",
-    ""
-  ),
-  createData(
-    3,
-    "anh1",
-    "taikhoan1",
-    "taikhoan1@gmail.com",
-    "tai khoan 1",
-    "03-09-2023",
-    "trangthai1",
-    ""
-  ),
-  createData(
-    4,
-    "anh1",
-    "taikhoan1",
-    "taikhoan1@gmail.com",
-    "tai khoan 1",
-    "03-09-2023",
-    "trangthai1",
-    ""
-  ),
-];
 export default function AdCustomerPage() {
+  const [listKhachHang, setlistKhachHang] = useState([]);
+  const [initPage, setInitPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageSearch, setPageSearch] = useState({ textSearch: "" });
+  //
+  useEffect(() => {
+    fetchData(initPage - 1, pageSearch);
+  }, [initPage, listKhachHang, pageSearch]);
+
+  const handelOnchangePage = (p) => {
+    setInitPage(p);
+    fetchData(p - 1, pageSearch);
+  };
+
+  const fetchData = (initPage, pageSearch) => {
+    if (pageSearch.textSearch !== "") {
+      khachHangApi.search(initPage, pageSearch.textSearch).then((response) => {
+        setlistKhachHang(response.data.data.content);
+        setTotalPages(response.data.data.totalPages);
+      });
+    } else {
+      khachHangApi.get(initPage).then((response) => {
+        setlistKhachHang(response.data.data.content);
+        setTotalPages(response.data.data.totalPages);
+      });
+    }
+  };
+  const deleteKhachHang = (id) => {
+    khachHangApi.delete(id).then(() => {
+      alert("Xóa thành công");
+    });
+  };
+
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <TextField
           id="outlined-basic"
-          label="Mã khách hàng"
+          label="Tên khách hàng"
           variant="outlined"
           size="small"
+          onChange={(e) => setPageSearch({ textSearch: e.target.value })}
         />
-        <Button
-          variant="contained"
-          style={{ marginLeft: "10px" }}
-          AiOutlineSearch
-        >
-          Tìm kiếm
-        </Button>
         <Button
           variant="outlined"
           style={{ float: "right" }}
@@ -106,34 +77,73 @@ export default function AdCustomerPage() {
             <TableHead>
               <TableRow>
                 <TableCell>STT</TableCell>
-                <TableCell align="right">Ảnh</TableCell>
-                <TableCell align="right">Tên tài khoản</TableCell>
-                <TableCell align="right">Email</TableCell>
-                <TableCell align="right">Họ tên</TableCell>
-                <TableCell align="right">Ngày tạo</TableCell>
-                <TableCell align="right">trạng thái</TableCell>
-                <TableCell align="right">Thao tác</TableCell>
+                <TableCell align="center">Ảnh</TableCell>
+                <TableCell align="center">Email</TableCell>
+                <TableCell align="center">Họ tên</TableCell>
+                <TableCell align="center">Ngày sinh</TableCell>
+                <TableCell align="center">Số điện thoại</TableCell>
+                <TableCell align="center">Ngày tạo</TableCell>
+                <TableCell align="center">trạng thái</TableCell>
+                <TableCell align="center">Thao tác</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {listKhachHang.map((row, index) => (
                 <TableRow
-                  key={row.name}
+                  key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="right">{row.stt}</TableCell>
-                  <TableCell align="right">{row.anh}</TableCell>
-                  <TableCell align="right">{row.tenTaiKhoan}</TableCell>
-                  <TableCell align="right">{row.email}</TableCell>
-                  <TableCell align="right">{row.hoTen}</TableCell>
-                  <TableCell align="right">{row.ngayTao}</TableCell>
-                  <TableCell align="right">{row.trangThai}</TableCell>
-                  <TableCell align="right">{row.thaoTac}</TableCell>
+                  <TableCell align="center">{index + 1}</TableCell>
+                  <TableCell align="center">{row.avatar}</TableCell>
+                  <TableCell align="center">{row.email}</TableCell>
+                  <TableCell align="center">{row.fullName}</TableCell>
+                  <TableCell align="center">{row.dateBirth}</TableCell>
+                  <TableCell align="center">{row.phoneNumber}</TableCell>
+                  <TableCell align="center">{row.createdAt}</TableCell>
+                  <TableCell align="center">
+                    <Button
+                      style={{
+                        backgroundColor: "#ffdb58",
+                        color: "#fff",
+                        borderRadius: "90px",
+                        textTransform: "none",
+                      }}
+                    >
+                      {row.status ? "hoạt động" : ""}
+                    </Button>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button
+                      component={Link}
+                      to={`/admin/customer/getOne/${row.id}`}
+                      variant="outlined"
+                    >
+                      Chi tiết
+                    </Button>
+                    <Button
+                      onClick={() => deleteKhachHang(row.id)}
+                      variant="danger"
+                    >
+                      delete
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+        <Grid container sx={{ mt: 2 }}>
+          <Grid item xs={5}></Grid>
+          <Grid item xs={5}></Grid>
+          <Grid item xs={2} sx={{ float: "right" }}>
+            <Pagination
+              page={initPage}
+              onChange={(event, page) => handelOnchangePage(page)}
+              count={totalPages}
+              color="primary"
+            />
+          </Grid>
+        </Grid>
       </Paper>
     </div>
   );

@@ -41,8 +41,8 @@ public class PromotionServiceImpl implements PromotionService {
         return null;
     }
 
-    public Page<Promotion> KMPage(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
+    public Page<Promotion> KMPage(int page) {
+        Pageable pageable = PageRequest.of(page, 5);
         return khuyenMaiRepository.findAll(pageable);
     }
 

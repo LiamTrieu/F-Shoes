@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -20,8 +20,8 @@ import Modal from "@mui/material/Modal";
 // import Dropdown from "@mui/joy/Dropdown";
 // import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { DataGrid } from "@mui/x-data-grid";
+import { useParams } from "react-router-dom";
 import khuyenMaiApi from "../../../api/admin/khuyenmai/khuyenMaiApi";
-import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -68,32 +68,21 @@ const rows = [
   { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
 ];
 
-export default function AdPromotionAdd() {
+export default function AdPromotionDetail() {
   const [age, setAge] = React.useState("");
 
-  let navigate = useNavigate();
+  const { id } = useParams();
+  const [promotion, setPromotion] = useState([]);
 
-  const [addPromotionRe, setAddPromotionRe] = useState({
-    name: "",
-    value: "",
-    type: true,
-    status: "0",
-    timeStart: "2022",
-    timeEnd: "2022",
-  });
-
-  const { name, value, type, status, timeStart, timeEnd } = addPromotionRe;
-
-  const handleInputChange = (e) => {
-    setAddPromotionRe({ ...addPromotionRe, [e.target.name]: e.target.value });
+  const detail = (id) => {
+    khuyenMaiApi.getById(id).then((response) => {
+      setPromotion(response.data);
+      console.log(response.data);
+    });
   };
-
-  const onSubmit = (e) => {
-    khuyenMaiApi.addPromotion(e);
-    console.log("add thành công");
-    console.log(addPromotionRe);
-    navigate("/admin/promotion");
-  };
+  useEffect(() => {
+    detail(id);
+  }, [id]);
 
   const handleChange = (event) => {
     setAge(event.target.value);
@@ -113,25 +102,21 @@ export default function AdPromotionAdd() {
             <Grid item xs={12} md={6}>
               <TextField
                 id="outlined-basic"
-                label="Tên Khuyến Mại"
                 variant="outlined"
                 size="large"
                 sx={{ width: "100%" }}
                 name="name"
-                value={name}
-                onChange={(e) => handleInputChange(e)}
+                value={promotion.data?.name}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 id="outlined-basic"
-                label="Giá trị"
                 variant="outlined"
                 size="large"
                 sx={{ width: "100%" }}
                 name="value"
-                value={value}
-                onChange={(e) => handleInputChange(e)}
+                value={promotion.data?.value}
               />
             </Grid>
           </Grid>
@@ -148,9 +133,6 @@ export default function AdPromotionAdd() {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                name="timeStart"
-                // value={timeStart}
-                // onChange={(e) => handleInputChange(e)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -164,9 +146,6 @@ export default function AdPromotionAdd() {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                name="timeEnd"
-                // value={timeEnd}
-                // onChange={(e) => handleInputChange(e)}
               />
             </Grid>
           </Grid>
@@ -211,7 +190,6 @@ export default function AdPromotionAdd() {
                 variant="contained"
                 color="success"
                 sx={{ float: "right" }}
-                onClick={() => onSubmit(addPromotionRe)}
               >
                 Tạo Mới
               </Button>
@@ -237,17 +215,17 @@ export default function AdPromotionAdd() {
             >
               <Typography>Trạng Thái:</Typography>
               {/* <Dropdown>
-                <MenuButton
-                  // endDecorator={<ArrowDropDown />}
-                  sx={{ border: "none" }}>
-                  Size
-                </MenuButton>
-                <Menu
-                  sx={{ minWidth: 160, "--ListItemDecorator-size": "24px" }}>
-                  <MenuItem>Smaller</MenuItem>
-                  <MenuItem>Larger</MenuItem>
-                </Menu>
-              </Dropdown> */}
+                  <MenuButton
+                    // endDecorator={<ArrowDropDown />}
+                    sx={{ border: "none" }}>
+                    Size
+                  </MenuButton>
+                  <Menu
+                    sx={{ minWidth: 160, "--ListItemDecorator-size": "24px" }}>
+                    <MenuItem>Smaller</MenuItem>
+                    <MenuItem>Larger</MenuItem>
+                  </Menu>
+                </Dropdown> */}
               <TextField
                 sx={{ mt: 2, width: "30%" }}
                 id="outlined-basic"

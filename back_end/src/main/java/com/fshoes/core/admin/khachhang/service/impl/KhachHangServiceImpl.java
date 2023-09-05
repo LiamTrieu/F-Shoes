@@ -25,14 +25,20 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
-    public Page<Customer> getPage(int p, int pagesize) {
-        Pageable pageable = PageRequest.of(p, pagesize);
-        return khachHangRepository.findAll(pageable);
+    public Page<KhachHangRespone> getPage(int p) {
+        Pageable pageable = PageRequest.of(p, 5);
+        return khachHangRepository.getAllKhachHang(pageable);
     }
 
     @Override
-    public void save(Customer cu) {
-        khachHangRepository.save(cu);
+    public Page<KhachHangRespone> findKhachHangByName(int p, String textSearch) {
+        Pageable pageable = PageRequest.of(p, 5);
+        return khachHangRepository.FindKhachHangByName(pageable,textSearch);
+    }
+
+    @Override
+    public Customer save(Customer cu) {
+      return   khachHangRepository.save(cu);
     }
 
     @Override
@@ -46,13 +52,5 @@ public class KhachHangServiceImpl implements KhachHangService {
     public Customer getOne(int id) {
         return khachHangRepository.findById(id).orElse(null);
     }
-
-    @Override
-    public List<KhachHangRespone> seriolizeList(List<Customer> lst) {
-        List iteams = new ArrayList();
-        for (Customer cu : lst) iteams.add(new KhachHangRespone(cu));
-        return iteams;
-    }
-
 
 }
