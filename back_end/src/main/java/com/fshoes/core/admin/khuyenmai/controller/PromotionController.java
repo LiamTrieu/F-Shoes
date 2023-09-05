@@ -48,8 +48,8 @@ public class PromotionController {
     }
 
     @GetMapping("/page")
-    public ObjectRespone pageKM(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int pageSize){
-        return new ObjectRespone(khuyenMaiService.KMPage(page,pageSize));
+    public ObjectRespone pageKM(@RequestParam(defaultValue = "0", name = "page") int page){
+        return new ObjectRespone(khuyenMaiService.KMPage(page));
     }
 
     @GetMapping("/search-by-name")
