@@ -21,13 +21,25 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "transaction")
 public class Transaction extends IntegerEntity {
+
     private Boolean type;
 
     private BigDecimal totalMoney;
 
     private Boolean deleted;
 
+    private Integer paymentMethod;
+
+    private String note;
+
+    private Integer status;
+
     @ManyToOne
     @JoinColumn(name = "id_bill", referencedColumnName = "id")
     private Bill bill;
+
+    @ManyToOne
+    @JoinColumn(name = "id_staff", referencedColumnName = "id")
+    private Staff staff;
+
 }

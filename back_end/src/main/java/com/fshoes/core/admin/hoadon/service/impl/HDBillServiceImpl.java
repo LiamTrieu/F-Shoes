@@ -78,8 +78,8 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Override
     public Page<HDBillResponse> getBillByDateRange(Integer pageNo, String startDate, String endDate) throws ParseException {
-        Long start = DateUtil.parseDateLong(startDate);
-        Long end = DateUtil.parseDateLong(endDate);
+        Long start = DateUtil.parseDateTimeLong(startDate);
+        Long end = DateUtil.parseDateTimeLong(endDate);
         Pageable pageable = PageRequest.of(pageNo, 1000);
         return hdBillRepositpory.getBillByDateRange(pageable, start, end);
     }
@@ -198,6 +198,25 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public Bill getOne(Integer id) {
         return hdBillRepositpory.findById(id).orElse(null);
+    }
+
+    @Override
+    public Page<HDBillResponse> getBillByStatusAndType(Integer pageNo, String statusRequest, String typeRequest) {
+
+        Pageable pageable = PageRequest.of(pageNo, 1000);
+        Integer status;
+        Boolean type;
+        try {
+            status = Integer.valueOf(statusRequest);
+        } catch (Exception exception) {
+            status = null;
+        }
+        try {
+            type = Boolean.valueOf(typeRequest);
+        } catch (Exception exception) {
+            type = null;
+        }
+        return hdBillRepositpory.getBillByStatusAndType(pageable, status, type);
     }
 
     // Phương thức để tạo mã hóa đơn duy nhất
