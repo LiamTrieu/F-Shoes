@@ -34,9 +34,8 @@ public class AdVoucherServiceImpl implements AdVoucherService {
 
     @Override
     public Page<Voucher> getPageVoucher(Integer page) {
-//        Sort sort = Sort.by("id");
-//        Pageable pageable = PageRequest.of(page, 5, sort);
-        Pageable pageable = PageRequest.of(page, 5);
+        Sort sort = Sort.by("id");
+        Pageable pageable = PageRequest.of(page, 5, sort);
         return adVoucherRepository.findAll(pageable);
     }
 
@@ -77,9 +76,9 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Page<AdVoucherRespone> getSearchVoucher(PageableRequest pageableRequest, AdVoucherSearch voucherSearch) {
+    public Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch voucherSearch) {
         Sort sort = Sort.by("id");
-        Pageable pageable = PageRequest.of(pageableRequest.getPage() - 1, pageableRequest.getSize(), sort);
+        Pageable pageable = PageRequest.of(page, 5, sort);
         return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
 }

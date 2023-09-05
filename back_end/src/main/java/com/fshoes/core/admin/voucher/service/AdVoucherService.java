@@ -23,5 +23,5 @@ public interface AdVoucherService {
 
     Boolean deleteVoucher(Integer id);
 
-    Page<AdVoucherRespone> getSearchVoucher(PageableRequest pageableRequest, AdVoucherSearch adVoucherSearch);
+    Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch adVoucherSearch);
 }
