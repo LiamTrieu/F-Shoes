@@ -18,15 +18,13 @@ export default function AdCustomerPage() {
   const [listStaff, setListStaff] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setToTalPages] = useState(0);
+  const [tenSearch, setTenSearch] = useState('');
 
-  useEffect(() => {
-    fetchData(currentPage - 1);
-  }, [currentPage]);
-
-  const fetchData = (currentPage) => {
+  const fetchData = () => {
     staffApi
-      .searchAndGetPageStaff(currentPage)
+      .searchAndGetPageStaff(0, tenSearch)
       .then((response) => {
+        console.log(response.data);
         setListStaff(response.data.data);
         setCurrentPage(response.data.number);
         setToTalPages(response.data.totalPages);
@@ -36,16 +34,44 @@ export default function AdCustomerPage() {
       });
   };
 
+  useEffect(() => {
+    fetchData(currentPage - 1);
+  }, [currentPage]);
+
+  const Search = (e) =>{
+    setTenSearch(e.target.value)
+  }
+  // const fetchData = () => {
+    
+  //   staffApi
+  //     .getAllStaff()
+  //     .then((response) => {
+  //       console.log(response.data);
+  //       setListStaff(response.data);
+  //     })
+  //     .catch(() => {
+  //       alert("Error: Không tải dữ liệu API");
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <TextField
+          onChange={Search} 
           id="outlined-basic"
           label="Tên Nhân Viên"
           variant="outlined"
           size="small"
         />
+        
         <Button
+          onClick={()=> {
+            fetchData()
+          }}
           variant="contained"
           style={{ marginLeft: "10px" }}
           AiOutlineSearch
@@ -72,7 +98,7 @@ export default function AdCustomerPage() {
                 <TableCell align="right">Tên tài khoản</TableCell>
                 <TableCell align="right">Email</TableCell>
                 <TableCell align="right">Họ tên</TableCell>
-                <TableCell align="right">Ngày tạo</TableCell>
+                <TableCell align="right">Ngày sinh</TableCell>
                 <TableCell align="right">Trạng thái</TableCell>
                 <TableCell align="right">Thao tác</TableCell>
               </TableRow>
@@ -88,7 +114,7 @@ export default function AdCustomerPage() {
                     <TableCell align="right">{row.avatar}</TableCell>
                     <TableCell align="right">{row.fullName}</TableCell>
                     <TableCell align="right">{row.email}</TableCell>
-                    <TableCell align="right">{row.date_birth}</TableCell>
+                    <TableCell align="right">{row.dateBirth}</TableCell>
                     <TableCell align="right">{row.status}</TableCell>
                     <TableCell align="right"></TableCell>
                   </TableRow>
