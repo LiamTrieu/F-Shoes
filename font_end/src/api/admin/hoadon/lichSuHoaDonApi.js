@@ -1,10 +1,10 @@
-import axios from "axios";
-const url = "http://localhost:8080/api/billHistory";
+import axiosClient from '../../axios'
+
 const lichSuHoaDonApi = {
   getByIdBill: (idBill) => {
-    const urlGetByIdBill = `${url}/get-by-idBill/${idBill}`;
-    return axios.get(urlGetByIdBill);
+    const urlGetByIdBill = `/billHistory/get-by-idBill/${idBill}`
+    return axiosClient.get(urlGetByIdBill)
   },
-};
+}
 
-export default lichSuHoaDonApi;
+export default lichSuHoaDonApi
