@@ -260,7 +260,7 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
             sx={{
               ...colorBaseAdmin.colorText,
               transition: 'transform 0.5s ease',
-              transform: `rotate(${isMenuProduct ? 0 : 90}deg)`,
+              transform: `rotate(${isMenuAccount ? 0 : 90}deg)`,
             }}
           />
         </ListItemButton>

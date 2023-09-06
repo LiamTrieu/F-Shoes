@@ -22,8 +22,8 @@ public class MaterialServiceImpl implements MaterialService {
     private SpMaterialRepository materialRepository;
 
     @Override
-    public List<Material> getAll() {
-        return materialRepository.findAll();
+    public List<MaterialResponse> getAll() {
+        return materialRepository.getAll();
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface SizeService {
 
-    List<Size> getAll();
+    List<SizeResponse> getAll();
 
     SizeResponse getById(int id);
 

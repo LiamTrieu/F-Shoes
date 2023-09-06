@@ -22,8 +22,8 @@ public class SizeServiceImpl implements SizeService {
     private SpSizeRepository sizeRepository;
 
     @Override
-    public List<Size> getAll() {
-        return sizeRepository.findAll();
+    public List<SizeResponse> getAll() {
+        return sizeRepository.getAll();
     }
 
     @Override

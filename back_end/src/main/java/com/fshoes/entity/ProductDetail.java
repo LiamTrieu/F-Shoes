@@ -23,7 +23,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "product_detail")
 public class ProductDetail extends LongEntity {
-    @Column(length = EntityProperties.LENGTH_CODE, unique = true)
+    @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
 
     private BigDecimal price;
@@ -31,6 +31,8 @@ public class ProductDetail extends LongEntity {
     private Boolean deleted = false;
 
     private Integer amount;
+
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "id_brand", referencedColumnName = "id")

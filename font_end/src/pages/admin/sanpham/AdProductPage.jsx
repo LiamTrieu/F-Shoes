@@ -28,12 +28,12 @@ import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
 import dayjs from 'dayjs'
 import { RxMagnifyingGlass } from 'react-icons/rx'
 import { toast } from 'react-toastify'
-import Toast from '../../../components/Toast'
 import { useTheme } from '@emotion/react'
 import confirmSatus from '../../../components/comfirmSwal'
 import { MdEditSquare } from 'react-icons/md'
 import { IoEye } from 'react-icons/io5'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
+import { Link } from 'react-router-dom'
 
 const listBreadcrumb = [{ name: 'Quản lý sản phẩm' }]
 export default function AdProductPage() {
@@ -43,7 +43,7 @@ export default function AdProductPage() {
   const [product, setProduct] = useState({ name: '' })
   const [productUpdate, setProductUpdate] = useState({ id: 0, name: '' })
   const [listProduct, setListProuct] = useState([])
-  const [isBackdrop, setIsBackdrop] = useState(false)
+  const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, textSearch: '' })
   const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
 
@@ -51,19 +51,27 @@ export default function AdProductPage() {
     fetchData(filter)
   }, [filter])
 
-  const fetchData = (filter) => {
-    sanPhamApi.get(filter).then((response) => {
-      const res = response.data
-      setListProuct(res.data)
-      setPageRespone({ currentPage: res.currentPage, totalPages: res.totalPages })
-    })
+  const fetchData = async (filter) => {
+    setIsBackdrop(true)
+    await sanPhamApi
+      .get(filter)
+      .then((response) => {
+        const res = response.data
+        setListProuct(res.data)
+        setPageRespone({ currentPage: res.currentPage, totalPages: res.totalPages })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    setIsBackdrop(false)
   }
 
-  const addProduct = () => {
+  const addProduct = async () => {
+    setIsBackdrop(true)
     const title = 'Xác nhận Thêm mới sản phẩm?'
     const text = ''
     setOpenAdd(false)
-    confirmSatus(title, text, theme).then((result) => {
+    await confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         sanPhamApi.add(product).then((res) => {
           if (res.data.success) {
@@ -85,12 +93,14 @@ export default function AdProductPage() {
         setOpenAdd(true)
       }
     })
+    setIsBackdrop(false)
   }
-  const updateProduct = () => {
+  const updateProduct = async () => {
+    setIsBackdrop(true)
     const title = 'Xác nhận cập nhập sản phẩm?'
     const text = ''
     setOpenUpdate(false)
-    confirmSatus(title, text, theme).then((result) => {
+    await confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         sanPhamApi.update(productUpdate.id, { name: productUpdate.name }).then((res) => {
           if (res.data.success) {
@@ -111,6 +121,7 @@ export default function AdProductPage() {
         setOpenUpdate(true)
       }
     })
+    setIsBackdrop(false)
   }
 
   const chageName = (e) => {
@@ -144,7 +155,6 @@ export default function AdProductPage() {
 
   return (
     <Box>
-      <Toast />
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isBackdrop}>
@@ -330,7 +340,10 @@ export default function AdProductPage() {
                     </TableCell>
                     <TableCell align="center">
                       <Tooltip title="Xem chi tiết">
-                        <IconButton color="primary">
+                        <IconButton
+                          component={Link}
+                          to={`/admin/product/detail/${row.id}`}
+                          color="primary">
                           <IoEye style={{ fontSize: '20px' }} />
                         </IconButton>
                       </Tooltip>

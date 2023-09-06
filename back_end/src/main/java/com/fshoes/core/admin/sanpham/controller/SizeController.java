@@ -24,6 +24,11 @@ public class SizeController {
     @Autowired
     private SizeService sizeService;
 
+    @GetMapping
+    public ObjectRespone getAll(){
+        return new ObjectRespone(sizeService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageSize(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {

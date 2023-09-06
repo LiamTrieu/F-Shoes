@@ -24,6 +24,10 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    @GetMapping
+    public ObjectRespone getAll(){
+        return new ObjectRespone(categoryService.getAll());
+    }
     @GetMapping("/page")
     public PageReponse getPageCategory(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {

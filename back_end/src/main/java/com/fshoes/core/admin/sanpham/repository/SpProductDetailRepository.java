@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface SpProductDetailRepository extends ProductDetailRepository {
 
     @Query(value = """
-            select PD.id, PD.code, P.name as product, C.code as color, B.name as brand, S.name as sole,
+            select PD.id , PD.code, P.name as product, C.code as color, B.name as brand, S.name as sole,
              M.name as material, CA.name as category, I.name as image, SI.size, PD.amount, PD.price, PD.deleted
              from product_detail PD
              left join product P on PD.id_product = P.id
@@ -31,8 +31,9 @@ public interface SpProductDetailRepository extends ProductDetailRepository {
              and (:#{#filterReq.idMaterial} is null or M.id = :#{#filterReq.idMaterial})
              and (:#{#filterReq.idCategory} is null or CA.id = :#{#filterReq.idCategory})
              and (:#{#filterReq.idSize} is null or SI.id = :#{#filterReq.idSize})
-             and (:#{#filterReq.idColor} is null or C.id = :#{#filterReq.idColor})""", nativeQuery = true)
-    Page<ProductDetailResponse> getAll(Pageable pageable, @Param("filterReq") PrdDetailFilterRequest filterReq);
+             and (:#{#filterReq.idColor} is null or C.id = :#{#filterReq.idColor})
+             and  P.id = :id""", nativeQuery = true)
+    Page<ProductDetailResponse> getAllByIdProduct(@Param(("id")) int id, Pageable pageable, @Param("filterReq") PrdDetailFilterRequest filterReq);
 
     @Query(value = """
             select PD.id, PD.code, P.name as product, C.code as color, B.name as brand, S.name as sole,
@@ -45,6 +46,8 @@ public interface SpProductDetailRepository extends ProductDetailRepository {
              left join material M on PD.id_material = M.id
              left join category CA on PD.id_category = CA.id
              left join size SI on PD.id_size = SI.id
-             left join image I on PD.id_image = I.id""", nativeQuery = true)
+             left join image I on PD.id_image = I.id
+             where PD.id = :id""", nativeQuery = true)
     Optional<ProductDetailResponse> getById(@Param("id") Long id);
+
 }

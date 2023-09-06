@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface SoleService {
 
-    List<Sole> getAll();
+    List<SoleResponse> getAll();
 
     SoleResponse getById(int id);
 

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -19,4 +20,7 @@ public interface SpBrandRepository extends BrandRepository {
 
     @Query(value = "select id, name, deleted from brand where id = :id", nativeQuery = true)
     Optional<BrandResponse> getById(@Param("id") int id);
+
+    @Query(value = "select id, name, deleted from Brand where !deleted", nativeQuery = true)
+    List<BrandResponse> getAll();
 }
