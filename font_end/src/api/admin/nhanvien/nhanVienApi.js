@@ -10,6 +10,10 @@ const staffApi = {
     const urlSearchByInput = `${urlStaff}/api/staff/search-getPage?page=${page}&searchTen=${searchTen}`;
     return axios.get(urlSearchByInput);
   },
+  getOne: (id) =>{
+    const url = `${urlStaff}/api/staff/detail/${id}`;
+    return axios.get(url);
+  },
   addStaff: (addStaffRequest) => {
     const urlAddStaff = {
       url: `${urlStaff}/api/staff/add`,
