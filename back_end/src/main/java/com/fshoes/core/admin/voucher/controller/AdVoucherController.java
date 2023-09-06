@@ -4,7 +4,6 @@ import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
 import com.fshoes.core.common.ObjectRespone;
-import com.fshoes.core.common.PageableRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,10 +13,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/voucher")
@@ -46,8 +48,8 @@ public class AdVoucherController {
         return new ObjectRespone(voucherService.addVoucher(voucherRequest));
     }
 
-    @PatchMapping("/update/{id}")
-    public ObjectRespone updateVoucher(@PathVariable Integer id, @RequestBody @Valid AdVoucherRequest voucherRequest) {
+    @PutMapping("/update/{id}")
+    public ObjectRespone updateVoucher(@PathVariable Integer id, @RequestBody @Valid AdVoucherRequest voucherRequest) throws ParseException {
         return new ObjectRespone(voucherService.updateVoucher(id, voucherRequest));
     }
 
@@ -60,7 +62,7 @@ public class AdVoucherController {
 
     @GetMapping("/search")
     public ObjectRespone getSearchVoucher(@RequestParam(defaultValue = "0", name = "pageSearch") Integer page,
-                                                @ModelAttribute AdVoucherSearch adVoucherSearch) {
+                                          @ModelAttribute AdVoucherSearch adVoucherSearch) {
         return new ObjectRespone(voucherService.getSearchVoucher(page, adVoucherSearch));
     }
 

@@ -5,7 +5,6 @@ import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
-import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Voucher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +28,8 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Voucher getVoucherById(Integer id) {
-        return adVoucherRepository.findById(id).orElse(null);
+    public AdVoucherRespone getVoucherById(Integer id) {
+        return adVoucherRepository.getVoucherById(id).orElse(null);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Boolean updateVoucher(Integer id, AdVoucherRequest voucherRequest) {
+    public Boolean updateVoucher(Integer id, AdVoucherRequest voucherRequest) throws ParseException {
         Optional<Voucher> optionalVoucher = adVoucherRepository.findById(id);
         if (optionalVoucher.isPresent()) {
             Voucher voucher = optionalVoucher.get();
@@ -79,6 +79,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     public Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch voucherSearch) {
         Sort sort = Sort.by("id");
         Pageable pageable = PageRequest.of(page, 5, sort);
+
         return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
 }

@@ -12,50 +12,51 @@ import {
   RadioGroup,
   Select,
   TextField,
-} from "@mui/material";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import React, { useState } from "react";
-import voucherApi from "../../../api/admin/voucher/VoucherApi";
-import { useNavigate } from "react-router-dom";
+} from '@mui/material'
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import React, { useState } from 'react'
+import voucherApi from '../../../api/admin/voucher/VoucherApi'
+import { useNavigate } from 'react-router-dom'
+import dayjs from 'dayjs'
 // import PercentIcon from "@mui/icons-material/Percent";
 
 export default function AdVoucherAdd() {
   const initialVoucher = {
-    code: "",
-    name: "",
+    code: '',
+    name: '',
     value: 0,
     maximumValue: 0,
-    type: "true",
+    type: 'true',
     minimumAmount: 0,
     quantity: 0,
-    startDate: 0,
-    endDate: 0,
+    startDate: '',
+    endDate: '',
     status: 1,
-  };
+  }
 
-  const navigate = useNavigate();
-  const [isSelectVisible, setIsSelectVisible] = useState(false);
-  const [voucherAdd, setVoucherAdd] = useState(initialVoucher);
+  const navigate = useNavigate()
+  const [isSelectVisible, setIsSelectVisible] = useState(false)
+  const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
 
   const handleTypeChange = (event) => {
-    const newValue = event.target.value === "true";
-    setVoucherAdd({ ...voucherAdd, type: Boolean(event.target.value) });
-    setIsSelectVisible(newValue === false);
-  };
+    const newValue = event.target.value === 'true'
+    setVoucherAdd({ ...voucherAdd, type: Boolean(event.target.value) })
+    setIsSelectVisible(newValue === false)
+  }
 
   const handleVoucherAdd = (voucherAdd) => {
-    console.log("voucher :", voucherAdd);
+    console.log('voucher :', voucherAdd)
     voucherApi
       .addVoucher(voucherAdd)
       .then(() => {
-        alert("Thêm mới voucher thành công!");
-        navigate("/admin/voucher");
+        alert('Thêm mới voucher thành công!')
+        navigate('/admin/voucher')
       })
       .catch(() => {
-        alert("Thêm mới voucher thất bại!");
-      });
-  };
+        alert('Thêm mới voucher thất bại!')
+      })
+  }
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 1 }}>
@@ -68,9 +69,7 @@ export default function AdVoucherAdd() {
               type="text"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setVoucherAdd({ ...voucherAdd, code: e.target.value })
-              }
+              onChange={(e) => setVoucherAdd({ ...voucherAdd, code: e.target.value })}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -82,9 +81,7 @@ export default function AdVoucherAdd() {
               type="text"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setVoucherAdd({ ...voucherAdd, name: e.target.value })
-              }
+              onChange={(e) => setVoucherAdd({ ...voucherAdd, name: e.target.value })}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -102,9 +99,7 @@ export default function AdVoucherAdd() {
               type="number"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setVoucherAdd({ ...voucherAdd, value: Number(e.target.value) })
-              }
+              onChange={(e) => setVoucherAdd({ ...voucherAdd, value: Number(e.target.value) })}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -129,9 +124,7 @@ export default function AdVoucherAdd() {
                 shrink: true,
               }}
               InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">VNĐ</InputAdornment>
-                ),
+                endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
               }}
             />
           </Grid>
@@ -176,9 +169,7 @@ export default function AdVoucherAdd() {
                 shrink: true,
               }}
               InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">VNĐ</InputAdornment>
-                ),
+                endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
               }}
             />
           </Grid>
@@ -191,18 +182,30 @@ export default function AdVoucherAdd() {
           <Grid item xs={5.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                // onChange={(e) => setVoucherAdd({...voucherAdd, startDate: e.target.value })}
+                format="DD-MM-YYYY HH:mm:ss"
+                onChange={(e) =>
+                  setVoucherAdd({
+                    ...voucherAdd,
+                    startDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
+                  })
+                }
                 label="Từ ngày"
-                sx={{ width: "100%" }}
+                sx={{ width: '100%' }}
               />
             </LocalizationProvider>
           </Grid>
           <Grid item xs={5.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                // onChange={(e) => setVoucherAdd({...voucherAdd, endDate: e.target.value })}
+                format="DD-MM-YYYY HH:mm:ss"
+                onChange={(e) =>
+                  setVoucherAdd({
+                    ...voucherAdd,
+                    endDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
+                  })
+                }
                 label="Đến ngày"
-                sx={{ width: "100%" }}
+                sx={{ width: '100%' }}
               />
             </LocalizationProvider>
           </Grid>
@@ -249,10 +252,7 @@ export default function AdVoucherAdd() {
           </Grid>
           <Grid item xs={3}>
             {isSelectVisible && (
-              <Button
-                sx={{ width: 150, float: "left", mt: 2.5 }}
-                variant="contained"
-              >
+              <Button sx={{ width: 150, float: 'left', mt: 2.5 }} variant="contained">
                 Chọn
               </Button>
             )}
@@ -270,8 +270,7 @@ export default function AdVoucherAdd() {
               onClick={() => handleVoucherAdd(voucherAdd)}
               variant="contained"
               fullWidth
-              color="success"
-            >
+              color="success">
               Xác nhận
             </Button>
           </Grid>
@@ -279,5 +278,5 @@ export default function AdVoucherAdd() {
         <Grid item xs={0.5}></Grid>
       </Paper>
     </div>
-  );
+  )
 }
