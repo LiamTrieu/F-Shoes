@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.khuyenmai.service;
 
+import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequest;
 import com.fshoes.core.admin.khuyenmai.model.respone.PromotionRespone;
 import com.fshoes.core.admin.khuyenmai.repository.KMPromotionRepository;
 import com.fshoes.entity.Promotion;
@@ -19,16 +20,17 @@ public interface PromotionService {
      List<PromotionRespone> getAll() ;
 
 
-     Optional<Promotion> getOne(int id);
+     Promotion getOne(int id);
 
-     Promotion addKhuyenMai(Promotion promotion);
-     Promotion updateKhuyenMai(Promotion promotion, int id);
+
+     Promotion addKhuyenMai(PromotionRequest promotionRequest) throws ParseException;
+     Promotion updateKhuyenMai(PromotionRequest promotionRequest, int id) throws ParseException;
 
      Page<Promotion> KMPage(int page);
 
-     Page<PromotionRespone> searchByName(Integer page, Integer pageSize, String Name) ;
+     Page<PromotionRespone> searchByName(Integer page,  String Name) ;
 
      Page<PromotionRespone> searchByStatus(Integer page, Integer pageSize, Integer status);
 
-     Page<PromotionRespone> searchByTime(Integer page, Integer pageSize, String timeStartSearch, String timeEndSearch);
+     Page<PromotionRespone> searchByTime(Integer page, String timeStartSearch, String timeEndSearch);
 }

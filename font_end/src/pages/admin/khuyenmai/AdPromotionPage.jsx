@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import Container from "@mui/material/Container";
+import React, { useEffect, useState } from 'react'
+import Container from '@mui/material/Container'
 import {
   Box,
   Button,
@@ -10,62 +10,76 @@ import {
   Table,
   TextField,
   Typography,
-} from "@mui/material";
+} from '@mui/material'
 
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
 // import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import { Link } from "react-router-dom";
-import khuyenMaiApi from "../../../api/admin/khuyenmai/khuyenMaiApi";
+import { Link } from 'react-router-dom'
+import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
+import dayjs from 'dayjs'
 // import khuyenMaiApi from "../../../api/admin/khuyenmai/khuyenMaiApi";
 // import axios from "axios";
 
 export default function AdPromotionPage() {
-  const [listKhuyenMai, setListKhuyenMai] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-
-  const handelOnchangePage = (Page) => {
-    loadData(Page - 1);
-    setCurrentPage(Page);
-  };
-
-  const loadData = (currentPage) => {
-    khuyenMaiApi.getPage(currentPage).then((response) => {
-      setListKhuyenMai(response.data.data.content);
-      setTotalPages(response.data.data.totalPages);
-    });
-  };
+  const [listKhuyenMai, setListKhuyenMai] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [searchByName, setSearchByName] = useState('')
 
   useEffect(() => {
-    loadData(currentPage - 1);
-  }, []);
+    loadData(currentPage - 1, searchByName)
+  }, [currentPage, listKhuyenMai, searchByName])
+
+  const handelOnchangePage = (Page) => {
+    loadData(Page - 1, searchByName)
+    setCurrentPage(Page)
+  }
+
+  const loadData = (currentPage, searchByName) => {
+    if (searchByName !== '') {
+      khuyenMaiApi.searchPromotionByName(currentPage, searchByName).then((response) => {
+        setListKhuyenMai(response.data.data.content)
+        setTotalPages(response.data.data.totalPages)
+      })
+    } else {
+      khuyenMaiApi.getPage(currentPage).then((response) => {
+        setListKhuyenMai(response.data.data.content)
+        setTotalPages(response.data.data.totalPages)
+      })
+    }
+  }
 
   return (
     <Container>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: '100%' }}>
           <Grid container spacing={2}>
             <Grid item xs={6} md={3}>
               <TextField
-                sx={{ width: "80%" }}
+                sx={{ width: '80%' }}
                 id="outlined"
                 label="Name"
                 type="text"
                 size="small"
+                // value={searchByName}
+                onChange={(e) => setSearchByName(e.target.value)}
               />
             </Grid>
             <Grid xs={6} md={2}>
-              <Button sx={{ ml: 1, mt: 2 }} variant="contained">
+              {/* <Button
+                sx={{ ml: 1, mt: 2 }}
+                variant="contained"
+                onClick={() => onSubmit(searchByName, currentPage)}>
                 Tìm kiếm
-              </Button>
+              </Button> */}
             </Grid>
             <Grid xs={6} md={2}>
               <TextField
-                sx={{ mt: 2, width: "80%" }}
+                sx={{ mt: 2, width: '80%' }}
                 id="outlined-basic"
                 label="Từ ngày"
                 type="date"
@@ -78,7 +92,7 @@ export default function AdPromotionPage() {
             </Grid>
             <Grid xs={6} md={2}>
               <TextField
-                sx={{ mt: 2, width: "80%" }}
+                sx={{ mt: 2, width: '80%' }}
                 id="outlined-basic"
                 label="Đến ngày"
                 type="date"
@@ -95,19 +109,13 @@ export default function AdPromotionPage() {
                 color="success"
                 variant="contained"
                 component={Link}
-                to="/admin/promotion/add"
-              >
+                to="/admin/promotion/add">
                 {/* <AddIcon /> */}
                 <Typography sx={{ ml: 1 }}>Tạo Khuyến Mại</Typography>
               </Button>
             </Grid>
           </Grid>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}
-          >
+          <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
             <Typography>Trạng Thái:</Typography>
             {/* <Dropdown>
               <MenuButton
@@ -125,7 +133,7 @@ export default function AdPromotionPage() {
       </Paper>
 
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        <TableContainer component={Paper} sx={{ width: "100%" }}>
+        <TableContainer component={Paper} sx={{ width: '100%' }}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -142,8 +150,7 @@ export default function AdPromotionPage() {
               {listKhuyenMai.map((promotion, index) => (
                 <TableRow
                   key={promotion.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell align="right">{index + 1}</TableCell>
 
                   <TableCell align="right">{promotion.name}</TableCell>
@@ -151,30 +158,26 @@ export default function AdPromotionPage() {
                   <TableCell align="right">
                     <Button
                       sx={{
-                        backgroundColor:
-                          promotion.type === false ? "#FFFF99" : "#66FFFF",
-                        borderRadius: "90px",
-                        textTransform: "none",
-                      }}
-                    >
-                      {promotion.type === false ? "Tất cả" : "Giới hạn"}
+                        backgroundColor: promotion.type === false ? '#FFFF99' : '#66FFFF',
+                        borderRadius: '90px',
+                        textTransform: 'none',
+                      }}>
+                      {promotion.type === false ? 'Tất cả' : 'Giới hạn'}
                     </Button>
                   </TableCell>
                   <TableCell align="right">
                     <Button
                       sx={{
-                        backgroundColor:
-                          promotion.status === 0 ? "#FF6633" : "#00FF00",
-                        borderRadius: "90px",
-                        textTransform: "none",
-                      }}
-                    >
-                      {promotion.status === 0 ? "Hết hạn" : "Còn hạn"}
+                        backgroundColor: promotion.status === 0 ? '#FF6633' : '#00FF00',
+                        borderRadius: '90px',
+                        textTransform: 'none',
+                      }}>
+                      {promotion.status === 0 ? 'Hết hạn' : 'Còn hạn'}
                     </Button>
                   </TableCell>
 
                   <TableCell align="right">
-                    {promotion.timeStart} - {promotion.timeEnd}
+                    {dayjs(promotion.timeStart).format('DD/MM/YYYY HH:mm:ss')}
                   </TableCell>
                   <TableCell>
                     <Link to={`/admin/promotion/get-one/${promotion.id}`}>
@@ -190,11 +193,10 @@ export default function AdPromotionPage() {
         </TableContainer>
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "10px",
-          }}
-        >
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '10px',
+          }}>
           <Pagination
             page={currentPage}
             onChange={(event, value) => handelOnchangePage(value)}
@@ -204,5 +206,5 @@ export default function AdPromotionPage() {
         </div>
       </Paper>
     </Container>
-  );
+  )
 }
