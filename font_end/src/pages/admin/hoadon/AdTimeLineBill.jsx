@@ -1,93 +1,92 @@
-import React from "react";
-import { FaRegFileAlt, FaTrash, FaTruck } from "react-icons/fa";
-import { MdPaid } from "react-icons/md";
-import { GiConfirmed } from "react-icons/gi";
-import { IoCloudDoneSharp } from "react-icons/io5";
-import { getStatus } from "../../../services/constants/statusHoaDon";
-import { Box, Step, StepLabel, Stepper } from "@mui/material";
-import dayjs from "dayjs";
+import React from 'react'
+import { FaRegFileAlt, FaTrash, FaTruck } from 'react-icons/fa'
+import { MdPaid } from 'react-icons/md'
+import { GiConfirmed } from 'react-icons/gi'
+import { IoCloudDoneSharp } from 'react-icons/io5'
+import { getStatus } from '../../../services/constants/statusHoaDon'
+import { Box, Step, StepLabel, Stepper } from '@mui/material'
+import dayjs from 'dayjs'
 
 const AdTimeLineBill = (props) => {
-  const { orderTimeLine } = props;
+  const { orderTimeLine } = props
   const getStatusInfo = (status) => {
     switch (status) {
       case 1:
         return {
-          color: "#00CC00", // Green
+          color: '#00CC00', // Green
           icon: <FaRegFileAlt />,
-        };
+        }
       case 2:
         return {
-          color: "#FFD700", // Yellow
+          color: '#FFD700', // Yellow
           icon: <GiConfirmed />,
-        };
+        }
       case 3:
         return {
-          color: "#FF5733", // Yellow
+          color: '#FF5733', // Yellow
           icon: <FaTruck />,
-        };
+        }
       case 4:
         return {
-          color: "#FF9933", // Yellow
+          color: '#FF9933', // Yellow
           icon: <FaRegFileAlt />,
-        };
+        }
       case 5:
         return {
-          color: "#FFC733", // Yellow
+          color: '#FFC733', // Yellow
           icon: <MdPaid />,
-        };
+        }
       case 6:
         return {
-          color: "#FFAA33", // Yellow
+          color: '#FFAA33', // Yellow
           icon: <FaRegFileAlt />,
-        };
+        }
       case 7:
         return {
-          color: "#FF1233", // Red
+          color: '#FF1233', // Red
           icon: <IoCloudDoneSharp />,
-        };
+        }
       case 0:
         return {
-          color: "gray",
+          color: 'gray',
           icon: <FaTrash />,
-        };
+        }
       default:
         return {
-          color: "#000000",
+          color: '#000000',
           icon: <FaRegFileAlt />,
-        };
+        }
     }
-  };
+  }
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: '100%' }}>
       <Stepper activeStep={orderTimeLine.length - 1}>
         {orderTimeLine.map((order, index) => {
-          const statusInfo = getStatusInfo(order.statusBill); // Lấy thông tin màu và biểu tượng
+          const statusInfo = getStatusInfo(order.statusBill) // Lấy thông tin màu và biểu tượng
           return (
-            <Step key={order.idOrderHistory}>
+            <Step key={'timeline-order' + order.id}>
               <StepLabel
                 icon={statusInfo.icon}
                 sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
                   color: statusInfo.color,
-                  fontSize: "35px",
-                  marginTop: "8px",
-                  marginBottom: "20px",
-                  minWidth: "48px", // Đảm bảo biểu tượng có kích thước tối thiểu
-                }}
-              >
+                  fontSize: '35px',
+                  marginTop: '8px',
+                  marginBottom: '20px',
+                  minWidth: '48px', // Đảm bảo biểu tượng có kích thước tối thiểu
+                }}>
                 {getStatus(order.statusBill)}
                 <br />
-                {dayjs(order.createdAt).format("DD-MM-YYYY HH:mm:ss")}
+                {dayjs(order.createdAt).format('DD-MM-YYYY HH:mm:ss')}
               </StepLabel>
             </Step>
-          );
+          )
         })}
       </Stepper>
     </Box>
-  );
-};
+  )
+}
 
-export default AdTimeLineBill;
+export default AdTimeLineBill

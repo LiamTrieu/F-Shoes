@@ -1,6 +1,7 @@
 import {
   Button,
   Grid,
+  IconButton,
   Pagination,
   Paper,
   Table,
@@ -11,45 +12,48 @@ import {
   TableRow,
   TextField,
   Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import khachHangApi from "../../../api/admin/khachhang/KhachHangApi";
+} from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
+import dayjs from 'dayjs'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 // import SearchIcon from "@mui/icons-material/Search";
 
 export default function AdCustomerPage() {
-  const [listKhachHang, setlistKhachHang] = useState([]);
-  const [initPage, setInitPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [pageSearch, setPageSearch] = useState({ textSearch: "" });
+  const [listKhachHang, setlistKhachHang] = useState([])
+  const [initPage, setInitPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [pageSearch, setPageSearch] = useState({ textSearch: '' })
   //
   useEffect(() => {
-    fetchData(initPage - 1, pageSearch);
-  }, [initPage, listKhachHang, pageSearch]);
+    fetchData(initPage - 1, pageSearch)
+  }, [initPage, listKhachHang, pageSearch])
 
   const handelOnchangePage = (p) => {
-    setInitPage(p);
-    fetchData(p - 1, pageSearch);
-  };
+    setInitPage(p)
+    fetchData(p - 1, pageSearch)
+  }
 
   const fetchData = (initPage, pageSearch) => {
-    if (pageSearch.textSearch !== "") {
+    if (pageSearch.textSearch !== '') {
       khachHangApi.search(initPage, pageSearch.textSearch).then((response) => {
-        setlistKhachHang(response.data.data.content);
-        setTotalPages(response.data.data.totalPages);
-      });
+        setlistKhachHang(response.data.data.content)
+        setTotalPages(response.data.data.totalPages)
+      })
     } else {
       khachHangApi.get(initPage).then((response) => {
-        setlistKhachHang(response.data.data.content);
-        setTotalPages(response.data.data.totalPages);
-      });
+        setlistKhachHang(response.data.data.content)
+        setTotalPages(response.data.data.totalPages)
+      })
     }
-  };
+  }
   const deleteKhachHang = (id) => {
     khachHangApi.delete(id).then(() => {
-      alert("Xóa thành công");
-    });
-  };
+      alert('Xóa thành công')
+    })
+  }
 
   return (
     <div>
@@ -63,21 +67,19 @@ export default function AdCustomerPage() {
         />
         <Button
           variant="outlined"
-          style={{ float: "right" }}
+          style={{ float: 'right' }}
           color="success"
           component={Link}
-          to="/admin/customer/add"
-        >
+          to="/admin/customer/add">
           <Typography sx={{ ml: 1 }}>Tạo khách hàng</Typography>
         </Button>
       </Paper>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        <TableContainer component={Paper} sx={{ width: "100%" }}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableContainer component={Paper} sx={{ width: '100%' }}>
+          <Table aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell>STT</TableCell>
-                <TableCell align="center">Ảnh</TableCell>
                 <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Họ tên</TableCell>
                 <TableCell align="center">Ngày sinh</TableCell>
@@ -89,43 +91,42 @@ export default function AdCustomerPage() {
             </TableHead>
             <TableBody>
               {listKhachHang.map((row, index) => (
-                <TableRow
-                  key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
+                <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell align="center">{index + 1}</TableCell>
-                  <TableCell align="center">{row.avatar}</TableCell>
                   <TableCell align="center">{row.email}</TableCell>
                   <TableCell align="center">{row.fullName}</TableCell>
-                  <TableCell align="center">{row.dateBirth}</TableCell>
+                  <TableCell align="center"> {dayjs(row.dateBirth).format('MM/DD/YYYY')}</TableCell>
                   <TableCell align="center">{row.phoneNumber}</TableCell>
-                  <TableCell align="center">{row.createdAt}</TableCell>
+                  <TableCell align="center"> {dayjs(row.createdAt).format('MM/DD/YYYY')}</TableCell>
                   <TableCell align="center">
-                    <Button
+                    <div
                       style={{
-                        backgroundColor: "#ffdb58",
-                        color: "#fff",
-                        borderRadius: "90px",
-                        textTransform: "none",
-                      }}
-                    >
-                      {row.status ? "hoạt động" : ""}
-                    </Button>
+                        backgroundColor: '#ffdb58',
+                        color: '#fff',
+                        borderRadius: '90px',
+                        textTransform: 'none',
+                        padding: '8px 16px',
+                        display: 'inline-block',
+                      }}>
+                      {row.status ? 'hoạt động' : ''}
+                    </div>
                   </TableCell>
                   <TableCell align="center">
-                    <Button
+                    <IconButton
+                      color="primary"
                       component={Link}
                       to={`/admin/customer/getOne/${row.id}`}
-                      variant="outlined"
+                      sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
                     >
-                      Chi tiết
-                    </Button>
-                    <Button
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
                       onClick={() => deleteKhachHang(row.id)}
-                      variant="danger"
+                      sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
                     >
-                      delete
-                    </Button>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -134,8 +135,8 @@ export default function AdCustomerPage() {
         </TableContainer>
         <Grid container sx={{ mt: 2 }}>
           <Grid item xs={5}></Grid>
-          <Grid item xs={5}></Grid>
-          <Grid item xs={2} sx={{ float: "right" }}>
+          <Grid item xs={4}></Grid>
+          <Grid item xs={3} sx={{ float: 'right' }}>
             <Pagination
               page={initPage}
               onChange={(event, page) => handelOnchangePage(page)}
@@ -146,5 +147,5 @@ export default function AdCustomerPage() {
         </Grid>
       </Paper>
     </div>
-  );
+  )
 }

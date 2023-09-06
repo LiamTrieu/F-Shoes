@@ -24,9 +24,12 @@ public class StaffController {
     }
 
     @GetMapping("/search-getPage")
-    public PageReponse hienthiPageNo(@ModelAttribute(name = "page") PageableRequest pageableRequest,
-                                     @ModelAttribute(name = "searchTen") SearchStaff search) {
-        return new PageReponse<>(service.searchStaff(pageableRequest, search));
+    public PageReponse hienthiPageNo(int page, String searchTen) {
+        PageableRequest pageableRequest = new PageableRequest();
+        pageableRequest.setPage(page);
+        SearchStaff searchStaff = new SearchStaff();
+        searchStaff.setSearchTen(searchTen);
+        return new PageReponse<>(service.searchStaff(pageableRequest, searchStaff));
     }
 
     @PostMapping("/add")

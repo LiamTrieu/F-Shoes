@@ -1,87 +1,86 @@
-import { Paper, Grid, Button, Chip, Stack } from "@mui/material";
-import React, { useState, useEffect } from "react";
-import hoaDonApi from "../../../api/admin/hoadon/hoaDonApi";
-import { getStatus } from "../../../services/constants/statusHoaDon";
-import { useParams } from "react-router-dom";
+import { Paper, Grid, Button, Chip, Stack } from '@mui/material'
+import React, { useState, useEffect } from 'react'
+import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
+import { getStatus } from '../../../services/constants/statusHoaDon'
+import { useParams } from 'react-router-dom'
 //transaction
-// import lichSuGiaoDichApi from "../../../api/admin/hoadon/lichSuGiaoDich";
-// import AdBillTransaction from "./AdBillTransaction";
+import lichSuGiaoDichApi from '../../../api/admin/hoadon/lichSuGiaoDich'
+import AdBillTransaction from './AdBillTransaction'
 //timeline
-// import lichSuHoaDonApi from "../../../api/admin/hoadon/lichSuHoaDonApi";
-// import AdTimeLineBill from "./AdTimeLineBill";
+import lichSuHoaDonApi from '../../../api/admin/hoadon/lichSuHoaDonApi'
+import AdTimeLineBill from './AdTimeLineBill'
 
 export default function AdBillDetail() {
-  const { id } = useParams();
-  const [billDetail, setBillDetail] = useState();
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams()
+  const [billDetail, setBillDetail] = useState()
+  const [loading, setLoading] = useState(true)
   //timeline
-  // const [listOrderTimeLine, setListOrderTimeLine] = useState([]);
-  // const [loadingTimeline, setLoadingTimeline] = useState(true);
+  const [listOrderTimeLine, setListOrderTimeLine] = useState([])
+  const [loadingTimeline, setLoadingTimeline] = useState(true)
   //transaction
-  // const [listTransaction, setListTransaction] = useState([]);
-  // const [loadingTransaction, setLoadinTransaction] = useState(true);
+  const [listTransaction, setListTransaction] = useState([])
+  const [loadingTransaction, setLoadinTransaction] = useState(true)
 
   useEffect(() => {
     if (!billDetail) {
-      getOneBill(id);
+      getOneBill(id)
       //timeline
-      // getBillHistoryByIdBill(id);
+      getBillHistoryByIdBill(id)
       //transaction
-      // getTransactionByIdBill(id);
+      getTransactionByIdBill(id)
     }
-  }, [id, billDetail]);
+  }, [id, billDetail])
 
   const getOneBill = (id) => {
     hoaDonApi
       .getOne(id)
       .then((response) => {
-        setBillDetail(response.data.data);
-        setLoading(false); // Đã tải xong dữ liệu, ngừng hiển thị loader
+        setBillDetail(response.data.data)
+        setLoading(false) // Đã tải xong dữ liệu, ngừng hiển thị loader
       })
       .catch((error) => {
-        console.error("Lỗi khi gửi yêu cầu API get page: ", error);
-        setLoading(false); // Ngừng hiển thị loader nếu có lỗi
-      });
-  };
+        console.error('Lỗi khi gửi yêu cầu API get page: ', error)
+        setLoading(false) // Ngừng hiển thị loader nếu có lỗi
+      })
+  }
   //timeline
-  // const getBillHistoryByIdBill = (id) => {
-  //   setLoadingTimeline(true); // Bắt đầu tải lịch sử đơn hàng - hiển thị load=))
-  //   lichSuHoaDonApi
-  //     .getByIdBill(id)
-  //     .then((response) => {
-  //       setListOrderTimeLine(response.data.data);
-  //       setLoadingTimeline(false); // Đã tải xong lịch sử đơn hàng, ngừng hiển thị loader
-  //     })
-  //     .catch((error) => {
-  //       console.error("Lỗi khi gửi yêu cầu API get orderTimeline: ", error);
-  //       setLoadingTimeline(false); // Ngừng hiển thị loader nếu có lỗi
-  //     });
-  // };
+  const getBillHistoryByIdBill = (id) => {
+    setLoadingTimeline(true) // Bắt đầu tải lịch sử đơn hàng - hiển thị load=))
+    lichSuHoaDonApi
+      .getByIdBill(id)
+      .then((response) => {
+        setListOrderTimeLine(response.data.data)
+        setLoadingTimeline(false) // Đã tải xong lịch sử đơn hàng, ngừng hiển thị loader
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API get orderTimeline: ', error)
+        setLoadingTimeline(false) // Ngừng hiển thị loader nếu có lỗi
+      })
+  }
   //transaction
-  // const getTransactionByIdBill = (id) => {
-  //   setLoadinTransaction(true); // Bắt đầu tải lịch sử đơn hàng - hiển thị load=))
-  //   lichSuGiaoDichApi
-  //     .getByIdBill(id)
-  //     .then((response) => {
-  //       setListTransaction(response.data.data);
-  //       setLoadinTransaction(false); // Đã tải xong lịch sử đơn hàng, ngừng hiển thị loader
-  //     })
-  //     .catch((error) => {
-  //       console.error("Lỗi khi gửi yêu cầu API get orderTimeline: ", error);
-  //       setLoadinTransaction(false); // Ngừng hiển thị loader nếu có lỗi
-  //     });
-  // };
-
+  const getTransactionByIdBill = (id) => {
+    setLoadinTransaction(true) // Bắt đầu tải lịch sử đơn hàng - hiển thị load=))
+    lichSuGiaoDichApi
+      .getByIdBill(id)
+      .then((response) => {
+        setListTransaction(response.data.data)
+        setLoadinTransaction(false) // Đã tải xong lịch sử đơn hàng, ngừng hiển thị loader
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API get orderTimeline: ', error)
+        setLoadinTransaction(false) // Ngừng hiển thị loader nếu có lỗi
+      })
+  }
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <h3>Lịch sử đơn hàng</h3>
         {/* timeline */}
-        {/* {loadingTimeline ? (
+        {loadingTimeline ? (
           <div>Loading...</div>
         ) : (
           <AdTimeLineBill key="unique-key" orderTimeLine={listOrderTimeLine} />
-        )} */}
+        )}
       </Paper>
 
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
@@ -93,8 +92,7 @@ export default function AdBillDetail() {
             <Button
               variant="contained"
               color="primary"
-              style={{ textTransform: "none", marginRight: "50px" }}
-            >
+              style={{ textTransform: 'none', marginRight: '50px' }}>
               Cập nhật
             </Button>
           </Grid>
@@ -112,7 +110,7 @@ export default function AdBillDetail() {
             </Grid>
             <Grid item xs={6}>
               <label>Tên khách hàng: </label>
-              {billDetail?.fullName ? billDetail.fullName : "Khách lẻ"}
+              {billDetail?.fullName ? billDetail.fullName : 'Khách lẻ'}
             </Grid>
             <Grid item xs={6}>
               <Stack direction="row" spacing={1}>
@@ -127,10 +125,7 @@ export default function AdBillDetail() {
             <Grid item xs={6}>
               <Stack direction="row" spacing={1}>
                 <label>Loại: </label>
-                <Chip
-                  label={billDetail.type ? "Giao hàng" : "Tại Quầy"}
-                  color="primary"
-                />
+                <Chip label={billDetail.type ? 'Giao hàng' : 'Tại Quầy'} color="primary" />
               </Stack>
             </Grid>
             <Grid item xs={6}>
@@ -142,12 +137,12 @@ export default function AdBillDetail() {
       </Paper>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <h3>Lịch sử thanh toán</h3>
-        {/* {loadingTransaction ? (
+        {loadingTransaction ? (
           <div>Loading...</div>
         ) : (
           <AdBillTransaction listTransaction={listTransaction} />
-        )} */}
+        )}
       </Paper>
     </div>
-  );
+  )
 }

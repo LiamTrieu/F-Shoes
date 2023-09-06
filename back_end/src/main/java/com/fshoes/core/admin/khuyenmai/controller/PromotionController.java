@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.khuyenmai.controller;
 
 
+import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequest;
 import com.fshoes.core.admin.khuyenmai.service.impl.PromotionServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
@@ -38,13 +39,13 @@ public class PromotionController {
     }
 
     @PostMapping("/add")
-    public ObjectRespone addKhuyenMai(@RequestBody Promotion promotion) {
-        return new ObjectRespone(khuyenMaiService.addKhuyenMai(promotion));
+    public ObjectRespone addKhuyenMai(@RequestBody PromotionRequest promotionRequest) throws ParseException {
+        return new ObjectRespone(khuyenMaiService.addKhuyenMai(promotionRequest));
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone updateKhuyenMai(@RequestBody Promotion promotion, @PathVariable int id) {
-        return new ObjectRespone(khuyenMaiService.updateKhuyenMai(promotion, id));
+    public ObjectRespone updateKhuyenMai(@RequestBody PromotionRequest promotionRequest, @PathVariable int id) throws ParseException {
+        return new ObjectRespone(khuyenMaiService.updateKhuyenMai(promotionRequest, id));
     }
 
     @GetMapping("/page")
@@ -54,10 +55,9 @@ public class PromotionController {
 
     @GetMapping("/search-by-name")
     public ObjectRespone getByName(@RequestParam(name = "textSearch") String textSearch,
-                                       @RequestParam("page") Integer page,
-                                       @RequestParam("pageSize") Integer pageSize ){
+                                       @RequestParam("page") Integer page){
 
-        return new ObjectRespone(khuyenMaiService.searchByName(page,pageSize,textSearch));
+        return new ObjectRespone(khuyenMaiService.searchByName(page,textSearch));
 
     }
 
@@ -72,10 +72,10 @@ public class PromotionController {
 
     @GetMapping("/search-by-time")
     public ObjectRespone getTime(@RequestParam("page") Integer page,
-                                     @RequestParam("pageSize") Integer pageSize,
+
                                      @RequestParam(value = "timeStartSearch") String timeStartSearch,
                                      @RequestParam(value = "timeEndSearch") String timeEndSearch) {
-        return new ObjectRespone(khuyenMaiService.searchByTime(page,pageSize,timeStartSearch,timeEndSearch));
+        return new ObjectRespone(khuyenMaiService.searchByTime(page,timeStartSearch,timeEndSearch));
     }
 
 

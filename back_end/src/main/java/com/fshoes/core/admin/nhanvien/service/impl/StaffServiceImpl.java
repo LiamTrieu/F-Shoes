@@ -36,7 +36,7 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public Page<StaffRespone> searchStaff(PageableRequest pageableRequest, SearchStaff searchStaff) {
         int page = pageableRequest.getPage() < 1 ? 0 : pageableRequest.getPage() - 1;
-        Pageable pageable = PageRequest.of(page, pageableRequest.getSize());
+        Pageable pageable = PageRequest.of(page, 5);
 
         return repo.searchStaff(searchStaff, pageable);
     }

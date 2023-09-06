@@ -1,68 +1,83 @@
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import staffApi from '../../../api/admin/nhanvien/nhanVienApi'
 import { Box, Button, Grid, Paper, TextField } from '@mui/material'
-import React, { useState } from 'react'
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
-import { useNavigate } from 'react-router-dom'
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 
-export default function AdCustomerAdd() {
-  const navigate = useNavigate()
-  const [khachHang, setKhachHang] = useState({
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    dateBirth: '',
-  })
-  const onSubmit = (khachHang) => {
-    khachHangApi.addKhachHang(khachHang).then(() => {
-      alert('thành công')
-      navigate('/admin/customer')
-    })
+export default function AdStaffDetail() {
+  const { id } = useParams();
+  const [staffDetail, setStaffDetail] = useState();
+
+  useEffect(() => {
+    loadData(id)
+  }, [])
+
+  const loadData = (id) => {
+    staffApi
+      .getOne(id)
+      .then((response) => {
+        console.log(response.data);
+        setStaffDetail(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const setSelectImage = useState(null)
+  const handleImageChange = (event) => {
+    const file = event.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = () => {
+        setSelectImage(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
   }
 
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Box sx={{ pt: 4 }}>
-          <h1>Khách hàng</h1>
+          <h1>Nhân Viên</h1>
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12} md={6}>
               <TextField
-                placeholder="Tên khách hàng"
+                placeholder="Tên nhân viên"
+                variant="outlined"
+                id="outlined-basic"
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) => setKhachHang({ ...khachHang, fullName: e.target.value })}
+                value={staffDetail?.fullName}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
+                id="outlined-basic"
                 placeholder="Email"
+                variant="outlined"
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) => setKhachHang({ ...khachHang, email: e.target.value })}
-                disabled
+                value={staffDetail?.email}
               />
             </Grid>
           </Grid>
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12} md={6}>
               <TextField
+                id="outlined-basic"
                 placeholder="Số điện thoại"
+                variant="outlined"
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) => setKhachHang({ ...khachHang, phoneNumber: e.target.value })}
+                value={staffDetail?.phoneNumber}
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField placeholder="Địa chỉ" style={{ width: '82%' }} type="text" size="small" />
-              <Button variant="contained" color="success" sx={{ float: 'right' }}>
-                Chọn
-              </Button>
             </Grid>
           </Grid>
 
@@ -74,15 +89,15 @@ export default function AdCustomerAdd() {
                 </DemoContainer>
               </LocalizationProvider>
             </Grid>
+            <Grid item xs={12} md={6}>
+              <h3>Chọn ảnh nhân viên</h3>
+              <input type="file" accept="image/*" onChange={handleImageChange} />
+            </Grid>
           </Grid>
 
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12}>
-              <Button
-                onClick={() => onSubmit(khachHang)}
-                variant="contained"
-                color="success"
-                sx={{ float: 'right' }}>
+              <Button variant="contained" color="success" sx={{ float: 'right' }}>
                 Tạo Mới
               </Button>
             </Grid>

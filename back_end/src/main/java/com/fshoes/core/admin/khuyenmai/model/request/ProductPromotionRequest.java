@@ -1,10 +1,14 @@
 package com.fshoes.core.admin.khuyenmai.model.request;
 
 import com.fshoes.entity.ProductPromotion;
+import lombok.Getter;
+import lombok.Setter;
 
 
 import java.math.BigDecimal;
 
+@Getter
+@Setter
 public class ProductPromotionRequest {
 
     private String pricePromotion;

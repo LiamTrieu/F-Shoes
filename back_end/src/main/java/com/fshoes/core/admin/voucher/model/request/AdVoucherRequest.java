@@ -2,11 +2,13 @@ package com.fshoes.core.admin.voucher.model.request;
 
 import com.fshoes.entity.Voucher;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.util.DateUtil;
 import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 
 @Getter
 @Setter
@@ -27,11 +29,11 @@ public class AdVoucherRequest {
 
     private Integer quantity;
 
-    private Long startDate;
+    private String startDate;
 
-    private Long endDate;
+    private String endDate;
 
-    public Voucher newVoucher(Voucher voucher) {
+    public Voucher newVoucher(Voucher voucher) throws ParseException {
         voucher.setCode(this.getCode());
         voucher.setName(this.getName());
         voucher.setValue(this.getValue());
@@ -39,8 +41,8 @@ public class AdVoucherRequest {
         voucher.setType(this.getType());
         voucher.setMinimumAmount(this.getMinimumAmount());
         voucher.setQuantity(this.getQuantity());
-        voucher.setStartDate(this.getStartDate());
-        voucher.setEndDate(this.getEndDate());
+        voucher.setStartDate(DateUtil.parseDateTimeLong(this.getStartDate()));
+        voucher.setEndDate(DateUtil.parseDateTimeLong(this.getEndDate()));
         voucher.setStatus(1);
         return voucher;
     }
