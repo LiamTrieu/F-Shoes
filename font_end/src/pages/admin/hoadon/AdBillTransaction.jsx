@@ -7,19 +7,19 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material";
-import React from "react";
-import { formatCurrency } from "../../../services/common/formatCurrency ";
-import dayjs from "dayjs";
+} from '@mui/material'
+import React from 'react'
+import { formatCurrency } from '../../../services/common/formatCurrency '
+import dayjs from 'dayjs'
 
 const AdBillTransaction = (props) => {
-  const { listTransaction } = props;
+  const { listTransaction } = props
   const tableRowStyle = {
-    "&:hover": {
-      backgroundColor: "lightgray",
-      cursor: "pointer",
+    '&:hover': {
+      backgroundColor: 'lightgray',
+      cursor: 'pointer',
     },
-  };
+  }
   return (
     <div>
       <TableContainer>
@@ -37,17 +37,22 @@ const AdBillTransaction = (props) => {
           </TableHead>
           <TableBody>
             {listTransaction.map((row, index) => (
-              <TableRow key={row.code} sx={tableRowStyle}>
+              <TableRow key={'transaction' + row.code} sx={tableRowStyle}>
                 <TableCell align="center">
                   {row.totalMoney !== null ? formatCurrency(row.totalMoney) : 0}
                 </TableCell>
                 <TableCell align="center">
-                  {dayjs(row.createdAt).format("DD-MM-YYYY HH:mm:ss")}
+                  {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
+                </TableCell>
+                <TableCell align="center">
+                  <Stack direction="row" spacing={1}>
+                    <Chip label={row.type ? 'Thanh toán' : 'Hoàn tiền'} color="primary" />
+                  </Stack>
                 </TableCell>
                 <TableCell align="center">
                   <Stack direction="row" spacing={1}>
                     <Chip
-                      label={row.type ? "Thanh toán" : "Hoàn tiền"}
+                      label={row.paymentMethod === 1 ? 'Tiền mặt' : 'Chuyển khoản'}
                       color="primary"
                     />
                   </Stack>
@@ -55,19 +60,7 @@ const AdBillTransaction = (props) => {
                 <TableCell align="center">
                   <Stack direction="row" spacing={1}>
                     <Chip
-                      label={
-                        row.paymentMethod === 1 ? "Tiền mặt" : "Chuyển khoản"
-                      }
-                      color="primary"
-                    />
-                  </Stack>
-                </TableCell>
-                <TableCell align="center">
-                  <Stack direction="row" spacing={1}>
-                    <Chip
-                      label={
-                        row.status === 1 ? "Thành công" : "Không thành công"
-                      }
+                      label={row.status === 1 ? 'Thành công' : 'Không thành công'}
                       color="primary"
                     />
                   </Stack>
@@ -80,7 +73,7 @@ const AdBillTransaction = (props) => {
         </Table>
       </TableContainer>
     </div>
-  );
-};
+  )
+}
 
-export default AdBillTransaction;
+export default AdBillTransaction

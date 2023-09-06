@@ -1,10 +1,10 @@
-import axios from "axios";
-const url = "http://localhost:8080/api/transaction";
+import axiosClient from '../../axios'
+
 const lichSuGiaoDichApi = {
   getByIdBill: (idBill) => {
-    const urlGetByIdBill = `${url}/get-by-idBill/${idBill}`;
-    return axios.get(urlGetByIdBill);
+    const urlGetByIdBill = `/transaction/get-by-idBill/${idBill}`
+    return axiosClient.get(urlGetByIdBill)
   },
-};
+}
 
-export default lichSuGiaoDichApi;
+export default lichSuGiaoDichApi
