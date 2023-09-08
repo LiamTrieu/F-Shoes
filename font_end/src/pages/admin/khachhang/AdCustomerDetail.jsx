@@ -7,9 +7,16 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 import { useNavigate, useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
+import confirmSatus from '../../../components/comfirmSwal'
+import { toast } from 'react-toastify'
+import { useTheme } from '@emotion/react'
 
 export default function AdCustomerDetail() {
+  const theme = useTheme()
   const { id } = useParams()
+  const navigate = useNavigate()
+
+  // State để lưu trữ dữ liệu khách hàng
   const [khachHang, setKhachHang] = useState({
     fullName: '',
     email: '',
@@ -17,39 +24,56 @@ export default function AdCustomerDetail() {
     dateBirth: null,
   })
 
+  // Nạp dữ liệu khách hàng khi thành phần được tạo ra (hoặc khi tham số id thay đổi)
   useEffect(() => {
     loadData(id)
   }, [id])
 
   const loadData = (id) => {
     khachHangApi.getOne(id).then((response) => {
+      const formattedBirthDate = dayjs(response.data.data.dateBirth).format('DD-MM-YYYY')
       // Khởi tạo trạng thái khách hàng khi tải dữ liệu
-      setKhachHang(response.data.data)
+      setKhachHang({ ...response.data.data, dateBirth: formattedBirthDate })
     })
   }
-
-  const navigate = useNavigate()
 
   const updateKhachHang = (e) => {
     const fieldName = e.target.name
     const fieldValue = e.target.value
 
-    // Tạo một bản sao của trạng thái cập nhật
+    // Tạo một bản sao của trạng thái khách hàng
     const updatedKhachHang = { ...khachHang }
 
     // Cập nhật giá trị cho trường chỉ khi fieldName khớp với trường muốn cập nhật
-    if (fieldName === 'fullName' || fieldName === 'email' || fieldName === 'phoneNumber') {
+    if (
+      fieldName === 'fullName' ||
+      fieldName === 'email' ||
+      fieldName === 'phoneNumber' ||
+      fieldName === 'dateBirth'
+    ) {
       updatedKhachHang[fieldName] = fieldValue
     }
 
-    // Cập nhật trạng thái cập nhật
+    // Cập nhật trạng thái khách hàng
     setKhachHang(updatedKhachHang)
   }
 
   const onSubmit = (id, khachHang) => {
-    khachHangApi.updateKhachHang(id, khachHang).then(() => {
-      alert('Cập nhật thành công')
-      navigate('/admin/customer')
+    const title = 'Xác nhận sửa mới khách hàng?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        khachHangApi.updateKhachHang(id, khachHang).then(() => {
+          toast.success('Sửa khách hàng thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          navigate('/admin/customer')
+        })
+      } else {
+        toast.error('Sửa khách hàng thất bại', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
     })
   }
 
@@ -119,7 +143,19 @@ export default function AdCustomerDetail() {
             <Grid item xs={12} md={6}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
-                  <DatePicker label="Ngày sinh" value={dayjs(khachHang.dateBirth)} />
+                  <DatePicker
+                    label="Ngày sinh"
+                    name="dateBirth"
+                    value={khachHang.dateBirth ? dayjs(khachHang.dateBirth) : null}
+                    onChange={(date) =>
+                      updateKhachHang({
+                        target: {
+                          name: 'dateBirth',
+                          value: date ? dayjs(date).format('DD-MM-YYYY') : null,
+                        },
+                      })
+                    }
+                  />
                 </DemoContainer>
               </LocalizationProvider>
             </Grid>

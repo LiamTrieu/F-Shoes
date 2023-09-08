@@ -1,9 +1,11 @@
 package com.fshoes.core.admin.khachhang.service;
 
+import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
 import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.entity.Customer;
 import org.springframework.data.domain.Page;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface KhachHangService {
@@ -14,8 +16,9 @@ public interface KhachHangService {
 
     Page<KhachHangRespone> findKhachHangByName(int p, String textSearch );
 
-    Customer save(Customer cu);
+    Customer add(KhachHangRequest khachHangRequest);
 
+    Boolean update(Integer id, KhachHangRequest khachHangRequest) throws ParseException;
     void delete(int id );
 
     Customer getOne(int id);
