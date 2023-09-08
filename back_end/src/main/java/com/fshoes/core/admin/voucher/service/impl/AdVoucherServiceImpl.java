@@ -79,7 +79,6 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     public Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch voucherSearch) {
         Sort sort = Sort.by("id");
         Pageable pageable = PageRequest.of(page, 5, sort);
-
         return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
 }
