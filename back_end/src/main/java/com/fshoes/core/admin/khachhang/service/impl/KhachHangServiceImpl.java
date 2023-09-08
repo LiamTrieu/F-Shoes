@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.khachhang.service.impl;
 
+import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
 import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.khachhang.service.KhachHangService;
@@ -10,8 +11,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class KhachHangServiceImpl implements KhachHangService {
@@ -37,8 +40,26 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
-    public Customer save(Customer cu) {
-      return   khachHangRepository.save(cu);
+    public Customer add(KhachHangRequest khachHangRequest) {
+      try {
+          Customer customer = khachHangRequest.newCustomer(new Customer());
+          return khachHangRepository.save(customer);
+      } catch (ParseException e) {
+          e.printStackTrace();
+          return null;
+      }
+    }
+
+    @Override
+    public Boolean update(Integer id, KhachHangRequest khachHangRequest) throws ParseException {
+        Optional<Customer> optionalCustomer = khachHangRepository.findById(id);
+        if (optionalCustomer.isPresent()){
+            Customer customer = khachHangRequest.newCustomer(optionalCustomer.get());
+            khachHangRepository.save(customer);
+            return true;
+        }else {
+            return false;
+        }
     }
 
     @Override

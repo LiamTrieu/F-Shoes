@@ -43,7 +43,6 @@ public class AdVoucherRequest {
         voucher.setQuantity(this.getQuantity());
         voucher.setStartDate(DateUtil.parseDateTimeLong(this.getStartDate()));
         voucher.setEndDate(DateUtil.parseDateTimeLong(this.getEndDate()));
-        voucher.setStatus(1);
         return voucher;
     }
 }
