@@ -7,8 +7,13 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
+import confirmSatus from '../../../components/comfirmSwal'
+import { useTheme } from '@emotion/react'
+import Toast from '../../../components/Toast'
+import { toast } from 'react-toastify'
 
 export default function AdCustomerAdd() {
+  const theme = useTheme()
   const navigate = useNavigate()
   const [khachHang, setKhachHang] = useState({
     fullName: '',
@@ -17,15 +22,28 @@ export default function AdCustomerAdd() {
     dateBirth: '',
   })
   const onSubmit = (khachHang) => {
-    khachHangApi.addKhachHang(khachHang).then(() => {
-      alert('thành công')
-      navigate('/admin/customer')
+    const title = 'Xác nhận Thêm mới khách hàng?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        khachHangApi.addKhachHang(khachHang).then(() => {
+          toast.success('Thêm khách hàng thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          navigate('/admin/customer')
+        })
+      } else {
+        toast.error('Thêm khách hàng thất bại', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
     })
   }
 
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
+        <Toast />
         <Box sx={{ pt: 4 }}>
           <h1>Khách hàng</h1>
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>

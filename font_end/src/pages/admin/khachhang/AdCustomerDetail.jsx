@@ -7,8 +7,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 import { useNavigate, useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
+import confirmSatus from '../../../components/comfirmSwal'
+import { toast } from 'react-toastify'
+import { useTheme } from '@emotion/react'
 
 export default function AdCustomerDetail() {
+  const theme = useTheme()
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -55,9 +59,21 @@ export default function AdCustomerDetail() {
   }
 
   const onSubmit = (id, khachHang) => {
-    khachHangApi.updateKhachHang(id, khachHang).then(() => {
-      alert('Cập nhật thành công')
-      navigate('/admin/customer')
+    const title = 'Xác nhận sửa mới khách hàng?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        khachHangApi.updateKhachHang(id, khachHang).then(() => {
+          toast.success('Sửa khách hàng thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          navigate('/admin/customer')
+        })
+      } else {
+        toast.error('Sửa khách hàng thất bại', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
     })
   }
 
