@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.voucher.model.request;
 
-import com.fshoes.entity.Voucher;
 import lombok.Getter;
 import lombok.Setter;
 

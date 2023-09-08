@@ -107,13 +107,13 @@ export default function AdVoucherPage() {
           <Grid item xs={2.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                onChange={
-                  (e) => console.log('start search:', dayjs(e).format('DD-MM-YYYY HH:mm:ss'))
-                  // setSearchVoucher({
-                  //   ...searchVoucher,
-                  //   startDateSearch: Number(dayjs(e).format('DD-MM-YYYY HH:mm:ss')),
-                  // })
-                }
+                format={'DD-MM-YYYY HH:mm:ss'}
+                onChange={(e) => {
+                  setSearchVoucher({
+                    ...searchVoucher,
+                    startDateSearch: dayjs(e).toDate().getTime(),
+                  })
+                }}
                 label="Từ ngày"
                 sx={{ width: '100%' }}
               />
@@ -122,12 +122,13 @@ export default function AdVoucherPage() {
           <Grid item xs={2.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                // onChange={(e) =>
-                //   setSearchVoucher({
-                //     ...searchVoucher,
-                //     endDateSearch: Number(dayjs(e).format('DD-MM-YYYY HH:mm:ss')),
-                //   })
-                // }
+                format={'DD-MM-YYYY HH:mm:ss'}
+                onChange={(e) => {
+                  setSearchVoucher({
+                    ...searchVoucher,
+                    endDateSearch: dayjs(e).toDate().getTime(),
+                  })
+                }}
                 label="Đến ngày"
                 sx={{ width: '100%' }}
               />

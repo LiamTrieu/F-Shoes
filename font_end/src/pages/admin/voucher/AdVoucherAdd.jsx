@@ -182,7 +182,7 @@ export default function AdVoucherAdd() {
           <Grid item xs={5.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                format="DD-MM-YYYY HH:mm:ss"
+                format={'DD-MM-YYYY HH:mm:ss'}
                 onChange={(e) =>
                   setVoucherAdd({
                     ...voucherAdd,
@@ -197,7 +197,7 @@ export default function AdVoucherAdd() {
           <Grid item xs={5.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                format="DD-MM-YYYY HH:mm:ss"
+                format={'DD-MM-YYYY HH:mm:ss'}
                 onChange={(e) =>
                   setVoucherAdd({
                     ...voucherAdd,
