@@ -6,6 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 import { useNavigate } from 'react-router-dom'
+import dayjs from 'dayjs'
 
 export default function AdCustomerAdd() {
   const navigate = useNavigate()
@@ -44,7 +45,6 @@ export default function AdCustomerAdd() {
                 size="small"
                 fullWidth
                 onChange={(e) => setKhachHang({ ...khachHang, email: e.target.value })}
-                disabled
               />
             </Grid>
           </Grid>
@@ -70,7 +70,12 @@ export default function AdCustomerAdd() {
             <Grid item xs={12} md={6}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
-                  <DatePicker label="Ngày sinh" />
+                  <DatePicker
+                    label="Ngày sinh"
+                    onChange={(e) =>
+                      setKhachHang({ ...khachHang, dateBirth: dayjs(e).format('DD-MM-YYYY') })
+                    }
+                  />
                 </DemoContainer>
               </LocalizationProvider>
             </Grid>

@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.khachhang.controller;
 
+import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
 import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.service.impl.KhachHangServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +39,9 @@ public class KhachHangController {
         return new ObjectRespone(khachHangService.findKhachHangByName(p,textSearch));
     }
     @PostMapping("/create")
-    public ObjectRespone create(@RequestBody Customer customer) {
-        customer.setStatus(1);
-        return new ObjectRespone(khachHangService.save(customer));
+    public ObjectRespone create(@RequestBody KhachHangRequest khachHangRequest) {
+        khachHangRequest.setStatus(1);
+        return new ObjectRespone(khachHangService.add(khachHangRequest));
     }
 
     @GetMapping("/get-one/{id}")
@@ -48,9 +50,8 @@ public class KhachHangController {
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone update(@PathVariable int id, @RequestBody Customer customer) {
-        customer.setId(id);
-        return new ObjectRespone(khachHangService.save(customer));
+    public ObjectRespone update(@PathVariable int id, @RequestBody KhachHangRequest khachHangRequest) throws ParseException {
+        return new ObjectRespone(khachHangService.update(id,khachHangRequest));
     }
 
     @DeleteMapping("/delete/{id}")

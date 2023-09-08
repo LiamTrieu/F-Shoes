@@ -22,37 +22,54 @@ import DeleteIcon from '@mui/icons-material/Delete'
 // import SearchIcon from "@mui/icons-material/Search";
 
 export default function AdCustomerPage() {
-  const [listKhachHang, setlistKhachHang] = useState([])
+  const [listKhachHang, setListKhachHang] = useState([])
   const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [pageSearch, setPageSearch] = useState({ textSearch: '' })
-  //
+
   useEffect(() => {
     fetchData(initPage - 1, pageSearch)
-  }, [initPage, listKhachHang, pageSearch])
+  }, [initPage, pageSearch])
 
-  const handelOnchangePage = (p) => {
-    setInitPage(p)
-    fetchData(p - 1, pageSearch)
+  const handleOnChangePage = (page) => {
+    setInitPage(page)
   }
 
   const fetchData = (initPage, pageSearch) => {
     if (pageSearch.textSearch !== '') {
-      khachHangApi.search(initPage, pageSearch.textSearch).then((response) => {
-        setlistKhachHang(response.data.data.content)
-        setTotalPages(response.data.data.totalPages)
-      })
+      khachHangApi
+        .search(initPage, pageSearch.textSearch)
+        .then((response) => {
+          setListKhachHang(response.data.data.content)
+          setTotalPages(response.data.data.totalPages)
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
     } else {
-      khachHangApi.get(initPage).then((response) => {
-        setlistKhachHang(response.data.data.content)
-        setTotalPages(response.data.data.totalPages)
-      })
+      khachHangApi
+        .get(initPage)
+        .then((response) => {
+          setListKhachHang(response.data.data.content)
+          setTotalPages(response.data.data.totalPages)
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
     }
   }
+
   const deleteKhachHang = (id) => {
-    khachHangApi.delete(id).then(() => {
-      alert('Xóa thành công')
-    })
+    khachHangApi
+      .delete(id)
+      .then(() => {
+        alert('Xóa thành công')
+        // Sau khi xóa thành công, cập nhật lại danh sách khách hàng trong state
+        setListKhachHang((prevList) => prevList.filter((khachHang) => khachHang.id !== id))
+      })
+      .catch((error) => {
+        alert('Xóa thất bại: ' + error.message)
+      })
   }
 
   return (
@@ -139,7 +156,7 @@ export default function AdCustomerPage() {
           <Grid item xs={3} sx={{ float: 'right' }}>
             <Pagination
               page={initPage}
-              onChange={(event, page) => handelOnchangePage(page)}
+              onChange={(_, page) => handleOnChangePage(page)}
               count={totalPages}
               color="primary"
             />
