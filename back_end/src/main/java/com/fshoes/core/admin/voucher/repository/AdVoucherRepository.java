@@ -18,7 +18,7 @@ public interface AdVoucherRepository extends VoucherRepository {
             v.type, v.minimum_amount as minimumAmount, v.quantity,
             v.start_date as startDate, v.end_date as endDate, v.status
             from voucher v
-            where (:#{#AVS.nameSearch} is null  or v.name like %:#{#AVS.nameSearch}%)
+            where (:#{#AVS.nameSearch} is null  or v.code like %:#{#AVS.nameSearch}%)
             and (:#{#AVS.startDateSearch} is null or v.start_date >= :#{#AVS.startDateSearch})
             and (:#{#AVS.endDateSearch} is null or v.end_date <= :#{#AVS.endDateSearch})
             """, nativeQuery = true)

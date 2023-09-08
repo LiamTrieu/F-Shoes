@@ -47,7 +47,14 @@ export default function AdVoucherDetail() {
     voucherApi
       .getOneVoucherById(id)
       .then((response) => {
-        setVoucherDetail(response.data)
+        const formattedStartDate = dayjs(response.data.data.startDate).format('DD-MM-YYYY HH:mm:ss')
+        const formattedEndDate = dayjs(response.data.data.endDate).format('DD-MM-YYYY HH:mm:ss')
+
+        setVoucherDetail({
+          ...response.data.data,
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+        })
       })
       .catch(() => {
         alert('Error: Không tải được dữ liệu API')
@@ -57,16 +64,17 @@ export default function AdVoucherDetail() {
   const handleTypeChange = (event) => {
     const newValue = event.target.value === 'true'
     setVoucherDetail({
-      ...voucherDetail.data,
-      data: { ...voucherDetail.data, type: Boolean(event.target.value) },
+      ...voucherDetail,
+      type: Boolean(event.target.value),
     })
+
     setIsSelectVisible(newValue === false)
   }
 
   const handleUpdateVoucher = (idUpdate, voucherDetail) => {
-    console.log(voucherDetail.data)
+    console.log(voucherDetail)
     voucherApi
-      .updateVoucher(idUpdate, voucherDetail.data)
+      .updateVoucher(idUpdate, voucherDetail)
       .then(() => {
         alert('updateVoucher success!')
         navigate('/admin/voucher')
@@ -87,14 +95,14 @@ export default function AdVoucherDetail() {
               label="Mã voucher"
               type="text"
               size="small"
-              value={voucherDetail.data?.code}
-              fullWidth
+              value={voucherDetail?.code}
               onChange={(e) => {
                 setVoucherDetail({
-                  ...voucherDetail.data,
-                  data: { ...voucherDetail.data, code: e.target.value },
+                  ...voucherDetail,
+                  code: e.target.value,
                 })
               }}
+              fullWidth
               InputLabelProps={{
                 shrink: true,
               }}
@@ -105,11 +113,11 @@ export default function AdVoucherDetail() {
               label="Tên voucher"
               type="text"
               size="small"
-              value={voucherDetail.data?.name}
+              value={voucherDetail?.name}
               onChange={(e) => {
                 setVoucherDetail({
-                  ...voucherDetail.data,
-                  data: { ...voucherDetail.data, name: e.target.value },
+                  ...voucherDetail,
+                  name: e.target.value,
                 })
               }}
               fullWidth
@@ -129,11 +137,11 @@ export default function AdVoucherDetail() {
               label="Giá trị"
               type="number"
               size="small"
-              value={voucherDetail.data?.value}
+              value={voucherDetail?.value}
               onChange={(e) => {
                 setVoucherDetail({
-                  ...voucherDetail.data,
-                  data: { ...voucherDetail.data, value: Number(e.target.value) },
+                  ...voucherDetail,
+                  value: Number(e.target.value),
                 })
               }}
               fullWidth
@@ -150,11 +158,11 @@ export default function AdVoucherDetail() {
               label="Giá trị tối đa"
               type="number"
               size="small"
-              value={voucherDetail.data?.maximumValue}
+              value={voucherDetail?.maximumValue}
               onChange={(e) => {
                 setVoucherDetail({
-                  ...voucherDetail.data,
-                  data: { ...voucherDetail.data, maximumValue: Number(e.target.value) },
+                  ...voucherDetail,
+                  maximumValue: Number(e.target.value),
                 })
               }}
               fullWidth
@@ -178,11 +186,11 @@ export default function AdVoucherDetail() {
               type="number"
               variant="outlined"
               size="small"
-              value={voucherDetail.data?.quantity}
+              value={voucherDetail?.quantity}
               onChange={(e) => {
                 setVoucherDetail({
-                  ...voucherDetail.data,
-                  data: { ...voucherDetail.data, quantity: Number(e.target.value) },
+                  ...voucherDetail,
+                  quantity: Number(e.target.value),
                 })
               }}
               fullWidth
@@ -196,11 +204,11 @@ export default function AdVoucherDetail() {
               label="Điều kiện"
               type="number"
               size="small"
-              value={voucherDetail.data?.minimumAmount}
+              value={voucherDetail?.minimumAmount}
               onChange={(e) => {
                 setVoucherDetail({
-                  ...voucherDetail.data,
-                  data: { ...voucherDetail.data, minimumAmount: Number(e.target.value) },
+                  ...voucherDetail,
+                  minimumAmount: Number(e.target.value),
                 })
               }}
               fullWidth
@@ -221,14 +229,12 @@ export default function AdVoucherDetail() {
           <Grid item xs={5.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                value={dayjs(voucherDetail.data?.startDate)}
+                format={'DD-MM-YYYY HH:mm:ss'}
+                value={dayjs(voucherDetail?.startDate, 'DD-MM-YYYY HH:mm:ss')}
                 onChange={(e) => {
                   setVoucherDetail({
-                    ...voucherDetail.data,
-                    data: {
-                      ...voucherDetail.data,
-                      startDate: '03-09-2023 00:00:00',
-                    },
+                    ...voucherDetail,
+                    startDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                   })
                 }}
                 label="Từ ngày"
@@ -239,14 +245,12 @@ export default function AdVoucherDetail() {
           <Grid item xs={5.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                value={dayjs(voucherDetail.data?.endDate)}
+                format={'DD-MM-YYYY HH:mm:ss'}
+                value={dayjs(voucherDetail?.endDate, 'DD-MM-YYYY HH:mm:ss')}
                 onChange={(e) => {
                   setVoucherDetail({
-                    ...voucherDetail.data,
-                    data: {
-                      ...voucherDetail.data,
-                      endDate: '05-09-2023 00:00:00',
-                    },
+                    ...voucherDetail,
+                    endDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                   })
                 }}
                 label="Đến ngày"
@@ -269,7 +273,7 @@ export default function AdVoucherDetail() {
                   value={true}
                   control={<Radio />}
                   label="Tất cả"
-                  checked={voucherDetail.data?.type === true}
+                  checked={voucherDetail?.type === true}
                   onChange={handleTypeChange}
                 />
                 <FormControlLabel
@@ -277,7 +281,7 @@ export default function AdVoucherDetail() {
                   value={false}
                   control={<Radio />}
                   label="Cá nhân"
-                  checked={voucherDetail.data?.type === false}
+                  checked={voucherDetail?.type === false}
                   onChange={handleTypeChange}
                 />
               </RadioGroup>
