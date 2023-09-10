@@ -69,10 +69,6 @@ export default function AdCustomerDetail() {
           })
           navigate('/admin/customer')
         })
-      } else {
-        toast.error('Sửa khách hàng thất bại', {
-          position: toast.POSITION.TOP_RIGHT,
-        })
       }
     })
   }
@@ -151,7 +147,7 @@ export default function AdCustomerDetail() {
                       updateKhachHang({
                         target: {
                           name: 'dateBirth',
-                          value: date ? dayjs(date).format('DD-MM-YYYY') : null,
+                          value: date ? dayjs(date).format('MM-DD-YYYY') : null,
                         },
                       })
                     }
