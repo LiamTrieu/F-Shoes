@@ -21,5 +21,9 @@ const soleApi = {
     const urlUpdate = `/sole/update/${id}`
     return axiosClient.put(urlUpdate, sole)
   },
+  deleted: (id, isDeleted) => {
+    const url = `/sole/deleted/${id}`
+    return axiosClient.put(url, isDeleted)
+  },
 }
 export default soleApi

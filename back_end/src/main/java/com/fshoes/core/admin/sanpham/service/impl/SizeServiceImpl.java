@@ -59,4 +59,15 @@ public class SizeServiceImpl implements SizeService {
             return null;
         }
     }
+
+    @Override
+    public Size chageDeleted(int id, boolean isDeleted) {
+        try {
+            Size size = sizeRepository.findById(id).orElseThrow();
+            size.setDeleted(isDeleted);
+            return sizeRepository.save(size);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

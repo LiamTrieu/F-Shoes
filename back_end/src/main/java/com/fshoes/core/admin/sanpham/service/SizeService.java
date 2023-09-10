@@ -19,4 +19,6 @@ public interface SizeService {
     Size addSize(SizeRequest sizeReq);
 
     Size updateSize(SizeRequest sizeReq, int id);
+
+    Size chageDeleted(int id, boolean isDeleted);
 }

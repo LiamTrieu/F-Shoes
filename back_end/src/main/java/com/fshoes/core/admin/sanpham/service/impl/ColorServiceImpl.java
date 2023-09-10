@@ -59,4 +59,15 @@ public class ColorServiceImpl implements ColorService {
             return null;
         }
     }
+
+    @Override
+    public Color chageDeleted(int id, boolean isDeleted) {
+        try {
+            Color color = colorRepository.findById(id).orElseThrow();
+            color.setDeleted(isDeleted);
+            return colorRepository.save(color);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

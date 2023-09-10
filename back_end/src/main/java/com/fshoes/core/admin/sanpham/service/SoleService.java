@@ -19,4 +19,6 @@ public interface SoleService {
     Sole addSole(SoleRequest soleReq);
 
     Sole updateSole(SoleRequest soleReq, int id);
+
+    Sole chageDeleted(int id, boolean isDeleted);
 }

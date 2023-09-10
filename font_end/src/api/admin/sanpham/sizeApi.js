@@ -21,5 +21,9 @@ const sizeApi = {
     const urlUpdate = `/size/update/${id}`
     return axiosClient.put(urlUpdate, size)
   },
+  deleted: (id, isDeleted) => {
+    const url = `/size/deleted/${id}`
+    return axiosClient.put(url, isDeleted)
+  },
 }
 export default sizeApi

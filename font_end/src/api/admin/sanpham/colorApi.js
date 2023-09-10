@@ -21,5 +21,9 @@ const colorApi = {
     const urlUpdate = `/color/update/${id}`
     return axiosClient.put(urlUpdate, color)
   },
+  deleted: (id, isDeleted) => {
+    const url = `/color/deleted/${id}`
+    return axiosClient.put(url, isDeleted)
+  },
 }
 export default colorApi
