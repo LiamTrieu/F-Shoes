@@ -9,6 +9,9 @@ import clientRoute from './clientroute'
 import Home from '../pages/client/Home'
 import AdminHeader from '../layout/AdminHeader'
 import Toast from '../components/Toast'
+import adCategoryRoute from './adminroute/adcategoryroute'
+import adMaterialRoute from './adminroute/admaterialroute'
+import adBrandRoute from './adminroute/adbrandroute'
 
 const router = createBrowserRouter([
   {
@@ -37,6 +40,9 @@ const router = createBrowserRouter([
       ...adPromotionRoute,
       ...adStaffRoute,
       ...adVoucherRoute,
+      ...adCategoryRoute,
+      ...adMaterialRoute,
+      ...adBrandRoute,
     ],
   },
 ])

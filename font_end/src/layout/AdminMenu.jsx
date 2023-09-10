@@ -225,7 +225,11 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                 />
               </ListItemButton>
 
-              <ListItemButton sx={customListItem} onClick={() => handleCloseOpenMenu(false)}>
+              <ListItemButton
+                sx={customListItem}
+                component={Link}
+                to="/admin/category"
+                onClick={() => handleCloseOpenMenu(false)}>
                 <ListItemText
                   sx={{ m: 0, p: 0 }}
                   primaryTypographyProps={{
@@ -235,7 +239,11 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                   primary="&nbsp;	&bull; &nbsp; &nbsp; Loại giày"
                 />
               </ListItemButton>
-              <ListItemButton sx={customListItem} onClick={() => handleCloseOpenMenu(false)}>
+              <ListItemButton
+                sx={customListItem}
+                component={Link}
+                to="/admin/material"
+                onClick={() => handleCloseOpenMenu(false)}>
                 <ListItemText
                   sx={{ m: 0, p: 0 }}
                   primaryTypographyProps={{
@@ -246,7 +254,11 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                 />
               </ListItemButton>
 
-              <ListItemButton sx={customListItem} onClick={() => handleCloseOpenMenu(false)}>
+              <ListItemButton
+                sx={customListItem}
+                component={Link}
+                to="/admin/brand"
+                onClick={() => handleCloseOpenMenu(false)}>
                 <ListItemText
                   sx={{ m: 0, p: 0 }}
                   primaryTypographyProps={{
