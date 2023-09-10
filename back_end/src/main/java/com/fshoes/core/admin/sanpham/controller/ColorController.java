@@ -44,9 +44,9 @@ public class ColorController {
     public ObjectRespone addColor(@RequestBody ColorRequest colorReq){
         return new ObjectRespone(colorService.addColor(colorReq));
     }
-    @PutMapping ("/update/{id}")
-    public ObjectRespone updateColor(@RequestBody ColorRequest colorReq,
-                                        @PathVariable int id){
-        return new ObjectRespone(colorService.updateColor(colorReq, id));
+    @PutMapping("/deleted/{id}")
+    public ObjectRespone deletedColor(@RequestBody boolean isDeleted,
+                                        @PathVariable int id) {
+        return new ObjectRespone(colorService.chageDeleted(id,isDeleted));
     }
 }

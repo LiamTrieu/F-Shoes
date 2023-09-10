@@ -9,4 +9,6 @@ public class AdVoucherSearch {
     private String nameSearch;
     private Long startDateSearch;
     private Long endDateSearch;
+    private Integer typeSearch;
+    private Integer statusSearch;
 }

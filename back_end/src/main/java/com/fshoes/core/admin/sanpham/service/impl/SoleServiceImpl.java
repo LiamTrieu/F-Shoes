@@ -58,4 +58,15 @@ public class SoleServiceImpl implements SoleService {
             return null;
         }
     }
+
+    @Override
+    public Sole chageDeleted(int id, boolean isDeleted) {
+        try {
+            Sole sole = soleRepository.findById(id).orElseThrow();
+            sole.setDeleted(isDeleted);
+            return soleRepository.save(sole);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

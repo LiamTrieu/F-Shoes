@@ -19,4 +19,6 @@ public interface ColorService {
     Color addColor(ColorRequest colorReq);
 
     Color updateColor(ColorRequest colorReq, int id);
+
+    Color chageDeleted(int id, boolean isDeleted);
 }
