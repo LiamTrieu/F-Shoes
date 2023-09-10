@@ -76,12 +76,10 @@ export default function CustomizedDialogs({ openDialog, setOpenDialog, listOrder
                     <TableCell align="center">
                       {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
                     </TableCell>
-                    <TableCell align="center">
-                      {row.staff.id} - {row.staff.fullName}
-                    </TableCell>
+                    <TableCell align="center">{row.staff ? row.staff.fullName : ''}</TableCell>
                     <TableCell align="center">
                       <Stack direction="row" spacing={1}>
-                        <Chip label={getStatus(row.statusBill)} color="primary" />
+                        <Chip size="small" label={getStatus(row.statusBill)} color="primary" />
                       </Stack>
                     </TableCell>
                     <TableCell align="center">{row.note}</TableCell>

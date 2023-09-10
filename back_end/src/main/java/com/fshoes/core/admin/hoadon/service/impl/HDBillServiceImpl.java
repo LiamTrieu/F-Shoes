@@ -91,15 +91,31 @@ public class HDBillServiceImpl implements HDBillService {
     }
 
     @Override
-    public Page<HDBillResponse> getBillByStatusAndDateRange(Integer pageNo, Integer status, String startDate, String endDate) throws ParseException {
+    public Page<HDBillResponse> filterBill(Integer pageNo, String statusRequest, String startDate, String endDate, String typeRequest) throws ParseException {
+        Boolean type;
+        Integer status;
         try {
-            Long start = DateUtil.parseDateLong(startDate);
-            Long end = DateUtil.parseDateLong(endDate);
-            Pageable pageable = PageRequest.of(pageNo, 5);
-            return hdBillRepositpory.getBillByStatusAndDateRange(pageable, status, start, end);
+            status = Integer.valueOf(statusRequest);
         } catch (Exception exception) {
-            return null;
+            status = null;
         }
+        if (!typeRequest.equalsIgnoreCase("true") && !typeRequest.equalsIgnoreCase("false")) {
+            type = null;
+        } else {
+            type = Boolean.valueOf(typeRequest);
+        }
+        Long start;
+        Long end;
+        try {
+            start = DateUtil.parseDateLong(startDate);
+            end = DateUtil.parseDateLong(endDate);
+
+        } catch (Exception exception) {
+            start = null;
+            end = null;
+        }
+        Pageable pageable = PageRequest.of(pageNo, 1000);
+        return hdBillRepositpory.filterBill(pageable, status, start, end, type);
     }
 
     //staff create bill - type = 0: tại quầy, 1: qua web
@@ -202,7 +218,6 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Override
     public Page<HDBillResponse> getBillByStatusAndType(Integer pageNo, String statusRequest, String typeRequest) {
-
         Pageable pageable = PageRequest.of(pageNo, 1000);
         Integer status;
         Boolean type;
@@ -211,11 +226,13 @@ public class HDBillServiceImpl implements HDBillService {
         } catch (Exception exception) {
             status = null;
         }
-        try {
-            type = Boolean.valueOf(typeRequest);
-        } catch (Exception exception) {
+        if (!typeRequest.equalsIgnoreCase("true") && !typeRequest.equalsIgnoreCase("false")) {
             type = null;
+        } else {
+            type = Boolean.valueOf(typeRequest);
         }
+        System.out.println(type);
+        System.out.println(status);
         return hdBillRepositpory.getBillByStatusAndType(pageable, status, type);
     }
 

@@ -206,7 +206,7 @@ export default function AdBillDetail() {
             <Grid item xs={6}>
               <Stack direction="row" spacing={1}>
                 <label>Trạng thái: </label>
-                <Chip label={getStatus(billDetail.status)} color="primary" />
+                <Chip size="small" label={getStatus(billDetail.status)} color="primary" />
               </Stack>
             </Grid>
             <Grid item xs={6}>
@@ -216,7 +216,11 @@ export default function AdBillDetail() {
             <Grid item xs={6}>
               <Stack direction="row" spacing={1}>
                 <label>Loại: </label>
-                <Chip label={billDetail.type ? 'Giao hàng' : 'Tại Quầy'} color="primary" />
+                <Chip
+                  size="small"
+                  label={billDetail.type ? 'Giao hàng' : 'Tại Quầy'}
+                  color="primary"
+                />
               </Stack>
             </Grid>
             <Grid item xs={6}>

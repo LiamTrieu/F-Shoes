@@ -78,14 +78,15 @@ public class HDBillController {
         return new PageReponse<>(hdBillService.getBillByTotalMoneyRange(pageNo, minTotalMoney, maxTotalMoney));
     }
 
-    @GetMapping("/get-by-status-and-dateRange")
+    @GetMapping("/filter")
     public PageReponse getBillByStatusAndDateRange(
             @RequestParam(value = "pageNo", defaultValue = "0") Integer pageNo,
-            @RequestParam(value = "status") Integer status,
+            @RequestParam(value = "status") String status,
             @RequestParam(value = "startDate") String startDate,
-            @RequestParam(value = "endDate") String endDate
+            @RequestParam(value = "endDate") String endDate,
+            @RequestParam(value = "typeRequest") String typeRequest
     ) throws ParseException {
-        return new PageReponse<>(hdBillService.getBillByStatusAndDateRange(pageNo, status, startDate, endDate));
+        return new PageReponse<>(hdBillService.filterBill(pageNo, status, startDate, endDate, typeRequest));
     }
 
     @PostMapping("/create-bill")

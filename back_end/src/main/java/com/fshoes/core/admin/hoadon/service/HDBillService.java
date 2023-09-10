@@ -23,7 +23,7 @@ public interface HDBillService {
 
     Page<HDBillResponse> getBillByTotalMoneyRange(Integer pageNo, BigDecimal minPrice, BigDecimal maxPrice);
 
-    Page<HDBillResponse> getBillByStatusAndDateRange(Integer pageNo, Integer status, String startDate, String endDate) throws ParseException;
+    Page<HDBillResponse> filterBill(Integer pageNo, String status, String startDate, String endDate, String typeRequest) throws ParseException;
 
     Bill createBill();
 
