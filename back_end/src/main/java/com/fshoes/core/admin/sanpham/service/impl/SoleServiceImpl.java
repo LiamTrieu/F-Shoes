@@ -22,8 +22,8 @@ public class SoleServiceImpl implements SoleService {
     private SpSoleRepository soleRepository;
 
     @Override
-    public List<Sole> getAll() {
-        return soleRepository.findAll();
+    public List<SoleResponse> getAll() {
+        return soleRepository.getAll();
     }
 
     @Override

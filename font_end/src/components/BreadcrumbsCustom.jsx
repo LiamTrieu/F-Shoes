@@ -13,6 +13,7 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
           <Typography
             variant="h4"
             sx={{
+              color: 'layout.colorText',
               textDecoration: 'none',
               fontWeight: '400',
               fontSize: 'calc(1.2rem + 0.15vw)',

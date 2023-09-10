@@ -24,6 +24,11 @@ public class MaterialController {
     @Autowired
     private MaterialService materialService;
 
+    @GetMapping
+    public ObjectRespone getAll(){
+        return new ObjectRespone(materialService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageMaterial(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {

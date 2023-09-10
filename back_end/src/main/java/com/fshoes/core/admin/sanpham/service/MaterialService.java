@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MaterialService {
 
-    List<Material> getAll();
+    List<MaterialResponse> getAll();
 
     MaterialResponse getById(int id);
 

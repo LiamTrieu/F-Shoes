@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface BrandService {
 
-    List<Brand> getAll();
+    List<BrandResponse> getAll();
 
     BrandResponse getById(int id);
 

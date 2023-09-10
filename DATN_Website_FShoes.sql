@@ -67,6 +67,7 @@ CREATE TABLE product (
 );
 CREATE TABLE promotion (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    type BOOLEAN,
     name NVARCHAR(100) UNIQUE NOT NULL,
     time_start BIGINT NOT NULL,
     time_end BIGINT NOT NULL,
@@ -136,7 +137,8 @@ CREATE TABLE product_detail (
     id_size INT,
     id_color INT,
     id_image INT,
-    code CHAR(30) UNIQUE NOT NULL,
+    description TEXT,
+    code CHAR(30) NOT NULL,
     price DECIMAL(16 , 0 ) NOT NULL,
     amount INT,
     created_at BIGINT,

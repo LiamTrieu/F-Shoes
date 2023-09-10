@@ -8,7 +8,6 @@ import {
   SwipeableDrawer,
   Toolbar,
   Tooltip,
-  Typography,
   useMediaQuery,
 } from '@mui/material'
 import AdminMenu from './AdminMenu'

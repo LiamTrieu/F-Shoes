@@ -25,6 +25,11 @@ public class BrandController {
     @Autowired
     private BrandService brandService;
 
+    @GetMapping
+    public ObjectRespone getAll(){
+        return new ObjectRespone(brandService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageBrand(PageableRequest pageableRequest,
                                     @RequestParam(defaultValue = "") String textSearch) {

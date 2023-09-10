@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CategoryService {
 
-    List<Category> getAll();
+    List<CategoryResponse> getAll();
 
     CategoryResponse getById(int id);
 

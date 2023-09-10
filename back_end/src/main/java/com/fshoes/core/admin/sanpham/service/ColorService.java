@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ColorService {
 
-    List<Color> getAll();
+    List<ColorResponse> getAll();
 
     ColorResponse getById(int id);
 

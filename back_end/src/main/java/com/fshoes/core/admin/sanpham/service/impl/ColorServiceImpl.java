@@ -22,8 +22,8 @@ public class ColorServiceImpl implements ColorService {
     private SpColorRepository colorRepository;
 
     @Override
-    public List<Color> getAll() {
-        return colorRepository.findAll();
+    public List<ColorResponse> getAll() {
+        return colorRepository.getAll();
     }
 
     @Override
