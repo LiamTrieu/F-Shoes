@@ -80,7 +80,7 @@ export default function AdProductDetailAdd() {
   const [listSole, setListSole] = useState([])
   const [product, setProduct] = useState({})
 
-  // const [listProductDetailRequest, setListProuctDetailRequest] = useState([productDetailRequest])
+  const [listProductDetailRequest, setListProuctDetailRequest] = useState([])
   const [listProductDetail, setListProuctDetail] = useState([])
 
   const listBreadcrumb = [
@@ -255,7 +255,15 @@ export default function AdProductDetailAdd() {
                     }}
                   />
                 </Typography>
-                <SelectAttribute label="Size" value="size" id={'select-brand'} options={listSize} />
+                <SelectAttribute
+                  onChange={() => {
+                    console.log(productDetail)
+                  }}
+                  label="Size"
+                  value="size"
+                  id={'select-size'}
+                  options={listSize}
+                />
                 <Box></Box>
               </Container>
             </Paper>
