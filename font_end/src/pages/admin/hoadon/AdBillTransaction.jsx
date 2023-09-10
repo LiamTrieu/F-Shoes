@@ -46,12 +46,17 @@ const AdBillTransaction = (props) => {
                 </TableCell>
                 <TableCell align="center">
                   <Stack direction="row" spacing={1}>
-                    <Chip label={row.type ? 'Thanh toán' : 'Hoàn tiền'} color="primary" />
+                    <Chip
+                      size="small"
+                      label={row.type ? 'Thanh toán' : 'Hoàn tiền'}
+                      color="primary"
+                    />
                   </Stack>
                 </TableCell>
                 <TableCell align="center">
                   <Stack direction="row" spacing={1}>
                     <Chip
+                      size="small"
                       label={row.paymentMethod === 1 ? 'Tiền mặt' : 'Chuyển khoản'}
                       color="primary"
                     />
@@ -60,6 +65,7 @@ const AdBillTransaction = (props) => {
                 <TableCell align="center">
                   <Stack direction="row" spacing={1}>
                     <Chip
+                      size="small"
                       label={row.status === 1 ? 'Thành công' : 'Không thành công'}
                       color="primary"
                     />

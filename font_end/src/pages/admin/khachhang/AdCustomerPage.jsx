@@ -42,6 +42,12 @@ export default function AdCustomerPage() {
     setInitPage(page)
   }
 
+  const updateKhachHangListAfterDelete = (id) => {
+    // Lọc ra các khách hàng mà không có id bị xóa
+    const updatedListKhachHang = listKhachHang.filter((khachHang) => khachHang.id !== id)
+    setListKhachHang(updatedListKhachHang)
+  }
+
   const fetchData = (initPage, pageSearch) => {
     if (pageSearch.textSearch !== '') {
       khachHangApi
@@ -75,10 +81,7 @@ export default function AdCustomerPage() {
           toast.success('Xóa khách hàng thành công', {
             position: toast.POSITION.TOP_RIGHT,
           })
-        })
-      } else {
-        toast.error('Xóa khách hàng thất bại', {
-          position: toast.POSITION.TOP_RIGHT,
+          updateKhachHangListAfterDelete(id)
         })
       }
     })
@@ -116,7 +119,6 @@ export default function AdCustomerPage() {
                   <TableCell align="center">Ngày sinh</TableCell>
                   <TableCell align="center">Số điện thoại</TableCell>
                   <TableCell align="center">Ngày tạo</TableCell>
-                  <TableCell align="center">trạng thái</TableCell>
                   <TableCell align="center">Thao tác</TableCell>
                 </TableRow>
               </TableHead>
@@ -127,26 +129,11 @@ export default function AdCustomerPage() {
                     <TableCell align="center">{row.email}</TableCell>
                     <TableCell align="center">{row.fullName}</TableCell>
                     <TableCell align="center">
-                      {' '}
                       {dayjs(row.dateBirth).format('MM/DD/YYYY')}
                     </TableCell>
                     <TableCell align="center">{row.phoneNumber}</TableCell>
                     <TableCell align="center">
-                      {' '}
                       {dayjs(row.createdAt).format('MM/DD/YYYY')}
-                    </TableCell>
-                    <TableCell align="center">
-                      <div
-                        style={{
-                          backgroundColor: '#ffdb58',
-                          color: '#fff',
-                          borderRadius: '90px',
-                          textTransform: 'none',
-                          padding: '8px 16px',
-                          display: 'inline-block',
-                        }}>
-                        {row.status ? 'hoạt động' : ''}
-                      </div>
                     </TableCell>
                     <TableCell align="center">
                       <IconButton

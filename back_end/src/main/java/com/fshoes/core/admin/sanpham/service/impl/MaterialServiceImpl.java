@@ -59,4 +59,15 @@ public class MaterialServiceImpl implements MaterialService {
             return null;
         }
     }
+
+    @Override
+    public Material chageDeleted(int id, boolean isDeleted) {
+        try {
+            Material material = materialRepository.findById(id).orElseThrow();
+            material.setDeleted(isDeleted);
+            return materialRepository.save(material);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

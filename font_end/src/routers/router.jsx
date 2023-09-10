@@ -12,6 +12,9 @@ import Toast from '../components/Toast'
 import adSizeRoute from './adminroute/adsizeroute'
 import adSoleRoute from './adminroute/adsoleroute'
 import adColorRoute from './adminroute/adcolorroute'
+import adCategoryRoute from './adminroute/adcategoryroute'
+import adMaterialRoute from './adminroute/admaterialroute'
+import adBrandRoute from './adminroute/adbrandroute'
 
 const router = createBrowserRouter([
   {
@@ -42,7 +45,10 @@ const router = createBrowserRouter([
       ...adVoucherRoute,
       ...adSizeRoute,
       ...adSoleRoute,
-      ...adColorRoute
+      ...adColorRoute,
+      ...adCategoryRoute,
+      ...adMaterialRoute,
+      ...adBrandRoute,
     ],
   },
 ])

@@ -25,9 +25,10 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ObjectRespone getAll(){
+    public ObjectRespone getAll() {
         return new ObjectRespone(categoryService.getAll());
     }
+
     @GetMapping("/page")
     public PageReponse getPageCategory(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {
@@ -35,17 +36,24 @@ public class CategoryController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getCategory(@PathVariable int id){
+    public ObjectRespone getCategory(@PathVariable int id) {
         return new ObjectRespone(categoryService.getById(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addCategory(@RequestBody CategoryRequest categoryReq){
+    public ObjectRespone addCategory(@RequestBody CategoryRequest categoryReq) {
         return new ObjectRespone(categoryService.addCategory(categoryReq));
     }
-    @PutMapping ("/update/{id}")
+
+    @PutMapping("/update/{id}")
     public ObjectRespone updateCategory(@RequestBody CategoryRequest categoryReq,
-                                        @PathVariable int id){
+                                        @PathVariable int id) {
         return new ObjectRespone(categoryService.updateCategory(categoryReq, id));
+    }
+
+    @PutMapping("/deleted/{id}")
+    public ObjectRespone deletedProduct(@RequestBody boolean isDeleted,
+                                        @PathVariable int id) {
+        return new ObjectRespone(categoryService.chageDeleted(id, isDeleted));
     }
 }

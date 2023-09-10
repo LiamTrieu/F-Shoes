@@ -19,4 +19,6 @@ public interface CategoryService {
     Category addCategory(CategoryRequest categoryReq);
 
     Category updateCategory(CategoryRequest categoryReq, int id);
+
+    Category chageDeleted(int id, boolean isDeleted);
 }
