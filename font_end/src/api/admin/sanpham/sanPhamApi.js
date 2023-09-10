@@ -5,6 +5,10 @@ const sanPhamApi = {
     const url = `/product/page`
     return axiosClient.get(url, { params: filter })
   },
+  getById: (id) => {
+    const url = `/product/get/${id}`
+    return axiosClient.get(url)
+  },
   deleted: (id, isDeleted) => {
     const url = `/product/deleted/${id}`
     return axiosClient.put(url, isDeleted)

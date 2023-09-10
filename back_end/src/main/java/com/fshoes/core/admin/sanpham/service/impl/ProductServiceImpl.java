@@ -22,8 +22,8 @@ public class ProductServiceImpl implements ProductService {
     private SpProductRepository productRepository;
 
     @Override
-    public List<Product> getAll() {
-        return productRepository.findAll();
+    public List<ProductResponse> getAll() {
+        return productRepository.getAll();
     }
 
     @Override

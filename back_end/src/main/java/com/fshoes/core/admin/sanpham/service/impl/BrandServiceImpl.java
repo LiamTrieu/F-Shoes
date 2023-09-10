@@ -7,7 +7,6 @@ import com.fshoes.core.admin.sanpham.service.BrandService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Brand;
 import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
-import com.fshoes.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,8 +26,8 @@ public class BrandServiceImpl implements BrandService {
     CloudinaryImage cloudinaryImage;
 
     @Override
-    public List<Brand> getAll() {
-        return brandRepository.findAll();
+    public List<BrandResponse> getAll() {
+        return brandRepository.getAll();
     }
 
     @Override
@@ -59,6 +58,17 @@ public class BrandServiceImpl implements BrandService {
         try {
             Brand brand = brandRepository.findById(id).orElseThrow();
             return brandRepository.save(brandReq.tranBrand(brand));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Brand chageDeleted(int id, boolean isDeleted) {
+        try {
+            Brand brand = brandRepository.findById(id).orElseThrow();
+            brand.setDeleted(isDeleted);
+            return brandRepository.save(brand);
         } catch (Exception e) {
             return null;
         }

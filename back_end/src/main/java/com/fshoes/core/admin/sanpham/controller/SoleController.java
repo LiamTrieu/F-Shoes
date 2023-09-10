@@ -24,6 +24,11 @@ public class SoleController {
     @Autowired
     private SoleService soleService;
 
+    @GetMapping
+    public ObjectRespone getAll() {
+        return new ObjectRespone(soleService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageSole(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {

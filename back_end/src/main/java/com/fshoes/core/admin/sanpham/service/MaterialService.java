@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MaterialService {
 
-    List<Material> getAll();
+    List<MaterialResponse> getAll();
 
     MaterialResponse getById(int id);
 
@@ -19,4 +19,6 @@ public interface MaterialService {
     Material addMaterial(MaterialRequest materialReq);
 
     Material updateMaterial(MaterialRequest materialReq, int id);
+
+    Material chageDeleted(int id, boolean isDeleted);
 }

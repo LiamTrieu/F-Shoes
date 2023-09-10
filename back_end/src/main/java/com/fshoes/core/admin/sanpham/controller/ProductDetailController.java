@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,17 +21,18 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/productDetail")
+@RequestMapping("/api/product-detail")
 @CrossOrigin("*")
 public class ProductDetailController {
 
     @Autowired
     private ProductDetailService productDetailService;
 
-    @GetMapping("/page")
+    @GetMapping("/page/{id}")
     public PageReponse getPageProductDetail(@ModelAttribute PageableRequest pageableRequest,
-                                            @ModelAttribute PrdDetailFilterRequest filterReq) {
-        return new PageReponse<>(productDetailService.getPage(pageableRequest, filterReq));
+                                            @ModelAttribute PrdDetailFilterRequest filterReq,
+                                            @PathVariable int id) {
+        return new PageReponse<>(productDetailService.getPage(id,pageableRequest, filterReq));
     }
 
     @GetMapping("/get/{id}")
@@ -41,9 +41,7 @@ public class ProductDetailController {
     }
 
     @PostMapping("/add")
-    public ObjectRespone addProductDetail(@ModelAttribute ProductDetailRequest productDetailReq,
-                                          @RequestParam List<MultipartFile> imageFiles) {
-        productDetailReq.setImages(imageFiles);
+    public ObjectRespone addProductDetail(@ModelAttribute ProductDetailRequest productDetailReq) {
         return new ObjectRespone(productDetailService.addProductDetail(productDetailReq));
     }
     @PutMapping ("/update/{id}")

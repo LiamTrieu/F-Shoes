@@ -22,8 +22,8 @@ public class CategoryServiceImpl implements CategoryService {
     private SpCategoryRepository categoryRepository;
 
     @Override
-    public List<Category> getAll() {
-        return categoryRepository.findAll();
+    public List<CategoryResponse> getAll() {
+        return categoryRepository.getAll();
     }
 
     @Override
@@ -54,6 +54,17 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             Category category = categoryRepository.findById(id).orElseThrow();
             return categoryRepository.save(categoryReq.tranCategory(category));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Category chageDeleted(int id, boolean isDeleted) {
+        try {
+            Category category = categoryRepository.findById(id).orElseThrow();
+            category.setDeleted(isDeleted);
+            return categoryRepository.save(category);
         } catch (Exception e) {
             return null;
         }

@@ -24,6 +24,11 @@ public class ColorController {
     @Autowired
     private ColorService colorService;
 
+    @GetMapping
+    public ObjectRespone getAll(){
+        return new ObjectRespone(colorService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageColor(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {

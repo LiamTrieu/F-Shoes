@@ -25,6 +25,11 @@ public class BrandController {
     @Autowired
     private BrandService brandService;
 
+    @GetMapping
+    public ObjectRespone getAll() {
+        return new ObjectRespone(brandService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageBrand(PageableRequest pageableRequest,
                                     @RequestParam(defaultValue = "") String textSearch) {
@@ -32,17 +37,24 @@ public class BrandController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getBrand(@PathVariable int id){
+    public ObjectRespone getBrand(@PathVariable int id) {
         return new ObjectRespone(brandService.getById(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addBrand(@RequestBody BrandRequest brandReq){
+    public ObjectRespone addBrand(@RequestBody BrandRequest brandReq) {
         return new ObjectRespone(brandService.addBrand(brandReq));
     }
-    @PutMapping ("/update/{id}")
+
+    @PutMapping("/update/{id}")
     public ObjectRespone updateBrand(@RequestBody BrandRequest brandReq,
-                                        @PathVariable int id){
+                                     @PathVariable int id) {
         return new ObjectRespone(brandService.updateBrand(brandReq, id));
+    }
+
+    @PutMapping("/deleted/{id}")
+    public ObjectRespone deletedProduct(@RequestBody boolean isDeleted,
+                                        @PathVariable int id) {
+        return new ObjectRespone(brandService.chageDeleted(id, isDeleted));
     }
 }

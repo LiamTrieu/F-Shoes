@@ -24,6 +24,11 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @GetMapping
+    public ObjectRespone getAll(){
+        return new ObjectRespone(productService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageProduct(PageableRequest pageableRequest,
                                        @RequestParam(defaultValue = "") String textSearch) {

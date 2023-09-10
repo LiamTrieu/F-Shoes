@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ProductDetailServiceImpl implements ProductDetailService {
@@ -45,15 +44,14 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public Page<ProductDetailResponse> getPage(PageableRequest pageReq, PrdDetailFilterRequest filterReq) {
+    public Page<ProductDetailResponse> getPage(int id, PageableRequest pageReq, PrdDetailFilterRequest filterReq) {
         Sort sort = Sort.by("id").reverse();
         Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
-        return productDetailRepository.getAll(pageable, filterReq);
+        return productDetailRepository.getAllByIdProduct(id,pageable, filterReq);
     }
 
 
     @Override
-    @Transactional
     public ProductDetailResponse addProductDetail(ProductDetailRequest detailReq) {
         try {
             ProductDetail productDetail = detailReq.tranDetail(new ProductDetail());
@@ -70,9 +68,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                     productDetail.setImage(image);
                 }
             }
+            productDetailRepository.save(productDetail);
 
             //save productdetail da duoc them anh mac dinh
-            Long idProduct = productDetailRepository.save(productDetail).getId();
+            Long idProduct = productDetail.getId();
 
             return productDetailRepository.getById(idProduct).orElseThrow();
         } catch (Exception e) {
