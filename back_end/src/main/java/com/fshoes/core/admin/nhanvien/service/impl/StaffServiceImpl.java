@@ -7,6 +7,7 @@ import com.fshoes.core.admin.nhanvien.repository.StaffRepositorys;
 import com.fshoes.core.admin.nhanvien.service.StaffService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Staff;
+import com.fshoes.util.DateUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -47,21 +50,22 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public Staff add(@Valid StaffRequest staffRequest, BindingResult result) {
+    public Staff add(@Valid StaffRequest staffRequest, BindingResult result) throws ParseException {
         if (result.hasErrors()) {
             return null;
         }
+        Long dateBirth = DateUtil.parseDateLong(staffRequest.getDateBirth());
         Staff staff = Staff.builder()
                 .fullName(staffRequest.getFullName())
                 .password(staffRequest.getPassword())
-                .dateBirth(staffRequest.getDateBirth())
+                .dateBirth(dateBirth)
                 .phoneNumber(staffRequest.getPhoneNumber())
                 .email(staffRequest.getEmail())
                 .gender(staffRequest.getGender())
                 .avatar(staffRequest.getAvatar())
                 .CitizenId(staffRequest.getCitizenId())
                 .role(staffRequest.getRole())
-//                .status(staffRequest.getStatus())
+                .status(staffRequest.getStatus())
                 .build();
         return repo.save(staff);
     }

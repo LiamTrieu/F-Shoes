@@ -10,10 +10,16 @@ import {
   TableBody,
   Paper,
   Pagination,
+  Tooltip,
+  IconButton,
+  Stack,
+  Chip,
 } from '@mui/material'
 import { Link } from 'react-router-dom'
 import staffApi from '../../../api/admin/nhanvien/nhanVienApi'
 import { useEffect, useState } from 'react'
+import { IoEye } from 'react-icons/io5'
+import dayjs from 'dayjs'
 
 export default function AdCustomerPage() {
   const [listStaff, setListStaff] = useState([])
@@ -21,13 +27,12 @@ export default function AdCustomerPage() {
   const [totalPages, setToTalPages] = useState(0)
   const [tenSearch, setTenSearch] = useState('')
 
-  const fetchData = () => {
+  const fetchData = (currentPage, tenSearch) => {
     staffApi
-      .searchAndGetPageStaff(0, tenSearch)
+      .get(currentPage, '')
       .then((response) => {
         console.log(response.data)
         setListStaff(response.data.data)
-        setCurrentPage(response.data.number)
         setToTalPages(response.data.totalPages)
       })
       .catch(() => {
@@ -36,33 +41,21 @@ export default function AdCustomerPage() {
   }
 
   useEffect(() => {
-    fetchData(currentPage - 1)
-  }, [currentPage])
+    console.log(currentPage)
+    console.log(tenSearch)
+    console.log(staffApi.get)
+    fetchData(currentPage, tenSearch)
+  }, [currentPage, tenSearch])
 
   const Search = (e) => {
     setTenSearch(e.target.value)
   }
 
-  const handelOnchangePage = (Page) => {
-    fetchData(Page - 1)
-    setCurrentPage(Page)
+  const handlePageChange = (event, newPage) => {
+    //newPage <=> currentPage được hiển thị ( hiển thị từ 1 <=> pageNo + 1)
+    fetchData(newPage)
+    setCurrentPage(newPage)
   }
-  // const fetchData = () => {
-
-  //   staffApi
-  //     .getAllStaff()
-  //     .then((response) => {
-  //       console.log(response.data);
-  //       setListStaff(response.data);
-  //     })
-  //     .catch(() => {
-  //       alert("Error: Không tải dữ liệu API");
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
@@ -103,6 +96,8 @@ export default function AdCustomerPage() {
                 <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Số điện thoại</TableCell>
                 <TableCell align="center">Ngày sinh</TableCell>
+                <TableCell align="center">Giới tính</TableCell>
+                {/* <TableCell align="center">CCCD</TableCell> */}
                 <TableCell align="center">Trạng thái</TableCell>
                 <TableCell align="center">Thao tác</TableCell>
               </TableRow>
@@ -116,27 +111,25 @@ export default function AdCustomerPage() {
                     <TableCell align="center">{row.fullName}</TableCell>
                     <TableCell align="center">{row.email}</TableCell>
                     <TableCell align="center">{row.phoneNumber}</TableCell>
-                    <TableCell align="center">{row.dateBirth}</TableCell>
                     <TableCell align="center">
-                      <Button
-                        style={{
-                          backgroundColor: '#00FF00',
-                          color: '#fff',
-                          borderRadius: '90px',
-                          textTransform: 'none',
-                        }}>
-                        {row.status ? 'hoạt động' : ''}
-                      </Button>
+                      {dayjs(row.dateBirth).format('DD-MM-YYYY')}
+                    </TableCell>
+                    <TableCell align="center">{row.gender ? "Nam" : "Nữ"}</TableCell>
+                    {/* <TableCell align="center">{row.citizenId}</TableCell> */}
+                    <TableCell align="center">
+                      <Stack direction="row" spacing={1}>
+                        <Chip size="small" label={row.status ? 'Hoạt động' : ''} color="primary" />
+                      </Stack>
                     </TableCell>
                     <TableCell align="center">
-                      <Button
-                        component={Link}
-                        to={`/admin/staff/detail/${row.id}`}
-                        variant="outlined"
-                        style={{ float: 'right' }}
-                        color="success">
-                        Chi tiết
-                      </Button>
+                      <Tooltip title="Xem chi tiết">
+                        <IconButton
+                          color="black"
+                          component={Link}
+                          to={`/admin/staff/detail/${row.id}`}>
+                          <IoEye style={{ fontSize: '20px' }} />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))
@@ -155,8 +148,9 @@ export default function AdCustomerPage() {
             marginTop: '10px',
           }}>
           <Pagination
+            defaultPage={1}
             page={currentPage}
-            onChange={(event, value) => handelOnchangePage(value)}
+            onChange={handlePageChange}
             count={totalPages}
             variant="outlined"
           />

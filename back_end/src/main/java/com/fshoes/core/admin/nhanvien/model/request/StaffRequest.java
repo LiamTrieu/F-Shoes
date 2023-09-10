@@ -13,34 +13,35 @@ public class StaffRequest {
     @Length(max = 100)
     private String fullName;
 
-    private Long dateBirth;
+    private String dateBirth;
 
     @NotBlank
     private String phoneNumber;
 
-    @NotBlank
     private String email;
 
     private Boolean gender;
 
-    @NotBlank
     private String password;
 
-    @NotBlank
     private String avatar;
 
     private String CitizenId;
 
     private Integer role;
 
+    private Integer status;
+
     public Staff tranStaff(Staff staff) {
         staff.setFullName(this.fullName);
-        staff.setDateBirth(this.dateBirth);
+        staff.setDateBirth(Long.valueOf(this.dateBirth));
         staff.setPhoneNumber(this.phoneNumber);
         staff.setEmail(this.email);
         staff.setGender(this.gender);
         staff.setCitizenId(this.CitizenId);
         staff.setRole(this.role);
+        staff.setStatus(this.status);
         return staff;
     }
+
 }
