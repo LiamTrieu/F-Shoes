@@ -18,6 +18,7 @@ import {
   MenuItem,
   Stack,
   Chip,
+  IconButton,
 } from '@mui/material'
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
 import dayjs from 'dayjs'
@@ -27,9 +28,10 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { FaEye, FaPlusCircle } from 'react-icons/fa'
+import { FaPlusCircle } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import { IoEye } from 'react-icons/io5'
 
 export default function AdBillPage() {
   const tableRowStyle = {
@@ -64,7 +66,7 @@ export default function AdBillPage() {
     if (e.target.value === undefined || e.target.value === '') {
       fetchData(currentPage - 1)
     } else {
-      searchByInputtext(0, e.target.value)
+      searchByInputText(0, e.target.value)
     }
   }
 
@@ -98,7 +100,7 @@ export default function AdBillPage() {
       })
   }
 
-  const searchByInputtext = (currentPage, inputSearch) => {
+  const searchByInputText = (currentPage, inputSearch) => {
     hoaDonApi
       .searchInput(currentPage, inputSearch)
       .then((response) => {
@@ -170,7 +172,7 @@ export default function AdBillPage() {
 
         <Grid container spacing={2}>
           <Grid item xs={0.5}></Grid>
-          <Grid item xs={5}>
+          <Grid item xs={5} style={{ height: '50px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={['DatePicker', 'DatePicker']}>
                 <DatePicker label="Từ ngày" value={startDate} onChange={(e) => setStartDate(e)} />
@@ -278,22 +280,24 @@ export default function AdBillPage() {
                   </TableCell>
                   <TableCell align="center">
                     <Stack direction="row" spacing={1}>
-                      <Chip label={row.type ? 'Giao hàng' : 'Tại Quầy'} color="primary" />
+                      <Chip
+                        size="small"
+                        label={row.type ? 'Giao hàng' : 'Tại Quầy'}
+                        color="primary"
+                      />
                     </Stack>
                   </TableCell>
                   <TableCell align="center">
                     <Stack direction="row" spacing={1}>
-                      <Chip label={getStatus(row.status)} color="primary" />
+                      <Chip size="small" label={getStatus(row.status)} color="primary" />
                     </Stack>
                   </TableCell>
                   <TableCell align="center">
                     <Link to={`/admin/bill-detail/${row.id}`}>
                       <Tooltip title="Xem chi tiết">
-                        <Button style={{ color: '#C0C0C0' }}>
-                          <span>
-                            <FaEye />
-                          </span>
-                        </Button>
+                        <IconButton color="#C0C0C0'">
+                          <IoEye style={{ fontSize: '20px' }} />
+                        </IconButton>
                       </Tooltip>
                     </Link>
                   </TableCell>
@@ -306,7 +310,8 @@ export default function AdBillPage() {
           style={{
             display: 'flex',
             justifyContent: 'center',
-            marginTop: '10px',
+            marginTop: '20px',
+            paddingBottom: '20px',
           }}>
           <Pagination
             defaultPage={1}
