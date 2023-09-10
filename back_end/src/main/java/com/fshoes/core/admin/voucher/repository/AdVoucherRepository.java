@@ -21,6 +21,8 @@ public interface AdVoucherRepository extends VoucherRepository {
             where (:#{#AVS.nameSearch} is null  or v.code like %:#{#AVS.nameSearch}%)
             and (:#{#AVS.startDateSearch} is null or v.start_date >= :#{#AVS.startDateSearch})
             and (:#{#AVS.endDateSearch} is null or v.end_date <= :#{#AVS.endDateSearch})
+            and (:#{#AVS.typeSearch} is null or v.type = :#{#AVS.typeSearch})
+            and (:#{#AVS.statusSearch} is null or v.status = :#{#AVS.statusSearch})
             """, nativeQuery = true)
     Page<AdVoucherRespone> pageSearchVoucher(Pageable pageable, @Param("AVS") AdVoucherSearch AVS);
 

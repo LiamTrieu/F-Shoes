@@ -19,6 +19,7 @@ import React, { useState } from 'react'
 import voucherApi from '../../../api/admin/voucher/VoucherApi'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
+import Swal from 'sweetalert2'
 // import PercentIcon from "@mui/icons-material/Percent";
 
 export default function AdVoucherAdd() {
@@ -47,20 +48,38 @@ export default function AdVoucherAdd() {
 
   const handleVoucherAdd = (voucherAdd) => {
     console.log('voucher :', voucherAdd)
-    voucherApi
-      .addVoucher(voucherAdd)
-      .then(() => {
-        alert('Thêm mới voucher thành công!')
-        navigate('/admin/voucher')
-      })
-      .catch(() => {
-        alert('Thêm mới voucher thất bại!')
-      })
+    Swal.fire({
+      title: 'Xác nhận thêm mới voucher!',
+      icon: 'question',
+      iconHtml: '?',
+      confirmButtonText: 'Xác nhận',
+      cancelButtonText: 'Hủy',
+      showCancelButton: true,
+      showCloseButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        voucherApi
+          .addVoucher(voucherAdd)
+          .then(() => {
+            Swal.fire('Thêm mới voucher thành công!', '', 'success')
+            navigate('/admin/voucher')
+          })
+          .catch(() => {
+            Swal.fire('Thêm mới voucher thất bại!', '', 'error')
+          })
+      }
+    })
   }
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 1 }}>
-        <h1>Thêm mới Voucher</h1>
+        <Grid container spacing={2}>
+          <Grid item xs={0.5}></Grid>
+          <Grid item xs={11}>
+            <h1>Thêm mới Voucher</h1>
+          </Grid>
+          <Grid item xs={0.5}></Grid>
+        </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
@@ -271,7 +290,7 @@ export default function AdVoucherAdd() {
               variant="contained"
               fullWidth
               color="success">
-              Xác nhận
+              Thêm mới
             </Button>
           </Grid>
         </Grid>
