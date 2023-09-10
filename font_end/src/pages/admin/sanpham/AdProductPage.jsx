@@ -51,9 +51,9 @@ export default function AdProductPage() {
     fetchData(filter)
   }, [filter])
 
-  const fetchData = async (filter) => {
+  const fetchData = (filter) => {
     setIsBackdrop(true)
-    await sanPhamApi
+   sanPhamApi
       .get(filter)
       .then((response) => {
         const res = response.data
@@ -66,12 +66,12 @@ export default function AdProductPage() {
     setIsBackdrop(false)
   }
 
-  const addProduct = async () => {
+  const addProduct = () => {
     setIsBackdrop(true)
     const title = 'Xác nhận Thêm mới sản phẩm?'
     const text = ''
     setOpenAdd(false)
-    await confirmSatus(title, text, theme).then((result) => {
+    confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         sanPhamApi.add(product).then((res) => {
           if (res.data.success) {
@@ -95,12 +95,12 @@ export default function AdProductPage() {
     })
     setIsBackdrop(false)
   }
-  const updateProduct = async () => {
+  const updateProduct = () => {
     setIsBackdrop(true)
     const title = 'Xác nhận cập nhập sản phẩm?'
     const text = ''
     setOpenUpdate(false)
-    await confirmSatus(title, text, theme).then((result) => {
+    confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         sanPhamApi.update(productUpdate.id, { name: productUpdate.name }).then((res) => {
           if (res.data.success) {

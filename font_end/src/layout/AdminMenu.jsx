@@ -200,7 +200,60 @@ export default function AdminMenu({ isCloseOpenMenu, isMenuLg }) {
                     ...customFont,
                     ...colorBaseAdmin.colorText,
                   }}
-                  primary="&nbsp;	&bull; &nbsp; &nbsp; Thuộc tính"
+                  primary="&nbsp;	&bull; &nbsp; &nbsp; Size"
+                />
+              </ListItemButton>
+
+              <ListItemButton sx={customListItem} onClick={() => handleCloseOpenMenu(false)}>
+                <ListItemText
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
+                  primary="&nbsp;	&bull; &nbsp; &nbsp; Đế giày"
+                />
+              </ListItemButton>
+              <ListItemButton sx={customListItem} onClick={() => handleCloseOpenMenu(false)}>
+                <ListItemText
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
+                  primary="&nbsp;	&bull; &nbsp; &nbsp; Màu sắc"
+                />
+              </ListItemButton>
+
+              <ListItemButton sx={customListItem} onClick={() => handleCloseOpenMenu(false)}>
+                <ListItemText
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
+                  primary="&nbsp;	&bull; &nbsp; &nbsp; Loại giày"
+                />
+              </ListItemButton>
+              <ListItemButton sx={customListItem} onClick={() => handleCloseOpenMenu(false)}>
+                <ListItemText
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
+                  primary="&nbsp;	&bull; &nbsp; &nbsp; Chất liệu"
+                />
+              </ListItemButton>
+
+              <ListItemButton sx={customListItem} onClick={() => handleCloseOpenMenu(false)}>
+                <ListItemText
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{
+                    ...customFont,
+                    ...colorBaseAdmin.colorText,
+                  }}
+                  primary="&nbsp;	&bull; &nbsp; &nbsp; Thương hiệu"
                 />
               </ListItemButton>
             </List>
