@@ -19,4 +19,6 @@ public interface BrandService {
     Brand addBrand(BrandRequest brandReq);
 
     Brand updateBrand(BrandRequest brandReq, int id);
+
+    Brand chageDeleted(int id, boolean isDeleted);
 }

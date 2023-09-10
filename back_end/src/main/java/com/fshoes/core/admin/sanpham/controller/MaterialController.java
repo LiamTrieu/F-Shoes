@@ -25,7 +25,7 @@ public class MaterialController {
     private MaterialService materialService;
 
     @GetMapping
-    public ObjectRespone getAll(){
+    public ObjectRespone getAll() {
         return new ObjectRespone(materialService.getAll());
     }
 
@@ -36,17 +36,24 @@ public class MaterialController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getMaterial(@PathVariable int id){
+    public ObjectRespone getMaterial(@PathVariable int id) {
         return new ObjectRespone(materialService.getById(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addMaterial(@RequestBody MaterialRequest materialReq){
+    public ObjectRespone addMaterial(@RequestBody MaterialRequest materialReq) {
         return new ObjectRespone(materialService.addMaterial(materialReq));
     }
-    @PutMapping ("/update/{id}")
+
+    @PutMapping("/update/{id}")
     public ObjectRespone updateMaterial(@RequestBody MaterialRequest materialReq,
-                                        @PathVariable int id){
+                                        @PathVariable int id) {
         return new ObjectRespone(materialService.updateMaterial(materialReq, id));
+    }
+
+    @PutMapping("/deleted/{id}")
+    public ObjectRespone deletedProduct(@RequestBody boolean isDeleted,
+                                        @PathVariable int id) {
+        return new ObjectRespone(materialService.chageDeleted(id, isDeleted));
     }
 }

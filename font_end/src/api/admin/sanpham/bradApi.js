@@ -9,6 +9,10 @@ const bradApi = {
     const url = `/brand/page`
     return axiosClient.get(url, { params: filter })
   },
+  deleted: (id, isDeleted) => {
+    const url = `/brand/deleted/${id}`
+    return axiosClient.put(url, isDeleted)
+  },
   getById: (id) => {
     const url = `/brand/get/${id}`
     return axiosClient.get(url)

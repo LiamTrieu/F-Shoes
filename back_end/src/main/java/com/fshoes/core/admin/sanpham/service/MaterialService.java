@@ -19,4 +19,6 @@ public interface MaterialService {
     Material addMaterial(MaterialRequest materialReq);
 
     Material updateMaterial(MaterialRequest materialReq, int id);
+
+    Material chageDeleted(int id, boolean isDeleted);
 }

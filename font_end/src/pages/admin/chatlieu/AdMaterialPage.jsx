@@ -10,6 +10,7 @@ import {
   Paper,
   Select,
   Stack,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -125,6 +126,29 @@ export default function AdMaterialPage() {
   const chageName = (e) => {
     if (openAdd) setMaterial({ ...material, name: e.target.value })
     else setMaterialUpdate({ ...materialUpdate, name: e.target.value })
+  }
+  const setDeleted = (id, isDeleted) => {
+    const title = 'Xác nhận thay đổi hoạt động?'
+    const text = 'Ẩn hoạt động sẽ làm ẩn chất liệu khỏi nơi khác'
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        materialApi.deleted(id, isDeleted).then((res) => {
+          if (res.data.success) {
+            setIsBackdrop(false)
+            if (!isDeleted) {
+              toast.success('Đã bật trạng thái hoạt động', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            } else {
+              toast.error('Đã tắt trạng thái hoạt động', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            }
+            fetchData(filter)
+          }
+        })
+      }
+    })
   }
 
   return (
@@ -290,6 +314,9 @@ export default function AdMaterialPage() {
                       Ngày thêm
                     </TableCell>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
+                      Hoạt động
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: '500' }} align="center">
                       Chức năng
                     </TableCell>
                   </TableRow>
@@ -303,6 +330,16 @@ export default function AdMaterialPage() {
                       <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Switch
+                          checked={!row.deleted}
+                          onChange={(e) => {
+                            const isDel = !e.target.checked
+                            setDeleted(row.id, isDel)
+                          }}
+                          size="small"
+                        />
                       </TableCell>
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">

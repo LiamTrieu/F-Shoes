@@ -62,4 +62,15 @@ public class BrandServiceImpl implements BrandService {
             return null;
         }
     }
+
+    @Override
+    public Brand chageDeleted(int id, boolean isDeleted) {
+        try {
+            Brand brand = brandRepository.findById(id).orElseThrow();
+            brand.setDeleted(isDeleted);
+            return brandRepository.save(brand);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

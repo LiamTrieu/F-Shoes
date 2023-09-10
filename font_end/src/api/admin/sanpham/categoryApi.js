@@ -10,6 +10,10 @@ const categoryApi = {
     const url = `/category/page`
     return axiosClient.get(url, { params: filter })
   },
+  deleted: (id, isDeleted) => {
+    const url = `/category/deleted/${id}`
+    return axiosClient.put(url, isDeleted)
+  },
   getById: (id) => {
     const url = `/category/get/${id}`
     return axiosClient.get(url)

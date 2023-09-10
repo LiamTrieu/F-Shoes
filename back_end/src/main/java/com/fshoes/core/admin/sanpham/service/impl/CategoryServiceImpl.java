@@ -58,4 +58,15 @@ public class CategoryServiceImpl implements CategoryService {
             return null;
         }
     }
+
+    @Override
+    public Category chageDeleted(int id, boolean isDeleted) {
+        try {
+            Category category = categoryRepository.findById(id).orElseThrow();
+            category.setDeleted(isDeleted);
+            return categoryRepository.save(category);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

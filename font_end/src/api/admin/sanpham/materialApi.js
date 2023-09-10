@@ -9,6 +9,10 @@ const materialApi = {
     const url = `/material/page`
     return axiosClient.get(url, { params: filter })
   },
+  deleted: (id, isDeleted) => {
+    const url = `/material/deleted/${id}`
+    return axiosClient.put(url, isDeleted)
+  },
   getById: (id) => {
     const url = `/material/get/${id}`
     return axiosClient.get(url)
