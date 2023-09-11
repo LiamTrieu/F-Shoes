@@ -36,16 +36,21 @@ public class StaffRequest {
     private Integer status;
 
     public Staff tranStaff(Staff staff) throws ParseException {
-        staff.setFullName(this.fullName);
-        staff.setDateBirth(DateUtil.parseDateLong(this.dateBirth));
-        staff.setPhoneNumber(this.phoneNumber);
-        staff.setEmail(this.email);
-        staff.setGender(this.gender);
-        staff.setCitizenId(this.CitizenId);
-        staff.setRole(this.role);
-        System.out.println(this.status);
-        staff.setStatus(this.status);
-        return staff;
+        try {
+            staff.setFullName(this.fullName);
+            staff.setDateBirth(DateUtil.parseDateLong(this.dateBirth));
+            staff.setPhoneNumber(this.phoneNumber);
+            staff.setEmail(this.email);
+            staff.setGender(this.gender);
+            staff.setCitizenId(this.CitizenId);
+            staff.setRole(this.role);
+            System.out.println(this.status);
+            staff.setStatus(this.status);
+            return staff;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

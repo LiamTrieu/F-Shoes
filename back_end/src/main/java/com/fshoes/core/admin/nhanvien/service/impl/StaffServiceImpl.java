@@ -70,11 +70,31 @@ public class StaffServiceImpl implements StaffService {
         return repo.save(staff);
     }
 
+//    @Override
+//    public Staff update(StaffRequest staffRequest, Integer id) {
+//
+//        try {
+//            Staff staff = repo.findById(id).orElseThrow();
+//            return repo.save(staffRequest.tranStaff(staff));
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
+
     @Override
-    public Staff update(StaffRequest staffRequest, Integer id) {
+    public Staff update(StaffRequest staffRequest, Integer id) throws ParseException {
+        Long dateBirth = DateUtil.parseDateLong(staffRequest.getDateBirth());
         try {
             Staff staff = repo.findById(id).orElseThrow();
-            return repo.save(staffRequest.tranStaff(staff));
+            staff.setFullName(staffRequest.getFullName());
+            staff.setEmail(staffRequest.getEmail());
+            staff.setPhoneNumber(staffRequest.getPhoneNumber());
+            staff.setCitizenId(staffRequest.getCitizenId());
+            staff.setRole(staffRequest.getRole());
+            staff.setGender(staffRequest.getGender());
+            staff.setDateBirth(dateBirth);
+            staff.setStatus(staffRequest.getStatus());
+            return repo.save(staff);
         } catch (Exception e) {
             return null;
         }

@@ -62,6 +62,8 @@ export default function AdStaffDetail() {
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         staffApi.update(id, staffDetail).then(() => {
+          console.log('text')
+          console.log(staffDetail)
           toast.success('Cập nhật nhân viên thành công!', {
             position: toast.POSITION.TOP_RIGHT,
           })
@@ -254,13 +256,13 @@ export default function AdStaffDetail() {
           <Grid item xs={3}>
             <FormControl size="small">
               <FormLabel>Giới tính:</FormLabel>
-              <RadioGroup row>
+              <RadioGroup row value={staffDetail?.gender}>
                 <FormControlLabel
                   name="genderUpdate"
                   value={true}
                   control={<Radio />}
                   label="Nam"
-                  checked={staffDetail?.gender === true}
+                  // checked={staffDetail?.gender === true}
                   onChange={handleGenderRadioChange}
                 />
                 <FormControlLabel
@@ -268,7 +270,7 @@ export default function AdStaffDetail() {
                   value={false}
                   control={<Radio />}
                   label="Nữ"
-                  checked={staffDetail?.gender === false}
+                  // checked={staffDetail?.gender === false}
                   onChange={handleGenderRadioChange}
                 />
               </RadioGroup>

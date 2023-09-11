@@ -23,6 +23,6 @@ public interface StaffService {
 
     Staff add(@Valid StaffRequest staffRequest) throws ParseException;
 
-    Staff update(StaffRequest staffRequest, Integer id);
+    Staff update(StaffRequest staffRequest, Integer id) throws ParseException;
 
 }

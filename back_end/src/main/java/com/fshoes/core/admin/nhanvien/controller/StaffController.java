@@ -45,7 +45,7 @@ public class StaffController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity update(@PathVariable("id") Integer id, @RequestBody StaffRequest staffRequest) {
+    public ResponseEntity update(@PathVariable("id") Integer id, @RequestBody StaffRequest staffRequest) throws ParseException {
         return new ResponseEntity(service.update(staffRequest, id), HttpStatus.OK);
     }
 
