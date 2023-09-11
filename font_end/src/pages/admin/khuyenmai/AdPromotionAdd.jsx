@@ -5,11 +5,6 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Modal from '@mui/material/Modal'
-// import Menu from "@mui/joy/Menu";
-
-// import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
-// import Dropdown from "@mui/joy/Dropdown";
-// import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { DataGrid } from '@mui/x-data-grid'
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
 import { useNavigate } from 'react-router-dom'
@@ -18,6 +13,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { toast } from 'react-toastify'
 
 const style = {
   position: 'absolute',
@@ -71,20 +67,22 @@ export default function AdPromotionAdd() {
   const [addPromotionRe, setAddPromotionRe] = useState({
     name: '',
     value: '',
-    type: true,
-    status: '0',
+    type: false,
+    status: '1',
     timeStart: '',
     timeEnd: '',
   })
-
-  const { name, value, timeStart, timeEnd } = addPromotionRe
 
   const handleInputChange = (e) => {
     setAddPromotionRe({ ...addPromotionRe, [e.target.name]: e.target.value })
   }
 
   const onSubmit = (e) => {
-    khuyenMaiApi.addPromotion(e)
+    khuyenMaiApi.addPromotion(e).then(() => {
+      toast.success('Add thành công', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    })
     console.log('add thành công')
     console.log(addPromotionRe)
     navigate('/admin/promotion')
@@ -111,7 +109,6 @@ export default function AdPromotionAdd() {
                 size="large"
                 sx={{ width: '100%' }}
                 name="name"
-                value={name}
                 onChange={(e) => handleInputChange(e)}
               />
             </Grid>
@@ -123,7 +120,6 @@ export default function AdPromotionAdd() {
                 size="large"
                 sx={{ width: '100%' }}
                 name="value"
-                value={value}
                 onChange={(e) => handleInputChange(e)}
               />
             </Grid>
@@ -137,8 +133,8 @@ export default function AdPromotionAdd() {
                     label="từ ngày"
                     size="large"
                     sx={{ width: '100%' }}
+                    format={'DD-MM-YYYY HH:mm:ss'}
                     name="timeStart"
-                    value={timeStart}
                     onChange={(e) =>
                       setAddPromotionRe({
                         ...addPromotionRe,
@@ -154,10 +150,10 @@ export default function AdPromotionAdd() {
                 <DemoContainer components={['DateTimePicker']}>
                   <DateTimePicker
                     label="đến ngày"
+                    format={'DD-MM-YYYY HH:mm:ss'}
                     size="large"
                     sx={{ width: '100%' }}
                     name="timeEnd"
-                    value={timeEnd}
                     onChange={(e) => {
                       setAddPromotionRe({
                         ...addPromotionRe,
@@ -228,18 +224,6 @@ export default function AdPromotionAdd() {
               spacing={2}
               sx={{ mt: 3, mb: 3 }}>
               <Typography>Trạng Thái:</Typography>
-              {/* <Dropdown>
-                <MenuButton
-                  // endDecorator={<ArrowDropDown />}
-                  sx={{ border: "none" }}>
-                  Size
-                </MenuButton>
-                <Menu
-                  sx={{ minWidth: 160, "--ListItemDecorator-size": "24px" }}>
-                  <MenuItem>Smaller</MenuItem>
-                  <MenuItem>Larger</MenuItem>
-                </Menu>
-              </Dropdown> */}
               <TextField
                 sx={{ mt: 2, width: '30%' }}
                 id="outlined-basic"

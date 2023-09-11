@@ -18,6 +18,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import dayjs from 'dayjs'
+import Swal from 'sweetalert2'
 
 const style = {
   position: 'absolute',
@@ -68,11 +69,10 @@ export default function AdPromotionDetail() {
 
   let navigate = useNavigate()
   const { id } = useParams()
-  const [promotion, setPromotion] = useState([])
   const [updatePromotion, setUpdatePromotion] = useState({
     name: '',
     value: '',
-    type: true,
+    type: false,
     status: '0',
     timeStart: '',
     timeEnd: '',
@@ -80,21 +80,28 @@ export default function AdPromotionDetail() {
 
   const { name, value, timeStart, timeEnd } = updatePromotion
 
-  const handleInputChanged = (e) => {
-    setPromotion(e.target.value)
-    setUpdatePromotion({ ...updatePromotion, [e.target.name]: e.target.value })
-  }
-
   const onSubmit = (e, id) => {
-    khuyenMaiApi.UpdayePromotion(e, id)
-    console.log('update Thành cômg')
-    console.log(updatePromotion)
-    navigate('/admin/promotion')
+    khuyenMaiApi
+      .UpdayePromotion(e, id)
+      .then(() => {
+        Swal.fire('update thành công', 'You clicked the button!', 'success')
+        navigate('/admin/promotion')
+      })
+      .catch(() => {
+        alert('update thất bại')
+      })
   }
 
   const detail = (id) => {
     khuyenMaiApi.getById(id).then((response) => {
-      setPromotion(response.data)
+      const formattedStartDate = dayjs(response.data.data.timeStart).format('DD-MM-YYYY HH:mm:ss')
+      const formattedEndDate = dayjs(response.data.data.timeEnd).format('DD-MM-YYYY HH:mm:ss')
+
+      setUpdatePromotion({
+        ...response.data.data,
+        timeStart: formattedStartDate,
+        timeEnd: formattedEndDate,
+      })
       console.log(response.data)
     })
   }
@@ -122,9 +129,8 @@ export default function AdPromotionDetail() {
                 size="large"
                 sx={{ width: '100%' }}
                 name="name"
-                defaultValue={name}
-                value={promotion.data?.name}
-                onChange={(e) => handleInputChanged(e)}
+                value={updatePromotion?.name}
+                onChange={(e) => setUpdatePromotion({ ...updatePromotion, name: e.target.value })}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -134,9 +140,8 @@ export default function AdPromotionDetail() {
                 size="large"
                 sx={{ width: '100%' }}
                 name="value"
-                defaultValue={value}
-                value={promotion.data?.value}
-                onChange={(e) => handleInputChanged(e)}
+                value={updatePromotion?.value}
+                onChange={(e) => setUpdatePromotion({ ...updatePromotion, value: e.target.value })}
               />
             </Grid>
           </Grid>
@@ -148,10 +153,10 @@ export default function AdPromotionDetail() {
                   <DateTimePicker
                     label="từ ngày"
                     size="large"
+                    format={'DD-MM-YYYY HH:mm:ss'}
                     sx={{ width: '100%' }}
                     name="timeStart"
-                    defaultValue={timeStart}
-                    value={dayjs(promotion.data?.timeStart)}
+                    value={dayjs(updatePromotion?.timeStart, 'DD-MM-YYYY HH:mm:ss')}
                     onChange={(e) => {
                       setUpdatePromotion({
                         ...updatePromotion,
@@ -166,12 +171,12 @@ export default function AdPromotionDetail() {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DateTimePicker']}>
                   <DateTimePicker
-                    label="từ ngày"
+                    label="Đến ngày"
+                    format={'DD-MM-YYYY HH:mm:ss'}
                     size="large"
                     sx={{ width: '100%' }}
                     name="timeEnd"
-                    defaultValue={timeEnd}
-                    value={dayjs(promotion.data?.timeEnd)}
+                    value={dayjs(updatePromotion?.timeEnd, 'DD-MM-YYYY HH:mm:ss')}
                     onChange={(e) => {
                       setUpdatePromotion({
                         ...updatePromotion,
