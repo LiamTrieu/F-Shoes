@@ -65,7 +65,7 @@ export default function AdVoucherDetail() {
     const newValue = event.target.value === 'true'
     setVoucherDetail({
       ...voucherDetail,
-      type: Boolean(event.target.value),
+      type: event.target.value,
     })
 
     setIsSelectVisible(newValue === false)
@@ -267,13 +267,12 @@ export default function AdVoucherDetail() {
           <Grid item xs={3}>
             <FormControl size="small">
               <FormLabel>Kiểu</FormLabel>
-              <RadioGroup row>
+              <RadioGroup row value={voucherDetail?.type}>
                 <FormControlLabel
                   name="typeUpdate"
                   value={true}
                   control={<Radio />}
                   label="Tất cả"
-                  checked={voucherDetail?.type === true}
                   onChange={handleTypeChange}
                 />
                 <FormControlLabel
@@ -281,7 +280,6 @@ export default function AdVoucherDetail() {
                   value={false}
                   control={<Radio />}
                   label="Cá nhân"
-                  checked={voucherDetail?.type === false}
                   onChange={handleTypeChange}
                 />
               </RadioGroup>

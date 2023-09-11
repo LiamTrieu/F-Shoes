@@ -6,8 +6,8 @@ const sizeApi = {
     return axiosClient.get(urlGetAll)
   },
   getPageSize: (filter) => {
-    const urlGetPage = `/size/page?page=${filter.page}&size=${filter.size}`
-    return axiosClient.get(urlGetPage)
+    const urlGetPage = `/size/page`
+    return axiosClient.get(urlGetPage, { params: filter })
   },
   getOneById: (id) => {
     const urlGetOne = `/size/get/${id}`
