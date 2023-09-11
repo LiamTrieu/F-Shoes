@@ -29,7 +29,7 @@ export default function AdCustomerPage() {
 
   const fetchData = (currentPage, tenSearch) => {
     staffApi
-      .get(currentPage, '')
+      .get(currentPage, tenSearch)
       .then((response) => {
         console.log(response.data)
         setListStaff(response.data.data)
@@ -52,7 +52,6 @@ export default function AdCustomerPage() {
   }
 
   const handlePageChange = (event, newPage) => {
-    //newPage <=> currentPage được hiển thị ( hiển thị từ 1 <=> pageNo + 1)
     fetchData(newPage)
     setCurrentPage(newPage)
   }
@@ -67,7 +66,7 @@ export default function AdCustomerPage() {
           size="small"
         />
 
-        <Button
+        {/* <Button
           onClick={() => {
             fetchData()
           }}
@@ -75,7 +74,7 @@ export default function AdCustomerPage() {
           style={{ marginLeft: '10px' }}
           AiOutlineSearch>
           Tìm kiếm
-        </Button>
+        </Button> */}
         <Button
           variant="outlined"
           style={{ float: 'right' }}
@@ -94,7 +93,7 @@ export default function AdCustomerPage() {
                 <TableCell align="center">Ảnh</TableCell>
                 <TableCell align="center">Họ và tên</TableCell>
                 <TableCell align="center">Email</TableCell>
-                <TableCell align="center">Số điện thoại</TableCell>
+                <TableCell align="center">SDT</TableCell>
                 <TableCell align="center">Ngày sinh</TableCell>
                 <TableCell align="center">Giới tính</TableCell>
                 {/* <TableCell align="center">CCCD</TableCell> */}
@@ -118,7 +117,7 @@ export default function AdCustomerPage() {
                     {/* <TableCell align="center">{row.citizenId}</TableCell> */}
                     <TableCell align="center">
                       <Stack direction="row" spacing={1}>
-                        <Chip size="small" label={row.status ? 'Hoạt động' : ''} color="primary" />
+                        <Chip size="small" label={row.status === '1' ? 'Hoạt động' : 'Không hoạt động'} color="primary" />
                       </Stack>
                     </TableCell>
                     <TableCell align="center">

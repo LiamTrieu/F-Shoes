@@ -15,6 +15,9 @@ import {
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
+import { toast } from 'react-toastify'
+import confirmSatus from '../../../components/comfirmSwal'
+import { useTheme } from '@emotion/react'
 
 export default function AdStaffDetail() {
   const initStaff = {
@@ -32,6 +35,7 @@ export default function AdStaffDetail() {
   const { id } = useParams()
   const [staffDetail, setStaffDetail] = useState(initStaff)
   const navigate = useNavigate()
+  const theme = useTheme()
 
   useEffect(() => {
     loadData(id)
@@ -53,15 +57,22 @@ export default function AdStaffDetail() {
   const handButtonUpdateStaff = (id, staffDetail) => {
     console.log(id)
     console.log(staffDetail)
-    staffApi
-      .update(id, staffDetail)
-      .then(() => {
-        alert('Cập nhật nhân viên thành công!')
-        navigate('/admin/staff')
-      })
-      .catch(() => {
-        alert('Cập nhật nhân viên thất bại!')
-      })
+    const title = 'Xác nhận cập nhật nhân viên?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        staffApi.update(id, staffDetail).then(() => {
+          toast.success('Cập nhật nhân viên thành công!', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          navigate('/admin/staff')
+        })
+      } else {
+        toast.error('Cập nhật nhân viên thất bại', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
+    })
   }
 
   const handleRoleRadioChange = (event) => {
@@ -222,21 +233,19 @@ export default function AdStaffDetail() {
           <Grid item xs={5.5}>
             <FormControl size="small">
               <FormLabel>Trạng thái:</FormLabel>
-              <RadioGroup row>
-                <FormControlLabel
-                  name="statusUpdate"
-                  value={0}
-                  control={<Radio />}
-                  label="Hoạt động"
-                  checked={staffDetail?.status === 0}
-                  onChange={handleStatusRadioChange}
-                />
+              <RadioGroup row value={staffDetail?.status}>
                 <FormControlLabel
                   name="statusUpdate"
                   value={1}
                   control={<Radio />}
+                  label="Hoạt động"
+                  onChange={handleStatusRadioChange}
+                />
+                <FormControlLabel
+                  name="statusUpdate"
+                  value={0}
+                  control={<Radio />}
                   label="Không hoạt động"
-                  checked={staffDetail?.status === 1}
                   onChange={handleStatusRadioChange}
                 />
               </RadioGroup>

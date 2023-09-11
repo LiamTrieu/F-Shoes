@@ -13,7 +13,7 @@ public class StaffRequest {
     @Length(max = 100)
     private String fullName;
 
-    private String dateBirth;
+    private Long dateBirth;
 
     @NotBlank
     private String phoneNumber;
@@ -34,12 +34,13 @@ public class StaffRequest {
 
     public Staff tranStaff(Staff staff) {
         staff.setFullName(this.fullName);
-        staff.setDateBirth(Long.valueOf(this.dateBirth));
+        staff.setDateBirth(this.dateBirth);
         staff.setPhoneNumber(this.phoneNumber);
         staff.setEmail(this.email);
         staff.setGender(this.gender);
         staff.setCitizenId(this.CitizenId);
         staff.setRole(this.role);
+        System.out.println(this.status);
         staff.setStatus(this.status);
         return staff;
     }

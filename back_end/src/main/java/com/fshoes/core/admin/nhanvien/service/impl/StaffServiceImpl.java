@@ -54,7 +54,7 @@ public class StaffServiceImpl implements StaffService {
         if (result.hasErrors()) {
             return null;
         }
-        Long dateBirth = DateUtil.parseDateLong(staffRequest.getDateBirth());
+        Long dateBirth = DateUtil.parseDateLong(String.valueOf(staffRequest.getDateBirth()));
         Staff staff = Staff.builder()
                 .fullName(staffRequest.getFullName())
                 .password(staffRequest.getPassword())

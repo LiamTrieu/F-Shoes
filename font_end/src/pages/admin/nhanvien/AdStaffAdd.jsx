@@ -1,10 +1,23 @@
 import React, { useState } from 'react'
 import staffApi from '../../../api/admin/nhanvien/nhanVienApi'
-import { Button, Grid, Paper, TextField } from '@mui/material'
+import {
+  Button,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  Paper,
+  Radio,
+  RadioGroup,
+  TextField,
+} from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
+import confirmSatus from '../../../components/comfirmSwal'
+import { useTheme } from '@emotion/react'
+import { toast } from 'react-toastify'
 
 export default function AddStaff() {
   const initStaff = {
@@ -21,15 +34,29 @@ export default function AddStaff() {
   }
   const navigate = useNavigate()
   const [staffAdd, setStaffAdd] = useState(initStaff)
+  const theme = useTheme()
+
+  const handleGenderRadioChange = (e) => {
+    setStaffAdd({ ...staffAdd, gender: Boolean(e.target.value) })
+  }
 
   const handleStaffAdd = (staffAdd) => {
     console.log('staff :', staffAdd)
-    staffApi.add(staffAdd).then(() => {
-      alert('Thêm mới nhân viên thành công!')
-      navigate('/admin/staff')
-    })
-    .catch(() => {
-      alert('Thêm mới nhân viên thất bại!')
+    const title = 'Xác nhận thêm mới nhân viên?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        staffApi.add(staffAdd).then(() => {
+          toast.success('Thêm mới nhân viên thành công!', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          navigate('/admin/staff')
+        })
+      } else {
+        toast.error('Thêm khách hàng thất bại', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
     })
   }
   return (
@@ -81,13 +108,16 @@ export default function AddStaff() {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
-            <TextField
-              id="outlined-basic"
-              label="Giới tính"
-              variant="outlined"
-              fullWidth
-              onChange={(e) => setStaffAdd({ ...staffAdd, gender: e.target.value })}
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                format={'DD-MM-YYYY'}
+                label="Ngày Sinh"
+                sx={{ width: '100%' }}
+                onChange={(e) =>
+                  setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
+                }
+              />
+            </LocalizationProvider>
           </Grid>
           <Grid item xs={5.5}>
             <TextField
@@ -102,13 +132,26 @@ export default function AddStaff() {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker format={'DD-MM-YYYY'} label="Ngày Sinh" sx={{ width: '100%' }} 
-              onChange={(e) =>
-                setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
-                
-              }/>
-            </LocalizationProvider>
+            <FormControl size="small">
+              <FormLabel>Giới tính:</FormLabel>
+              <RadioGroup row>
+                <FormControlLabel
+                  name="genderUpdate"
+                  value={true}
+                  control={<Radio />}
+                  label="Nam"
+                  onChange={handleGenderRadioChange}
+                />
+                <FormControlLabel
+                  name="genderUpdate"
+                  value={false}
+                  control={<Radio />}
+                  label="Nữ"
+                  // checked={staffAdd?.gender === false}
+                  onChange={handleGenderRadioChange}
+                />
+              </RadioGroup>
+            </FormControl>
           </Grid>
         </Grid>
 
