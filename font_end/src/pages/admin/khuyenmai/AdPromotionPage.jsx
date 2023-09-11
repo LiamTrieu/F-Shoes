@@ -3,7 +3,9 @@ import Container from '@mui/material/Container'
 import {
   Box,
   Button,
+  Chip,
   Grid,
+  IconButton,
   Pagination,
   Paper,
   Stack,
@@ -17,12 +19,11 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
-// import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import AddIcon from '@mui/icons-material/Add'
 import { Link } from 'react-router-dom'
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
 import dayjs from 'dayjs'
-// import khuyenMaiApi from "../../../api/admin/khuyenmai/khuyenMaiApi";
-// import axios from "axios";
+import CreateIcon from '@mui/icons-material/Create'
 
 export default function AdPromotionPage() {
   const [listKhuyenMai, setListKhuyenMai] = useState([])
@@ -69,14 +70,7 @@ export default function AdPromotionPage() {
                 onChange={(e) => setSearchByName(e.target.value)}
               />
             </Grid>
-            <Grid xs={6} md={2}>
-              {/* <Button
-                sx={{ ml: 1, mt: 2 }}
-                variant="contained"
-                onClick={() => onSubmit(searchByName, currentPage)}>
-                Tìm kiếm
-              </Button> */}
-            </Grid>
+            <Grid xs={6} md={2}></Grid>
             <Grid xs={6} md={2}>
               <TextField
                 sx={{ mt: 2, width: '80%' }}
@@ -105,30 +99,16 @@ export default function AdPromotionPage() {
             </Grid>
             <Grid xs={6} md={3}>
               <Button
-                sx={{ ml: 1, mt: 2 }}
+                sx={{ ml: 9, mt: 2 }}
                 color="success"
                 variant="contained"
                 component={Link}
                 to="/admin/promotion/add">
-                {/* <AddIcon /> */}
+                <AddIcon />
                 <Typography sx={{ ml: 1 }}>Tạo Khuyến Mại</Typography>
               </Button>
             </Grid>
           </Grid>
-          <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
-            <Typography>Trạng Thái:</Typography>
-            {/* <Dropdown>
-              <MenuButton
-                // endDecorator={<ArrowDropDown />}
-                sx={{ border: "none" }}>
-                Size
-              </MenuButton>
-              <Menu sx={{ minWidth: 160, "--ListItemDecorator-size": "24px" }}>
-                <MenuItem>Smaller</MenuItem>
-                <MenuItem>Larger</MenuItem>
-              </Menu>
-            </Dropdown> */}
-          </Stack>
         </Box>
       </Paper>
 
@@ -138,12 +118,13 @@ export default function AdPromotionPage() {
             <TableHead>
               <TableRow>
                 <TableCell>STT</TableCell>
-                <TableCell align="right">Tên</TableCell>
-                <TableCell align="right">Giá trị</TableCell>
-                <TableCell align="right">Quyền</TableCell>
-                <TableCell align="right">Trạng thái</TableCell>
-                <TableCell align="right">Thời gian</TableCell>
-                <TableCell align="right">Hoạt động</TableCell>
+                <TableCell align="center">Tên</TableCell>
+                <TableCell align="center">Giá trị</TableCell>
+                <TableCell align="center">Quyền</TableCell>
+                <TableCell align="center">Trạng thái</TableCell>
+                <TableCell align="center">Thời gian bắt đầu</TableCell>
+                <TableCell align="center">Thời gian kết thúc</TableCell>
+                <TableCell align="center">Hoạt động</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -151,39 +132,42 @@ export default function AdPromotionPage() {
                 <TableRow
                   key={promotion.id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell align="right">{index + 1}</TableCell>
+                  <TableCell align="center">{index + 1}</TableCell>
 
-                  <TableCell align="right">{promotion.name}</TableCell>
-                  <TableCell align="right">{promotion.value}</TableCell>
-                  <TableCell align="right">
-                    <Button
-                      sx={{
-                        backgroundColor: promotion.type === false ? '#FFFF99' : '#66FFFF',
-                        borderRadius: '90px',
-                        textTransform: 'none',
-                      }}>
-                      {promotion.type === false ? 'Tất cả' : 'Giới hạn'}
-                    </Button>
+                  <TableCell align="center">{promotion.name}</TableCell>
+                  <TableCell align="center">{promotion.value}%</TableCell>
+                  <TableCell align="center">
+                    <Stack direction="row" sx={{ paddingLeft: '30px' }}>
+                      <Chip
+                        sx={{
+                          backgroundColor: promotion.type === true ? '#FFFF66' : '#99FFFF',
+                        }}
+                        label={promotion.type === true ? 'Tất cả' : 'Giới hạn'}
+                      />
+                    </Stack>
                   </TableCell>
-                  <TableCell align="right">
-                    <Button
-                      sx={{
-                        backgroundColor: promotion.status === 0 ? '#FF6633' : '#00FF00',
-                        borderRadius: '90px',
-                        textTransform: 'none',
-                      }}>
-                      {promotion.status === 0 ? 'Hết hạn' : 'Còn hạn'}
-                    </Button>
+                  <TableCell align="center">
+                    <Stack direction="row" spacing={1} sx={{ paddingLeft: '30px' }}>
+                      <Chip
+                        sx={{
+                          backgroundColor: promotion.status === 0 ? '#00FF00' : '#99CCFF',
+                        }}
+                        label={promotion.status === 0 ? 'Hết hạn' : 'Còn hạn'}
+                      />
+                    </Stack>
                   </TableCell>
 
-                  <TableCell align="right">
-                    {dayjs(promotion.timeStart).format('DD/MM/YYYY HH:mm:ss')}
+                  <TableCell align="center">
+                    {dayjs(promotion.timeStart).format('DD/MM/YYYY')}
+                  </TableCell>
+                  <TableCell align="center">
+                    {dayjs(promotion.timeEnd).format('DD/MM/YYYY')}
                   </TableCell>
                   <TableCell>
                     <Link to={`/admin/promotion/get-one/${promotion.id}`}>
-                      <Button variant="contained" align="right">
-                        Chi tiết
-                      </Button>
+                      <IconButton sx={{ marginLeft: '30px' }}>
+                        <CreateIcon sx={{ color: '#FFCC00' }} />
+                      </IconButton>
                     </Link>
                   </TableCell>
                 </TableRow>
