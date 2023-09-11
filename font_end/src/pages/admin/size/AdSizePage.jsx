@@ -240,7 +240,7 @@ export default function AdSizePage() {
                     required: true,
                   }}
                   size="small"
-                  placeholder="Nhập tên kích cỡ"
+                  placeholder="Nhập kích cỡ"
                 />
               </DialogAddUpdate>
             )}
@@ -290,7 +290,7 @@ export default function AdSizePage() {
                     required: true,
                   }}
                   size="small"
-                  placeholder="Nhập tên kích cỡ"
+                  placeholder="Nhập kích cỡ"
                 />
               </DialogAddUpdate>
             )}
@@ -308,7 +308,7 @@ export default function AdSizePage() {
                       STT
                     </TableCell>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
-                      Tên
+                      kích cỡ
                     </TableCell>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm

@@ -1,5 +1,6 @@
 import {
   Button,
+  Chip,
   FormControl,
   Grid,
   InputLabel,
@@ -23,14 +24,16 @@ import { Link } from 'react-router-dom'
 import voucherApi from '../../../api/admin/voucher/VoucherApi'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { GiCancel } from 'react-icons/gi'
 import { BiDetail } from 'react-icons/bi'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { IoMdRefresh } from 'react-icons/io'
 import dayjs from 'dayjs'
-import Swal from 'sweetalert2'
+import { useTheme } from '@emotion/react'
+import confirmSatus from '../../../components/comfirmSwal'
+import { toast } from 'react-toastify'
 
 export default function AdVoucherPage() {
+  const theme = useTheme()
   const [listVoucher, setListVoucher] = useState([])
   const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
@@ -39,7 +42,7 @@ export default function AdVoucherPage() {
     nameSearch: '',
     startDateSearch: '',
     endDateSearch: '',
-    typeSearch: 1,
+    typeSearch: '',
     statusSearch: '',
   })
 
@@ -53,23 +56,21 @@ export default function AdVoucherPage() {
   }
 
   const handelDeleteVoucer = (idDelete) => {
-    Swal.fire({
-      title: 'Xác nhận hủy voucher!',
-      icon: 'question',
-      iconHtml: '?',
-      confirmButtonText: 'Xác nhận',
-      cancelButtonText: 'Hủy',
-      showCancelButton: true,
-      showCloseButton: true,
-    }).then((result) => {
+    const title = 'Xác nhận hủy voucher?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         voucherApi
           .deleteVoucher(idDelete)
           .then(() => {
-            Swal.fire('Hủy voucher thành công!', '', 'success')
+            toast.success('Hủy voucher thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
           })
           .catch(() => {
-            Swal.fire('Hủy voucher thất bại!', '', 'error')
+            toast.error('Hủy voucher thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
           })
       }
     })
@@ -111,7 +112,7 @@ export default function AdVoucherPage() {
       nameSearch: '',
       startDateSearch: '',
       endDateSearch: '',
-      typeSearch: 1,
+      typeSearch: '',
       statusSearch: '',
     })
     fetchData(initPage - 1, searchVoucher)
@@ -121,10 +122,10 @@ export default function AdVoucherPage() {
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={3}>
+          <Grid item xs={2.5}>
             <TextField
               id="outlined"
-              label="Nhập mã voucher"
+              label="Tìm voucher"
               type="text"
               name="nameSearch"
               onChange={(e) =>
@@ -135,10 +136,11 @@ export default function AdVoucherPage() {
               }
             />
           </Grid>
-          <Grid item xs={2.5}>
+          <Grid item xs={3.25}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm:ss'}
+                value={dayjs(searchVoucher?.startDateSearch)}
                 onChange={(e) => {
                   setSearchVoucher({
                     ...searchVoucher,
@@ -150,10 +152,11 @@ export default function AdVoucherPage() {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={2.5}>
+          <Grid item xs={3.25}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm:ss'}
+                value={dayjs(searchVoucher?.endDateSearch)}
                 onChange={(e) => {
                   setSearchVoucher({
                     ...searchVoucher,
@@ -164,6 +167,19 @@ export default function AdVoucherPage() {
                 sx={{ width: '100%' }}
               />
             </LocalizationProvider>
+          </Grid>
+          <Grid item xs={3}></Grid>
+        </Grid>
+        <Grid container sx={{ mt: 1 }} spacing={2}>
+          <Grid item xs={2.5}>
+            <Button
+              color="info"
+              variant="contained"
+              sx={{ borderRadius: '90px' }}
+              onClick={() => handleRefresh(initPage, searchVoucher)}>
+              <IoMdRefresh />
+              <Typography sx={{ ml: 1 }}>Tải lại</Typography>
+            </Button>
           </Grid>
           <Grid item xs={2}>
             <FormControl fullWidth>
@@ -207,26 +223,11 @@ export default function AdVoucherPage() {
               </Select>
             </FormControl>
           </Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={2.5}>
-            <Button
-              color="info"
-              variant="contained"
-              sx={{ borderRadius: '90px' }}
-              onClick={() => handleRefresh(initPage, searchVoucher)}>
-              <IoMdRefresh />
-              <Typography sx={{ ml: 1 }}>Tải lại</Typography>
-            </Button>
-          </Grid>
-          <Grid item xs={7}></Grid>
+          <Grid item xs={3}></Grid>
           <Grid item xs={2.5}>
             <Link to={'/admin/voucher/add'}>
-              <Button
-                color="success"
-                variant="contained"
-                sx={{ height: '100%', borderRadius: '90px' }}>
-                <AiOutlinePlusCircle style={{ width: '35px', height: '100%' }} />
+              <Button color="success" variant="contained" sx={{ borderRadius: '90px' }}>
+                <AiOutlinePlusCircle style={{ width: '25px', height: '100%' }} />
                 <Typography sx={{ ml: 1 }}>Tạo voucher</Typography>
               </Button>
             </Link>
@@ -240,7 +241,6 @@ export default function AdVoucherPage() {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell align="center">STT</TableCell>
                   <TableCell align="center">Mã</TableCell>
                   <TableCell align="center">Tên</TableCell>
                   <TableCell align="center">Giá trị</TableCell>
@@ -257,21 +257,16 @@ export default function AdVoucherPage() {
               <TableBody>
                 {listVoucher.map((row, index) => (
                   <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell align="center">{index + 1}</TableCell>
                     <TableCell align="center">{row.code}</TableCell>
                     <TableCell align="center">{row.name}</TableCell>
                     <TableCell align="center">{row.value}%</TableCell>
                     <TableCell align="center">{row.maximumValue}</TableCell>
                     <TableCell align="center">
-                      <Button
-                        sx={{
-                          borderRadius: '90px',
-                          textTransform: 'none',
-                          backgroundColor: row.type === true ? '#90caf9' : '#fff59d',
-                          color: row.type === true ? '#0d47a1' : '#f57f17',
-                        }}>
-                        {row.type === true ? 'Tất cả' : 'Cá nhân'}
-                      </Button>
+                      {row.type === true ? (
+                        <Chip color="info" label="Tất cả" />
+                      ) : (
+                        <Chip color="warning" label="Cá nhân" />
+                      )}
                     </TableCell>
                     <TableCell align="center">{row.minimumAmount}</TableCell>
                     <TableCell align="center">{row.quantity}</TableCell>
@@ -280,29 +275,22 @@ export default function AdVoucherPage() {
                     </TableCell>
                     <TableCell align="center">{dayjs(row.endDate).format('DD-MM-YYYY')}</TableCell>
                     <TableCell align="center">
-                      <Button
-                        sx={{
-                          borderRadius: '90px',
-                          textTransform: 'none',
-                          backgroundColor: row.status === 0 ? '#ef9a9a' : '#a5d6a7',
-                          color: row.status === 0 ? '#d50000' : '#1b5e20',
-                        }}>
-                        {row.status === 0 ? 'Hết hạn' : 'Còn hạn'}
-                      </Button>
+                      {row.status === 0 ? (
+                        <Chip color="error" label="Hết hạn" />
+                      ) : (
+                        <Chip
+                          color="success"
+                          onClick={() => handelDeleteVoucer(row.id)}
+                          label="Còn hạn"
+                        />
+                      )}
                     </TableCell>
                     <TableCell align="right">
-                      <Tooltip title="Hủy voucher">
-                        <Button onClick={() => handelDeleteVoucer(row.id)}>
-                          <span>
-                            <GiCancel />
-                          </span>
-                        </Button>
-                      </Tooltip>
                       <Link to={`/admin/voucher/${row.id}/detail`}>
-                        <Tooltip title="Detail">
+                        <Tooltip title="Xem chi tiết">
                           <Button>
                             <span>
-                              <BiDetail />
+                              <BiDetail style={{ width: '25px', height: '50%' }} />
                             </span>
                           </Button>
                         </Tooltip>

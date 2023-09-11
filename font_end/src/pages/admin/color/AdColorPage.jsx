@@ -95,7 +95,7 @@ export default function AdColorPage() {
   }
   const updateColor = () => {
     setIsBackdrop(true)
-    const title = 'Xác nhận cập nhập màu sắc?'
+    const title = 'Xác nhận cập nhật màu sắc?'
     const text = ''
     setOpenUpdate(false)
     confirmSatus(title, text, theme).then((result) => {
@@ -104,13 +104,13 @@ export default function AdColorPage() {
           if (res.data.success) {
             setIsBackdrop(false)
             setColor({ code: '' })
-            toast.success('Cập nhập màu sắc thành công', {
+            toast.success('Cập nhật màu sắc thành công', {
               position: toast.POSITION.TOP_RIGHT,
             })
             fetchData(filter)
           } else {
             setOpenUpdate(true)
-            toast.error('Cập nhập màu sắc thất bại', {
+            toast.error('Cập nhật màu sắc thất bại', {
               position: toast.POSITION.TOP_RIGHT,
             })
           }
@@ -198,7 +198,7 @@ export default function AdColorPage() {
               <DialogAddUpdate
                 open={openAdd}
                 setOpen={setOpenAdd}
-                title={'Thêm mới màu sắc'}
+                title={'Nhập mã màu sắc'}
                 buttonSubmit={
                   <Button
                     onClick={() => {
@@ -212,6 +212,7 @@ export default function AdColorPage() {
                   </Button>
                 }>
                 <TextField
+                  type="color"
                   id={'nameInputAdd'}
                   onChange={(e) => {
                     chageName(e)
@@ -240,7 +241,7 @@ export default function AdColorPage() {
                     required: true,
                   }}
                   size="small"
-                  placeholder="Nhập tên màu sắc"
+                  placeholder="Nhập mã màu sắc"
                 />
               </DialogAddUpdate>
             )}
@@ -262,6 +263,7 @@ export default function AdColorPage() {
                   </Button>
                 }>
                 <TextField
+                  type="color"
                   id={'nameInputUpdate'}
                   onChange={(e) => {
                     chageName(e)
@@ -290,7 +292,7 @@ export default function AdColorPage() {
                     required: true,
                   }}
                   size="small"
-                  placeholder="Nhập tên màu sắc"
+                  placeholder="Nhập mã màu sắc"
                 />
               </DialogAddUpdate>
             )}
@@ -308,7 +310,7 @@ export default function AdColorPage() {
                       STT
                     </TableCell>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
-                      Tên
+                      Màu sắc
                     </TableCell>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm
@@ -327,7 +329,15 @@ export default function AdColorPage() {
                       key={row.id}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                       <TableCell align="center">{index + 1}</TableCell>
-                      <TableCell align="center">{row.code}</TableCell>
+                      <TableCell align="center">
+                        <Button
+                          disabled
+                          sx={{
+                            borderRadius: '90px',
+                            textTransform: 'none',
+                            backgroundColor: `${row.code}`,
+                          }}></Button>
+                      </TableCell>
                       <TableCell align="center">
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>

@@ -5,12 +5,9 @@ import {
   FormLabel,
   Grid,
   InputAdornment,
-  InputLabel,
-  MenuItem,
   Paper,
   Radio,
   RadioGroup,
-  Select,
   TextField,
 } from '@mui/material'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
@@ -19,7 +16,9 @@ import React, { useState } from 'react'
 import voucherApi from '../../../api/admin/voucher/VoucherApi'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
-import Swal from 'sweetalert2'
+import confirmSatus from '../../../components/comfirmSwal'
+import { toast } from 'react-toastify'
+import { useTheme } from '@emotion/react'
 // import PercentIcon from "@mui/icons-material/Percent";
 
 export default function AdVoucherAdd() {
@@ -35,7 +34,7 @@ export default function AdVoucherAdd() {
     endDate: '',
     status: 1,
   }
-
+  const theme = useTheme()
   const navigate = useNavigate()
   const [isSelectVisible, setIsSelectVisible] = useState(false)
   const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
@@ -48,24 +47,22 @@ export default function AdVoucherAdd() {
 
   const handleVoucherAdd = (voucherAdd) => {
     console.log('voucher :', voucherAdd)
-    Swal.fire({
-      title: 'Xác nhận thêm mới voucher!',
-      icon: 'question',
-      iconHtml: '?',
-      confirmButtonText: 'Xác nhận',
-      cancelButtonText: 'Hủy',
-      showCancelButton: true,
-      showCloseButton: true,
-    }).then((result) => {
+    const title = 'Xác nhận thêm mới voucher?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         voucherApi
           .addVoucher(voucherAdd)
           .then(() => {
-            Swal.fire('Thêm mới voucher thành công!', '', 'success')
+            toast.success('Thêm mới voucher thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
             navigate('/admin/voucher')
           })
           .catch(() => {
-            Swal.fire('Thêm mới voucher thất bại!', '', 'error')
+            toast.error('Thêm mới voucher thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
           })
       }
     })
@@ -74,14 +71,14 @@ export default function AdVoucherAdd() {
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 1 }}>
         <Grid container spacing={2}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={11}>
+          <Grid item xs={0.1}></Grid>
+          <Grid item xs={11.8}>
             <h1>Thêm mới Voucher</h1>
           </Grid>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.1}></Grid>
         </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.1}></Grid>
           <Grid item xs={5.5}>
             <TextField
               label="Mã voucher"
@@ -89,11 +86,9 @@ export default function AdVoucherAdd() {
               size="small"
               fullWidth
               onChange={(e) => setVoucherAdd({ ...voucherAdd, code: e.target.value })}
-              InputLabelProps={{
-                shrink: true,
-              }}
             />
           </Grid>
+          <Grid item xs={0.6}></Grid>
           <Grid item xs={5.5}>
             <TextField
               label="Tên voucher"
@@ -101,17 +96,14 @@ export default function AdVoucherAdd() {
               size="small"
               fullWidth
               onChange={(e) => setVoucherAdd({ ...voucherAdd, name: e.target.value })}
-              InputLabelProps={{
-                shrink: true,
-              }}
             />
           </Grid>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.3}></Grid>
         </Grid>
         {/*------------------------------------------------------------------------------------- */}
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.1}></Grid>
           <Grid item xs={5.5}>
             <TextField
               label="Giá trị"
@@ -119,14 +111,13 @@ export default function AdVoucherAdd() {
               size="small"
               fullWidth
               onChange={(e) => setVoucherAdd({ ...voucherAdd, value: Number(e.target.value) })}
-              InputLabelProps={{
-                shrink: true,
-              }}
               InputProps={{
                 endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                inputProps: { min: 0, max: 100 },
               }}
             />
           </Grid>
+          <Grid item xs={0.6}></Grid>
           <Grid item xs={5.5}>
             <TextField
               label="Giá trị tối đa"
@@ -139,20 +130,17 @@ export default function AdVoucherAdd() {
                   maximumValue: Number(e.target.value),
                 })
               }
-              InputLabelProps={{
-                shrink: true,
-              }}
               InputProps={{
                 endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
               }}
             />
           </Grid>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.3}></Grid>
         </Grid>
         {/**?------------------------------------------------------------------------------------------------------- */}
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.1}></Grid>
           <Grid item xs={5.5}>
             <TextField
               label="Số lượng"
@@ -166,11 +154,9 @@ export default function AdVoucherAdd() {
                   quantity: Number(e.target.value),
                 })
               }
-              InputLabelProps={{
-                shrink: true,
-              }}
             />
           </Grid>
+          <Grid item xs={0.6}></Grid>
           <Grid item xs={5.5}>
             <TextField
               label="Điều kiện"
@@ -183,21 +169,17 @@ export default function AdVoucherAdd() {
                   minimumAmount: Number(e.target.value),
                 })
               }
-              endAdornment={<InputAdornment position="end">VNĐ</InputAdornment>}
-              InputLabelProps={{
-                shrink: true,
-              }}
               InputProps={{
                 endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
               }}
             />
           </Grid>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.3}></Grid>
         </Grid>
         {/**?------------------------------------------------------------------------------------------------------- */}
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.1}></Grid>
           <Grid item xs={5.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
@@ -213,6 +195,7 @@ export default function AdVoucherAdd() {
               />
             </LocalizationProvider>
           </Grid>
+          <Grid item xs={0.6}></Grid>
           <Grid item xs={5.5}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
@@ -228,12 +211,12 @@ export default function AdVoucherAdd() {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.3}></Grid>
         </Grid>
         {/**?------------------------------------------------------------------------------------------------------- */}
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={0.1}></Grid>
           <Grid item xs={3}>
             <FormControl size="small">
               <FormLabel>Kiểu</FormLabel>
@@ -257,26 +240,15 @@ export default function AdVoucherAdd() {
               </RadioGroup>
             </FormControl>
           </Grid>
-          <Grid item xs={5}>
-            {isSelectVisible && (
-              <FormControl size="small" sx={{ mt: 2.5 }} fullWidth>
-                <InputLabel>Quyền sử dụng</InputLabel>
-                <Select>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-          </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             {isSelectVisible && (
               <Button sx={{ width: 150, float: 'left', mt: 2.5 }} variant="contained">
                 Chọn
               </Button>
             )}
           </Grid>
-          <Grid item xs={0.5}></Grid>
+          <Grid item xs={6.6}></Grid>
+          <Grid item xs={0.3}></Grid>
         </Grid>
         {/**?------------------------------------------------------------------------------------------------------- */}
 

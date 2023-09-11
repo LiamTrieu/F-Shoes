@@ -5,9 +5,9 @@ const soleApi = {
     const urlGetAll = `/sole`
     return axiosClient.get(urlGetAll)
   },
-  getPageSole: (page) => {
-    const urlGetPage = `/sole/page?page=${page.page}&size=${page.size}`
-    return axiosClient.get(urlGetPage)
+  getPageSole: (filter) => {
+    const urlGetPage = `/sole/page`
+    return axiosClient.get(urlGetPage, { params: filter })
   },
   getOneById: (id) => {
     const urlGetOne = `/sole/get/${id}`

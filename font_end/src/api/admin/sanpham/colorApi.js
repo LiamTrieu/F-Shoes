@@ -5,9 +5,9 @@ const colorApi = {
     const urlGetAll = `/color`
     return axiosClient.get(urlGetAll)
   },
-  getPageColor: (page) => {
-    const urlGetPage = `/color/page?page=${page.page}&size=${page.size}`
-    return axiosClient.get(urlGetPage)
+  getPageColor: (filter) => {
+    const urlGetPage = `/color/page`
+    return axiosClient.get(urlGetPage, { params: filter })
   },
   getOneById: (id) => {
     const urlGetOne = `/color/get/${id}`
