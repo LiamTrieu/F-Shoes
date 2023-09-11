@@ -142,12 +142,12 @@ export default function AdCustomerDetail() {
                   <DatePicker
                     label="Ngày sinh"
                     name="dateBirth"
-                    value={khachHang.dateBirth ? dayjs(khachHang.dateBirth) : null}
+                    value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')} // Chuyển đổi sang đối tượng Date
                     onChange={(date) =>
                       updateKhachHang({
                         target: {
                           name: 'dateBirth',
-                          value: date ? dayjs(date).format('MM-DD-YYYY') : null,
+                          value: date ? dayjs(date).format('DD-MM-YYYY') : null,
                         },
                       })
                     }

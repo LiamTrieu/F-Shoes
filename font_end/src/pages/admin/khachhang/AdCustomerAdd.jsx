@@ -1,10 +1,21 @@
-import { Box, Button, Grid, MenuItem, Paper, Select, TextField } from '@mui/material'
 import React, { useState } from 'react'
+import {
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  TextField,
+} from '@mui/material'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
+import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
@@ -14,30 +25,56 @@ import { toast } from 'react-toastify'
 export default function AdCustomerAdd() {
   const theme = useTheme()
   const navigate = useNavigate()
+  const [xa, setXa] = useState('')
+  const [huyen, setHuyen] = useState('')
+  const [tinh, setTinh] = useState('')
   const [khachHang, setKhachHang] = useState({
     fullName: '',
     email: '',
     phoneNumber: '',
     dateBirth: '',
   })
+  const [diaChi, setDiaChi] = useState({
+    name: '',
+    phoneNumber: '',
+    email: '',
+    specificAddress: '',
+    type: null,
+    idCustomer: '',
+  })
+
+  const updateDiaChi = () => {
+    setDiaChi({
+      ...diaChi,
+      name: khachHang.fullName,
+      phoneNumber: khachHang.phoneNumber,
+      email: khachHang.email,
+      type: true,
+    })
+  }
+
   const onSubmit = (khachHang) => {
     const title = 'Xác nhận Thêm mới khách hàng?'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        khachHangApi.addKhachHang(khachHang).then(() => {
-          toast.success('Thêm khách hàng thành công', {
-            position: toast.POSITION.TOP_RIGHT,
+        // Thêm mới khách hàng
+        khachHangApi.addKhachHang(khachHang).then((response) => {
+          const khachHangId = response.data.id
+          console.log(khachHangId)
+          // Cập nhật id của khách hàng trong địa chỉ
+          setDiaChi({ ...diaChi, idCustomer: khachHangId })
+          // Thêm mới địa chỉ
+          DiaChiApi.add(diaChi).then(() => {
+            toast.success('Thêm khách hàng thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            navigate('/admin/customer')
           })
-          navigate('/admin/customer')
         })
       }
     })
   }
-
-  const xaData = ['Chọn xã', 'Xã A', 'Xã B', 'Xã C']
-  const huyenData = ['Chọn huyện', 'Huyện X', 'Huyện Y', 'Huyện Z']
-  const tinhData = ['Chọn tỉnh', 'Tỉnh M', 'Tỉnh N', 'Tỉnh O']
 
   return (
     <div>
@@ -51,7 +88,10 @@ export default function AdCustomerAdd() {
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) => setKhachHang({ ...khachHang, fullName: e.target.value })}
+                onChange={(e) => {
+                  setKhachHang({ ...khachHang, fullName: e.target.value })
+                  updateDiaChi()
+                }}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -60,7 +100,10 @@ export default function AdCustomerAdd() {
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) => setKhachHang({ ...khachHang, email: e.target.value })}
+                onChange={(e) => {
+                  setKhachHang({ ...khachHang, email: e.target.value })
+                  updateDiaChi()
+                }}
               />
             </Grid>
           </Grid>
@@ -71,46 +114,64 @@ export default function AdCustomerAdd() {
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) => setKhachHang({ ...khachHang, phoneNumber: e.target.value })}
+                onChange={(e) => {
+                  setKhachHang({ ...khachHang, phoneNumber: e.target.value })
+                  updateDiaChi()
+                }}
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Select
-                value={'Chọn xã'} // Sử dụng giá trị mặc định là 'Xã A' nếu giá trị xa chưa được khởi tạo
-                fullWidth
-                size="small">
-                {xaData.map((xa) => (
-                  <MenuItem key={xa} value={xa}>
-                    {xa}
-                  </MenuItem>
-                ))}
-              </Select>
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl size="small" fullWidth>
+                  <InputLabel id="demo-simple-select-label">Xã</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={xa}
+                    label="Xã"
+                    onChange={(e) => setXa(e.target.value)}>
+                    <MenuItem value={'Xã A'}>Xã A</MenuItem>
+                    <MenuItem value={'Xã B'}>Xã B</MenuItem>
+                    <MenuItem value={'Xã C'}>Xã C</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
             </Grid>
           </Grid>
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12} md={6}>
-              <Select
-                value={'Chọn huyện'} // Sử dụng giá trị mặc định là 'Xã A' nếu giá trị xa chưa được khởi tạo
-                fullWidth
-                size="small">
-                {huyenData.map((huyen) => (
-                  <MenuItem key={huyen} value={huyen}>
-                    {huyen}
-                  </MenuItem>
-                ))}
-              </Select>
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl size="small" fullWidth>
+                  <InputLabel id="demo-simple-select-label">Huyện</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={huyen}
+                    label="Huyện"
+                    onChange={(e) => setHuyen(e.target.value)}>
+                    <MenuItem value={'Huyện A'}>Huyện A</MenuItem>
+                    <MenuItem value={'Huyện B'}>Huyện B</MenuItem>
+                    <MenuItem value={'Huyện C'}>Huyện C</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Select
-                value={'Chọn tỉnh'} // Sử dụng giá trị mặc định là 'Xã A' nếu giá trị xa chưa được khởi tạo
-                fullWidth
-                size="small">
-                {tinhData.map((tinh) => (
-                  <MenuItem key={tinh} value={tinh}>
-                    {tinh}
-                  </MenuItem>
-                ))}
-              </Select>
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl size="small" fullWidth>
+                  <InputLabel id="demo-simple-select-label">Tỉnh</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={tinh}
+                    label="Tỉnh"
+                    onChange={(e) => setTinh(e.target.value)}>
+                    <MenuItem value={'Tỉnh A'}>Tỉnh A</MenuItem>
+                    <MenuItem value={'Tỉnh B'}>Tỉnh B</MenuItem>
+                    <MenuItem value={'Tỉnh C'}>Tỉnh C</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
             </Grid>
           </Grid>
 
@@ -126,6 +187,20 @@ export default function AdCustomerAdd() {
                   />
                 </DemoContainer>
               </LocalizationProvider>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                placeholder="Địa chỉ cụ thể"
+                type="text"
+                size="small"
+                fullWidth
+                onChange={(e) =>
+                  setDiaChi({
+                    ...diaChi,
+                    specificAddress: e.target.value + ', ' + xa + ', ' + huyen + ', ' + tinh,
+                  })
+                }
+              />
             </Grid>
           </Grid>
 

@@ -35,6 +35,8 @@ public class Address extends LongEntity {
     @Column(length = EntityProperties.LENGTH_ADDRESS)
     private String specificAddress;
 
+    private Boolean type;
+
     @ManyToOne
     @JoinColumn(name = "id_customer", referencedColumnName = "id")
     private Customer customer;
