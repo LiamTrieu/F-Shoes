@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ProductService {
 
-    List<Product> getAll();
+    List<ProductResponse> getAll();
 
     ProductResponse getById(int id);
 

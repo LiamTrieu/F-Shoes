@@ -3,7 +3,7 @@ package com.fshoes.core.admin.sanpham.model.respone;
 import java.math.BigDecimal;
 
 public interface ProductDetailResponse {
-    Double getId();
+    Integer getId();
 
     String getCode();
 
@@ -19,7 +19,7 @@ public interface ProductDetailResponse {
 
     String getCategory();
 
-    Float getSize();
+    String getSize();
 
     String getImage();
 

@@ -24,24 +24,36 @@ public class SoleController {
     @Autowired
     private SoleService soleService;
 
+    @GetMapping
+    public ObjectRespone getAll() {
+        return new ObjectRespone(soleService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageSole(PageableRequest pageableRequest,
-                                       @RequestParam(defaultValue = "") String textSearch) {
+                                   @RequestParam(defaultValue = "") String textSearch) {
         return new PageReponse<>(soleService.getPage(pageableRequest, textSearch));
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getSole(@PathVariable int id){
+    public ObjectRespone getSole(@PathVariable int id) {
         return new ObjectRespone(soleService.getById(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addSole(@RequestBody SoleRequest soleReq){
+    public ObjectRespone addSole(@RequestBody SoleRequest soleReq) {
         return new ObjectRespone(soleService.addSole(soleReq));
     }
-    @PutMapping ("/update/{id}")
+
+    @PutMapping("/update/{id}")
     public ObjectRespone updateSole(@RequestBody SoleRequest soleReq,
-                                        @PathVariable int id){
+                                    @PathVariable int id) {
         return new ObjectRespone(soleService.updateSole(soleReq, id));
+    }
+
+    @PutMapping("/deleted/{id}")
+    public ObjectRespone deletedSole(@RequestBody boolean isDeleted,
+                                        @PathVariable int id) {
+        return new ObjectRespone(soleService.chageDeleted(id, isDeleted));
     }
 }

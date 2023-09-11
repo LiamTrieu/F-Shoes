@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface SoleService {
 
-    List<Sole> getAll();
+    List<SoleResponse> getAll();
 
     SoleResponse getById(int id);
 
@@ -19,4 +19,6 @@ public interface SoleService {
     Sole addSole(SoleRequest soleReq);
 
     Sole updateSole(SoleRequest soleReq, int id);
+
+    Sole chageDeleted(int id, boolean isDeleted);
 }

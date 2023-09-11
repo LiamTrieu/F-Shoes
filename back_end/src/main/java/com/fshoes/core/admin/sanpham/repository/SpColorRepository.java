@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.sanpham.repository;
 
+import com.fshoes.core.admin.sanpham.model.respone.CategoryResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ColorResponse;
 import com.fshoes.repository.ColorRepository;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -19,4 +21,7 @@ public interface SpColorRepository extends ColorRepository {
 
     @Query(value = "select id, code, deleted from color where id = :id", nativeQuery = true)
     Optional<ColorResponse> getById(@Param("id") int id);
+
+    @Query(value = "select id, code, deleted from color where !deleted", nativeQuery = true)
+    List<ColorResponse> getAll();
 }

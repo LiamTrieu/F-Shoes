@@ -22,8 +22,8 @@ public class ColorServiceImpl implements ColorService {
     private SpColorRepository colorRepository;
 
     @Override
-    public List<Color> getAll() {
-        return colorRepository.findAll();
+    public List<ColorResponse> getAll() {
+        return colorRepository.getAll();
     }
 
     @Override
@@ -55,6 +55,17 @@ public class ColorServiceImpl implements ColorService {
         try {
             Color color = colorRepository.findById(id).orElseThrow();
             return colorRepository.save(colorReq.tranColor(color));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Color chageDeleted(int id, boolean isDeleted) {
+        try {
+            Color color = colorRepository.findById(id).orElseThrow();
+            color.setDeleted(isDeleted);
+            return colorRepository.save(color);
         } catch (Exception e) {
             return null;
         }

@@ -20,6 +20,10 @@ const hoaDonApi = {
     const urlGetOne = `/bill/get/${id}`
     return axiosClient.get(urlGetOne)
   },
+  getBillFilter: (filterBill) => {
+    const url = `/bill/filter`
+    return axiosClient.get(url, { params: filterBill })
+  },
 }
 
 export default hoaDonApi

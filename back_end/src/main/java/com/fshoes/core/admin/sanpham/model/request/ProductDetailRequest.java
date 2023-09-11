@@ -8,6 +8,7 @@ import com.fshoes.entity.Product;
 import com.fshoes.entity.ProductDetail;
 import com.fshoes.entity.Size;
 import com.fshoes.entity.Sole;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @ToString
 public class ProductDetailRequest {
 
@@ -84,11 +86,11 @@ public class ProductDetailRequest {
         return productDetail;
     }
 
+
     public String genCode(){
         return new StringBuffer()
                 .append(idProduct)
                 .append(idBrand)
-                .append(idSize)
                 .append(idColor)
                 .append(idMaterial)
                 .append(idSole)

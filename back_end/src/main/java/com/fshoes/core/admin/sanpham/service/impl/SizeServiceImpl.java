@@ -22,8 +22,8 @@ public class SizeServiceImpl implements SizeService {
     private SpSizeRepository sizeRepository;
 
     @Override
-    public List<Size> getAll() {
-        return sizeRepository.findAll();
+    public List<SizeResponse> getAll() {
+        return sizeRepository.getAll();
     }
 
     @Override
@@ -56,6 +56,17 @@ public class SizeServiceImpl implements SizeService {
             return sizeRepository.save(sizeReq.tranSize(size));
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Size chageDeleted(int id, boolean isDeleted) {
+        try {
+            Size size = sizeRepository.findById(id).orElseThrow();
+            size.setDeleted(isDeleted);
+            return sizeRepository.save(size);
+        } catch (Exception e) {
             return null;
         }
     }

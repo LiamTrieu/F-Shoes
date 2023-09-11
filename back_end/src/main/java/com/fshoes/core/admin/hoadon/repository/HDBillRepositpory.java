@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.hoadon.repository;
 
+import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.repository.BillRepository;
 import org.springframework.data.domain.Page;
@@ -207,8 +208,9 @@ public interface HDBillRepositpory extends BillRepository {
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
             "LEFT JOIN Customer c ON b.customer.id = c.id " +
-            "WHERE b.status = :status " +
-            "AND (b.createdAt >= :startDate AND b.createdAt <= :endDate) " +
+            "WHERE (:status IS NULL OR b.status = :status) " +
+            "AND (:startDate IS NULL OR b.createdAt >= :startDate AND :endDate IS NULL OR b.createdAt <= :endDate) " +
+            "AND (:type IS NULL OR b.type = :type)" +
             "GROUP BY " +
             "b.id," +
             "b.code, " +
@@ -225,11 +227,12 @@ public interface HDBillRepositpory extends BillRepository {
             "b.createdBy, " +
             "b.status " +
             "ORDER BY b.createdAt DESC")
-    Page<HDBillResponse> getBillByStatusAndDateRange(
+    Page<HDBillResponse> filterBill(
             Pageable pageable,
             @Param("status") Integer status,
             @Param("startDate") Long startDate,
-            @Param("endDate") Long endDate
+            @Param("endDate") Long endDate,
+            @Param("type") Boolean type
     );
 
     @Query("SELECT NEW com.fshoes.core.admin.hoadon.model.respone.HDBillResponse" +
@@ -238,7 +241,7 @@ public interface HDBillRepositpory extends BillRepository {
             "FROM Bill b " +
             "LEFT JOIN BillDetail bt ON b.id = bt.bill.id " +
             "LEFT JOIN Customer c ON b.customer.id = c.id " +
-            "WHERE (:status IS NULL OR b.status = :status) AND (:type IS NULL OR :type = true AND b.type = true OR :type = false AND b.type = false) \n" +
+            "WHERE (:status IS NULL OR b.status = :status) AND (:type IS NULL OR b.type = :type) \n" +
             "GROUP BY " +
             "b.id," +
             "b.code, " +

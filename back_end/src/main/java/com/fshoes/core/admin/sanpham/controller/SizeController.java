@@ -24,24 +24,36 @@ public class SizeController {
     @Autowired
     private SizeService sizeService;
 
+    @GetMapping
+    public ObjectRespone getAll() {
+        return new ObjectRespone(sizeService.getAll());
+    }
+
     @GetMapping("/page")
     public PageReponse getPageSize(PageableRequest pageableRequest,
-                                       @RequestParam(defaultValue = "") String textSearch) {
+                                   @RequestParam(defaultValue = "") String textSearch) {
         return new PageReponse<>(sizeService.getPage(pageableRequest, textSearch));
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getSize(@PathVariable int id){
+    public ObjectRespone getSize(@PathVariable int id) {
         return new ObjectRespone(sizeService.getById(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addSize(@RequestBody SizeRequest sizeReq){
+    public ObjectRespone addSize(@RequestBody SizeRequest sizeReq) {
         return new ObjectRespone(sizeService.addSize(sizeReq));
     }
-    @PutMapping ("/update/{id}")
+
+    @PutMapping("/update/{id}")
     public ObjectRespone updateSize(@RequestBody SizeRequest sizeReq,
-                                        @PathVariable int id){
+                                    @PathVariable int id) {
         return new ObjectRespone(sizeService.updateSize(sizeReq, id));
+    }
+
+    @PutMapping("/deleted/{id}")
+    public ObjectRespone deletedSize(@RequestBody boolean isDeleted,
+                                        @PathVariable int id) {
+        return new ObjectRespone(sizeService.chageDeleted(id, isDeleted));
     }
 }

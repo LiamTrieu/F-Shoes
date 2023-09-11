@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ColorService {
 
-    List<Color> getAll();
+    List<ColorResponse> getAll();
 
     ColorResponse getById(int id);
 
@@ -19,4 +19,6 @@ public interface ColorService {
     Color addColor(ColorRequest colorReq);
 
     Color updateColor(ColorRequest colorReq, int id);
+
+    Color chageDeleted(int id, boolean isDeleted);
 }

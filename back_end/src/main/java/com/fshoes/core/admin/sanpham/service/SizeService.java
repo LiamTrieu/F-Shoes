@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface SizeService {
 
-    List<Size> getAll();
+    List<SizeResponse> getAll();
 
     SizeResponse getById(int id);
 
@@ -19,4 +19,6 @@ public interface SizeService {
     Size addSize(SizeRequest sizeReq);
 
     Size updateSize(SizeRequest sizeReq, int id);
+
+    Size chageDeleted(int id, boolean isDeleted);
 }

@@ -22,8 +22,8 @@ public class SoleServiceImpl implements SoleService {
     private SpSoleRepository soleRepository;
 
     @Override
-    public List<Sole> getAll() {
-        return soleRepository.findAll();
+    public List<SoleResponse> getAll() {
+        return soleRepository.getAll();
     }
 
     @Override
@@ -54,6 +54,17 @@ public class SoleServiceImpl implements SoleService {
         try {
             Sole sole = soleRepository.findById(id).orElseThrow();
             return soleRepository.save(soleReq.tranSole(sole));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Sole chageDeleted(int id, boolean isDeleted) {
+        try {
+            Sole sole = soleRepository.findById(id).orElseThrow();
+            sole.setDeleted(isDeleted);
+            return soleRepository.save(sole);
         } catch (Exception e) {
             return null;
         }

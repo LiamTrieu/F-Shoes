@@ -15,7 +15,7 @@ public interface ProductDetailService {
 
     ProductDetailResponse getById(Long id);
 
-    Page<ProductDetailResponse> getPage(PageableRequest pageableRequest, PrdDetailFilterRequest detailFilterReq);
+    Page<ProductDetailResponse> getPage(int id,PageableRequest pageableRequest, PrdDetailFilterRequest detailFilterReq);
 
     ProductDetailResponse addProductDetail(ProductDetailRequest productDetailReq);
 
