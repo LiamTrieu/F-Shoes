@@ -5,12 +5,9 @@ import {
   FormLabel,
   Grid,
   InputAdornment,
-  InputLabel,
-  MenuItem,
   Paper,
   Radio,
   RadioGroup,
-  Select,
   TextField,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
@@ -36,8 +33,8 @@ export default function AdVoucherDetail() {
   }
   const { id } = useParams()
   const navigate = useNavigate()
-  const [isSelectVisible, setIsSelectVisible] = useState(false)
   const [voucherDetail, setVoucherDetail] = useState(initialVoucher)
+  const [isSelectVisible, setIsSelectVisible] = useState(false)
 
   useEffect(() => {
     fetchData(id)
@@ -55,6 +52,8 @@ export default function AdVoucherDetail() {
           startDate: formattedStartDate,
           endDate: formattedEndDate,
         })
+
+        setIsSelectVisible(response.data.data.type === false)
       })
       .catch(() => {
         alert('Error: Không tải được dữ liệu API')
@@ -285,25 +284,14 @@ export default function AdVoucherDetail() {
               </RadioGroup>
             </FormControl>
           </Grid>
-          <Grid item xs={5}>
-            {isSelectVisible && (
-              <FormControl size="small" sx={{ mt: 2.5 }} fullWidth>
-                <InputLabel>Quyền sử dụng</InputLabel>
-                <Select>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-          </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             {isSelectVisible && (
               <Button sx={{ width: 150, float: 'left', mt: 2.5 }} variant="contained">
                 Chọn
               </Button>
             )}
           </Grid>
+          <Grid item xs={6}></Grid>
           <Grid item xs={0.5}></Grid>
         </Grid>
         {/**?------------------------------------------------------------------------------------------------------- */}

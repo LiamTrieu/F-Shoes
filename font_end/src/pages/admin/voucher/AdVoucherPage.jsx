@@ -262,16 +262,11 @@ export default function AdVoucherPage() {
                     <TableCell align="center">{row.value}%</TableCell>
                     <TableCell align="center">{row.maximumValue}</TableCell>
                     <TableCell align="center">
-                      <Button
-                        sx={{
-                          borderRadius: '90px',
-                          textTransform: 'none',
-                          backgroundColor: row.type === true ? '#90caf9' : '#fff59d',
-                          color: row.type === true ? '#0d47a1' : '#f57f17',
-                          fontSize: '10px',
-                        }}>
-                        {row.type === true ? 'Tất cả' : 'Cá nhân'}
-                      </Button>
+                      {row.type === true ? (
+                        <Chip color="info" label="Tất cả" />
+                      ) : (
+                        <Chip color="warning" label="Cá nhân" />
+                      )}
                     </TableCell>
                     <TableCell align="center">{row.minimumAmount}</TableCell>
                     <TableCell align="center">{row.quantity}</TableCell>
@@ -283,17 +278,11 @@ export default function AdVoucherPage() {
                       {row.status === 0 ? (
                         <Chip color="error" label="Hết hạn" />
                       ) : (
-                        <Button
-                          sx={{
-                            borderRadius: '90px',
-                            textTransform: 'none',
-                            backgroundColor: row.status === 0 ? '#ef9a9a' : '#a5d6a7',
-                            color: row.status === 0 ? '#d50000' : '#1b5e20',
-                            fontSize: '10px',
-                          }}
-                          onClick={() => handelDeleteVoucer(row.id)}>
-                          Còn hạn
-                        </Button>
+                        <Chip
+                          color="success"
+                          onClick={() => handelDeleteVoucer(row.id)}
+                          label="Còn hạn"
+                        />
                       )}
                     </TableCell>
                     <TableCell align="right">
