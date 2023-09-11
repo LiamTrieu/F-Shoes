@@ -19,7 +19,7 @@ public interface StaffRespone {
     String getEmail();
 
     @Value("#{target.gender}")
-    String getGender();
+    Boolean getGender();
 
     @Value("#{target.password}")
     String getPassword();
@@ -32,4 +32,7 @@ public interface StaffRespone {
 
     @Value("#{target.role}")
     String getRole();
+
+    @Value("#{target.status}")
+    String getStatus();
 }

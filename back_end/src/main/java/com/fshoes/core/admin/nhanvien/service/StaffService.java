@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.BindingResult;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface StaffService {
@@ -20,8 +21,8 @@ public interface StaffService {
 
     Staff getOne(Integer id);
 
-    Staff add(@Valid StaffRequest staffRequest, BindingResult result);
+    Staff add(@Valid StaffRequest staffRequest) throws ParseException;
 
-    Staff update(StaffRequest staffRequest, Integer id);
+    Staff update(StaffRequest staffRequest, Integer id) throws ParseException;
 
 }

@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+
 @RestController
 @RequestMapping("/api/staff")
 @CrossOrigin("*") // chấp nhận yêu cầu từ bên khác
@@ -33,8 +35,8 @@ public class StaffController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity add(@RequestBody StaffRequest staffRequest, BindingResult result) {
-        return new ResponseEntity(service.add(staffRequest, result), HttpStatus.OK);
+    public ResponseEntity add(@RequestBody StaffRequest staffRequest) throws ParseException {
+        return new ResponseEntity(service.add(staffRequest), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
@@ -43,7 +45,7 @@ public class StaffController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity update(@PathVariable("id") Integer id, @RequestBody StaffRequest staffRequest) {
+    public ResponseEntity update(@PathVariable("id") Integer id, @RequestBody StaffRequest staffRequest) throws ParseException {
         return new ResponseEntity(service.update(staffRequest, id), HttpStatus.OK);
     }
 
