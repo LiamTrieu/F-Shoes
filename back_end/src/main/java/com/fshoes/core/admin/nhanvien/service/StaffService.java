@@ -21,7 +21,7 @@ public interface StaffService {
 
     Staff getOne(Integer id);
 
-    Staff add(@Valid StaffRequest staffRequest, BindingResult result) throws ParseException;
+    Staff add(@Valid StaffRequest staffRequest) throws ParseException;
 
     Staff update(StaffRequest staffRequest, Integer id);
 

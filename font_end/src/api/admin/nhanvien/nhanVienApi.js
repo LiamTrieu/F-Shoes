@@ -3,7 +3,7 @@ import axiosClient from '../../axios'
 const staffApi = {
   get: (page, filter) => {
     const url = `/staff/search-getPage?page=${page}&searchTen=${filter}`
-    return axiosClient.get(url,page, filter)
+    return axiosClient.get(url)
   },
   getOne: (id) => {
     const url = `/staff/detail/${id}`

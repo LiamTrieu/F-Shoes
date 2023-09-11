@@ -50,11 +50,11 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public Staff add(@Valid StaffRequest staffRequest, BindingResult result) throws ParseException {
-        if (result.hasErrors()) {
-            return null;
-        }
-        Long dateBirth = DateUtil.parseDateLong(String.valueOf(staffRequest.getDateBirth()));
+    public Staff add(@Valid StaffRequest staffRequest) throws ParseException {
+//        if (result.hasErrors()) {
+//            return null;
+//        }
+        Long dateBirth = DateUtil.parseDateLong(staffRequest.getDateBirth());
         Staff staff = Staff.builder()
                 .fullName(staffRequest.getFullName())
                 .password(staffRequest.getPassword())

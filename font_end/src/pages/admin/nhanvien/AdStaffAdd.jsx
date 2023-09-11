@@ -32,9 +32,9 @@ export default function AddStaff() {
     role: 1,
     status: 1,
   }
-  const navigate = useNavigate()
   const [staffAdd, setStaffAdd] = useState(initStaff)
   const theme = useTheme()
+  const navigate = useNavigate()
 
   const handleGenderRadioChange = (e) => {
     setStaffAdd({ ...staffAdd, gender: Boolean(e.target.value) })

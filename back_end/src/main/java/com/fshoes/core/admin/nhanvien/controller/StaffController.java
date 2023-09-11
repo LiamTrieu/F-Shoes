@@ -35,8 +35,8 @@ public class StaffController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity add(@RequestBody StaffRequest staffRequest, BindingResult result) throws ParseException {
-        return new ResponseEntity(service.add(staffRequest, result), HttpStatus.OK);
+    public ResponseEntity add(@RequestBody StaffRequest staffRequest) throws ParseException {
+        return new ResponseEntity(service.add(staffRequest), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
