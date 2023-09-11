@@ -1,5 +1,7 @@
 package com.fshoes.core.admin.khachhang.service;
 
+import com.fshoes.core.admin.khachhang.model.request.DiaChiRequest;
+import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
 import com.fshoes.core.admin.khachhang.model.respone.DiaChiRespone;
 import com.fshoes.core.admin.khachhang.repository.DiaChiRepository;
 import com.fshoes.entity.Address;
@@ -18,9 +20,13 @@ public interface DiaChiService {
 
     Page<Address> getPage(int p);
 
-    void save(Address address);
+    Address add(DiaChiRequest diaChiRequest);
+
+    Boolean update(Integer id, DiaChiRequest DiaChiRequest);
+
+
 
     void delete(int id);
 
-    public List<DiaChiRespone> seriolizeList(List<Address> lst);
+
 }

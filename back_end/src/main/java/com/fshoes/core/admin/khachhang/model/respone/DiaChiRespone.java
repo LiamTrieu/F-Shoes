@@ -1,23 +1,17 @@
 package com.fshoes.core.admin.khachhang.model.respone;
 
 import com.fshoes.entity.Address;
+import com.fshoes.entity.Customer;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
-public class DiaChiRespone {
-    Long id;
-    String ten;
-    String soDienThoai;
-    String email;
-    String diaChiCuthe;
+public interface DiaChiRespone {
+    Long getId();
+    String getName();
 
-    public DiaChiRespone(Address address) {
-        this.id = address.getId();
-        this.ten = address.getName();
-        this.soDienThoai = address.getPhoneNumber();
-        this.email = address.getEmail();
-        this.diaChiCuthe = address.getSpecificAddress();
-    }
+    String getPhoneNumber();
+    String getEmail();
+    String getSpecificAddress();
+    Boolean getType();
+
 }

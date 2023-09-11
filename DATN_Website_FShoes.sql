@@ -212,6 +212,7 @@ CREATE TABLE address (
     phone_number VARCHAR(10) NOT NULL,
     email VARCHAR(100) NOT NULL,
     specific_address NVARCHAR(100) NOT NULL,
+    type BOOLEAN default 0,
     created_at BIGINT,
     updated_at BIGINT,
     created_by NVARCHAR(100),
