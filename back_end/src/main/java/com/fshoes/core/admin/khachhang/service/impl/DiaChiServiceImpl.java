@@ -3,6 +3,7 @@ package com.fshoes.core.admin.khachhang.service.impl;
 import com.fshoes.core.admin.khachhang.model.request.DiaChiRequest;
 import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
 import com.fshoes.core.admin.khachhang.repository.DiaChiRepository;
+import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.khachhang.service.DiaChiService;
 import com.fshoes.entity.Address;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,10 @@ import java.util.Optional;
 @Service
 public class DiaChiServiceImpl implements DiaChiService {
     @Autowired
-    DiaChiRepository diaChiRepository;
+   private DiaChiRepository diaChiRepository;
+
+    @Autowired
+    private KhachHangRepository khachHangRepository;
 
 
     @Override
@@ -41,6 +45,7 @@ public class DiaChiServiceImpl implements DiaChiService {
     public Address add(DiaChiRequest diaChiRequest) {
         try {
             Address address = diaChiRequest.newAddress(new Address());
+            address.setCustomer(khachHangRepository.findById(Integer.valueOf(diaChiRequest.getIdCustomer())).orElse(null));
             return diaChiRepository.save(address);
         }catch (Exception e) {
             e.printStackTrace();
