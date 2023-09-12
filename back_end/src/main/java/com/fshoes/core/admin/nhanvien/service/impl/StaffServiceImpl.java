@@ -14,11 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StaffServiceImpl implements StaffService {
@@ -40,7 +39,6 @@ public class StaffServiceImpl implements StaffService {
     public Page<StaffRespone> searchStaff(PageableRequest pageableRequest, SearchStaff searchStaff) {
         int page = pageableRequest.getPage() < 1 ? 0 : pageableRequest.getPage() - 1;
         Pageable pageable = PageRequest.of(page, 5);
-
         return repo.searchStaff(searchStaff, pageable);
     }
 
@@ -70,33 +68,15 @@ public class StaffServiceImpl implements StaffService {
         return repo.save(staff);
     }
 
-//    @Override
-//    public Staff update(StaffRequest staffRequest, Integer id) {
-//
-//        try {
-//            Staff staff = repo.findById(id).orElseThrow();
-//            return repo.save(staffRequest.tranStaff(staff));
-//        } catch (Exception e) {
-//            return null;
-//        }
-//    }
-
     @Override
-    public Staff update(StaffRequest staffRequest, Integer id) throws ParseException {
-        Long dateBirth = DateUtil.parseDateLong(staffRequest.getDateBirth());
-        try {
-            Staff staff = repo.findById(id).orElseThrow();
-            staff.setFullName(staffRequest.getFullName());
-            staff.setEmail(staffRequest.getEmail());
-            staff.setPhoneNumber(staffRequest.getPhoneNumber());
-            staff.setCitizenId(staffRequest.getCitizenId());
-            staff.setRole(staffRequest.getRole());
-            staff.setGender(staffRequest.getGender());
-            staff.setDateBirth(dateBirth);
-            staff.setStatus(staffRequest.getStatus());
-            return repo.save(staff);
-        } catch (Exception e) {
-            return null;
+    public Boolean update(StaffRequest staffRequest, Integer id) throws ParseException {
+        Optional<Staff> optional = repo.findById(id);
+        if (optional.isPresent()) {
+            Staff staff = staffRequest.tranStaff(optional.get());
+            repo.save(staff);
+            return true;
+        } else {
+            return false;
         }
     }
 }
