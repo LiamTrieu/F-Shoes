@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.hoadon.service;
 
+import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.entity.Bill;
@@ -34,5 +35,7 @@ public interface HDBillService {
     Bill getOne(Integer id);
 
     Page<HDBillResponse> getBillByStatusAndType(Integer pageNo, String status, String type);
+
+    Bill confirmOrder(Integer idBill, BillConfirmRequest billConfirmRequest);
 
 }

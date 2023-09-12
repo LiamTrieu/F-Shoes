@@ -26,12 +26,22 @@ public class HDBillHisotyServiceImpl implements HDBillHistoryService {
 
     @Override
     public BillHistory save(HDBillHistoryRequest hdBillHistoryRequest) {
-        return hdBillHistoryRepository.save(BillHistory.builder()
-                .bill(hdBillHistoryRequest.getBill())
-                .note(hdBillHistoryRequest.getNote())
-                .statusBill(hdBillHistoryRequest.getBill().getStatus())
-                .staff(staffRepository.findById(hdBillHistoryRequest.getIdStaff()).get())
-                .build());
+        if (hdBillHistoryRequest.getIdStaff() != null) {
+            return hdBillHistoryRepository.save(BillHistory.builder()
+                    .bill(hdBillHistoryRequest.getBill())
+                    .note(hdBillHistoryRequest.getNote())
+                    .statusBill(hdBillHistoryRequest.getBill().getStatus())
+                    .staff(staffRepository.findById(hdBillHistoryRequest.getIdStaff()).get())
+                    .build());
+        } else {
+            return hdBillHistoryRepository.save(BillHistory.builder()
+                    .bill(hdBillHistoryRequest.getBill())
+                    .note(hdBillHistoryRequest.getNote())
+                    .statusBill(hdBillHistoryRequest.getBill().getStatus())
+                    .staff(null)
+                    .build());
+        }
+
     }
 
 }

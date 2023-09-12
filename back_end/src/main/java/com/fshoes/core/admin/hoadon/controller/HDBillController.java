@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.hoadon.controller;
 
+import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.core.common.ObjectRespone;
@@ -118,6 +119,12 @@ public class HDBillController {
             @RequestParam(value = "type") String type
     ) {
         return new PageReponse<>(hdBillService.getBillByStatusAndType(pageNo, status, type));
+    }
+
+    @PutMapping("/confirm-order/{idBill}")
+    public ObjectRespone confirmOrder(@PathVariable(name = "idBill") Integer idBill,
+                                      @RequestBody BillConfirmRequest billConfirmRequest) {
+        return new ObjectRespone(hdBillService.confirmOrder(idBill, billConfirmRequest));
     }
 
 }

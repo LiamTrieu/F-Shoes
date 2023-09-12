@@ -69,4 +69,9 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         return hdBillDetailRepository.getBillDetailsByBillIdAndStatus(idBill, status);
     }
 
+    @Override
+    public BillDetail getBillDetailByBillIdAndProductDetailId(Integer idBill, Integer idProductDetail) {
+        return hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(idBill, idProductDetail);
+    }
+
 }

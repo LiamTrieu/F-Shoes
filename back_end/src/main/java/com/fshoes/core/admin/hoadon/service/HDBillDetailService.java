@@ -14,4 +14,6 @@ public interface HDBillDetailService {
 
     List<BillDetail> getBillDetailByBillIdAndStatus(Integer idBill, Integer status);
 
+    BillDetail getBillDetailByBillIdAndProductDetailId(Integer idBill, Integer idProductDetail);
+
 }

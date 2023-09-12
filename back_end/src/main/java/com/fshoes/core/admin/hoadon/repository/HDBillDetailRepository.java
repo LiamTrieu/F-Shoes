@@ -13,4 +13,6 @@ public interface HDBillDetailRepository extends BillDetailRepository {
 
     List<BillDetail> getBillDetailsByBillIdAndStatus(Integer idBill, Integer status);
 
+    BillDetail getBillDetailByBillIdAndProductDetailId(Integer idBill, Integer idProductDetail);
+
 }
