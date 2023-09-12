@@ -7,7 +7,6 @@ import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Staff;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.validation.BindingResult;
 
 import java.text.ParseException;
 import java.util.List;
@@ -23,6 +22,6 @@ public interface StaffService {
 
     Staff add(@Valid StaffRequest staffRequest) throws ParseException;
 
-    Staff update(StaffRequest staffRequest, Integer id) throws ParseException;
+    Boolean update(StaffRequest staffRequest, Integer id) throws ParseException;
 
 }

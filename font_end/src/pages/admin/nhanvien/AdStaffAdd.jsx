@@ -147,7 +147,6 @@ export default function AddStaff() {
                   value={false}
                   control={<Radio />}
                   label="Nữ"
-                  // checked={staffAdd?.gender === false}
                   onChange={handleGenderRadioChange}
                 />
               </RadioGroup>

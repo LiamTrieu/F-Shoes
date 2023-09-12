@@ -8,7 +8,6 @@ import com.fshoes.core.common.PageableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -48,5 +47,4 @@ public class StaffController {
     public ResponseEntity update(@PathVariable("id") Integer id, @RequestBody StaffRequest staffRequest) throws ParseException {
         return new ResponseEntity(service.update(staffRequest, id), HttpStatus.OK);
     }
-
 }

@@ -55,13 +55,14 @@ export default function AdCustomerPage() {
     fetchData(newPage)
     setCurrentPage(newPage)
   }
+
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <TextField
           onChange={Search}
           id="outlined-basic"
-          label="Tên Nhân Viên"
+          label="Tìm kiếm nhân viên bằng tên"
           variant="outlined"
           size="small"
         />

@@ -94,7 +94,7 @@ export default function AdStaffDetail() {
   const handleGenderRadioChange = (event) => {
     setStaffDetail({
       ...staffDetail,
-      gender: Boolean(event.target.value),
+      gender: event.target.value,
     })
   }
 
@@ -262,7 +262,6 @@ export default function AdStaffDetail() {
                   value={true}
                   control={<Radio />}
                   label="Nam"
-                  // checked={staffDetail?.gender === true}
                   onChange={handleGenderRadioChange}
                 />
                 <FormControlLabel
@@ -270,7 +269,6 @@ export default function AdStaffDetail() {
                   value={false}
                   control={<Radio />}
                   label="Nữ"
-                  // checked={staffDetail?.gender === false}
                   onChange={handleGenderRadioChange}
                 />
               </RadioGroup>

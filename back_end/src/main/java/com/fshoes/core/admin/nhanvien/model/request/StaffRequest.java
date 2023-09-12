@@ -33,24 +33,19 @@ public class StaffRequest {
 
     private Integer role;
 
-    private Integer status;
+    private Integer status = 1;
 
     public Staff tranStaff(Staff staff) throws ParseException {
-        try {
-            staff.setFullName(this.fullName);
-            staff.setDateBirth(DateUtil.parseDateLong(this.dateBirth));
-            staff.setPhoneNumber(this.phoneNumber);
-            staff.setEmail(this.email);
-            staff.setGender(this.gender);
-            staff.setCitizenId(this.CitizenId);
-            staff.setRole(this.role);
-            System.out.println(this.status);
-            staff.setStatus(this.status);
-            return staff;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        staff.setFullName(this.getFullName());
+        staff.setAvatar(this.getAvatar());
+        staff.setDateBirth(DateUtil.parseDateLong(this.getDateBirth()));
+        staff.setPhoneNumber(this.getPhoneNumber());
+        staff.setEmail(this.getEmail());
+        staff.setGender(this.getGender());
+        staff.setCitizenId(this.getCitizenId());
+        staff.setRole(this.getRole());
+        System.out.println(this.status);
+        staff.setStatus(this.getStatus());
+        return staff;
     }
-
 }
