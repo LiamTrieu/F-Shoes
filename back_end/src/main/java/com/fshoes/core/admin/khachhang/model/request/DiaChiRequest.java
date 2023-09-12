@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.khachhang.model.request;
 
 import com.fshoes.entity.Address;
+import com.fshoes.entity.Customer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,8 @@ public class DiaChiRequest {
     private String specificAddress;
 
     private Boolean type = false;
+
+    private String idCustomer;
 
 
     public Address newAddress (Address address) {

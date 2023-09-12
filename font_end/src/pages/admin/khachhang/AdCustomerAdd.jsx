@@ -60,12 +60,23 @@ export default function AdCustomerAdd() {
       if (result.isConfirmed) {
         // Thêm mới khách hàng
         khachHangApi.addKhachHang(khachHang).then((response) => {
-          const khachHangId = response.data.id
+          let khachHangId = response.data.data.id
           console.log(khachHangId)
           // Cập nhật id của khách hàng trong địa chỉ
-          setDiaChi({ ...diaChi, idCustomer: khachHangId })
+          // setDiaChi({ ...diaChi, idCustomer: response.data.data.id })
+          // console.log(diaChi)
+
+          // thêm 1 phần tử obj
+          const obj = {
+            name: diaChi.name,
+            phoneNumber: diaChi.phoneNumber,
+            email: diaChi.email,
+            specificAddress: diaChi.specificAddress,
+            type: 0,
+            idCustomer: khachHangId,
+          }
           // Thêm mới địa chỉ
-          DiaChiApi.add(diaChi).then(() => {
+          DiaChiApi.add(obj).then(() => {
             toast.success('Thêm khách hàng thành công', {
               position: toast.POSITION.TOP_RIGHT,
             })
