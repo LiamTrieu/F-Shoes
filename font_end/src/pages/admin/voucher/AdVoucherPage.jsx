@@ -125,7 +125,7 @@ export default function AdVoucherPage() {
           <Grid item xs={2.5}>
             <TextField
               id="outlined"
-              label="Tìm voucher"
+              label="Tìm voucher theo mã"
               type="text"
               name="nameSearch"
               onChange={(e) =>
@@ -196,6 +196,7 @@ export default function AdVoucherPage() {
                   name: 'Kiểu',
                   id: 'hd-select-type',
                 }}>
+                <MenuItem value=""> </MenuItem>
                 <MenuItem value="1">Tất cả</MenuItem>
                 <MenuItem value="0">cá nhân</MenuItem>
               </Select>
@@ -218,8 +219,10 @@ export default function AdVoucherPage() {
                   name: 'Trạng thái',
                   id: 'hd-select-status',
                 }}>
-                <MenuItem value={0}>Hết hạn</MenuItem>
-                <MenuItem value={1}>Còn hạn</MenuItem>
+                <MenuItem value={''}>Tất cả</MenuItem>
+                <MenuItem value={'0'}>Hết hạn</MenuItem>
+                <MenuItem value={'1'}>Còn hạn</MenuItem>
+                <MenuItem value={'2'}>Chờ hoạt động</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -277,12 +280,14 @@ export default function AdVoucherPage() {
                     <TableCell align="center">
                       {row.status === 0 ? (
                         <Chip color="error" label="Hết hạn" />
-                      ) : (
+                      ) : row.status === 1 ? (
                         <Chip
                           color="success"
                           onClick={() => handelDeleteVoucer(row.id)}
                           label="Còn hạn"
                         />
+                      ) : (
+                        <Chip color="secondary" label="Chờ hoạt động" />
                       )}
                     </TableCell>
                     <TableCell align="right">

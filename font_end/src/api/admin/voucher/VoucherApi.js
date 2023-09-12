@@ -29,6 +29,10 @@ const voucherApi = {
     const urlSearchVoucher = `/voucher/search?startDateSearch=${adVoucherSearch.startDateSearch}&endDateSearch=${adVoucherSearch.endDateSearch}&pageSearch=${pageableRequest}&nameSearch=${adVoucherSearch.nameSearch}&typeSearch=${adVoucherSearch.typeSearch}&statusSearch=${adVoucherSearch.statusSearch}`
     return axiosClient.get(urlSearchVoucher)
   },
+  getPageCustomer: (p) => {
+    const url = `/khach-hang/get-page?p=${p}`
+    return axiosClient.get(url)
+  },
 }
 
 export default voucherApi

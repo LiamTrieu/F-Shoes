@@ -306,7 +306,7 @@ export default function AdVoucherDetail() {
               variant="contained"
               fullWidth
               color="warning">
-              Cập nhật
+              Xác nhận
             </Button>
           </Grid>
         </Grid>

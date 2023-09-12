@@ -1,13 +1,22 @@
 import {
   Button,
+  Dialog,
+  DialogActions,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
   InputAdornment,
+  Pagination,
   Paper,
   Radio,
   RadioGroup,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
 } from '@mui/material'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
@@ -38,6 +47,11 @@ export default function AdVoucherAdd() {
   const navigate = useNavigate()
   const [isSelectVisible, setIsSelectVisible] = useState(false)
   const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
+  const [openCustomer, setOpenCustomer] = useState(false)
+  const [listCustomer, setListCustomer] = useState([])
+  const [initPage, setInitPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [dataFetched, setDataFetched] = useState(false)
 
   const handleTypeChange = (event) => {
     const newValue = event.target.value === 'true'
@@ -66,6 +80,25 @@ export default function AdVoucherAdd() {
           })
       }
     })
+  }
+
+  const handelCustomeFill = (initPage) => {
+    voucherApi
+      .getPageCustomer(initPage - 1)
+      .then((response) => {
+        setListCustomer(response.data.data.content)
+        setTotalPages(response.data.data.totalPages)
+        setOpenCustomer(true)
+        setDataFetched(true)
+      })
+      .catch((error) => {
+        setDataFetched(false)
+      })
+  }
+
+  const handelOnchangePage = (page) => {
+    setInitPage(page)
+    handelCustomeFill(page - 1)
   }
   return (
     <div>
@@ -242,9 +275,61 @@ export default function AdVoucherAdd() {
           </Grid>
           <Grid item xs={2}>
             {isSelectVisible && (
-              <Button sx={{ width: 150, float: 'left', mt: 2.5 }} variant="contained">
+              <Button
+                onClick={() => handelCustomeFill(initPage)}
+                sx={{ width: 150, float: 'left', mt: 2.5 }}
+                variant="contained">
                 Chọn
               </Button>
+            )}
+            {openCustomer && (
+              <Dialog open={openCustomer} setOpen={setOpenCustomer} title={'Chọn khách hàng'}>
+                {dataFetched && (
+                  <TableContainer component={Paper}>
+                    <Table sx={{ width: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell align="center">Tên</TableCell>
+                          <TableCell align="center">Số điện thoại</TableCell>
+                          <TableCell align="center">Email</TableCell>
+                          <TableCell align="center">Ngày sinh</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {listCustomer.map((row, index) => (
+                          <TableRow
+                            key={row.id}
+                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                            <TableCell align="center">{row.fullName}</TableCell>
+                            <TableCell align="center">{row.phoneNumber}</TableCell>
+                            <TableCell align="center">{row.email}</TableCell>
+                            <TableCell align="center">
+                              {dayjs(row.dateBirth).format('DD-MM-YYYY')}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+                {!dataFetched && (
+                  <p style={{ textAlign: 'center' }}>
+                    <b>Không có dữ liệu</b>
+                  </p>
+                )}
+                <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                  <Pagination
+                    page={initPage}
+                    onChange={(event, page) => handelOnchangePage(page)}
+                    count={totalPages}
+                    color="primary"
+                  />
+                </Grid>
+                <DialogActions>
+                  <Button onClick={() => setOpenCustomer(false)}>Xác nhận</Button>
+                  <Button onClick={() => setOpenCustomer(false)}>Hủy</Button>
+                </DialogActions>
+              </Dialog>
             )}
           </Grid>
           <Grid item xs={6.6}></Grid>
