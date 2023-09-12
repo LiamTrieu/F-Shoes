@@ -3,6 +3,7 @@ package com.fshoes.core.admin.hoadon.controller;
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.core.common.ObjectRespone;
+import com.fshoes.entity.BillDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +45,11 @@ public class HDBillDetailController {
             @RequestParam("status") Integer status
     ) {
         return new ObjectRespone(hdBillDetailService.getBillDetailByBillIdAndStatus(idBill, status));
+    }
+
+    @GetMapping("/get-by-billAndProductDetail")
+    public ObjectRespone getByBillAndProductDetail(@RequestParam(name = "idBill") Integer idBill, @RequestParam(name = "idProductDetail") Integer idProductDetail) {
+        return new ObjectRespone(hdBillDetailService.getBillDetailByBillIdAndProductDetailId(idBill, idProductDetail));
     }
 
 }
