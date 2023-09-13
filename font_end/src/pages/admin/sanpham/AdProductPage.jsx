@@ -28,7 +28,6 @@ import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
 import dayjs from 'dayjs'
 import { RxMagnifyingGlass } from 'react-icons/rx'
 import { toast } from 'react-toastify'
-import { useTheme } from '@emotion/react'
 import confirmSatus from '../../../components/comfirmSwal'
 import { MdEditSquare } from 'react-icons/md'
 import { IoEye } from 'react-icons/io5'
@@ -37,7 +36,6 @@ import { Link } from 'react-router-dom'
 
 const listBreadcrumb = [{ name: 'Quản lý sản phẩm' }]
 export default function AdProductPage() {
-  const theme = useTheme()
   const [openAdd, setOpenAdd] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [product, setProduct] = useState({ name: '' })
@@ -53,7 +51,7 @@ export default function AdProductPage() {
 
   const fetchData = (filter) => {
     setIsBackdrop(true)
-   sanPhamApi
+    sanPhamApi
       .get(filter)
       .then((response) => {
         const res = response.data
@@ -71,7 +69,7 @@ export default function AdProductPage() {
     const title = 'Xác nhận Thêm mới sản phẩm?'
     const text = ''
     setOpenAdd(false)
-    confirmSatus(title, text, theme).then((result) => {
+    confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
         sanPhamApi.add(product).then((res) => {
           if (res.data.success) {
@@ -100,7 +98,7 @@ export default function AdProductPage() {
     const title = 'Xác nhận cập nhập sản phẩm?'
     const text = ''
     setOpenUpdate(false)
-    confirmSatus(title, text, theme).then((result) => {
+    confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
         sanPhamApi.update(productUpdate.id, { name: productUpdate.name }).then((res) => {
           if (res.data.success) {
@@ -132,7 +130,7 @@ export default function AdProductPage() {
   const setDeleted = (id, isDeleted) => {
     const title = 'Xác nhận thay đổi hoạt động?'
     const text = 'Ẩn hoạt động sẽ làm ẩn sản phẩm khỏi nơi khác'
-    confirmSatus(title, text, theme).then((result) => {
+    confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
         sanPhamApi.deleted(id, isDeleted).then((res) => {
           if (res.data.success) {
@@ -161,7 +159,7 @@ export default function AdProductPage() {
         <CircularProgress color="inherit" />
       </Backdrop>
       <BreadcrumbsCustom nameHere={'Sản phẩm'} listLink={listBreadcrumb} />
-      <Container component={Paper} elevation={3} sx={{ py: 3, borderRadius: '10px' }}>
+      <Container component={Paper} elevation={3} sx={{ py: 3 }}>
         <Stack
           sx={{ mb: 2 }}
           direction="row"
@@ -184,11 +182,7 @@ export default function AdProductPage() {
             size="small"
             placeholder="Tìm sản phẩm"
           />
-          <Button
-            onClick={() => setOpenAdd(true)}
-            disableElevation
-            sx={{ ...spButton }}
-            variant="outlined">
+          <Button onClick={() => setOpenAdd(true)} color="cam" variant="contained">
             <Box component={FaPlus} sx={{ mr: '3px', fontSize: '15px' }} />
             Thêm&nbsp;
             <Box sx={{ display: { xs: 'none', md: 'inline' } }} component={'span'}>
@@ -202,11 +196,10 @@ export default function AdProductPage() {
               title={'Thêm mới sản phẩm'}
               buttonSubmit={
                 <Button
+                  color="cam"
                   onClick={() => {
                     openAdd ? addProduct() : updateProduct()
                   }}
-                  color="primary"
-                  disableElevation
                   sx={{ ...spButton }}
                   variant="contained">
                   Thêm
@@ -221,23 +214,8 @@ export default function AdProductPage() {
                 fullWidth
                 sx={{
                   my: 2,
-                  '& .MuiInputBase-root fieldset': {
-                    borderColor: theme.palette.layout.colorText,
-                    color: theme.palette.layout.colorText,
-                  },
-                  '& .MuiInputBase-root': {
-                    ' &.Mui-focused fieldset': {
-                      borderColor: theme.palette.layout.colorText,
-                    },
-                    borderColor: theme.palette.layout.colorText,
-                    color: theme.palette.layout.colorText,
-                  },
-                  '& .MuiInputBase-root:hover fieldset': {
-                    borderColor: 'gray',
-                  },
                 }}
                 inputProps={{
-                  style: { color: theme.palette.layout.colorText },
                   required: true,
                 }}
                 size="small"
@@ -269,25 +247,7 @@ export default function AdProductPage() {
                 }}
                 defaultValue={productUpdate.name}
                 fullWidth
-                sx={{
-                  my: 2,
-                  '& .MuiInputBase-root fieldset': {
-                    borderColor: theme.palette.layout.colorText,
-                    color: theme.palette.layout.colorText,
-                  },
-                  '& .MuiInputBase-root': {
-                    ' &.Mui-focused fieldset': {
-                      borderColor: theme.palette.layout.colorText,
-                    },
-                    borderColor: theme.palette.layout.colorText,
-                    color: theme.palette.layout.colorText,
-                  },
-                  '& .MuiInputBase-root:hover fieldset': {
-                    borderColor: 'gray',
-                  },
-                }}
                 inputProps={{
-                  style: { color: theme.palette.layout.colorText },
                   required: true,
                 }}
                 size="small"

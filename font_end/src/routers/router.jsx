@@ -7,7 +7,7 @@ import adStaffRoute from './adminroute/adstaffroute'
 import adVoucherRoute from './adminroute/advoucherroute'
 import clientRoute from './clientroute'
 import Home from '../pages/client/Home'
-import AdminHeader from '../layout/AdminHeader'
+import AppBarAdmin from '../layout/AppBarAdmin'
 import Toast from '../components/Toast'
 import adSizeRoute from './adminroute/adsizeroute'
 import adSoleRoute from './adminroute/adsoleroute'
@@ -30,10 +30,10 @@ const router = createBrowserRouter([
   {
     path: '/admin',
     element: (
-      <AdminHeader>
+      <AppBarAdmin>
         <Toast />
         <Outlet />
-      </AdminHeader>
+      </AppBarAdmin>
     ),
     children: [
       { index: true, element: <Navigate to={'/admin/product'} /> },
