@@ -6,6 +6,7 @@ import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
 import com.fshoes.entity.Voucher;
+import com.fshoes.infrastructure.constant.StatusVoucher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +29,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public AdVoucherRespone getVoucherById(Integer id) {
+    public AdVoucherRespone getVoucherById(String id) {
         return adVoucherRepository.getVoucherById(id).orElse(null);
     }
 
@@ -51,7 +52,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Boolean updateVoucher(Integer id, AdVoucherRequest voucherRequest) throws ParseException {
+    public Boolean updateVoucher(String id, AdVoucherRequest voucherRequest) throws ParseException {
         Optional<Voucher> optionalVoucher = adVoucherRepository.findById(id);
         if (optionalVoucher.isPresent()) {
             Voucher voucher = optionalVoucher.get();
@@ -63,11 +64,11 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Boolean deleteVoucher(Integer id) {
+    public Boolean deleteVoucher(String id) {
         Optional<Voucher> optionalVoucher = adVoucherRepository.findById(id);
         if (optionalVoucher.isPresent()) {
             Voucher voucher = optionalVoucher.get();
-            voucher.setStatus(0);
+            voucher.setStatus(StatusVoucher.DA_KET_THUC);
             adVoucherRepository.save(voucher);
             return true;
         } else {

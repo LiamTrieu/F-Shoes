@@ -6,6 +6,7 @@ import com.fshoes.core.admin.sanpham.repository.SpProductRepository;
 import com.fshoes.core.admin.sanpham.service.ProductService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Product;
+import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getById(int id) {
-        return productRepository.getById(id).orElse(null);
+    public ProductResponse getById(String id) {
+        return productRepository.productById(id).orElse(null);
     }
 
     @Override
     public Page<ProductResponse> getPage(PageableRequest pageReq, String textSearch) {
-        Sort sort = Sort.by("id").reverse();
+        Sort sort = Sort.by("create_at").reverse();
         Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
         Page<ProductResponse> page = productRepository.getPageProduct(pageable, textSearch);
         if (pageReq.getPage() > page.getTotalPages() && page.getTotalPages() > 0) {
@@ -58,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(ProductRequest productReq, int id) {
+    public Product updateProduct(ProductRequest productReq, String id) {
         try {
             Product product = productRepository.findById(id).orElseThrow();
             return productRepository.save(productReq.tranProduct(product));
@@ -68,10 +69,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product chageDeleted(int id, boolean isDeleted) {
+    public Product chageDeleted(String id, Integer isDeleted) {
         try {
             Product product = productRepository.findById(id).orElseThrow();
-            product.setDeleted(isDeleted);
+            product.setDeleted(Status.values()[isDeleted]);
             return productRepository.save(product);
         } catch (Exception e) {
             return null;

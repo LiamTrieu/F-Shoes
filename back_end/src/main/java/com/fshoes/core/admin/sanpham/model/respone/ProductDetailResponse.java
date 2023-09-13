@@ -1,9 +1,10 @@
 package com.fshoes.core.admin.sanpham.model.respone;
 
+import com.fshoes.entity.base.IsIdentified;
+
 import java.math.BigDecimal;
 
-public interface ProductDetailResponse {
-    Integer getId();
+public interface ProductDetailResponse extends IsIdentified {
 
     String getCode();
 

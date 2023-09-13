@@ -12,13 +12,13 @@ public interface SizeService {
 
     List<SizeResponse> getAll();
 
-    SizeResponse getById(int id);
+    SizeResponse getById(String id);
 
     Page<SizeResponse> getPage(PageableRequest pageableRequest, String textSearch);
 
     Size addSize(SizeRequest sizeReq);
 
-    Size updateSize(SizeRequest sizeReq, int id);
+    Size updateSize(SizeRequest sizeReq, String id);
 
-    Size chageDeleted(int id, boolean isDeleted);
+    Size chageDeleted(String id, Integer isDeleted);
 }

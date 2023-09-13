@@ -5,8 +5,8 @@ import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
 import com.fshoes.core.admin.nhanvien.model.respone.StaffRespone;
 import com.fshoes.core.admin.nhanvien.repository.StaffRepositorys;
 import com.fshoes.core.admin.nhanvien.service.StaffService;
-import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Staff;
+import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.util.DateUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +36,14 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public Page<StaffRespone> searchStaff(PageableRequest pageableRequest, SearchStaff searchStaff) {
-        int page = pageableRequest.getPage() < 1 ? 0 : pageableRequest.getPage() - 1;
+    public Page<StaffRespone> searchStaff(SearchStaff searchStaff) {
+        int page = searchStaff.getPage() < 1 ? 0 : searchStaff.getPage() - 1;
         Pageable pageable = PageRequest.of(page, 5);
         return repo.searchStaff(searchStaff, pageable);
     }
 
     @Override
-    public Staff getOne(Integer id) {
+    public Staff getOne(String id) {
         return repo.findById(id).get();
     }
 
@@ -63,13 +63,13 @@ public class StaffServiceImpl implements StaffService {
                 .avatar(staffRequest.getAvatar())
                 .CitizenId(staffRequest.getCitizenId())
                 .role(staffRequest.getRole())
-                .status(staffRequest.getStatus())
+                .status(Status.values()[staffRequest.getStatus()])
                 .build();
         return repo.save(staff);
     }
 
     @Override
-    public Boolean update(StaffRequest staffRequest, Integer id) throws ParseException {
+    public Boolean update(StaffRequest staffRequest, String id) throws ParseException {
         Optional<Staff> optional = repo.findById(id);
         if (optional.isPresent()) {
             Staff staff = staffRequest.tranStaff(optional.get());

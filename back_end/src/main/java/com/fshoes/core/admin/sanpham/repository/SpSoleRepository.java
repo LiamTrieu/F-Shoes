@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.sanpham.repository;
 
-import com.fshoes.core.admin.sanpham.model.respone.CategoryResponse;
 import com.fshoes.core.admin.sanpham.model.respone.SoleResponse;
 import com.fshoes.repository.SoleRepository;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,7 @@ public interface SpSoleRepository extends SoleRepository {
     Page<SoleResponse> getPageSole(Pageable pageable,@Param("textSearch") String textSeacrh);
 
     @Query(value = "select id, name, deleted from sole where id = :id", nativeQuery = true)
-    Optional<SoleResponse> getById(@Param("id") int id);
+    Optional<SoleResponse> soleById(@Param("id") String id);
 
     @Query(value = "select id, name, deleted from sole where !deleted", nativeQuery = true)
     List<SoleResponse> getAll();

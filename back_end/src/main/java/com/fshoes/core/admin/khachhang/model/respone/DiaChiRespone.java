@@ -1,12 +1,8 @@
 package com.fshoes.core.admin.khachhang.model.respone;
 
-import com.fshoes.entity.Address;
-import com.fshoes.entity.Customer;
-import lombok.Getter;
-import lombok.Setter;
+import com.fshoes.entity.base.IsIdentified;
 
-public interface DiaChiRespone {
-    Long getId();
+public interface DiaChiRespone extends IsIdentified {
     String getName();
 
     String getPhoneNumber();

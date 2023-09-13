@@ -12,13 +12,13 @@ public interface MaterialService {
 
     List<MaterialResponse> getAll();
 
-    MaterialResponse getById(int id);
+    MaterialResponse getById(String id);
 
     Page<MaterialResponse> getPage(PageableRequest pageableRequest, String textSearch);
 
     Material addMaterial(MaterialRequest materialReq);
 
-    Material updateMaterial(MaterialRequest materialReq, int id);
+    Material updateMaterial(MaterialRequest materialReq, String id);
 
-    Material chageDeleted(int id, boolean isDeleted);
+    Material chageDeleted(String id, Integer isDeleted);
 }

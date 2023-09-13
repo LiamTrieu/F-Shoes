@@ -1,7 +1,8 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -11,8 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,7 +19,7 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "staff")
-public class Staff extends IntegerEntity {
+public class Staff extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String fullName;
 
@@ -44,6 +43,6 @@ public class Staff extends IntegerEntity {
 
     private Integer role = 0;
 
-    private Integer status = 1;
+    private Status status = Status.HOAT_DONG;
 
 }

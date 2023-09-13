@@ -12,13 +12,13 @@ public interface ProductService {
 
     List<ProductResponse> getAll();
 
-    ProductResponse getById(int id);
+    ProductResponse getById(String id);
 
     Page<ProductResponse> getPage(PageableRequest pageableRequest, String textSearch);
 
     Product addProduct(ProductRequest productReq);
 
-    Product updateProduct(ProductRequest productReq, int id);
+    Product updateProduct(ProductRequest productReq, String id);
 
-    Product chageDeleted(int id, boolean isDeleted);
+    Product chageDeleted(String id, Integer isDeleted);
 }

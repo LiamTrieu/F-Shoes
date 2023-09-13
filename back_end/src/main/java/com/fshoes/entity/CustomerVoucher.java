@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.LongEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,8 +18,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "customer_voucher")
-public class CustomerVoucher extends LongEntity {
-    private Integer status = 1;
+public class CustomerVoucher extends PrimaryEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_customer", referencedColumnName = "id")

@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.sanpham.repository;
 
-import com.fshoes.core.admin.sanpham.model.respone.CategoryResponse;
 import com.fshoes.core.admin.sanpham.model.respone.SizeResponse;
 import com.fshoes.repository.SizeRepository;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,7 @@ public interface SpSizeRepository extends SizeRepository {
     Page<SizeResponse> getPageSize(Pageable pageable,@Param("textSearch") String textSeacrh);
 
     @Query(value = "select id, size, deleted from size where id = :id", nativeQuery = true)
-    Optional<SizeResponse> getById(@Param("id") int id);
+    Optional<SizeResponse> sizeById(@Param("id") String id);
 
     @Query(value = "select id, size, deleted from size where !deleted", nativeQuery = true)
     List<SizeResponse> getAll();

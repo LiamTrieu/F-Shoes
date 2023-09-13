@@ -12,15 +12,15 @@ import java.util.List;
 public interface AdVoucherService {
     List<Voucher> getAllVoucher();
 
-    AdVoucherRespone getVoucherById(Integer id);
+    AdVoucherRespone getVoucherById(String id);
 
     Page<Voucher> getPageVoucher(Integer page);
 
     Voucher addVoucher(AdVoucherRequest voucherRequest);
 
-    Boolean updateVoucher(Integer id, AdVoucherRequest voucherRequest) throws ParseException;
+    Boolean updateVoucher(String id, AdVoucherRequest voucherRequest) throws ParseException;
 
-    Boolean deleteVoucher(Integer id);
+    Boolean deleteVoucher(String id);
 
     Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch adVoucherSearch);
 }

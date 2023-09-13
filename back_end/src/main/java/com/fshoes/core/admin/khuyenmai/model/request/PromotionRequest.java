@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.khuyenmai.model.request;
 
 import com.fshoes.entity.Promotion;
+import com.fshoes.infrastructure.constant.StatusVoucher;
 import com.fshoes.util.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +30,7 @@ public class PromotionRequest {
         promotion.setTimeEnd(DateUtil.parseDateTimeLong(this.timeEnd));
         promotion.setType(this.type);
         promotion.setValue(this.value);
-        promotion.setStatus(this.status);
+        promotion.setStatus(StatusVoucher.values()[status]);
 
         return promotion;
 

@@ -6,6 +6,7 @@ import com.fshoes.core.admin.sanpham.repository.SpSoleRepository;
 import com.fshoes.core.admin.sanpham.service.SoleService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Sole;
+import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,13 @@ public class SoleServiceImpl implements SoleService {
     }
 
     @Override
-    public SoleResponse getById(int id) {
-        return soleRepository.getById(id).orElse(null);
+    public SoleResponse getById(String id) {
+        return soleRepository.soleById(id).orElse(null);
     }
 
     @Override
     public Page<SoleResponse> getPage(PageableRequest pageReq, String textSearch) {
-        Sort sort = Sort.by("id");
+        Sort sort = Sort.by("create_at");
         Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
         return soleRepository.getPageSole(pageable, textSearch);
     }
@@ -50,7 +51,7 @@ public class SoleServiceImpl implements SoleService {
     }
 
     @Override
-    public Sole updateSole(SoleRequest soleReq, int id) {
+    public Sole updateSole(SoleRequest soleReq, String id) {
         try {
             Sole sole = soleRepository.findById(id).orElseThrow();
             return soleRepository.save(soleReq.tranSole(sole));
@@ -60,10 +61,10 @@ public class SoleServiceImpl implements SoleService {
     }
 
     @Override
-    public Sole chageDeleted(int id, boolean isDeleted) {
+    public Sole chageDeleted(String id, Integer isDeleted) {
         try {
             Sole sole = soleRepository.findById(id).orElseThrow();
-            sole.setDeleted(isDeleted);
+            sole.setDeleted(Status.values()[isDeleted]);
             return soleRepository.save(sole);
         } catch (Exception e) {
             return null;

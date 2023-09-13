@@ -1,8 +1,9 @@
 package com.fshoes.core.admin.khuyenmai.model.respone;
 
-public interface PromotionRespone {
+import com.fshoes.entity.base.IsIdentified;
 
-    Integer getId();
+public interface PromotionRespone extends IsIdentified {
+
 
     String getName();
 

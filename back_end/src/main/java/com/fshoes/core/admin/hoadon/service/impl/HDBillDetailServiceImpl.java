@@ -7,6 +7,7 @@ import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
 import com.fshoes.entity.ProductDetail;
+import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.repository.ProductDetailRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +37,18 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                 .productDetail(productDetail)
                 .price(hdBillDetailRequest.getPrice())
                 .quantity(hdBillDetailRequest.getQuanity())
-                .status(hdBillDetailRequest.getStatus())
+                .status(StatusBillDetail.values()[hdBillDetailRequest.getStatus()])
                 .build();
         return hdBillDetailRepository.save(billDetail);
     }
 
     @Override
-    public List<BillDetail> getBillDetailByBillId(Integer idBill) {
+    public List<BillDetail> getBillDetailByBillId(String idBill) {
         return hdBillDetailRepository.getBillDetailsByBillId(idBill);
     }
 
     @Override
-    public BillDetail updateBillDetail(Integer idBillDetail, HDBillDetailRequest hdBillDetailRequest) {
+    public BillDetail updateBillDetail(String idBillDetail, HDBillDetailRequest hdBillDetailRequest) {
 
         BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).orElseThrow(() -> new RuntimeException("Khong tim thay bill detail"));
 
@@ -58,19 +59,19 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         billDetail.setProductDetail(productDetail);
         billDetail.setPrice(hdBillDetailRequest.getPrice());
         billDetail.setQuantity(hdBillDetailRequest.getQuanity());
-        billDetail.setStatus(hdBillDetailRequest.getStatus());
+        billDetail.setStatus(StatusBillDetail.values()[hdBillDetailRequest.getStatus()]);
 
         return hdBillDetailRepository.save(billDetail);
 
     }
 
     @Override
-    public List<BillDetail> getBillDetailByBillIdAndStatus(Integer idBill, Integer status) {
+    public List<BillDetail> getBillDetailByBillIdAndStatus(String idBill, Integer status) {
         return hdBillDetailRepository.getBillDetailsByBillIdAndStatus(idBill, status);
     }
 
     @Override
-    public BillDetail getBillDetailByBillIdAndProductDetailId(Integer idBill, Integer idProductDetail) {
+    public BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail) {
         return hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(idBill, idProductDetail);
     }
 

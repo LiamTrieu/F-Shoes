@@ -6,6 +6,7 @@ import com.fshoes.core.admin.sanpham.repository.SpColorRepository;
 import com.fshoes.core.admin.sanpham.service.ColorService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Color;
+import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,13 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public ColorResponse getById(int id) {
-        return colorRepository.getById(id).orElse(null);
+    public ColorResponse getById(String id) {
+        return colorRepository.getColorById(id).orElse(null);
     }
 
     @Override
     public Page<ColorResponse> getPage(PageableRequest pageReq, String textSearch) {
-        Sort sort = Sort.by("id");
+        Sort sort = Sort.by("create_at");
         Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
         return colorRepository.getPageColor(pageable, textSearch);
     }
@@ -43,7 +44,6 @@ public class ColorServiceImpl implements ColorService {
     public Color addColor(ColorRequest colorReq) {
         try {
             Color color = colorReq.tranColor(new Color());
-            color.setDeleted(false);
             return colorRepository.save(color);
         } catch (Exception e) {
             return null;
@@ -51,7 +51,7 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public Color updateColor(ColorRequest colorReq, int id) {
+    public Color updateColor(ColorRequest colorReq, String id) {
         try {
             Color color = colorRepository.findById(id).orElseThrow();
             return colorRepository.save(colorReq.tranColor(color));
@@ -61,10 +61,10 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public Color chageDeleted(int id, boolean isDeleted) {
+    public Color chageDeleted(String id, Integer isDeleted) {
         try {
             Color color = colorRepository.findById(id).orElseThrow();
-            color.setDeleted(isDeleted);
+            color.setDeleted(Status.values()[isDeleted]);
             return colorRepository.save(color);
         } catch (Exception e) {
             return null;

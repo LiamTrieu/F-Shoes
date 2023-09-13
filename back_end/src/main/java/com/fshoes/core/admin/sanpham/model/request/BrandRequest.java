@@ -10,11 +10,8 @@ public class BrandRequest {
 
     private String name;
 
-    private String deleted = "false";
-
     public Brand tranBrand(Brand brand) {
         brand.setName(this.name);
-        brand.setDeleted(Boolean.valueOf(this.deleted));
         return brand;
     }
 }

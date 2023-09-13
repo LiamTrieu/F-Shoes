@@ -33,7 +33,7 @@ public interface SpProductDetailRepository extends ProductDetailRepository {
              and (:#{#filterReq.idSize} is null or SI.id = :#{#filterReq.idSize})
              and (:#{#filterReq.idColor} is null or C.id = :#{#filterReq.idColor})
              and  P.id = :id""", nativeQuery = true)
-    Page<ProductDetailResponse> getAllByIdProduct(@Param(("id")) int id, Pageable pageable, @Param("filterReq") PrdDetailFilterRequest filterReq);
+    Page<ProductDetailResponse> getAllByIdProduct(@Param(("id")) String id, Pageable pageable, @Param("filterReq") PrdDetailFilterRequest filterReq);
 
     @Query(value = """
             select PD.id, PD.code, P.name as product, C.code as color, B.name as brand, S.name as sole,
@@ -48,6 +48,6 @@ public interface SpProductDetailRepository extends ProductDetailRepository {
              left join size SI on PD.id_size = SI.id
              left join image I on PD.id_image = I.id
              where PD.id = :id""", nativeQuery = true)
-    Optional<ProductDetailResponse> getById(@Param("id") Long id);
+    Optional<ProductDetailResponse> getDetailResponse(@Param("id") String id);
 
 }

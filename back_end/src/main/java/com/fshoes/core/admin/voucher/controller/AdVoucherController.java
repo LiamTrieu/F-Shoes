@@ -6,7 +6,6 @@ import com.fshoes.core.admin.voucher.service.AdVoucherService;
 import com.fshoes.core.common.ObjectRespone;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,7 +21,6 @@ import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/voucher")
-@CrossOrigin("*")
 public class AdVoucherController {
     @Autowired
     private AdVoucherService voucherService;
@@ -33,7 +31,7 @@ public class AdVoucherController {
     }
 
     @GetMapping("/view/one/{id}")
-    public ObjectRespone getOneVoucherById(@PathVariable Integer id) {
+    public ObjectRespone getOneVoucherById(@PathVariable String id) {
         return new ObjectRespone(voucherService.getVoucherById(id));
     }
 
@@ -48,12 +46,12 @@ public class AdVoucherController {
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone updateVoucher(@PathVariable Integer id, @RequestBody @Valid AdVoucherRequest voucherRequest) throws ParseException {
+    public ObjectRespone updateVoucher(@PathVariable String id, @RequestBody @Valid AdVoucherRequest voucherRequest) throws ParseException {
         return new ObjectRespone(voucherService.updateVoucher(id, voucherRequest));
     }
 
     @DeleteMapping("/delete/{id}")
-    public ObjectRespone deleteVoucher(@PathVariable Integer id) {
+    public ObjectRespone deleteVoucher(@PathVariable String id) {
         return voucherService.deleteVoucher(id) ?
                 new ObjectRespone("Hủy voucher thành công") :
                 new ObjectRespone("Hủy voucher thất bại");

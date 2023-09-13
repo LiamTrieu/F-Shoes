@@ -8,12 +8,12 @@ import java.util.List;
 public interface HDBillDetailService {
     BillDetail save(HDBillDetailRequest hdBillDetailRequest);
 
-    List<BillDetail> getBillDetailByBillId(Integer idBill);
+    List<BillDetail> getBillDetailByBillId(String idBill);
 
-    BillDetail updateBillDetail(Integer idBillDetail, HDBillDetailRequest hdBillDetailRequest);
+    BillDetail updateBillDetail(String idBillDetail, HDBillDetailRequest hdBillDetailRequest);
 
-    List<BillDetail> getBillDetailByBillIdAndStatus(Integer idBill, Integer status);
+    List<BillDetail> getBillDetailByBillIdAndStatus(String idBill, Integer status);
 
-    BillDetail getBillDetailByBillIdAndProductDetailId(Integer idBill, Integer idProductDetail);
+    BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
 
 }

@@ -1,7 +1,8 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.StatusVoucher;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "promotion")
-public class Promotion extends IntegerEntity {
+public class Promotion extends PrimaryEntity {
 
     @Column(length = EntityProperties.LENGTH_NAME, unique = true)
     private String name;
@@ -31,5 +32,5 @@ public class Promotion extends IntegerEntity {
 
     private Integer value;
 
-    private Integer status;
+    private StatusVoucher status;
 }

@@ -1,6 +1,7 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.LongEntity;
+import com.fshoes.entity.base.PrimaryEntity;
+import com.fshoes.infrastructure.constant.StatusBillDetail;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,12 +21,12 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "bill_detail")
-public class BillDetail extends LongEntity {
+public class BillDetail extends PrimaryEntity {
     private Integer quantity;
 
     private BigDecimal price;
 
-    private Integer status;
+    private StatusBillDetail status;
 
     @ManyToOne
     @JoinColumn(name = "id_bill", referencedColumnName = "id")

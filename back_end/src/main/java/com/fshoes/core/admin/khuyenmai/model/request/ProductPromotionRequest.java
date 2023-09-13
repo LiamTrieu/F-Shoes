@@ -4,7 +4,6 @@ import com.fshoes.entity.ProductPromotion;
 import lombok.Getter;
 import lombok.Setter;
 
-
 import java.math.BigDecimal;
 
 @Getter
@@ -20,8 +19,8 @@ public class ProductPromotionRequest {
     private String idPromotion;
 
     public ProductPromotion newProductProduct(ProductPromotion productPromotion){
-        productPromotion.getPromotion().setId(Integer.valueOf(idPromotion));
-        productPromotion.getProductDetail().setId(Long.valueOf(idProductDetail));
+        productPromotion.getPromotion().setId(idPromotion);
+        productPromotion.getProductDetail().setId(idProductDetail);
 
         productPromotion.setPricePromotion(BigDecimal.valueOf(Long.parseLong(pricePromotion)));
         return productPromotion;

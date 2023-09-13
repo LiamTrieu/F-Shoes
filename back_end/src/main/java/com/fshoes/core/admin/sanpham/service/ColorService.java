@@ -12,13 +12,13 @@ public interface ColorService {
 
     List<ColorResponse> getAll();
 
-    ColorResponse getById(int id);
+    ColorResponse getById(String id);
 
     Page<ColorResponse> getPage(PageableRequest pageableRequest, String textSearch);
 
     Color addColor(ColorRequest colorReq);
 
-    Color updateColor(ColorRequest colorReq, int id);
+    Color updateColor(ColorRequest colorReq, String id);
 
-    Color chageDeleted(int id, boolean isDeleted);
+    Color chageDeleted(String id, Integer isDeleted);
 }

@@ -15,7 +15,6 @@ import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -42,47 +41,44 @@ public class ProductDetailRequest {
 
     private String amount;
 
-    private String deleted = "false";
-
     private Integer indexDefault = -1;
 
-    private List<Integer> idImage;
+    private List<String> idImage;
 
     private List<MultipartFile> images;
 
     public ProductDetail tranDetail(ProductDetail productDetail){
         Brand brand = new Brand();
-        brand.setId(Integer.valueOf(this.getIdBrand()));
+        brand.setId(this.getIdBrand());
         productDetail.setBrand(brand);
 
         Sole sole = new Sole();
-        sole.setId(Integer.valueOf(this.getIdSole()));
+        sole.setId(this.getIdSole());
         productDetail.setSole(sole);
 
         Material material = new Material();
-        material.setId(Integer.valueOf(this.getIdMaterial()));
+        material.setId(this.getIdMaterial());
         productDetail.setMaterial(material);
 
         Category category = new Category();
-        category.setId(Integer.valueOf(this.getIdCategory()));
+        category.setId(this.getIdCategory());
         productDetail.setCategory(category);
 
         Product product = new Product();
-        product.setId(Integer.valueOf(this.getIdProduct()));
+        product.setId(this.getIdProduct());
         productDetail.setProduct(product);
 
         Size size = new Size();
-        size.setId(Integer.valueOf(this.getIdSize()));
+        size.setId(this.getIdSize());
         productDetail.setSize(size);
 
         Color color = new Color();
-        color.setId(Integer.valueOf(this.idColor));
+        color.setId(this.idColor);
         productDetail.setColor(color);
 
         productDetail.setCode(this.genCode());
         productDetail.setPrice(BigDecimal.valueOf(Long.parseLong(this.price)));
         productDetail.setAmount(Integer.valueOf(this.amount));
-        productDetail.setDeleted(Boolean.valueOf(this.deleted));
         return productDetail;
     }
 

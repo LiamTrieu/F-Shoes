@@ -15,7 +15,7 @@ public class HDTransactionServiceImpl implements HDTransactionService {
     private HDTransactionRepository hdTransactionRepository;
 
     @Override
-    public List<Transaction> getTransactionByBillId(Integer idBill) {
+    public List<Transaction> getTransactionByBillId(String idBill) {
         return hdTransactionRepository.getTransactionByBillId(idBill);
     }
 

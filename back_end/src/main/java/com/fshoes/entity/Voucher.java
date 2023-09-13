@@ -1,7 +1,9 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.StatusVoucher;
+import com.fshoes.infrastructure.constant.TypeVoucher;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -20,7 +22,7 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "voucher")
-public class Voucher extends IntegerEntity {
+public class Voucher extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_CODE, unique = true)
     private String code;
 
@@ -31,7 +33,7 @@ public class Voucher extends IntegerEntity {
 
     private BigDecimal maximumValue;
 
-    private Boolean type;
+    private TypeVoucher type;
 
     private BigDecimal minimumAmount;
 
@@ -41,5 +43,5 @@ public class Voucher extends IntegerEntity {
 
     private Long endDate;
 
-    private Integer status;
+    private StatusVoucher status;
 }

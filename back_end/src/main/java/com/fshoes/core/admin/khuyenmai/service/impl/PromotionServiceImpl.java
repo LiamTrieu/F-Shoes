@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PromotionServiceImpl implements PromotionService {
@@ -26,7 +25,7 @@ public class PromotionServiceImpl implements PromotionService {
         return khuyenMaiRepository.getAllKhuyenMai();
     }
 
-    public Promotion getOne(int id) {
+    public Promotion getOne(String id) {
         return khuyenMaiRepository.findById(id).orElse(null);
     }
 
@@ -36,7 +35,7 @@ public class PromotionServiceImpl implements PromotionService {
         return khuyenMaiRepository.save(promotion);
     }
 
-    public Promotion updateKhuyenMai(PromotionRequest promotionRequest, int id) throws ParseException {
+    public Promotion updateKhuyenMai(PromotionRequest promotionRequest, String id) throws ParseException {
 //        if (khuyenMaiRepository.existsById(id)) {
 //            Promotion promotion = promotionRequest.newPromotion(new Promotion());
 //            promotionRequest.setId(id);

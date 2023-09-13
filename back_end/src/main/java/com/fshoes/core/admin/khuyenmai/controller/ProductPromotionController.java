@@ -3,7 +3,6 @@ package com.fshoes.core.admin.khuyenmai.controller;
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionRequest;
 import com.fshoes.core.admin.khuyenmai.service.impl.ProductPromotionServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
-import com.fshoes.entity.ProductPromotion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +27,7 @@ public class ProductPromotionController {
     }
 
     @GetMapping("/get-one/{id}")
-    public ObjectRespone getOne(@PathVariable Long id) {
+    public ObjectRespone getOne(@PathVariable String id) {
         return new ObjectRespone(productPromotionService.getOne(id));
     }
 
@@ -38,7 +37,7 @@ public class ProductPromotionController {
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone updateProductPromotion(@RequestBody ProductPromotionRequest productPromotionReques, @PathVariable Long id) {
+    public ObjectRespone updateProductPromotion(@RequestBody ProductPromotionRequest productPromotionReques, @PathVariable String id) {
         return new ObjectRespone(productPromotionService.updateProductPromotion(productPromotionReques, id));
     }
 

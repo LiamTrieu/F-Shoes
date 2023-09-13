@@ -6,7 +6,6 @@ import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageableRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/customerVoucher")
-@CrossOrigin("*")
 public class AdCustomerVoucherController {
     @Autowired
     private AdCustomerVoucherService adCustomerVoucherService;
@@ -29,7 +27,7 @@ public class AdCustomerVoucherController {
     }
 
     @GetMapping("/view/one/{id}")
-    public ObjectRespone getCustomerVoucherOneById(@PathVariable Integer id) {
+    public ObjectRespone getCustomerVoucherOneById(@PathVariable String id) {
         return new ObjectRespone(adCustomerVoucherService.getCustomerVoucherById(id));
     }
 
@@ -44,7 +42,7 @@ public class AdCustomerVoucherController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ObjectRespone deleteVoucher(@PathVariable Integer id) {
+    public ObjectRespone deleteVoucher(@PathVariable String id) {
         return adCustomerVoucherService.deleteCustomerVoucher(id) ?
                 new ObjectRespone("Hủy customer voucher thành công") :
                 new ObjectRespone("Hủy customer voucher thất bại");

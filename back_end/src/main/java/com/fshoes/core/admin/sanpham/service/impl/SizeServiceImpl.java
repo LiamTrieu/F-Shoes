@@ -6,6 +6,7 @@ import com.fshoes.core.admin.sanpham.repository.SpSizeRepository;
 import com.fshoes.core.admin.sanpham.service.SizeService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Size;
+import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,13 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
-    public SizeResponse getById(int id) {
-        return sizeRepository.getById(id).orElse(null);
+    public SizeResponse getById(String id) {
+        return sizeRepository.sizeById(id).orElse(null);
     }
 
     @Override
     public Page<SizeResponse> getPage(PageableRequest pageReq, String textSearch) {
-        Sort sort = Sort.by("id");
+        Sort sort = Sort.by("create_at");
         Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
         return sizeRepository.getPageSize(pageable, textSearch);
     }
@@ -50,7 +51,7 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
-    public Size updateSize(SizeRequest sizeReq, int id) {
+    public Size updateSize(SizeRequest sizeReq, String id) {
         try {
             Size size = sizeRepository.findById(id).orElseThrow();
             return sizeRepository.save(sizeReq.tranSize(size));
@@ -61,10 +62,10 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
-    public Size chageDeleted(int id, boolean isDeleted) {
+    public Size chageDeleted(String id, Integer isDeleted) {
         try {
             Size size = sizeRepository.findById(id).orElseThrow();
-            size.setDeleted(isDeleted);
+            size.setDeleted(Status.values()[isDeleted]);
             return sizeRepository.save(size);
         } catch (Exception e) {
             return null;

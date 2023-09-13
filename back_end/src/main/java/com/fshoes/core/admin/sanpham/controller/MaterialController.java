@@ -6,7 +6,6 @@ import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/material")
-@CrossOrigin("*")
 public class MaterialController {
 
     @Autowired
@@ -36,7 +34,7 @@ public class MaterialController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getMaterial(@PathVariable int id) {
+    public ObjectRespone getMaterial(@PathVariable String id) {
         return new ObjectRespone(materialService.getById(id));
     }
 
@@ -47,13 +45,13 @@ public class MaterialController {
 
     @PutMapping("/update/{id}")
     public ObjectRespone updateMaterial(@RequestBody MaterialRequest materialReq,
-                                        @PathVariable int id) {
+                                        @PathVariable String id) {
         return new ObjectRespone(materialService.updateMaterial(materialReq, id));
     }
 
     @PutMapping("/deleted/{id}")
-    public ObjectRespone deletedProduct(@RequestBody boolean isDeleted,
-                                        @PathVariable int id) {
+    public ObjectRespone deletedProduct(@RequestBody Integer isDeleted,
+                                        @PathVariable String id) {
         return new ObjectRespone(materialService.chageDeleted(id, isDeleted));
     }
 }

@@ -10,11 +10,9 @@ public class ColorRequest {
 
     private String code;
 
-    private String deleted = "false";
 
     public Color tranColor(Color color) {
         color.setCode(this.code);
-        color.setDeleted(Boolean.valueOf(this.deleted));
         return color;
     }
 }

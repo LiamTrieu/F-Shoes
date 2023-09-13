@@ -33,5 +33,5 @@ public interface AdVoucherRepository extends VoucherRepository {
             from voucher v
             where v.id =:id
             """, nativeQuery = true)
-    Optional<AdVoucherRespone> getVoucherById(@Param("id") Integer id);
+    Optional<AdVoucherRespone> getVoucherById(@Param("id") String id);
 }

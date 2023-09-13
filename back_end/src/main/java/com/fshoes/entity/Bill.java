@@ -1,7 +1,9 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.LongEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.StatusBill;
+import com.fshoes.infrastructure.constant.TypeBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -22,7 +24,7 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "bill")
-public class Bill extends LongEntity {
+public class Bill extends PrimaryEntity {
 
     @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
@@ -50,7 +52,7 @@ public class Bill extends LongEntity {
 
     private Long confirmationDate;
 
-    private Boolean type;
+    private TypeBill type;
 
     @Column(length = EntityProperties.LENGTH_DESCRIPTION)
     private String note;
@@ -59,14 +61,13 @@ public class Bill extends LongEntity {
 
     private Long desiredReceiptDate;
 
-    private Long CompleteDate;
+    private Long completeDate;
 
-    private Integer status;
+    private StatusBill status;
 
     @ManyToOne
     @JoinColumn(name = "id_customer", referencedColumnName = "id")
     private Customer customer;
-
 
     @ManyToOne
     @JoinColumn(name = "id_voucher", referencedColumnName = "id")

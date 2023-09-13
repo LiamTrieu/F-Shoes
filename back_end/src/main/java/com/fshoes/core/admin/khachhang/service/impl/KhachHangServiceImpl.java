@@ -5,6 +5,7 @@ import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.khachhang.service.KhachHangService;
 import com.fshoes.entity.Customer;
+import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +51,7 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
-    public Boolean update(Integer id, KhachHangRequest khachHangRequest) throws ParseException {
+    public Boolean update(String id, KhachHangRequest khachHangRequest) throws ParseException {
         Optional<Customer> optionalCustomer = khachHangRepository.findById(id);
         if (optionalCustomer.isPresent()){
             Customer customer = khachHangRequest.newCustomer(optionalCustomer.get());
@@ -63,14 +63,14 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(String id) {
         Customer cu = khachHangRepository.findById(id).orElse(null);
-        cu.setStatus(0);
+        cu.setStatus(Status.NGUNG_HOAT_DONG);
         khachHangRepository.save(cu);
     }
 
     @Override
-    public Customer getOne(int id) {
+    public Customer getOne(String id) {
         return khachHangRepository.findById(id).orElse(null);
     }
 

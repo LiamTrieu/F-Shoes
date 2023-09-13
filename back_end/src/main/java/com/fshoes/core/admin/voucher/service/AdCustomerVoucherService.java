@@ -11,11 +11,11 @@ import java.util.List;
 public interface AdCustomerVoucherService {
     List<AdCustomerVoucherRespone> getAllCustomerVoucher();
 
-    AdCustomerVoucherRespone getCustomerVoucherById(Integer id);
+    AdCustomerVoucherRespone getCustomerVoucherById(String id);
 
     Page<AdCustomerVoucherRespone> getPageCustomerVoucher(PageableRequest pageableRequest);
 
     CustomerVoucher addCustomerVoucher(AdCustomerVoucherRequest adCustomerVoucherRequest);
 
-    Boolean deleteCustomerVoucher(Integer id);
+    Boolean deleteCustomerVoucher(String id);
 }

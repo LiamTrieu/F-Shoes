@@ -16,7 +16,7 @@ public class HDBillHistoryRequest {
 
     private Bill bill;
 
-    private Integer idStaff;
+    private String idStaff;
 
     private String note;
 

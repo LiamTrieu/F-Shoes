@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageableRequest {
+public abstract class PageableRequest {
     private int page = 1;
-    private int size = 1;
+    private int size = 5;
 }

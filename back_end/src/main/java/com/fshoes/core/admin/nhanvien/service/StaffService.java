@@ -3,7 +3,6 @@ package com.fshoes.core.admin.nhanvien.service;
 import com.fshoes.core.admin.nhanvien.model.request.SearchStaff;
 import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
 import com.fshoes.core.admin.nhanvien.model.respone.StaffRespone;
-import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Staff;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -16,12 +15,12 @@ public interface StaffService {
 
     Page<StaffRespone> getStaff(Integer page);
 
-    Page<StaffRespone> searchStaff(PageableRequest pageableRequest, SearchStaff searchStaff);
+    Page<StaffRespone> searchStaff(SearchStaff searchStaff);
 
-    Staff getOne(Integer id);
+    Staff getOne(String id);
 
     Staff add(@Valid StaffRequest staffRequest) throws ParseException;
 
-    Boolean update(StaffRequest staffRequest, Integer id) throws ParseException;
+    Boolean update(StaffRequest staffRequest, String id) throws ParseException;
 
 }

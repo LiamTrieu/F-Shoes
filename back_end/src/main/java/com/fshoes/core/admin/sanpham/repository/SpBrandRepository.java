@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Repository
@@ -19,8 +18,8 @@ public interface SpBrandRepository extends BrandRepository {
     Page<BrandResponse> getPageBrand(Pageable pageable,@Param("textSearch") String textSeacrh);
 
     @Query(value = "select id, name, deleted from brand where id = :id", nativeQuery = true)
-    Optional<BrandResponse> getById(@Param("id") int id);
+    BrandResponse getBardById(@Param("id") String id);
 
-    @Query(value = "select id, name, deleted from Brand where !deleted", nativeQuery = true)
+    @Query(value = "select id, name, deleted from Brand where deleted = 0", nativeQuery = true)
     List<BrandResponse> getAll();
 }

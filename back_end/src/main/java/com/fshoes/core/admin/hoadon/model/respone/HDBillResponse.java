@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class HDBillResponse {
 
-    private Long id;
+    private String id;
 
     private String code;
 
@@ -42,7 +42,7 @@ public class HDBillResponse {
     private Integer status;
 
 
-    public HDBillResponse(Long id, String code, String fullName, String phoneNumber, String address, BigDecimal totalMoney, BigDecimal moneyReduced, BigDecimal moneyAfter, BigDecimal moneyShip, Boolean type, String note, Long createdAt, String createdBy, Long totalProduct, Integer status) {
+    public HDBillResponse(String id, String code, String fullName, String phoneNumber, String address, BigDecimal totalMoney, BigDecimal moneyReduced, BigDecimal moneyAfter, BigDecimal moneyShip, Boolean type, String note, Long createdAt, String createdBy, Long totalProduct, Integer status) {
         this.id = id;
         this.code = code;
         this.fullName = fullName;

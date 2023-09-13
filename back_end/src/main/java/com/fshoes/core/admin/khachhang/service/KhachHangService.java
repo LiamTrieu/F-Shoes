@@ -18,9 +18,10 @@ public interface KhachHangService {
 
     Customer add(KhachHangRequest khachHangRequest);
 
-    Boolean update(Integer id, KhachHangRequest khachHangRequest) throws ParseException;
-    void delete(int id );
+    Boolean update(String id, KhachHangRequest khachHangRequest) throws ParseException;
 
-    Customer getOne(int id);
+    void delete(String id);
+
+    Customer getOne(String id);
 
 }

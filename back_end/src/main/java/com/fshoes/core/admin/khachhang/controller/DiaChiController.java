@@ -2,20 +2,22 @@ package com.fshoes.core.admin.khachhang.controller;
 
 
 import com.fshoes.core.admin.khachhang.model.request.DiaChiRequest;
-import com.fshoes.core.admin.khachhang.model.respone.DiaChiRespone;
 import com.fshoes.core.admin.khachhang.service.DiaChiService;
 import com.fshoes.core.common.ObjectRespone;
-import com.fshoes.entity.Address;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/dia-chi")
-@CrossOrigin("*")
 public class DiaChiController {
     @Autowired
     private DiaChiService diaChiService;
@@ -31,7 +33,7 @@ public class DiaChiController {
     }
 
     @GetMapping("/get-one/{id}")
-    public ObjectRespone getOne(@PathVariable int id){
+    public ObjectRespone getOne(@PathVariable String id) {
         return new ObjectRespone(diaChiService.getOne(id));
     }
 
@@ -42,7 +44,7 @@ public class DiaChiController {
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone update(@PathVariable Integer id, @RequestBody DiaChiRequest diaChiRequest) {
+    public ObjectRespone update(@PathVariable String id, @RequestBody DiaChiRequest diaChiRequest) {
         return new ObjectRespone(diaChiService.update(id,diaChiRequest));
     }
 }

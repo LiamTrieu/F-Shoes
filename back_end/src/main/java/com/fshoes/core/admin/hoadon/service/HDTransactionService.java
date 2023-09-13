@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface HDTransactionService {
 
-    List<Transaction> getTransactionByBillId(Integer idBill);
+    List<Transaction> getTransactionByBillId(String idBill);
 
 }
