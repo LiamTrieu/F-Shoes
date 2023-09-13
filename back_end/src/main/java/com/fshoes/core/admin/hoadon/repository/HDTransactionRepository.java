@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface HDTransactionRepository extends TransactionRepository {
-    List<Transaction> getTransactionByBillId(Integer idBill);
+    List<Transaction> getTransactionByBillId(String idBill);
 
 }

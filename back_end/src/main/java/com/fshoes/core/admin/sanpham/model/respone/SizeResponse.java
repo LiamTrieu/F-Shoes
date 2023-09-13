@@ -1,7 +1,9 @@
 package com.fshoes.core.admin.sanpham.model.respone;
 
-public interface SizeResponse {
-    Integer getId();
+import com.fshoes.entity.base.IsIdentified;
+
+public interface SizeResponse extends IsIdentified {
     Float getSize();
-    Boolean getDeleted();
+
+    Integer getDeleted();
 }

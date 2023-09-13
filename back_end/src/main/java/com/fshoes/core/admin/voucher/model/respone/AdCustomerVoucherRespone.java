@@ -1,7 +1,8 @@
 package com.fshoes.core.admin.voucher.model.respone;
 
-public interface AdCustomerVoucherRespone {
-    Long getId();
+import com.fshoes.entity.base.IsIdentified;
+
+public interface AdCustomerVoucherRespone extends IsIdentified {
 
     String getCustomer();
 

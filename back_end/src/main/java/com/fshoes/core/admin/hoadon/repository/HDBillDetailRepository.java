@@ -9,10 +9,10 @@ import java.util.List;
 @Repository
 public interface HDBillDetailRepository extends BillDetailRepository {
 
-    List<BillDetail> getBillDetailsByBillId(Integer idBill);
+    List<BillDetail> getBillDetailsByBillId(String idBill);
 
-    List<BillDetail> getBillDetailsByBillIdAndStatus(Integer idBill, Integer status);
+    List<BillDetail> getBillDetailsByBillIdAndStatus(String idBill, Integer status);
 
-    BillDetail getBillDetailByBillIdAndProductDetailId(Integer idBill, Integer idProductDetail);
+    BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
 
 }

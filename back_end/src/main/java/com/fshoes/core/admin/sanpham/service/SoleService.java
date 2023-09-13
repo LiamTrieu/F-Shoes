@@ -12,13 +12,13 @@ public interface SoleService {
 
     List<SoleResponse> getAll();
 
-    SoleResponse getById(int id);
+    SoleResponse getById(String id);
 
     Page<SoleResponse> getPage(PageableRequest pageableRequest, String textSearch);
 
     Sole addSole(SoleRequest soleReq);
 
-    Sole updateSole(SoleRequest soleReq, int id);
+    Sole updateSole(SoleRequest soleReq, String id);
 
-    Sole chageDeleted(int id, boolean isDeleted);
+    Sole chageDeleted(String id, Integer isDeleted);
 }

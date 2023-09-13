@@ -4,11 +4,7 @@ package com.fshoes.core.admin.khuyenmai.controller;
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequest;
 import com.fshoes.core.admin.khuyenmai.service.impl.PromotionServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
-import com.fshoes.core.common.PageReponse;
-import com.fshoes.entity.Promotion;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +18,6 @@ import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/promotion")
-@CrossOrigin("*")
 public class PromotionController {
 
     @Autowired
@@ -34,7 +29,7 @@ public class PromotionController {
     }
 
     @GetMapping("/get-one/{id}")
-    public ObjectRespone getOne(@PathVariable int id) {
+    public ObjectRespone getOne(@PathVariable String id) {
         return new ObjectRespone(khuyenMaiService.getOne(id));
     }
 
@@ -44,7 +39,7 @@ public class PromotionController {
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone updateKhuyenMai(@RequestBody PromotionRequest promotionRequest, @PathVariable int id) throws ParseException {
+    public ObjectRespone updateKhuyenMai(@RequestBody PromotionRequest promotionRequest, @PathVariable String id) throws ParseException {
         return new ObjectRespone(khuyenMaiService.updateKhuyenMai(promotionRequest, id));
     }
 

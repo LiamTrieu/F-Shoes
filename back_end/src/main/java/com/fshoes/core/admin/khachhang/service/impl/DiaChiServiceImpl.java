@@ -1,7 +1,6 @@
 package com.fshoes.core.admin.khachhang.service.impl;
 
 import com.fshoes.core.admin.khachhang.model.request.DiaChiRequest;
-import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
 import com.fshoes.core.admin.khachhang.repository.DiaChiRepository;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.khachhang.service.DiaChiService;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +29,7 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
-    public Address getOne(int id) {
+    public Address getOne(String id) {
         return diaChiRepository.findById(id).orElse(null);
     }
 
@@ -45,7 +43,7 @@ public class DiaChiServiceImpl implements DiaChiService {
     public Address add(DiaChiRequest diaChiRequest) {
         try {
             Address address = diaChiRequest.newAddress(new Address());
-            address.setCustomer(khachHangRepository.findById(Integer.valueOf(diaChiRequest.getIdCustomer())).orElse(null));
+            address.setCustomer(khachHangRepository.findById(diaChiRequest.getIdCustomer()).orElse(null));
             return diaChiRepository.save(address);
         }catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +52,7 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
-    public Boolean update(Integer id, DiaChiRequest diaChiRequest) {
+    public Boolean update(String id, DiaChiRequest diaChiRequest) {
         Optional<Address> addressOptional = diaChiRepository.findById(id);
         if(addressOptional.isPresent()){
             Address address = diaChiRequest.newAddress(addressOptional.get());
@@ -63,13 +61,6 @@ public class DiaChiServiceImpl implements DiaChiService {
         }else {
             return false;
         }
-    }
-
-    @Override
-    public void delete(int id) {
-        Address address = diaChiRepository.findById(id).orElse(null);
-        address.setCustomer(null);
-        diaChiRepository.delete(address);
     }
 
 }

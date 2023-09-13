@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 @Builder
 public class HDBillDetailRequest {
 
-    private Integer idProductDetail;
+    private String idProductDetail;
 
-    private Integer idBill;
+    private String idBill;
 
     private Integer quanity;
 

@@ -12,13 +12,13 @@ public interface BrandService {
 
     List<BrandResponse> getAll();
 
-    BrandResponse getById(int id);
+    BrandResponse getById(String id);
 
     Page<BrandResponse> getPage(PageableRequest pageableRequest, String textSearch);
 
     Brand addBrand(BrandRequest brandReq);
 
-    Brand updateBrand(BrandRequest brandReq, int id);
+    Brand updateBrand(BrandRequest brandReq, String id);
 
-    Brand chageDeleted(int id, boolean isDeleted);
+    Brand chageDeleted(String id, Integer isDeleted);
 }

@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.nhanvien.model.request;
 
 import com.fshoes.entity.Staff;
+import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.util.DateUtil;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -45,7 +46,7 @@ public class StaffRequest {
         staff.setCitizenId(this.getCitizenId());
         staff.setRole(this.getRole());
         System.out.println(this.status);
-        staff.setStatus(this.getStatus());
+        staff.setStatus(Status.values()[status]);
         return staff;
     }
 }

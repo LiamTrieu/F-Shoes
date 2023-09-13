@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.sanpham.repository;
 
-import com.fshoes.core.admin.sanpham.model.respone.CategoryResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
 import com.fshoes.repository.ProductRepository;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,7 @@ public interface SpProductRepository extends ProductRepository {
     Page<ProductResponse> getPageProduct(Pageable pageable,@Param("textSearch") String textSeacrh);
 
     @Query(value = "select id, name, deleted, created_at as createAt from product where id = :id", nativeQuery = true)
-    Optional<ProductResponse> getById(@Param("id") int id);
+    Optional<ProductResponse> productById(@Param("id") String id);
 
     @Query(value = "select id, name, deleted from product where !deleted", nativeQuery = true)
     List<ProductResponse> getAll();

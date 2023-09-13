@@ -1,7 +1,8 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.LongEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -22,16 +23,17 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "product_detail")
-public class ProductDetail extends LongEntity {
+public class ProductDetail extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
 
     private BigDecimal price;
 
-    private Boolean deleted = false;
+    private Status deleted = Status.HOAT_DONG;
 
     private Integer amount;
 
+    @Column(length = EntityProperties.LENGTH_DESCRIPTION)
     private String description;
 
     @ManyToOne
@@ -61,8 +63,4 @@ public class ProductDetail extends LongEntity {
     @ManyToOne
     @JoinColumn(name = "id_color", referencedColumnName = "id")
     private Color color;
-
-    @ManyToOne
-    @JoinColumn(name = "id_image", referencedColumnName = "id")
-    private Image image;
 }

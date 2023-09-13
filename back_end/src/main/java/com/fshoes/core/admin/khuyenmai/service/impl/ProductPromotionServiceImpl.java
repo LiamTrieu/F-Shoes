@@ -23,7 +23,7 @@ public class ProductPromotionServiceImpl implements ProductPromotionService {
     }
 
     @Override
-    public Optional<ProductPromotion> getOne(Long id) {
+    public Optional<ProductPromotion> getOne(String id) {
         return productPromotionRepository.findById(id);
     }
 
@@ -34,7 +34,7 @@ public class ProductPromotionServiceImpl implements ProductPromotionService {
     }
 
     @Override
-    public ProductPromotion updateProductPromotion(ProductPromotionRequest productPromotionRequest, Long id) {
+    public ProductPromotion updateProductPromotion(ProductPromotionRequest productPromotionRequest, String id) {
         if(productPromotionRepository.existsById(id)){
            ProductPromotion productPromotion =  productPromotionRequest.newProductProduct( new ProductPromotion());
            productPromotion.setId(id);

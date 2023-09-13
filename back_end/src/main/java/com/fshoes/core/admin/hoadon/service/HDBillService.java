@@ -28,14 +28,14 @@ public interface HDBillService {
 
     Bill createBill();
 
-    Bill updateBill(Integer idBill, HDBillRequest hdBillRequest);
+    Bill updateBill(String idBill, HDBillRequest hdBillRequest);
 
-    Bill cancelOrder(Integer idBill, HDBillRequest hdBillRequest);
+    Bill cancelOrder(String idBill, HDBillRequest hdBillRequest);
 
-    Bill getOne(Integer id);
+    Bill getOne(String id);
 
     Page<HDBillResponse> getBillByStatusAndType(Integer pageNo, String status, String type);
 
-    Bill confirmOrder(Integer idBill, BillConfirmRequest billConfirmRequest);
+    Bill confirmOrder(String idBill, BillConfirmRequest billConfirmRequest);
 
 }

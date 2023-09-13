@@ -6,7 +6,7 @@ import com.fshoes.core.admin.sanpham.repository.SpBrandRepository;
 import com.fshoes.core.admin.sanpham.service.BrandService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Brand;
-import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
+import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,22 +22,19 @@ public class BrandServiceImpl implements BrandService {
     @Autowired
     private SpBrandRepository brandRepository;
 
-    @Autowired
-    CloudinaryImage cloudinaryImage;
-
     @Override
     public List<BrandResponse> getAll() {
         return brandRepository.getAll();
     }
 
     @Override
-    public BrandResponse getById(int id) {
-        return brandRepository.getById(id).orElse(null);
+    public BrandResponse getById(String id) {
+        return brandRepository.getBardById(id);
     }
 
     @Override
     public Page<BrandResponse> getPage(PageableRequest pageReq, String textSearch) {
-        Sort sort = Sort.by("id");
+        Sort sort = Sort.by("create_at");
         Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
         return brandRepository.getPageBrand(pageable, textSearch);
     }
@@ -54,7 +51,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public Brand updateBrand(BrandRequest brandReq, int id) {
+    public Brand updateBrand(BrandRequest brandReq, String id) {
         try {
             Brand brand = brandRepository.findById(id).orElseThrow();
             return brandRepository.save(brandReq.tranBrand(brand));
@@ -64,10 +61,10 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public Brand chageDeleted(int id, boolean isDeleted) {
+    public Brand chageDeleted(String id, Integer isDeleted) {
         try {
             Brand brand = brandRepository.findById(id).orElseThrow();
-            brand.setDeleted(isDeleted);
+            brand.setDeleted(Status.values()[isDeleted]);
             return brandRepository.save(brand);
         } catch (Exception e) {
             return null;

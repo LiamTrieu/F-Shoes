@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.sanpham.repository;
 
-import com.fshoes.core.admin.sanpham.model.respone.CategoryResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ColorResponse;
 import com.fshoes.repository.ColorRepository;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,7 @@ public interface SpColorRepository extends ColorRepository {
     Page<ColorResponse> getPageColor(Pageable pageable,@Param("textSearch") String textSeacrh);
 
     @Query(value = "select id, code, deleted from color where id = :id", nativeQuery = true)
-    Optional<ColorResponse> getById(@Param("id") int id);
+    Optional<ColorResponse> getColorById(@Param("id") String id);
 
     @Query(value = "select id, code, deleted from color where !deleted", nativeQuery = true)
     List<ColorResponse> getAll();

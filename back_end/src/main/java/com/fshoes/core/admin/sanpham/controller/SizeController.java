@@ -6,7 +6,6 @@ import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/size")
-@CrossOrigin("*")
 public class SizeController {
 
     @Autowired
@@ -36,7 +34,7 @@ public class SizeController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getSize(@PathVariable int id) {
+    public ObjectRespone getSize(@PathVariable String id) {
         return new ObjectRespone(sizeService.getById(id));
     }
 
@@ -47,13 +45,13 @@ public class SizeController {
 
     @PutMapping("/update/{id}")
     public ObjectRespone updateSize(@RequestBody SizeRequest sizeReq,
-                                    @PathVariable int id) {
+                                    @PathVariable String id) {
         return new ObjectRespone(sizeService.updateSize(sizeReq, id));
     }
 
     @PutMapping("/deleted/{id}")
-    public ObjectRespone deletedSize(@RequestBody boolean isDeleted,
-                                        @PathVariable int id) {
+    public ObjectRespone deletedSize(@RequestBody Integer isDeleted,
+                                     @PathVariable String id) {
         return new ObjectRespone(sizeService.chageDeleted(id, isDeleted));
     }
 }

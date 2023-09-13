@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.sanpham.repository;
 
-import com.fshoes.core.admin.sanpham.model.respone.BrandResponse;
 import com.fshoes.core.admin.sanpham.model.respone.CategoryResponse;
 import com.fshoes.repository.CategoryRepository;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,7 @@ public interface SpCategoryRepository extends CategoryRepository {
     Page<CategoryResponse> getPageCategory(Pageable pageable,@Param("textSearch") String textSeacrh);
 
     @Query(value = "select id, name, deleted from category where id = :id", nativeQuery = true)
-    Optional<CategoryResponse> getById(@Param("id") int id);
+    Optional<CategoryResponse> getCateById(@Param("id") String id);
 
     @Query(value = "select id, name, deleted from category where !deleted", nativeQuery = true)
     List<CategoryResponse> getAll();

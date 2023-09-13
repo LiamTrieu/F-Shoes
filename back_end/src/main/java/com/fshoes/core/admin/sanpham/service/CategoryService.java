@@ -12,13 +12,13 @@ public interface CategoryService {
 
     List<CategoryResponse> getAll();
 
-    CategoryResponse getById(int id);
+    CategoryResponse getById(String id);
 
     Page<CategoryResponse> getPage(PageableRequest pageableRequest, String textSearch);
 
     Category addCategory(CategoryRequest categoryReq);
 
-    Category updateCategory(CategoryRequest categoryReq, int id);
+    Category updateCategory(CategoryRequest categoryReq, String id);
 
-    Category chageDeleted(int id, boolean isDeleted);
+    Category chageDeleted(String id, Integer isDeleted);
 }

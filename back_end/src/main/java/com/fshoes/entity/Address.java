@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.LongEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "address")
-public class Address extends LongEntity {
+public class Address extends PrimaryEntity {
 
 
     @Column(length = EntityProperties.LENGTH_NAME)

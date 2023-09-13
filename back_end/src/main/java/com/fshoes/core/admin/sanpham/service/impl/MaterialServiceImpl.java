@@ -6,6 +6,7 @@ import com.fshoes.core.admin.sanpham.repository.SpMaterialRepository;
 import com.fshoes.core.admin.sanpham.service.MaterialService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Material;
+import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,13 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public MaterialResponse getById(int id) {
-        return materialRepository.getById(id).orElse(null);
+    public MaterialResponse getById(String id) {
+        return materialRepository.materialById(id).orElse(null);
     }
 
     @Override
     public Page<MaterialResponse> getPage(PageableRequest pageReq, String textSearch) {
-        Sort sort = Sort.by("id");
+        Sort sort = Sort.by("create_at");
         Pageable pageable = PageRequest.of(pageReq.getPage() - 1, pageReq.getSize(), sort);
         return materialRepository.getPageMaterial(pageable, textSearch);
     }
@@ -43,7 +44,6 @@ public class MaterialServiceImpl implements MaterialService {
     public Material addMaterial(MaterialRequest materialReq) {
         try {
             Material material = materialReq.tranMaterial(new Material());
-            material.setDeleted(false);
             return materialRepository.save(material);
         } catch (Exception e) {
             return null;
@@ -51,7 +51,7 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public Material updateMaterial(MaterialRequest materialReq, int id) {
+    public Material updateMaterial(MaterialRequest materialReq, String id) {
         try {
             Material material = materialRepository.findById(id).orElseThrow();
             return materialRepository.save(materialReq.tranMaterial(material));
@@ -61,10 +61,10 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public Material chageDeleted(int id, boolean isDeleted) {
+    public Material chageDeleted(String id, Integer isDeleted) {
         try {
             Material material = materialRepository.findById(id).orElseThrow();
-            material.setDeleted(isDeleted);
+            material.setDeleted(Status.values()[isDeleted]);
             return materialRepository.save(material);
         } catch (Exception e) {
             return null;

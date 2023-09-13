@@ -1,23 +1,24 @@
 package com.fshoes.core.admin.khachhang.controller;
 
 import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
-import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.service.impl.KhachHangServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
-import com.fshoes.core.common.PageReponse;
-import com.fshoes.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/khach-hang")
-@CrossOrigin("*")
 public class KhachHangController {
     @Autowired
     private KhachHangServiceImpl khachHangService;
@@ -45,17 +46,17 @@ public class KhachHangController {
     }
 
     @GetMapping("/get-one/{id}")
-    public ObjectRespone getOne(@PathVariable int id) {
+    public ObjectRespone getOne(@PathVariable String id) {
         return new ObjectRespone(khachHangService.getOne(id));
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone update(@PathVariable int id, @RequestBody KhachHangRequest khachHangRequest) throws ParseException {
+    public ObjectRespone update(@PathVariable String id, @RequestBody KhachHangRequest khachHangRequest) throws ParseException {
         return new ObjectRespone(khachHangService.update(id,khachHangRequest));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable int id) {
+    public void delete(@PathVariable String id) {
         khachHangService.delete(id);
     }
 }

@@ -1,9 +1,10 @@
 package com.fshoes.core.admin.voucher.model.respone;
 
+import com.fshoes.entity.base.IsIdentified;
+
 import java.math.BigDecimal;
 
-public interface AdVoucherRespone {
-    Integer getId();
+public interface AdVoucherRespone extends IsIdentified {
 
     String getCode();
 

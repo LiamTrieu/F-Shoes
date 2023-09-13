@@ -26,7 +26,7 @@ public interface AdCustomerVoucherRepository extends CustomerVoucherRepository {
             left join voucher v on cv.id_voucher = v.id
             where cv.id =:id
             """, nativeQuery = true)
-    AdCustomerVoucherRespone getOneById(Integer id);
+    AdCustomerVoucherRespone getOneById(String id);
     @Query(value = """
             select cv.id, c.full_name as customer, v.name as voucher, cv.status
             from customer_voucher cv

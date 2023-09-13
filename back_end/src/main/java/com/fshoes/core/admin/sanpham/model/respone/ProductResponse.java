@@ -1,8 +1,10 @@
 package com.fshoes.core.admin.sanpham.model.respone;
 
-public interface ProductResponse {
-    Integer getId();
+import com.fshoes.entity.base.IsIdentified;
+
+public interface ProductResponse extends IsIdentified {
     String getName();
-    Boolean getDeleted();
+
+    Integer getDeleted();
     Long getCreateAt();
 }

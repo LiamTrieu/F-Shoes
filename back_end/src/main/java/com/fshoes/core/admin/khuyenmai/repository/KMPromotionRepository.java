@@ -20,18 +20,18 @@ public interface KMPromotionRepository extends PromotionRepository {
     Page<PromotionRespone> searchByName(Pageable pageable, @Param("textSearch") String textSearch);
 
     @Query(value = "select Id, Name, time_start as TimeStart, time_end as TimeEnd, Value, Status " +
-            "from Promotion where TimeStart >= :timeStartSearch ",nativeQuery = true)
+            "from Promotion where time_start >= :timeStartSearch ", nativeQuery = true)
 
     Page<PromotionRespone> searchByTimeStart(Pageable pageable, @Param("timeStartSearch") Long timeStartSearch);
 
 
     @Query(value = "select Id, Name, time_start as TimeStart, time_end as TimeEnd, Value, Status " +
-            "from Promotion where TimeEnd <= :timeEndSearch ",nativeQuery = true)
+            "from Promotion where time_end <= :timeEndSearch ", nativeQuery = true)
 
     Page<PromotionRespone> searchByTimeEnd(Pageable pageable, @Param("timeEndSearch") Long timeEndSearch);
 
     @Query(value = "select Id, Name, time_start as TimeStart, time_end as TimeEnd, Value, Status " +
-            "from Promotion where TimeStart >= :timeStartSearch and  TimeEnd <= :timeEndSearch ",nativeQuery = true)
+            "from Promotion where time_start >= :timeStartSearch and  time_end <= :timeEndSearch ", nativeQuery = true)
 
     Page<PromotionRespone> searchPromotionBetweenDate(Pageable pageable, @Param("timeStartSearch") Long timeStartSearch, @Param("timeEndSearch") Long timeEndSearch);
 

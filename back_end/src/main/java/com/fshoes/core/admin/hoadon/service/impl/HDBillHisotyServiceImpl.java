@@ -20,7 +20,7 @@ public class HDBillHisotyServiceImpl implements HDBillHistoryService {
     private StaffRepository staffRepository;
 
     @Override
-    public List<BillHistory> getBillHistoriesByBillId(Integer idBill) {
+    public List<BillHistory> getBillHistoriesByBillId(String idBill) {
         return hdBillHistoryRepository.getBillHistoriesByBillId(idBill);
     }
 

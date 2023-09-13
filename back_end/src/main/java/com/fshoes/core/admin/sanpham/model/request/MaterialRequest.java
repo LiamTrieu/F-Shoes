@@ -10,11 +10,9 @@ public class MaterialRequest {
 
     private String name;
 
-    private String deleted = "false";
 
     public Material tranMaterial(Material material) {
         material.setName(this.name);
-        material.setDeleted(Boolean.valueOf(this.deleted));
         return material;
     }
 }

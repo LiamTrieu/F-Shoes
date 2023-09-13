@@ -29,7 +29,7 @@ public class AdCustomerVoucherServiceImpl implements AdCustomerVoucherService {
     }
 
     @Override
-    public AdCustomerVoucherRespone getCustomerVoucherById(Integer id) {
+    public AdCustomerVoucherRespone getCustomerVoucherById(String id) {
         return adCustomerVoucherRepository.getOneById(id);
     }
 
@@ -47,12 +47,11 @@ public class AdCustomerVoucherServiceImpl implements AdCustomerVoucherService {
             Voucher voucher = new Voucher();
             CustomerVoucher customerVoucher = new CustomerVoucher();
 
-            customer.setId(Integer.valueOf(adCustomerVoucherRequest.getIdCustomer()));
-            voucher.setId(Integer.valueOf(adCustomerVoucherRequest.getIdVoucher()));
+            customer.setId(adCustomerVoucherRequest.getIdCustomer());
+            voucher.setId(adCustomerVoucherRequest.getIdVoucher());
 
             customerVoucher.setCustomer(customer);
             customerVoucher.setVoucher(voucher);
-            customerVoucher.setStatus(1);
 
             return adCustomerVoucherRepository.save(customerVoucher);
         } catch (Exception e) {
@@ -62,11 +61,10 @@ public class AdCustomerVoucherServiceImpl implements AdCustomerVoucherService {
     }
 
     @Override
-    public Boolean deleteCustomerVoucher(Integer id) {
+    public Boolean deleteCustomerVoucher(String id) {
         Optional<CustomerVoucher> optionalCustomerVoucher = adCustomerVoucherRepository.findById(id);
         if (optionalCustomerVoucher.isPresent()) {
             CustomerVoucher customerVoucher = optionalCustomerVoucher.get();
-            customerVoucher.setStatus(0);
             adCustomerVoucherRepository.save(customerVoucher);
             return true;
         } else {

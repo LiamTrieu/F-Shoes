@@ -5,9 +5,7 @@ import com.fshoes.core.admin.sanpham.service.BrandService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
-import com.fshoes.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/brand")
-@CrossOrigin("*")
 public class BrandController {
 
     @Autowired
@@ -37,7 +34,7 @@ public class BrandController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getBrand(@PathVariable int id) {
+    public ObjectRespone getBrand(@PathVariable String id) {
         return new ObjectRespone(brandService.getById(id));
     }
 
@@ -48,13 +45,13 @@ public class BrandController {
 
     @PutMapping("/update/{id}")
     public ObjectRespone updateBrand(@RequestBody BrandRequest brandReq,
-                                     @PathVariable int id) {
+                                     @PathVariable String id) {
         return new ObjectRespone(brandService.updateBrand(brandReq, id));
     }
 
     @PutMapping("/deleted/{id}")
-    public ObjectRespone deletedProduct(@RequestBody boolean isDeleted,
-                                        @PathVariable int id) {
+    public ObjectRespone deletedProduct(@RequestBody Integer isDeleted,
+                                        @PathVariable String id) {
         return new ObjectRespone(brandService.chageDeleted(id, isDeleted));
     }
 }

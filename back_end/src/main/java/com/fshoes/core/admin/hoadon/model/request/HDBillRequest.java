@@ -13,9 +13,9 @@ import lombok.Setter;
 @Builder
 public class HDBillRequest {
 
-    private Integer idVoucher;
+    private String idVoucher;
 
-    private Integer idCustomer;
+    private String idCustomer;
 
     private String fullName;
 
@@ -29,6 +29,6 @@ public class HDBillRequest {
 
     private String noteBillHistory;
 
-    private Integer idStaff;
+    private String idStaff;
 
 }

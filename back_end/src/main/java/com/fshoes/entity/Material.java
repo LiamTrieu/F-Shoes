@@ -1,7 +1,8 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -18,11 +19,11 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "material")
-public class Material extends IntegerEntity {
+public class Material extends PrimaryEntity {
 
     @Column(length = EntityProperties.LENGTH_NAME, unique = true)
     private String name;
 
-    private Boolean deleted = false;
+    private Status deleted = Status.HOAT_DONG;
 
 }

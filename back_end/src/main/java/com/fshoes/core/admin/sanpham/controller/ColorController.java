@@ -6,7 +6,6 @@ import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/color")
-@CrossOrigin("*")
 public class ColorController {
 
     @Autowired
@@ -36,7 +34,7 @@ public class ColorController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getColor(@PathVariable int id){
+    public ObjectRespone getColor(@PathVariable String id) {
         return new ObjectRespone(colorService.getById(id));
     }
 
@@ -45,8 +43,8 @@ public class ColorController {
         return new ObjectRespone(colorService.addColor(colorReq));
     }
     @PutMapping("/deleted/{id}")
-    public ObjectRespone deletedColor(@RequestBody boolean isDeleted,
-                                        @PathVariable int id) {
+    public ObjectRespone deletedColor(@RequestBody Integer isDeleted,
+                                      @PathVariable String id) {
         return new ObjectRespone(colorService.chageDeleted(id,isDeleted));
     }
 }

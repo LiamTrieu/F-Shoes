@@ -10,11 +10,8 @@ public class CategoryRequest {
 
     private String name;
 
-    private String deleted = "false";
-
     public Category tranCategory(Category category) {
         category.setName(this.name);
-        category.setDeleted(Boolean.valueOf(this.deleted));
         return category;
     }
 }

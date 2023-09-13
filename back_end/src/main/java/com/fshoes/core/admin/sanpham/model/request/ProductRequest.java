@@ -10,11 +10,9 @@ public class ProductRequest {
 
     private String name;
 
-    private String deleted = "false";
 
     public Product tranProduct(Product product) {
         product.setName(this.name);
-        product.setDeleted(Boolean.valueOf(this.deleted));
         return product;
     }
 }

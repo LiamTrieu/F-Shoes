@@ -6,7 +6,6 @@ import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +20,6 @@ import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/bill")
-@CrossOrigin("*")
 public class HDBillController {
 
     @Autowired
@@ -96,19 +94,19 @@ public class HDBillController {
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone updateBill(@PathVariable("id") Integer idBill,
+    public ObjectRespone updateBill(@PathVariable("id") String idBill,
                                     @RequestBody HDBillRequest hdBillRequest) {
         return new ObjectRespone(hdBillService.updateBill(idBill, hdBillRequest));
     }
 
     @PutMapping("/cancel/{id}")
-    public ObjectRespone cancel(@PathVariable("id") Integer idBill,
+    public ObjectRespone cancel(@PathVariable("id") String idBill,
                                 @RequestBody HDBillRequest hdBillRequest) {
         return new ObjectRespone(hdBillService.cancelOrder(idBill, hdBillRequest));
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getOne(@PathVariable("id") Integer id) {
+    public ObjectRespone getOne(@PathVariable("id") String id) {
         return new ObjectRespone(hdBillService.getOne(id));
     }
 
@@ -122,7 +120,7 @@ public class HDBillController {
     }
 
     @PutMapping("/confirm-order/{idBill}")
-    public ObjectRespone confirmOrder(@PathVariable(name = "idBill") Integer idBill,
+    public ObjectRespone confirmOrder(@PathVariable(name = "idBill") String idBill,
                                       @RequestBody BillConfirmRequest billConfirmRequest) {
         return new ObjectRespone(hdBillService.confirmOrder(idBill, billConfirmRequest));
     }

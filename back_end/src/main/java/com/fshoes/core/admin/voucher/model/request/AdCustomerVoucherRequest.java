@@ -12,9 +12,8 @@ public class AdCustomerVoucherRequest {
     private String status = "1";
 
     public CustomerVoucher newCustomerVoucher(CustomerVoucher customerVoucher) {
-        customerVoucher.getCustomer().setId(Integer.valueOf(idCustomer));
-        customerVoucher.getVoucher().setId(Integer.valueOf(idVoucher));
-        customerVoucher.setStatus(Integer.valueOf(status));
+        customerVoucher.getCustomer().setId(idCustomer);
+        customerVoucher.getVoucher().setId(idVoucher);
         return customerVoucher;
     }
 }

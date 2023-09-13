@@ -6,7 +6,6 @@ import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/sole")
-@CrossOrigin("*")
 public class SoleController {
 
     @Autowired
@@ -36,7 +34,7 @@ public class SoleController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getSole(@PathVariable int id) {
+    public ObjectRespone getSole(@PathVariable String id) {
         return new ObjectRespone(soleService.getById(id));
     }
 
@@ -47,13 +45,13 @@ public class SoleController {
 
     @PutMapping("/update/{id}")
     public ObjectRespone updateSole(@RequestBody SoleRequest soleReq,
-                                    @PathVariable int id) {
+                                    @PathVariable String id) {
         return new ObjectRespone(soleService.updateSole(soleReq, id));
     }
 
     @PutMapping("/deleted/{id}")
-    public ObjectRespone deletedSole(@RequestBody boolean isDeleted,
-                                        @PathVariable int id) {
+    public ObjectRespone deletedSole(@RequestBody Integer isDeleted,
+                                     @PathVariable String id) {
         return new ObjectRespone(soleService.chageDeleted(id, isDeleted));
     }
 }

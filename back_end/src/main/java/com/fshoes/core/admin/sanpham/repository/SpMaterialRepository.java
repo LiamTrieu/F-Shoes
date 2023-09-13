@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.sanpham.repository;
 
-import com.fshoes.core.admin.sanpham.model.respone.CategoryResponse;
 import com.fshoes.core.admin.sanpham.model.respone.MaterialResponse;
 import com.fshoes.repository.MaterialRepository;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,7 @@ public interface SpMaterialRepository extends MaterialRepository {
     Page<MaterialResponse> getPageMaterial(Pageable pageable,@Param("textSearch") String textSeacrh);
 
     @Query(value = "select id, name, deleted from material where id = :id", nativeQuery = true)
-    Optional<MaterialResponse> getById(@Param("id") int id);
+    Optional<MaterialResponse> materialById(@Param("id") String id);
 
     @Query(value = "select id, name, deleted from material where !deleted", nativeQuery = true)
     List<MaterialResponse> getAll();

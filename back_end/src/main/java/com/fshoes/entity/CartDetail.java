@@ -1,6 +1,6 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "cart_detail")
-public class CartDetail extends IntegerEntity {
+public class CartDetail extends PrimaryEntity {
     private Integer quantity;
 
     @ManyToOne

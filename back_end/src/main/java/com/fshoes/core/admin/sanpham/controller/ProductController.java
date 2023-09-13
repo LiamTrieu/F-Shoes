@@ -6,7 +6,6 @@ import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.PageableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/product")
-@CrossOrigin("*")
 public class ProductController {
 
     @Autowired
@@ -36,7 +34,7 @@ public class ProductController {
     }
 
     @GetMapping("/get/{id}")
-    public ObjectRespone getProduct(@PathVariable int id){
+    public ObjectRespone getProduct(@PathVariable String id) {
         return new ObjectRespone(productService.getById(id));
     }
 
@@ -46,13 +44,13 @@ public class ProductController {
     }
     @PutMapping ("/update/{id}")
     public ObjectRespone updateProduct(@RequestBody ProductRequest productReq,
-                                        @PathVariable int id){
+                                       @PathVariable String id) {
         return new ObjectRespone(productService.updateProduct(productReq, id));
     }
 
     @PutMapping("/deleted/{id}")
-    public ObjectRespone deletedProduct(@RequestBody boolean isDeleted,
-                                        @PathVariable int id) {
+    public ObjectRespone deletedProduct(@RequestBody Integer isDeleted,
+                                        @PathVariable String id) {
         return new ObjectRespone(productService.chageDeleted(id,isDeleted));
     }
 }

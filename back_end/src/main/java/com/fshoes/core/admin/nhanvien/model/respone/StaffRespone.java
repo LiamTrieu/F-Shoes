@@ -1,10 +1,9 @@
 package com.fshoes.core.admin.nhanvien.model.respone;
 
+import com.fshoes.entity.base.IsIdentified;
 import org.springframework.beans.factory.annotation.Value;
 
-public interface StaffRespone {
-    @Value("#{target.id}")
-    Integer getId();
+public interface StaffRespone extends IsIdentified {
 
     @Value("#{target.full_name}")
     String getfullName();

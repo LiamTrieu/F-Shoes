@@ -13,9 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class BillConfirmRequest {
-    private Integer idVoucher;
+    private String idVoucher;
 
-    private Integer idCustomer;
+    private String idCustomer;
 
     private String fullName;
 
@@ -29,7 +29,7 @@ public class BillConfirmRequest {
 
     private String noteBillHistory;
 
-    private Integer idStaff;
+    private String idStaff;
 
     private List<HDBillDetailRequest> listHdctReq;
 
