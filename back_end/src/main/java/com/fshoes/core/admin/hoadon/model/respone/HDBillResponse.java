@@ -1,62 +1,37 @@
 package com.fshoes.core.admin.hoadon.model.respone;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fshoes.entity.base.IsIdentified;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class HDBillResponse {
+public interface HDBillResponse extends IsIdentified {
 
-    private String id;
+    String getCode();
 
-    private String code;
+    String getFullName();
 
-    private String fullName;
+    String getPhoneNumber();
 
-    private String phoneNumber;
+    String getAddress();
 
-    private String address;
+    Long getTotalMoney();
 
-    private BigDecimal totalMoney;
+    BigDecimal getMoneyReduced();
 
-    private BigDecimal moneyReduced;
+    BigDecimal getMoneyAfter();
 
-    private BigDecimal moneyAfter;
+    BigDecimal getMoneyShip();
 
-    private BigDecimal moneyShip;
+    Integer getType();
 
-    private Boolean type;
+    String getNote();
 
-    private String note;
+    Long getCreatedAt();
 
-    private Long createdAt;
+    String getCreatedBy();
 
-    private String createdBy;
+    Long getTotalProduct();
 
-    private Long totalProduct;
+    Integer getStatus();
 
-    private Integer status;
-
-
-    public HDBillResponse(String id, String code, String fullName, String phoneNumber, String address, BigDecimal totalMoney, BigDecimal moneyReduced, BigDecimal moneyAfter, BigDecimal moneyShip, Boolean type, String note, Long createdAt, String createdBy, Long totalProduct, Integer status) {
-        this.id = id;
-        this.code = code;
-        this.fullName = fullName;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.totalMoney = totalMoney;
-        this.moneyReduced = moneyReduced;
-        this.moneyAfter = moneyAfter;
-        this.moneyShip = moneyShip;
-        this.type = type;
-        this.note = note;
-        this.createdAt = createdAt;
-        this.createdBy = createdBy;
-        this.totalProduct = totalProduct;
-        this.status = status;
-    }
 }

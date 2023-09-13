@@ -1,15 +1,13 @@
 import Swal from 'sweetalert2'
 
-export default function confirmSatus(title, text, theme) {
+export default function confirmSatus(title, text) {
   return Swal.fire({
     title: title,
     text: text,
     icon: 'warning',
-    background: theme.palette.layout.colorBgNav,
-    color: theme.palette.layout.colorText,
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
+    confirmButtonColor: '#F2721E',
+    cancelButtonColor: '#FF3333',
     confirmButtonText: 'Vâng!',
     cancelButtonText: 'Hủy',
   })
