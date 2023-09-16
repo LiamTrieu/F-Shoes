@@ -17,7 +17,7 @@ public interface StaffService {
 
     Page<StaffRespone> searchStaff(SearchStaff searchStaff);
 
-    Staff getOne(String id);
+    StaffRespone getOne(String id);
 
     Staff add(@Valid StaffRequest staffRequest) throws ParseException;
 

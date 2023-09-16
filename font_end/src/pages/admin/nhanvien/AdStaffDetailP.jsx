@@ -45,8 +45,11 @@ export default function AdStaffDetail() {
     staffApi
       .getOne(id)
       .then((response) => {
+        const formattedEndDate = dayjs(response.data.dateBirth).format('DD-MM-YYYY')
+        console.log('text')
         setStaffDetail({
           ...response.data,
+          dateBirth: formattedEndDate,
         })
       })
       .catch(() => {
@@ -62,7 +65,6 @@ export default function AdStaffDetail() {
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         staffApi.update(id, staffDetail).then(() => {
-          console.log('text')
           console.log(staffDetail)
           toast.success('Cập nhật nhân viên thành công!', {
             position: toast.POSITION.TOP_RIGHT,
@@ -199,7 +201,7 @@ export default function AdStaffDetail() {
                   value={0}
                   control={<Radio />}
                   label="Quản lý"
-                  checked={staffDetail?.role === 0}
+                  checked={staffDetail?.role === '0'}
                   onChange={handleRoleRadioChange}
                 />
                 <FormControlLabel
@@ -207,7 +209,7 @@ export default function AdStaffDetail() {
                   value={1}
                   control={<Radio />}
                   label="Nhân viên"
-                  checked={staffDetail?.role === 1}
+                  checked={staffDetail?.role === '1'}
                   onChange={handleRoleRadioChange}
                 />
               </RadioGroup>
@@ -219,7 +221,7 @@ export default function AdStaffDetail() {
                 format={'DD-MM-YYYY'}
                 label="Ngày sinh"
                 sx={{ width: '100%' }}
-                value={dayjs(staffDetail?.dateBirth)}
+                value={dayjs(staffDetail?.dateBirth, 'DD-MM-YYYY')}
                 onChange={(e) => {
                   setStaffDetail({
                     ...staffDetail,
@@ -238,14 +240,14 @@ export default function AdStaffDetail() {
               <RadioGroup row value={staffDetail?.status}>
                 <FormControlLabel
                   name="statusUpdate"
-                  value={1}
+                  value={0}
                   control={<Radio />}
                   label="Hoạt động"
                   onChange={handleStatusRadioChange}
                 />
                 <FormControlLabel
                   name="statusUpdate"
-                  value={0}
+                  value={1}
                   control={<Radio />}
                   label="Không hoạt động"
                   onChange={handleStatusRadioChange}

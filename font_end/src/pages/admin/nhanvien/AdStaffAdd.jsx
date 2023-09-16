@@ -13,11 +13,12 @@ import {
 } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
 import { toast } from 'react-toastify'
+import { QrReader } from 'react-qr-reader'
 
 export default function AddStaff() {
   const initStaff = {
@@ -32,6 +33,36 @@ export default function AddStaff() {
     role: 1,
     status: 1,
   }
+  const [qrDataArray, setQRCodeData] = useState('')
+  const [qrScannerVisible, setQrScannerVisible] = useState(false)
+  const handleScan = (qrData) => {
+    if (qrData) {
+      setQRCodeData(qrData)
+      const qrDataArray = qrData.split('|')
+      const citizenId = qrDataArray[0]
+      const fullName = qrDataArray[2]
+      const dateOfBirthRaw = qrDataArray[3]
+      const gender = qrDataArray[4]
+
+      const dateOfBirth = dayjs(dateOfBirthRaw, 'DDMMYYYY').format('DD-MM-YYYY')
+
+      setStaffAdd({
+        ...staffAdd,
+        citizenId,
+        fullName,
+        dateBirth: dateOfBirth,
+        gender,
+      })
+
+      console.log('data', qrData)
+    } else {
+      console.error('Không tìm thấy mã QR.')
+    }
+  }
+  const handleOpenQRScanner = () => {
+    setQrScannerVisible(true)
+  }
+
   const [staffAdd, setStaffAdd] = useState(initStaff)
   const theme = useTheme()
   const navigate = useNavigate()
@@ -40,7 +71,7 @@ export default function AddStaff() {
     setStaffAdd({ ...staffAdd, gender: Boolean(e.target.value) })
   }
 
-  const handleStaffAdd = (staffAdd) => {
+  const handleStaffAdd = () => {
     console.log('staff :', staffAdd)
     const title = 'Xác nhận thêm mới nhân viên?'
     const text = ''
@@ -63,6 +94,25 @@ export default function AddStaff() {
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <h2>Nhân viên</h2>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={0.5}></Grid>
+          <Grid item xs={3}></Grid>
+          <Grid item xs={5}></Grid>
+          <Grid item xs={3}>
+            <Button
+              variant="contained"
+              fullWidth
+              color="success"
+              // component={Link}
+              // to="/admin/staff/qr-code"
+              onClick={handleOpenQRScanner}>
+              Quét QR
+            </Button>
+            {qrScannerVisible && (
+              <QrReader delay={300} style={{ width: '100%' }} onResult={handleScan} />
+            )}
+          </Grid>
+        </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
