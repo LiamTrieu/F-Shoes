@@ -2,6 +2,7 @@ package com.fshoes.entity;
 
 import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.infrastructure.constant.StatusVoucher;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,4 +34,13 @@ public class Promotion extends PrimaryEntity {
     private Integer value;
 
     private StatusVoucher status;
+
+    public Integer getStatus() {
+        return status.ordinal();
+    }
+
+    public void setStatus(Integer status) {
+        this.status = StatusVoucher.values()[status];
+    }
+
 }

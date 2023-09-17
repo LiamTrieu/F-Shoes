@@ -1,9 +1,12 @@
 package com.fshoes.core.admin.khuyenmai.controller;
 
 
-import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequest;
+import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequestAdd;
+import com.fshoes.core.admin.khuyenmai.model.request.PromotionSearch;
+import com.fshoes.core.admin.khuyenmai.model.respone.PromotionRespone;
 import com.fshoes.core.admin.khuyenmai.service.impl.PromotionServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
+import com.fshoes.core.common.PageReponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,24 +31,29 @@ public class PromotionController {
         return new ObjectRespone(khuyenMaiService.getAll());
     }
 
+    @GetMapping("/get-page")
+    public PageReponse<PromotionRespone> getPage(PromotionRequestAdd request) {
+        return (khuyenMaiService.getPage(request));
+    }
+
     @GetMapping("/get-one/{id}")
     public ObjectRespone getOne(@PathVariable String id) {
         return new ObjectRespone(khuyenMaiService.getOne(id));
     }
 
     @PostMapping("/add")
-    public ObjectRespone addKhuyenMai(@RequestBody PromotionRequest promotionRequest) throws ParseException {
+    public ObjectRespone addKhuyenMai(@RequestBody PromotionRequestAdd promotionRequest) throws ParseException {
         return new ObjectRespone(khuyenMaiService.addKhuyenMai(promotionRequest));
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone updateKhuyenMai(@RequestBody PromotionRequest promotionRequest, @PathVariable String id) throws ParseException {
+    public ObjectRespone updateKhuyenMai(@RequestBody PromotionRequestAdd promotionRequest, @PathVariable String id) throws ParseException {
         return new ObjectRespone(khuyenMaiService.updateKhuyenMai(promotionRequest, id));
     }
 
-    @GetMapping("/page")
-    public ObjectRespone pageKM(@RequestParam(defaultValue = "0", name = "page") int page){
-        return new ObjectRespone(khuyenMaiService.KMPage(page));
+    @PutMapping("/delete/{id}")
+    public ObjectRespone deleteKhuyenMai( @PathVariable String id){
+        return new ObjectRespone(khuyenMaiService.deleteKhuyenMai(id));
     }
 
     @GetMapping("/search-by-name")
@@ -56,21 +64,9 @@ public class PromotionController {
 
     }
 
-    @GetMapping("/search-by-status")
-    public ObjectRespone getByStatus(@RequestParam(name = "statusSearch") Integer statusSearch,
-                                       @RequestParam("page") Integer page,
-                                       @RequestParam("pageSize") Integer pageSize ){
-
-        return new ObjectRespone(khuyenMaiService.searchByStatus(page,pageSize,statusSearch));
-
-    }
-
-    @GetMapping("/search-by-time")
-    public ObjectRespone getTime(@RequestParam("page") Integer page,
-
-                                     @RequestParam(value = "timeStartSearch") String timeStartSearch,
-                                     @RequestParam(value = "timeEndSearch") String timeEndSearch) {
-        return new ObjectRespone(khuyenMaiService.searchByTime(page,timeStartSearch,timeEndSearch));
+    @GetMapping("/get-Promotion-filter")
+    public PageReponse<PromotionRespone> getAllPro(PromotionSearch filter){
+        return new PageReponse<>(khuyenMaiService.getAllPromotion(filter));
     }
 
 

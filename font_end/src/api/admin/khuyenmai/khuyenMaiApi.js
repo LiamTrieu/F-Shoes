@@ -1,34 +1,42 @@
-import axios from 'axios'
-const urlPromotion = 'http://localhost:8080'
+import axiosClient from '../../axios'
 const khuyenMaiApi = {
   getAll: () => {
-    const GetAll = `${urlPromotion}/api/promotion/get-all`
-    return axios.get(GetAll)
+    const GetAll = `/promotion/get-all`
+    return axiosClient.get(GetAll)
   },
 
   getPage: (totalPages) => {
-    const urlPage = `${urlPromotion}/api/promotion/page?page=${totalPages}`
-    return axios.get(urlPage)
+    const urlPage = `/promotion/get-page`
+    return axiosClient.get(urlPage, totalPages)
+  },
+
+  getAllPromotion: (filter) => {
+    const urlPage = `/promotion/get-Promotion-filter`
+    return axiosClient.get(urlPage, filter)
   },
 
   getById: (id) => {
-    const getPageById = `${urlPromotion}/api/promotion/get-one/${id}`
-    return axios.get(getPageById)
+    const getPageById = `/promotion/get-one/${id}`
+    return axiosClient.get(getPageById)
   },
 
   addPromotion: (Promotion) => {
-    const urlAddPromotion = `${urlPromotion}/api/promotion/add`
-    return axios.post(urlAddPromotion, Promotion)
+    const urlAddPromotion = `/promotion/add`
+    return axiosClient.post(urlAddPromotion, Promotion)
   },
 
   UpdayePromotion: (UpdatePromotionRe, id) => {
-    const urlUpdatePromotion = `${urlPromotion}/api/promotion/update/${id}`
-    return axios.put(urlUpdatePromotion, UpdatePromotionRe, id)
+    const urlUpdatePromotion = `/promotion/update/${id}`
+    return axiosClient.put(urlUpdatePromotion, UpdatePromotionRe, id)
   },
 
   searchPromotionByName: (page, textSearch) => {
-    const urlSearchPromotion = `${urlPromotion}/api/promotion/search-by-name?page=${page}&textSearch=${textSearch}`
-    return axios.get(urlSearchPromotion)
+    const urlSearchPromotion = `/promotion/search-by-name?page=${page}&textSearch=${textSearch}`
+    return axiosClient.get(urlSearchPromotion)
+  },
+  deletePromotion: (id) => {
+    const urlDeletePromotion = `/promotion/delete/${id}`
+    return axiosClient.put(urlDeletePromotion)
   },
 }
 

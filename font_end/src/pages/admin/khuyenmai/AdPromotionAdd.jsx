@@ -1,4 +1,14 @@
-import { Box, Button, Container, Grid, Paper, Stack, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import React, { useState } from 'react'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -14,6 +24,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { toast } from 'react-toastify'
+import confirmSatus from '../../../components/comfirmSwal'
 
 const style = {
   position: 'absolute',
@@ -60,6 +71,8 @@ const rows = [
 ]
 
 export default function AdPromotionAdd() {
+  const theme = useTheme()
+
   const [age, setAge] = React.useState('')
 
   let navigate = useNavigate()
@@ -67,8 +80,8 @@ export default function AdPromotionAdd() {
   const [addPromotionRe, setAddPromotionRe] = useState({
     name: '',
     value: '',
-    type: false,
-    status: '1',
+    type: true,
+    status: '2',
     timeStart: '',
     timeEnd: '',
   })
@@ -78,14 +91,18 @@ export default function AdPromotionAdd() {
   }
 
   const onSubmit = (e) => {
-    khuyenMaiApi.addPromotion(e).then(() => {
-      toast.success('Add thành công', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
+    const title = 'bạn có muốn add Khuyến mại không'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        khuyenMaiApi.addPromotion(e).then(() => {
+          toast.success('Add thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+        })
+        navigate('/admin/promotion')
+      }
     })
-    console.log('add thành công')
-    console.log(addPromotionRe)
-    navigate('/admin/promotion')
   }
 
   const handleChange = (event) => {

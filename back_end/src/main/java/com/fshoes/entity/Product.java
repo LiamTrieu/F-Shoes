@@ -24,4 +24,12 @@ public class Product extends PrimaryEntity {
     private String name;
 
     private Status deleted = Status.HOAT_DONG;
+
+    public Integer getDeleted() {
+        return deleted.ordinal();
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = Status.values()[deleted];
+    }
 }
