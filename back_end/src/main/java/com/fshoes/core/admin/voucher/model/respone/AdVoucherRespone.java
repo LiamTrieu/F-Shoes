@@ -14,7 +14,7 @@ public interface AdVoucherRespone extends IsIdentified {
 
     BigDecimal getMaximumValue();
 
-    Boolean getType();
+    Integer getType();
 
     BigDecimal getMinimumAmount();
 

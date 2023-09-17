@@ -3,7 +3,6 @@ package com.fshoes.core.admin.sanpham.service.impl;
 import com.fshoes.core.admin.sanpham.repository.AdBrandRepository;
 import com.fshoes.core.admin.sanpham.service.BrandService;
 import com.fshoes.entity.Brand;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Autowired
     private AdBrandRepository brandRepository;
-    @Override
+  
     public List<Brand> findAll() {
         return brandRepository.findAll();
     }

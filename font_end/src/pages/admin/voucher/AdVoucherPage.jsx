@@ -28,14 +28,11 @@ import { BiDetail } from 'react-icons/bi'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { IoMdRefresh } from 'react-icons/io'
 import dayjs from 'dayjs'
-import { useTheme } from '@emotion/react'
-import confirmSatus from '../../../components/comfirmSwal'
 import { toast } from 'react-toastify'
+import confirmSatus from '../../../components/comfirmSwal'
 
 export default function AdVoucherPage() {
-  const theme = useTheme()
   const [listVoucher, setListVoucher] = useState([])
-  const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [dataFetched, setDataFetched] = useState(false)
   const [searchVoucher, setSearchVoucher] = useState({
@@ -44,21 +41,23 @@ export default function AdVoucherPage() {
     endDateSearch: '',
     typeSearch: '',
     statusSearch: '',
+    page: 1,
   })
 
   useEffect(() => {
-    fetchData(initPage - 1, searchVoucher)
-  }, [initPage, searchVoucher])
+    fetchData(searchVoucher)
+    console.log(searchVoucher)
+  }, [searchVoucher])
 
   const handelOnchangePage = (page) => {
-    setInitPage(page)
-    fetchData(page - 1, searchVoucher)
+    setSearchVoucher({ ...searchVoucher, page: page })
+    fetchData(searchVoucher)
   }
 
-  const handelDeleteVoucer = (idDelete) => {
+  const handelDeleteVoucer = (idDelete, searchVoucher) => {
     const title = 'Xác nhận hủy voucher?'
     const text = ''
-    confirmSatus(title, text, theme).then((result) => {
+    confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
         voucherApi
           .deleteVoucher(idDelete)
@@ -66,16 +65,18 @@ export default function AdVoucherPage() {
             toast.success('Hủy voucher thành công', {
               position: toast.POSITION.TOP_RIGHT,
             })
+            fetchData(searchVoucher)
           })
           .catch(() => {
             toast.error('Hủy voucher thất bại', {
               position: toast.POSITION.TOP_RIGHT,
             })
+            fetchData(searchVoucher)
           })
       }
     })
   }
-  const fetchData = (initPage, searchVoucher) => {
+  const fetchData = (searchVoucher) => {
     if (
       searchVoucher.nameSearch !== '' ||
       searchVoucher.startDateSearch !== '' ||
@@ -84,7 +85,7 @@ export default function AdVoucherPage() {
       searchVoucher.statusSearch !== ''
     ) {
       voucherApi
-        .searchVoucher(initPage, searchVoucher)
+        .searchVoucher(searchVoucher)
         .then((response) => {
           setListVoucher(response.data.data.content)
           setTotalPages(response.data.data.totalPages)
@@ -95,7 +96,7 @@ export default function AdVoucherPage() {
         })
     } else {
       voucherApi
-        .getPageVoucher(initPage)
+        .getPageVoucher(searchVoucher.page)
         .then((response) => {
           setListVoucher(response.data.data.content)
           setTotalPages(response.data.data.totalPages)
@@ -107,22 +108,23 @@ export default function AdVoucherPage() {
     }
   }
 
-  const handleRefresh = (initPage, searchVoucher) => {
+  const handleRefresh = (searchVoucher) => {
     setSearchVoucher({
       nameSearch: '',
       startDateSearch: '',
       endDateSearch: '',
       typeSearch: '',
       statusSearch: '',
+      page: 1,
     })
-    fetchData(initPage - 1, searchVoucher)
+    fetchData(searchVoucher)
   }
 
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={2.5}>
+          <Grid item xs={3}>
             <TextField
               id="outlined"
               label="Tìm voucher theo mã"
@@ -136,7 +138,7 @@ export default function AdVoucherPage() {
               }
             />
           </Grid>
-          <Grid item xs={3.25}>
+          <Grid item xs={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm:ss'}
@@ -152,7 +154,7 @@ export default function AdVoucherPage() {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={3.25}>
+          <Grid item xs={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm:ss'}
@@ -176,53 +178,37 @@ export default function AdVoucherPage() {
               color="info"
               variant="contained"
               sx={{ borderRadius: '90px' }}
-              onClick={() => handleRefresh(initPage, searchVoucher)}>
+              onClick={() => handleRefresh(searchVoucher)}>
               <IoMdRefresh />
               <Typography sx={{ ml: 1 }}>Tải lại</Typography>
             </Button>
           </Grid>
           <Grid item xs={2}>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="hd-select-type" shrink>
-                Kiểu
-              </InputLabel>
+            <FormControl variant="standard" fullWidth>
+              <InputLabel id="demo-simple-select-standard-label">Kiểu</InputLabel>
               <Select
-                id="hd-select-type"
-                label="Kiểu"
                 value={searchVoucher.typeSearch}
                 onChange={(e) => setSearchVoucher({ ...searchVoucher, typeSearch: e.target.value })}
-                sx={{ height: '40px' }}
-                inputProps={{
-                  name: 'Kiểu',
-                  id: 'hd-select-type',
-                }}>
-                <MenuItem value=""> </MenuItem>
-                <MenuItem value="1">Tất cả</MenuItem>
-                <MenuItem value="0">cá nhân</MenuItem>
+                label="Kiểu">
+                <MenuItem value={''}>Kiểu</MenuItem>
+                <MenuItem value={0}>Tất cả</MenuItem>
+                <MenuItem value={1}>Cá nhân</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid item xs={2}>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="hd-select-status" shrink>
-                Trạng thái
-              </InputLabel>
+            <FormControl variant="standard" fullWidth>
+              <InputLabel id="demo-simple-select-standard-label">Trạng thái</InputLabel>
               <Select
-                id="hd-select-status"
-                label="Trạng thái"
                 value={searchVoucher.statusSearch}
                 onChange={(e) =>
                   setSearchVoucher({ ...searchVoucher, statusSearch: e.target.value })
                 }
-                sx={{ height: '40px' }}
-                inputProps={{
-                  name: 'Trạng thái',
-                  id: 'hd-select-status',
-                }}>
-                <MenuItem value={''}>Tất cả</MenuItem>
-                <MenuItem value={'0'}>Hết hạn</MenuItem>
-                <MenuItem value={'1'}>Còn hạn</MenuItem>
-                <MenuItem value={'2'}>Chờ hoạt động</MenuItem>
+                label="Trạng thái">
+                <MenuItem value={''}>Trạng thái</MenuItem>
+                <MenuItem value={0}>Sắp diễn ra</MenuItem>
+                <MenuItem value={1}>Đang diễn ra</MenuItem>
+                <MenuItem value={2}>Đã kết thúc</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -265,10 +251,16 @@ export default function AdVoucherPage() {
                     <TableCell align="center">{row.value}%</TableCell>
                     <TableCell align="center">{row.maximumValue} VNĐ</TableCell>
                     <TableCell align="center">
-                      {row.type === true ? (
-                        <Chip color="info" label="Tất cả" />
+                      {row.type === 0 ? (
+                        <Chip
+                          style={{ backgroundColor: '#2196f3', color: 'white' }}
+                          label="Tất cả"
+                        />
                       ) : (
-                        <Chip color="warning" label="Cá nhân" />
+                        <Chip
+                          style={{ backgroundColor: '#ffeb3b', color: 'white' }}
+                          label="Cá nhân"
+                        />
                       )}
                     </TableCell>
                     <TableCell align="center">{row.minimumAmount} VNĐ</TableCell>
@@ -278,16 +270,22 @@ export default function AdVoucherPage() {
                     </TableCell>
                     <TableCell align="center">{dayjs(row.endDate).format('DD-MM-YYYY')}</TableCell>
                     <TableCell align="center">
-                      {row.status === 0 ? (
-                        <Chip color="error" label="Hết hạn" />
+                      {row.status === 2 ? (
+                        <Chip
+                          style={{ backgroundColor: '#f44336', color: 'white' }}
+                          label="Đã kết thúc"
+                        />
                       ) : row.status === 1 ? (
                         <Chip
-                          color="success"
-                          onClick={() => handelDeleteVoucer(row.id)}
-                          label="Còn hạn"
+                          style={{ backgroundColor: '#4caf50', color: 'white' }}
+                          onClick={() => handelDeleteVoucer(row.id, searchVoucher)}
+                          label="Đang diễn ra"
                         />
                       ) : (
-                        <Chip color="secondary" label="Chờ hoạt động" />
+                        <Chip
+                          style={{ backgroundColor: '#673ab7', color: 'white' }}
+                          label="Sắp diễn ra"
+                        />
                       )}
                     </TableCell>
                     <TableCell align="right">
@@ -314,8 +312,8 @@ export default function AdVoucherPage() {
         )}
         <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
           <Pagination
-            page={initPage}
-            onChange={(event, page) => handelOnchangePage(page)}
+            page={searchVoucher.page}
+            onChange={(_, page) => handelOnchangePage(page)}
             count={totalPages}
             color="primary"
           />

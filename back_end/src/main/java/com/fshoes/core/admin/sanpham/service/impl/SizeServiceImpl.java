@@ -65,7 +65,7 @@ public class SizeServiceImpl implements SizeService {
     public Size chageDeleted(String id, Integer isDeleted) {
         try {
             Size size = sizeRepository.findById(id).orElseThrow();
-            size.setDeleted(Status.values()[isDeleted]);
+            size.setDeleted(isDeleted);
             return sizeRepository.save(size);
         } catch (Exception e) {
             return null;

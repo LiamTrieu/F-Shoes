@@ -6,16 +6,7 @@ import com.fshoes.core.admin.voucher.service.AdVoucherService;
 import com.fshoes.core.common.ObjectRespone;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
@@ -36,7 +27,7 @@ public class AdVoucherController {
     }
 
     @GetMapping("/view/page")
-    public ObjectRespone getPageVoucher(@RequestParam(defaultValue = "0", name = "numberPage") Integer page) {
+    public ObjectRespone getPageVoucher(@RequestParam( name = "numberPage") Integer page) {
         return new ObjectRespone(voucherService.getPageVoucher(page));
     }
 
@@ -58,9 +49,9 @@ public class AdVoucherController {
     }
 
     @GetMapping("/search")
-    public ObjectRespone getSearchVoucher(@RequestParam(defaultValue = "0", name = "pageSearch") Integer page,
-                                          @ModelAttribute AdVoucherSearch adVoucherSearch) {
-        return new ObjectRespone(voucherService.getSearchVoucher(page, adVoucherSearch));
+    public ObjectRespone getSearchVoucher(
+            @ModelAttribute AdVoucherSearch adVoucherSearch) {
+        return new ObjectRespone(voucherService.getSearchVoucher(adVoucherSearch));
     }
 
 }

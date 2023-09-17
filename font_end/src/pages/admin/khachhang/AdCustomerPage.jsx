@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Grid,
   IconButton,
   Pagination,
   Paper,
@@ -24,6 +23,7 @@ import Toast from '../../../components/Toast'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
+import './AdCustomerPage.css'
 
 // import SearchIcon from "@mui/icons-material/Search";
 
@@ -94,15 +94,16 @@ export default function AdCustomerPage() {
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
           <TextField
             id="outlined-basic"
-            label="Tên khách hàng"
+            sx={{ width: '400px' }}
+            label="Tên hoặc số điện thoại khách hàng"
             variant="outlined"
             size="small"
             onChange={(e) => setPageSearch({ textSearch: e.target.value })}
           />
           <Button
-            variant="outlined"
+            variant="contained"
             style={{ float: 'right' }}
-            color="success"
+            color="cam"
             component={Link}
             to="/admin/customer/add">
             <Typography sx={{ ml: 1 }}>Tạo khách hàng</Typography>
@@ -112,14 +113,28 @@ export default function AdCustomerPage() {
           <TableContainer component={Paper} sx={{ width: '100%' }}>
             <Table aria-label="simple table">
               <TableHead>
-                <TableRow>
-                  <TableCell>STT</TableCell>
-                  <TableCell align="center">Email</TableCell>
-                  <TableCell align="center">Họ tên</TableCell>
-                  <TableCell align="center">Ngày sinh</TableCell>
-                  <TableCell align="center">Số điện thoại</TableCell>
-                  <TableCell align="center">Ngày tạo</TableCell>
-                  <TableCell align="center">Thao tác</TableCell>
+                <TableRow sx={{ backgroundColor: 'cam' }}>
+                  <TableCell align="center">
+                    <span className="head-table">#</span>
+                  </TableCell>
+                  <TableCell align="center">
+                    <span className="head-table">Email</span>
+                  </TableCell>
+                  <TableCell align="center">
+                    <span className="head-table">Họ tên</span>
+                  </TableCell>
+                  <TableCell align="center">
+                    <span className="head-table">Ngày sinh</span>
+                  </TableCell>
+                  <TableCell align="center">
+                    <span className="head-table">Số điện thoại</span>
+                  </TableCell>
+                  <TableCell align="center">
+                    <span className="head-table">Ngày tạo</span>
+                  </TableCell>
+                  <TableCell align="center">
+                    <span className="head-table">Thao tác</span>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -137,7 +152,7 @@ export default function AdCustomerPage() {
                     </TableCell>
                     <TableCell align="center">
                       <IconButton
-                        color="primary"
+                        color="cam"
                         component={Link}
                         to={`/admin/customer/getOne/${row.id}`}
                         sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
@@ -157,18 +172,19 @@ export default function AdCustomerPage() {
               </TableBody>
             </Table>
           </TableContainer>
-          <Grid container sx={{ mt: 2 }}>
-            <Grid item xs={5}></Grid>
-            <Grid item xs={4}></Grid>
-            <Grid item xs={3} sx={{ float: 'right' }}>
-              <Pagination
-                page={initPage}
-                onChange={(_, page) => handleOnChangePage(page)}
-                count={totalPages}
-                color="primary"
-              />
-            </Grid>
-          </Grid>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginTop: '10px',
+            }}>
+            <Pagination
+              page={initPage}
+              onChange={(_, page) => handleOnChangePage(page)}
+              count={totalPages}
+              color="cam"
+            />
+          </div>
         </Paper>
       </Box>
     </div>

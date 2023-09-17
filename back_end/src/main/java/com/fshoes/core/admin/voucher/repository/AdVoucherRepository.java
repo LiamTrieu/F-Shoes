@@ -31,6 +31,14 @@ public interface AdVoucherRepository extends VoucherRepository {
             v.type, v.minimum_amount as minimumAmount, v.quantity,
             v.start_date as startDate, v.end_date as endDate, v.status
             from voucher v
+            """, nativeQuery = true)
+    Page<AdVoucherRespone> getPageVoucher(Pageable pageable);
+
+    @Query(value = """
+            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            v.type, v.minimum_amount as minimumAmount, v.quantity,
+            v.start_date as startDate, v.end_date as endDate, v.status
+            from voucher v
             where v.id =:id
             """, nativeQuery = true)
     Optional<AdVoucherRespone> getVoucherById(@Param("id") String id);

@@ -38,7 +38,7 @@ public class KhachHangRequest {
         customer.setPhoneNumber(this.getPhoneNumber());
         customer.setGender(this.getGender());
         customer.setPassword(this.getPassword());
-       customer.setStatus(Status.values()[this.getStatus()]);
+       customer.setStatus(this.status);
         return customer;
    }
 }
