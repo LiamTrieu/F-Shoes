@@ -37,7 +37,7 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
       key={'listLink0'}
       color="text.primary">
       {nameHere}
-    </Typography>,
+    </Typography>
   )
   return (
     <Breadcrumbs
@@ -49,7 +49,7 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
           /
         </Typography>
       }
-      sx={{ mb: 2, mt: 1 }}
+      sx={{ mb: 2 }}
       aria-label="breadcrumb">
       {breadcrumbs}
     </Breadcrumbs>

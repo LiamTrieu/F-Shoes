@@ -1,0 +1,9 @@
+.filter .MuiSelect-select {
+  padding-left: 8px;
+  color: #fc7c27;
+  font-weight: 500;
+}
+
+.filter fieldset {
+  border: none !important;
+}

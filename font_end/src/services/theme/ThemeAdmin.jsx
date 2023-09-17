@@ -6,7 +6,7 @@ export default function ThemeAdmin({ children }) {
     typography: { fontFamily: 'Inter', color: 'black' },
     palette: {
       cam: {
-        main: '#F2721E',
+        main: '#fc7c27',
         contrastText: 'white',
       },
       error: {

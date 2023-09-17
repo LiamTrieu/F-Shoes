@@ -1,0 +1,25 @@
+.san-pham .MuiButton-root {
+  border-radius: 8px !important;
+  text-transform: none !important;
+  box-shadow: none;
+}
+
+.san-pham .MuiButton-root:active {
+  box-shadow: none;
+}
+
+.san-pham .MuiButton-root:hover {
+  box-shadow: none;
+}
+
+.san-pham .search-field .MuiInputBase-root {
+  border-radius: 8px !important;
+}
+
+.san-pham .search-field .MuiInputBase-root:hover fieldset {
+  border-color: #F2741F !important;
+}
+
+.san-pham .search-field .Mui-focused fieldset {
+  border-width: 1px !important;
+}
