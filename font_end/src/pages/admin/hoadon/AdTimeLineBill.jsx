@@ -75,7 +75,7 @@ const AdTimeLineBill = (props) => {
                   fontSize: '35px',
                   marginTop: '8px',
                   marginBottom: '20px',
-                  minWidth: '48px', // Đảm bảo biểu tượng có kích thước tối thiểu
+                  minWidth: '48px',
                 }}>
                 {getStatus(order.statusBill)}
                 <br />

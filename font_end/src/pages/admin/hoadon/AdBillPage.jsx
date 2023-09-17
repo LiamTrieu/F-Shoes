@@ -49,98 +49,84 @@ export default function AdBillPage() {
   const [endDate, setEndDate] = useState(dayjs(dayjs().format('YYYY-MM-DD')))
   const [statusBill, setStatusBill] = useState('all')
   const [typeBill, setTypeBill] = useState('all')
+  const [filter, setFilter] = useState({
+    page: 1,
+    size: 5,
+    startDate: '',
+    endDate: '',
+    status: '',
+    type: '',
+    inputSearch: '',
+  })
 
   useEffect(() => {
-    fetchData(currentPage - 1)
-  }, [currentPage])
+    filterBill(filter)
+  }, [filter])
 
   //hàm khi thay đổi trang
   const handlePageChange = (event, newPage) => {
-    //newPage <=> currentPage được hiển thị ( hiển thị từ 1 <=> pageNo + 1)
-    fetchData(newPage - 1)
+    const updatedFilter = { ...filter, page: newPage }
+    setFilter(updatedFilter)
     setCurrentPage(newPage)
   }
 
   const handleInputSearch = (e) => {
     setInputSearch(e.target.value)
-    if (e.target.value === undefined || e.target.value === '') {
-      fetchData(currentPage - 1)
-    } else {
-      searchByInputText(0, e.target.value)
-    }
+    const updatedFilter = { ...filter, inputSearch: e.target.value, page: 1 }
+    setFilter(updatedFilter)
   }
 
   const handleChangeSelectStatusBill = (event) => {
+    const updatedFilter = { ...filter, status: event.target.value, page: 1 }
     setStatusBill(event.target.value)
-    if (event.target.value === 'all' && typeBill === 'all') {
-      fetchData(0)
-    } else {
-      filterByStatusAndType(0, event.target.value, typeBill)
-    }
+    setFilter(updatedFilter)
   }
 
   const handleChangeSelectTypeBill = (event) => {
+    const updatedFilter = { ...filter, type: event.target.value, page: 1 }
     setTypeBill(event.target.value)
-    if (event.target.value === 'all' && statusBill === 'all') {
-      fetchData(0)
-    } else {
-      filterByStatusAndType(0, statusBill, event.target.value)
-    }
+    setFilter(updatedFilter)
   }
 
-  const fetchData = (currentPage) => {
+  const handleStartDateChange = (newValue) => {
+    const formattedStartDate = dayjs(newValue).format('DD-MM-YYYY')
+    const startDateString = `${formattedStartDate} 00:00:00`
+    const updatedFilter = { ...filter, startDate: startDateString, page: 1 }
+    setFilter(updatedFilter)
+    setStartDate(newValue)
+  }
+
+  const handleEndDateChange = (newValue) => {
+    const formattedEndDate = dayjs(newValue).format('DD-MM-YYYY')
+    const endDateString = `${formattedEndDate} 23:59:59`
+    const updatedFilter = { ...filter, endDate: endDateString, page: 1 }
+    setFilter(updatedFilter)
+    setEndDate(newValue)
+  }
+
+  const handleClearStartDate = () => {
+    setStartDate(null)
+    const updatedFilter = { ...filter, startDate: null, page: 1 }
+    setFilter(updatedFilter)
+  }
+
+  const handleClearEndDate = () => {
+    setEndDate(null)
+    const updatedFilter = { ...filter, endDate: null, page: 1 }
+    setFilter(updatedFilter)
+  }
+
+  // haqfm filter:
+  const filterBill = (filter) => {
     hoaDonApi
-      .getPage(currentPage)
+      .getBillFilter(filter)
       .then((response) => {
         setListHoaDon(response.data.data)
         setTotalPages(response.data.totalPages)
+        console.log(response.data.data)
       })
       .catch((error) => {
-        console.error('Lỗi khi gửi yêu cầu API get page: ', error)
-      })
-  }
-
-  const searchByInputText = (currentPage, inputSearch) => {
-    hoaDonApi
-      .searchInput(currentPage, inputSearch)
-      .then((response) => {
-        setListHoaDon(response.data.data)
-        setTotalPages(response.data.totalPages)
-      })
-      .catch((error) => {
-        console.error('Lỗi khi gửi yêu cầu API search By ô input: ', error)
-      })
-  }
-
-  const filterByStatusAndType = (currentPage, statusBill, typeBill) => {
-    hoaDonApi
-      .filterBillByStatusAndType(currentPage, statusBill, typeBill)
-      .then((response) => {
-        setListHoaDon(response.data.data)
-        setTotalPages(response.data.totalPages)
-      })
-      .catch((error) => {
-        console.error('Lỗi khi gửi yêu cầu API filter status and type', error)
-      })
-  }
-
-  const searchBillByDateRange = (currentPage, startDate, endDate) => {
-    // Định dạng startDate và endDate thành dd-mm-yyyy
-    const formattedStartDate = dayjs(startDate).format('DD-MM-YYYY')
-    const formattedEndDate = dayjs(endDate).format('DD-MM-YYYY')
-
-    // Chuyển đổi thành chuỗi
-    const startDateString = formattedStartDate.toString() + ' 00:00:00'
-    const endDateString = formattedEndDate.toString() + ' 23:59:59'
-
-    hoaDonApi
-      .searchByDateRange(currentPage, startDateString, endDateString)
-      .then((response) => {
-        setListHoaDon(response.data.data)
-        setTotalPages(response.data.totalPages)
-      })
-      .catch((error) => {
-        console.error('Lỗi khi gửi yêu cầu API tìm kiếm theo khoảng ngày: ', error)
+        console.error('Lỗi khi gửi yêu cầu API get filter: ', error)
       })
   }
 
@@ -175,22 +161,30 @@ export default function AdBillPage() {
           <Grid item xs={5} style={{ height: '50px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={['DatePicker', 'DatePicker']}>
-                <DatePicker label="Từ ngày" value={startDate} onChange={(e) => setStartDate(e)} />
+                <DatePicker
+                  label="Từ ngày"
+                  value={startDate}
+                  onChange={handleStartDateChange}
+                  componentsProps={{
+                    actionBar: {
+                      actions: ['clear'],
+                      onClear: handleClearStartDate,
+                    },
+                  }}
+                />
                 <DatePicker
                   label="Đến ngày"
                   value={endDate}
-                  onChange={(newValue) => setEndDate(newValue)}
+                  onChange={handleEndDateChange}
+                  componentsProps={{
+                    actionBar: {
+                      actions: ['clear'],
+                      onClear: handleClearEndDate,
+                    },
+                  }}
                 />
               </DemoContainer>
             </LocalizationProvider>
-          </Grid>
-          <Grid item xs={1.5}>
-            <Button
-              sx={{ ml: 1, mt: 2 }}
-              variant="contained"
-              onClick={() => searchBillByDateRange(0, startDate, endDate)}>
-              Tìm kiếm
-            </Button>
           </Grid>
           <Grid item xs={2} style={{ marginTop: '15px' }}>
             <FormControl fullWidth>

@@ -66,13 +66,13 @@ const AdBillTransaction = (props) => {
                   <Stack direction="row" spacing={1}>
                     <Chip
                       size="small"
-                      label={row.status === 1 ? 'Thành công' : 'Không thành công'}
+                      label={row.status === 0 ? 'Thành công' : 'Không thành công'}
                       color="primary"
                     />
                   </Stack>
                 </TableCell>
                 <TableCell align="center">{row.note}</TableCell>
-                <TableCell align="center">{row.staff.fullName}</TableCell>
+                <TableCell align="center">{row.fullName}</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -17,7 +17,7 @@ public class HDBillHistoryController {
 
     @GetMapping("/get-by-idBill/{idBill}")
     public ObjectRespone getByIdBill(@PathVariable("idBill") String idBill) {
-        return new ObjectRespone(hdBillHistoryService.getBillHistoriesByBillId(idBill));
+        return new ObjectRespone(hdBillHistoryService.getListBillHistoryByIdBill(idBill));
     }
 
 }

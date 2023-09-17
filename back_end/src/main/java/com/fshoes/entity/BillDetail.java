@@ -35,4 +35,12 @@ public class BillDetail extends PrimaryEntity {
     @ManyToOne
     @JoinColumn(name = "id_product_detail", referencedColumnName = "id")
     private ProductDetail productDetail;
+
+    public Integer getStatus() {
+        return status.ordinal();
+    }
+
+    public void setStatus(Integer status) {
+        this.status = StatusBillDetail.values()[status];
+    }
 }

@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
+@ToString
 @Table(name = "bill")
 public class Bill extends PrimaryEntity {
 
@@ -73,4 +75,19 @@ public class Bill extends PrimaryEntity {
     @JoinColumn(name = "id_voucher", referencedColumnName = "id")
     private Voucher voucher;
 
+    public Integer getType() {
+        return type.ordinal();
+    }
+
+    public void setType(Integer type) {
+        this.type = TypeBill.values()[type];
+    }
+
+    public Integer getStatus() {
+        return status.ordinal();
+    }
+
+    public void setStatus(Integer status) {
+        this.status = StatusBill.values()[status];
+    }
 }
