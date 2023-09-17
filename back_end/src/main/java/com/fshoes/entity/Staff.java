@@ -45,4 +45,11 @@ public class Staff extends PrimaryEntity {
 
     private Status status = Status.HOAT_DONG;
 
+    public Integer getStatus() {
+        return status.ordinal();
+    }
+
+    public void setStatus(Integer status) {
+        this.status = Status.values()[status];
+    }
 }

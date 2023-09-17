@@ -1,8 +1,10 @@
 package com.fshoes.core.admin.nhanvien.model.request;
 
 import com.fshoes.entity.Staff;
+import com.fshoes.infrastructure.constant.EntityProperties;
 import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.util.DateUtil;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +16,7 @@ import java.text.ParseException;
 @Setter
 public class StaffRequest {
     @NotBlank
-    @Length(max = 100)
+    @Column(length = EntityProperties.LENGTH_NAME)
     private String fullName;
 
     private String dateBirth;
@@ -34,7 +36,7 @@ public class StaffRequest {
 
     private Integer role;
 
-    private Integer status = 1;
+    private Integer status = 0;
 
     public Staff tranStaff(Staff staff) throws ParseException {
         staff.setFullName(this.getFullName());
@@ -46,7 +48,7 @@ public class StaffRequest {
         staff.setCitizenId(this.getCitizenId());
         staff.setRole(this.getRole());
         System.out.println(this.status);
-        staff.setStatus(Status.values()[status]);
+        staff.setStatus(status);
         return staff;
     }
 }

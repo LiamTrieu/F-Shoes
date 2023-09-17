@@ -118,7 +118,7 @@ export default function AdCustomerPage() {
                     {/* <TableCell align="center">{row.citizenId}</TableCell> */}
                     <TableCell align="center">
                       <Stack direction="row" spacing={1}>
-                        <Chip size="small" label={row.status === '1' ? 'Hoạt động' : 'Không hoạt động'} color="primary" />
+                        <Chip size="small" label={row.status === 0 ? 'Hoạt động' : 'Không hoạt động'} color="primary" />
                       </Stack>
                     </TableCell>
                     <TableCell align="center">

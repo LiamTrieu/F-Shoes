@@ -43,8 +43,8 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public Staff getOne(String id) {
-        return repo.findById(id).get();
+    public StaffRespone getOne(String id) {
+        return repo.getOneStaff(id);
     }
 
     @Override

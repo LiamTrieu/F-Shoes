@@ -6,7 +6,6 @@ import com.fshoes.core.admin.sanpham.repository.SpSoleRepository;
 import com.fshoes.core.admin.sanpham.service.SoleService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Sole;
-import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -64,7 +63,7 @@ public class SoleServiceImpl implements SoleService {
     public Sole chageDeleted(String id, Integer isDeleted) {
         try {
             Sole sole = soleRepository.findById(id).orElseThrow();
-            sole.setDeleted(Status.values()[isDeleted]);
+            sole.setDeleted(isDeleted);
             return soleRepository.save(sole);
         } catch (Exception e) {
             return null;

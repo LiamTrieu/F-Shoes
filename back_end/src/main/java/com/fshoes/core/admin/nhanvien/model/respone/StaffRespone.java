@@ -33,5 +33,5 @@ public interface StaffRespone extends IsIdentified {
     String getRole();
 
     @Value("#{target.status}")
-    String getStatus();
+    Integer getStatus();
 }
