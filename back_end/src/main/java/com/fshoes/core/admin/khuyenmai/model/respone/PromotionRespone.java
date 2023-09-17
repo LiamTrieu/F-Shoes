@@ -4,7 +4,6 @@ import com.fshoes.entity.base.IsIdentified;
 
 public interface PromotionRespone extends IsIdentified {
 
-
     String getName();
 
     Long getTimeStart();

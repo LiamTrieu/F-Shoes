@@ -42,4 +42,11 @@ public class Customer extends PrimaryEntity {
 
     private Status status;
 
+    public Integer getStatus() {
+        return status.ordinal();
+    }
+
+    public void setStatus(Integer status) {
+        this.status = Status.values()[status];
+    }
 }

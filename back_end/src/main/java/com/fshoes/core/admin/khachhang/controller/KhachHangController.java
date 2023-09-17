@@ -41,7 +41,7 @@ public class KhachHangController {
     }
     @PostMapping("/create")
     public ObjectRespone create(@RequestBody KhachHangRequest khachHangRequest) {
-        khachHangRequest.setStatus(1);
+        khachHangRequest.setStatus(0);
         return new ObjectRespone(khachHangService.add(khachHangRequest));
     }
 

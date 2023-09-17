@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.hoadon.service.impl;
 
+import com.fshoes.core.admin.hoadon.model.respone.HDTransactionResponse;
 import com.fshoes.core.admin.hoadon.repository.HDTransactionRepository;
 import com.fshoes.core.admin.hoadon.service.HDTransactionService;
 import com.fshoes.entity.Transaction;
@@ -15,7 +16,7 @@ public class HDTransactionServiceImpl implements HDTransactionService {
     private HDTransactionRepository hdTransactionRepository;
 
     @Override
-    public List<Transaction> getTransactionByBillId(String idBill) {
+    public List<HDTransactionResponse> getTransactionByBillId(String idBill) {
         return hdTransactionRepository.getTransactionByBillId(idBill);
     }
 

@@ -1,6 +1,8 @@
 package com.fshoes.core.admin.hoadon.service.impl;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
+import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
+import com.fshoes.core.admin.hoadon.model.respone.HDBillHistoryResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepositpory;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
@@ -43,7 +45,7 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     }
 
     @Override
-    public List<BillDetail> getBillDetailByBillId(String idBill) {
+    public List<HDBillDetailResponse> getBillDetailByBillId(String idBill) {
         return hdBillDetailRepository.getBillDetailsByBillId(idBill);
     }
 
@@ -59,14 +61,14 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         billDetail.setProductDetail(productDetail);
         billDetail.setPrice(hdBillDetailRequest.getPrice());
         billDetail.setQuantity(hdBillDetailRequest.getQuanity());
-        billDetail.setStatus(StatusBillDetail.values()[hdBillDetailRequest.getStatus()]);
+        billDetail.setStatus(hdBillDetailRequest.getStatus());
 
         return hdBillDetailRepository.save(billDetail);
 
     }
 
     @Override
-    public List<BillDetail> getBillDetailByBillIdAndStatus(String idBill, Integer status) {
+    public List<HDBillDetailResponse> getBillDetailByBillIdAndStatus(String idBill, Integer status) {
         return hdBillDetailRepository.getBillDetailsByBillIdAndStatus(idBill, status);
     }
 

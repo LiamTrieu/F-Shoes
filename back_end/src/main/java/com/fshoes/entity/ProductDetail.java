@@ -31,6 +31,14 @@ public class ProductDetail extends PrimaryEntity {
 
     private Status deleted = Status.HOAT_DONG;
 
+    public Integer getDeleted() {
+        return deleted.ordinal();
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = Status.values()[deleted];
+    }
+
     private Integer amount;
 
     @Column(length = EntityProperties.LENGTH_DESCRIPTION)

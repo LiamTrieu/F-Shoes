@@ -44,4 +44,20 @@ public class Voucher extends PrimaryEntity {
     private Long endDate;
 
     private StatusVoucher status;
+
+    public Integer getType() {
+        return type.ordinal();
+    }
+
+    public Integer getStatus() {
+        return status.ordinal();
+    }
+
+    public void setType(Integer type) {
+        this.type = TypeVoucher.values()[type];
+    }
+
+    public void setStatus(Integer status) {
+        this.status = StatusVoucher.values()[status];
+    }
 }

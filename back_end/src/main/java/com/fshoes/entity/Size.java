@@ -24,4 +24,12 @@ public class Size extends PrimaryEntity {
     private float size;
 
     private Status deleted = Status.HOAT_DONG;
+
+    public Integer getDeleted() {
+        return deleted.ordinal();
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = Status.values()[deleted];
+    }
 }

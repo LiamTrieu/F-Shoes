@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.khachhang.service.impl;
 
 import com.fshoes.core.admin.khachhang.model.request.DiaChiRequest;
+import com.fshoes.core.admin.khachhang.model.respone.DiaChiRespone;
 import com.fshoes.core.admin.khachhang.repository.DiaChiRepository;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.khachhang.service.DiaChiService;
@@ -29,6 +30,12 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
+    public Page<DiaChiRespone> getAllAddressByIdCustomer(int p ,String idCustomer) {
+        Pageable pageable = PageRequest.of(p,5);
+        return diaChiRepository.getPageAddressByIdCustomer(pageable,idCustomer);
+    }
+
+    @Override
     public Address getOne(String id) {
         return diaChiRepository.findById(id).orElse(null);
     }
@@ -43,6 +50,7 @@ public class DiaChiServiceImpl implements DiaChiService {
     public Address add(DiaChiRequest diaChiRequest) {
         try {
             Address address = diaChiRequest.newAddress(new Address());
+            address.setType(false);
             address.setCustomer(khachHangRepository.findById(diaChiRequest.getIdCustomer()).orElse(null));
             return diaChiRepository.save(address);
         }catch (Exception e) {
@@ -61,6 +69,11 @@ public class DiaChiServiceImpl implements DiaChiService {
         }else {
             return false;
         }
+    }
+
+    @Override
+    public void delete(String id) {
+        diaChiRepository.deleteById(id);
     }
 
 }

@@ -24,34 +24,53 @@ import { Link } from 'react-router-dom'
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
 import dayjs from 'dayjs'
 import CreateIcon from '@mui/icons-material/Create'
+import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+import './home.css'
 
 export default function AdPromotionPage() {
   const [listKhuyenMai, setListKhuyenMai] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
-  const [searchByName, setSearchByName] = useState('')
+  const [filter, setFilter] = useState({
+    page: 1,
+    size: 5,
+    name: '',
+    timeStart: '',
+    timeEnd: '',
+    status: '',
+    type: '',
+  })
 
-  useEffect(() => {
-    loadData(currentPage - 1, searchByName)
-  }, [currentPage, listKhuyenMai, searchByName])
+  // useEffect(() => {
+  //   loadData(currentPage, searchByName)
+  // }, [currentPage, searchByName])
 
   const handelOnchangePage = (Page) => {
-    loadData(Page - 1, searchByName)
+    loadData(Page)
     setCurrentPage(Page)
   }
 
-  const loadData = (currentPage, searchByName) => {
-    if (searchByName !== '') {
-      khuyenMaiApi.searchPromotionByName(currentPage, searchByName).then((response) => {
-        setListKhuyenMai(response.data.data.content)
-        setTotalPages(response.data.data.totalPages)
-      })
-    } else {
-      khuyenMaiApi.getPage(currentPage).then((response) => {
-        setListKhuyenMai(response.data.data.content)
-        setTotalPages(response.data.data.totalPages)
-      })
-    }
+  const handleDelete = (id) => {
+    khuyenMaiApi.deletePromotion(id)
+  }
+
+  useEffect(() => {
+    loadData(filter)
+  }, [filter])
+
+  const loadData = (filter) => {
+    // khuyenMaiApi.getAll().then((response) => {
+    //   setListKhuyenMai(response.data.data)
+    //   setTotalPages(response.data.totalPages)
+    // })
+    khuyenMaiApi.getAllPromotion(filter).then((response) => {
+      setListKhuyenMai(response.data.data)
+      setTotalPages(response.data.totalPages)
+    })
+    console.log(filter)
   }
 
   return (
@@ -66,46 +85,52 @@ export default function AdPromotionPage() {
                 label="Name"
                 type="text"
                 size="small"
-                // value={searchByName}
-                onChange={(e) => setSearchByName(e.target.value)}
+                onChange={(e) =>
+                  setFilter({
+                    ...filter,
+                    name: e.target.value,
+                  })
+                }
               />
             </Grid>
-            <Grid xs={6} md={2}></Grid>
-            <Grid xs={6} md={2}>
-              <TextField
-                sx={{ mt: 2, width: '80%' }}
-                id="outlined-basic"
-                label="Từ ngày"
-                type="date"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid xs={6} md={2}>
-              <TextField
-                sx={{ mt: 2, width: '80%' }}
-                id="outlined-basic"
-                label="Đến ngày"
-                type="date"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
+                <DateTimePicker
+                  className="dateTime"
+                  onChange={(e) =>
+                    setFilter({
+                      ...filter,
+                      timeStart: dayjs(e).format('DD/MM/YYYY'),
+                    })
+                  }
+                  label="Ngày bắt đầu"
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
+                <DateTimePicker
+                  className="dateTime"
+                  onChange={(e) =>
+                    setFilter({
+                      ...filter,
+                      timeEnd: dayjs(e).format('DD/MM/YYYY'),
+                    })
+                  }
+                  label="Ngày kết thúc"
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+            {/* </Grid> */}
             <Grid xs={6} md={3}>
               <Button
-                sx={{ ml: 9, mt: 2 }}
+                sx={{ ml: 9, mt: 2, borderRadius: '15px' }}
                 color="success"
-                variant="contained"
+                variant="outlined"
                 component={Link}
                 to="/admin/promotion/add">
                 <AddIcon />
-                <Typography sx={{ ml: 1 }}>Tạo Khuyến Mại</Typography>
+                <Typography sx={{ ml: 0, fontWeight: '500' }}>Tạo Khuyến Mại</Typography>
               </Button>
             </Grid>
           </Grid>
@@ -150,9 +175,20 @@ export default function AdPromotionPage() {
                     <Stack direction="row" spacing={1} sx={{ paddingLeft: '30px' }}>
                       <Chip
                         sx={{
-                          backgroundColor: promotion.status === 0 ? '#00FF00' : '#99CCFF',
+                          backgroundColor:
+                            promotion.status === 0
+                              ? '#00FF00'
+                              : promotion.status === 1
+                              ? '#99CCFF'
+                              : '#FFCC00',
                         }}
-                        label={promotion.status === 0 ? 'Hết hạn' : 'Còn hạn'}
+                        label={
+                          promotion.status === 0
+                            ? 'Sắp diễn ra'
+                            : promotion.status === 1
+                            ? 'Đang diễn ra'
+                            : 'Đã kết thúc'
+                        }
                       />
                     </Stack>
                   </TableCell>
@@ -169,6 +205,9 @@ export default function AdPromotionPage() {
                         <CreateIcon sx={{ color: '#FFCC00' }} />
                       </IconButton>
                     </Link>
+                    <IconButton onClick={() => handleDelete(promotion.id)}>
+                      <RestoreFromTrashIcon sx={{ color: '#FF0000' }} />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -182,8 +221,13 @@ export default function AdPromotionPage() {
             marginTop: '10px',
           }}>
           <Pagination
-            page={currentPage}
-            onChange={(event, value) => handelOnchangePage(value)}
+            page={filter.page}
+            onChange={(page) => {
+              setFilter({
+                ...filter,
+                page: page,
+              })
+            }}
             count={totalPages}
             variant="outlined"
           />

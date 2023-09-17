@@ -88,13 +88,13 @@ public class DBGenerator implements CommandLineRunner {
         //Customer
 
         //Promotion
-        Promotion promotion1 = Promotion.builder().name("Promotion 1").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(50).status(StatusVoucher.DANG_DIEN_RA).build();
+        Promotion promotion1 = Promotion.builder().name("Promotion 1").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(50).status(StatusVoucher.SAP_DIEN_RA).build();
         promotion1.setId(promotionRepository.save(promotion1).getId());
 
         Promotion promotion2 = Promotion.builder().name("Promotion 2").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(60).status(StatusVoucher.DANG_DIEN_RA).build();
         promotion2.setId(promotionRepository.save(promotion2).getId());
 
-        Promotion promotion3 = Promotion.builder().name("Promotion 3").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(70).status(StatusVoucher.DANG_DIEN_RA).build();
+        Promotion promotion3 = Promotion.builder().name("Promotion 3").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(70).status(StatusVoucher.DA_KET_THUC).build();
         promotion3.setId(promotionRepository.save(promotion3).getId());
 
         Promotion promotion4 = Promotion.builder().name("Promotion 4").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(80).status(StatusVoucher.DANG_DIEN_RA).build();
@@ -385,19 +385,19 @@ public class DBGenerator implements CommandLineRunner {
         //brand
 
         //color
-        Color color1 = Color.builder().code("#8B0016").name("Màu Đỏ Đậm").deleted(Status.HOAT_DONG).build();
+        Color color1 = Color.builder().code("#8B0016").name("Đỏ Đậm").deleted(Status.HOAT_DONG).build();
         color1.setId(colorRepository.save(color1).getId());
 
-        Color color2 = Color.builder().code("#00FF00").name("Màu Xanh Lá").deleted(Status.HOAT_DONG).build();
+        Color color2 = Color.builder().code("#00FF00").name("Xanh Lá").deleted(Status.HOAT_DONG).build();
         color2.setId(colorRepository.save(color2).getId());
 
-        Color color3 = Color.builder().code("#0000FF").name("Màu Xanh Dương").deleted(Status.HOAT_DONG).build();
+        Color color3 = Color.builder().code("#0000FF").name("Xanh Dương").deleted(Status.HOAT_DONG).build();
         color3.setId(colorRepository.save(color3).getId());
 
-        Color color4 = Color.builder().code("#FFFF00").name("Màu Vàng").deleted(Status.HOAT_DONG).build();
+        Color color4 = Color.builder().code("#FFFF00").name("Vàng").deleted(Status.HOAT_DONG).build();
         color4.setId(colorRepository.save(color4).getId());
 
-        Color color5 = Color.builder().code("#FFA500").name("Màu Cam").deleted(Status.HOAT_DONG).build();
+        Color color5 = Color.builder().code("#FFA500").name("Cam").deleted(Status.HOAT_DONG).build();
         color5.setId(colorRepository.save(color5).getId());
         //color
 

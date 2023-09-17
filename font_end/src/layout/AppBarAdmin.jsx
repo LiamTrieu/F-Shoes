@@ -8,12 +8,13 @@ import { Avatar, Badge, IconButton, Tooltip } from '@mui/material'
 import { AiOutlineMenuFold } from 'react-icons/ai'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
+import '../assets/styles/admin.css'
 
 const drawerWidth = 250
 
 export default function AppBarAdmin({ children }) {
   return (
-    <Box sx={{ display: 'flex', backgroundColor: '#F0F2F5', height: '100vh' }}>
+    <Box sx={{ display: 'flex', backgroundColor: '#F0F2F5', minHeight: '100vh' }}>
       <ThemeAdmin>
         <AppBar
           position="fixed"
@@ -61,8 +62,7 @@ export default function AppBarAdmin({ children }) {
             component={'img'}
             sx={{
               p: 6,
-              pt: 2,
-              pb: 1,
+              py: 0,
               transition: 'width 0.5s',
               minHeight: '65px',
             }}

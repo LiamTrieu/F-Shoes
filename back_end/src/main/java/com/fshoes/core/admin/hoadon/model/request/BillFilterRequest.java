@@ -1,24 +1,27 @@
 package com.fshoes.core.admin.hoadon.model.request;
 
+import com.fshoes.core.common.PageableRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BillFilterRequest {
-
-    private String inputSearch;
+@ToString
+public class BillFilterRequest extends PageableRequest {
 
     private String startDate;
 
     private String endDate;
 
-    private Integer status;
+    private String status;
 
-    private Integer type;
+    private String type;
+
+    private String inputSearch;
 
 }

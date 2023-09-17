@@ -1,7 +1,6 @@
 package com.fshoes.core.admin.voucher.model.request;
 
 import com.fshoes.entity.Voucher;
-import com.fshoes.infrastructure.constant.TypeVoucher;
 import com.fshoes.util.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +34,7 @@ public class AdVoucherRequest {
         voucher.setName(this.getName());
         voucher.setValue(this.getValue());
         voucher.setMaximumValue(this.getMaximumValue());
-        voucher.setType(TypeVoucher.values()[this.getType()]);
+        voucher.setType(this.getType());
         voucher.setMinimumAmount(this.getMinimumAmount());
         voucher.setQuantity(this.getQuantity());
         voucher.setStartDate(DateUtil.parseDateTimeLong(this.getStartDate()));
