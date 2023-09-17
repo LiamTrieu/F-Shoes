@@ -14,7 +14,7 @@ public interface AdVoucherService {
 
     AdVoucherRespone getVoucherById(String id);
 
-    Page<Voucher> getPageVoucher(Integer page);
+    Page<AdVoucherRespone> getPageVoucher(Integer page);
 
     Voucher addVoucher(AdVoucherRequest voucherRequest);
 
@@ -22,5 +22,5 @@ public interface AdVoucherService {
 
     Boolean deleteVoucher(String id);
 
-    Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch adVoucherSearch);
+    Page<AdVoucherRespone> getSearchVoucher(AdVoucherSearch adVoucherSearch);
 }
