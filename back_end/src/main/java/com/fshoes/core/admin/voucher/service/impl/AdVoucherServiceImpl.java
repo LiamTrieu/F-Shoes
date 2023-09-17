@@ -34,10 +34,10 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Page<Voucher> getPageVoucher(Integer page) {
-        Sort sort = Sort.by("id");
-        Pageable pageable = PageRequest.of(page, 5, sort);
-        return adVoucherRepository.findAll(pageable);
+    public Page<AdVoucherRespone> getPageVoucher(Integer page) {
+        Sort sort = Sort.by("code");
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        return adVoucherRepository.getPageVoucher(pageable);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
         Optional<Voucher> optionalVoucher = adVoucherRepository.findById(id);
         if (optionalVoucher.isPresent()) {
             Voucher voucher = optionalVoucher.get();
-            voucher.setStatus(StatusVoucher.DA_KET_THUC);
+            voucher.setStatus(2);
             adVoucherRepository.save(voucher);
             return true;
         } else {
@@ -77,9 +77,9 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public Page<AdVoucherRespone> getSearchVoucher(Integer page, AdVoucherSearch voucherSearch) {
-        Sort sort = Sort.by("id");
-        Pageable pageable = PageRequest.of(page, 5, sort);
+    public Page<AdVoucherRespone> getSearchVoucher(AdVoucherSearch voucherSearch) {
+        Sort sort = Sort.by("code");
+        Pageable pageable = PageRequest.of(voucherSearch.getPage()-1, voucherSearch.getSize(), sort);
         return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
 }

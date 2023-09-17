@@ -64,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category chageDeleted(String id, Integer isDeleted) {
         try {
             Category category = categoryRepository.findById(id).orElseThrow();
-            category.setDeleted(Status.values()[isDeleted]);
+            category.setDeleted(isDeleted);
             return categoryRepository.save(category);
         } catch (Exception e) {
             return null;

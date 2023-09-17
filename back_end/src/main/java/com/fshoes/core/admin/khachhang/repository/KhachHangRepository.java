@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface KhachHangRepository extends CustomerRepository {
 
     @Query(value = "Select id, avatar, email, full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber, created_at as createdAt, status " +
-            "from customer where status = 1", nativeQuery = true)
+            "from customer where status = 0", nativeQuery = true)
     Page<KhachHangRespone> getAllKhachHang(Pageable pageable);
 
     @Query(value = "Select id, avatar, email, full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber, created_at as createdAt, status " +

@@ -25,7 +25,7 @@ export default function AdVoucherDetail() {
     name: '',
     value: 0,
     maximumValue: 0,
-    type: true,
+    type: 0,
     minimumAmount: 0,
     quantity: 0,
     startDate: '',
@@ -53,21 +53,11 @@ export default function AdVoucherDetail() {
           endDate: formattedEndDate,
         })
 
-        setIsSelectVisible(response.data.data.type === false)
+        setIsSelectVisible(response.data.data.type === 1)
       })
       .catch(() => {
         alert('Error: Không tải được dữ liệu API')
       })
-  }
-
-  const handleTypeChange = (event) => {
-    const newValue = event.target.value === 'true'
-    setVoucherDetail({
-      ...voucherDetail,
-      type: event.target.value,
-    })
-
-    setIsSelectVisible(newValue === false)
   }
 
   const handleUpdateVoucher = (idUpdate, voucherDetail) => {
@@ -269,17 +259,19 @@ export default function AdVoucherDetail() {
               <RadioGroup row value={voucherDetail?.type}>
                 <FormControlLabel
                   name="typeUpdate"
-                  value={true}
+                  value={0}
                   control={<Radio />}
                   label="Tất cả"
-                  onChange={handleTypeChange}
+                  onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
+                  onClick={() => setIsSelectVisible(false)}
                 />
                 <FormControlLabel
                   name="typeUpdate"
-                  value={false}
+                  value={1}
                   control={<Radio />}
                   label="Cá nhân"
-                  onChange={handleTypeChange}
+                  onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
+                  onClick={() => setIsSelectVisible(true)}
                 />
               </RadioGroup>
             </FormControl>

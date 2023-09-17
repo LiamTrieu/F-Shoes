@@ -1,0 +1,66 @@
+/* Đảm bảo bảng rộng bằng chiều rộng của màn hình chứa */
+.tableCss {
+  width: 100% !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  text-align: center;
+  border-radius: 15px; /* Thêm border-radius ở đây với giá trị 90px */
+  overflow: hidden; /* Đảm bảo nội dung không vượt ra khỏi góc bo tròn */
+  margin: 5px;
+  box-shadow: 5px 5px 5px rgb(247, 246, 245);
+}
+
+/* Màu nền cho các ô cell tiêu đề */
+.tableCss .MuiTableHead-root .MuiTableRow-root .MuiTableCell-root {
+  background-color: #f2721e !important;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* Đường kẻ ngăn các các cell */
+.tableCss .MuiTableCell-root {
+  border-right: 1px solid white;
+  padding: 4px;
+  flex: 1;
+  min-width: auto;
+  box-sizing: border-box;
+}
+
+/* Màu nền cho ô cell */
+.tableCss th,
+.tableCss td {
+  background-color: white;
+  color: #333;
+  height: 50px;
+}
+
+/* Khoảng cách */
+.tableCss th,
+.tableCss td {
+  padding: 8px;
+}
+
+/* Viền và đường kẻ */
+.tableCss {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+}
+
+.tableCss th {
+  border: 1px solid #ddd;
+}
+
+/* Hiệu ứng hover */
+.tableCss tr:hover {
+  background-color: gray;
+}
+
+/* Giữ nguyên hình dạng table với bất kỳ màn hình nào */
+.tableCss th,
+.tableCss td {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
