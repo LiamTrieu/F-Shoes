@@ -7,7 +7,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   TextField,
@@ -110,68 +109,62 @@ export default function AdCustomerPage() {
           </Button>
         </Paper>
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-          <TableContainer component={Paper} sx={{ width: '100%' }}>
-            <Table aria-label="simple table">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: 'cam' }}>
+          <Table className="tableCss">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center">
+                  <span className="head-table">#</span>
+                </TableCell>
+                <TableCell align="center">
+                  <span className="head-table">Email</span>
+                </TableCell>
+                <TableCell align="center">
+                  <span className="head-table">Họ tên</span>
+                </TableCell>
+                <TableCell align="center">
+                  <span className="head-table">Ngày sinh</span>
+                </TableCell>
+                <TableCell align="center">
+                  <span className="head-table">Số điện thoại</span>
+                </TableCell>
+                <TableCell align="center">
+                  <span className="head-table">Ngày tạo</span>
+                </TableCell>
+                <TableCell align="center">
+                  <span className="head-table">Thao tác</span>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {listKhachHang.map((row, index) => (
+                <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell align="center">{index + 1}</TableCell>
+                  <TableCell align="center">{row.email}</TableCell>
+                  <TableCell align="center">{row.fullName}</TableCell>
+                  <TableCell align="center">{dayjs(row.dateBirth).format('MM/DD/YYYY')}</TableCell>
+                  <TableCell align="center">{row.phoneNumber}</TableCell>
+                  <TableCell align="center">{dayjs(row.createdAt).format('MM/DD/YYYY')}</TableCell>
                   <TableCell align="center">
-                    <span className="head-table">#</span>
-                  </TableCell>
-                  <TableCell align="center">
-                    <span className="head-table">Email</span>
-                  </TableCell>
-                  <TableCell align="center">
-                    <span className="head-table">Họ tên</span>
-                  </TableCell>
-                  <TableCell align="center">
-                    <span className="head-table">Ngày sinh</span>
-                  </TableCell>
-                  <TableCell align="center">
-                    <span className="head-table">Số điện thoại</span>
-                  </TableCell>
-                  <TableCell align="center">
-                    <span className="head-table">Ngày tạo</span>
-                  </TableCell>
-                  <TableCell align="center">
-                    <span className="head-table">Thao tác</span>
+                    <IconButton
+                      color="cam"
+                      component={Link}
+                      to={`/admin/customer/getOne/${row.id}`}
+                      sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => deleteKhachHang(row.id)}
+                      sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {listKhachHang.map((row, index) => (
-                  <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell align="center">{index + 1}</TableCell>
-                    <TableCell align="center">{row.email}</TableCell>
-                    <TableCell align="center">{row.fullName}</TableCell>
-                    <TableCell align="center">
-                      {dayjs(row.dateBirth).format('MM/DD/YYYY')}
-                    </TableCell>
-                    <TableCell align="center">{row.phoneNumber}</TableCell>
-                    <TableCell align="center">
-                      {dayjs(row.createdAt).format('MM/DD/YYYY')}
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        color="cam"
-                        component={Link}
-                        to={`/admin/customer/getOne/${row.id}`}
-                        sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        color="error"
-                        onClick={() => deleteKhachHang(row.id)}
-                        sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              ))}
+            </TableBody>
+          </Table>
           <div
             style={{
               display: 'flex',
