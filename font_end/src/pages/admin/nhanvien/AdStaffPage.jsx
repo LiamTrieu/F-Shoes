@@ -60,6 +60,7 @@ export default function AdCustomerPage() {
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <TextField
+          sx={{ width: '50%' }}
           onChange={Search}
           id="outlined-basic"
           label="Tìm kiếm nhân viên bằng tên"
@@ -114,11 +115,15 @@ export default function AdCustomerPage() {
                     <TableCell align="center">
                       {dayjs(row.dateBirth).format('DD-MM-YYYY')}
                     </TableCell>
-                    <TableCell align="center">{row.gender ? "Nam" : "Nữ"}</TableCell>
+                    <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
                     {/* <TableCell align="center">{row.citizenId}</TableCell> */}
                     <TableCell align="center">
                       <Stack direction="row" spacing={1}>
-                        <Chip size="small" label={row.status === 0 ? 'Hoạt động' : 'Không hoạt động'} color="primary" />
+                        <Chip
+                          size="small"
+                          label={row.status === 0 ? 'Hoạt động' : 'Không hoạt động'}
+                          color="primary"
+                        />
                       </Stack>
                     </TableCell>
                     <TableCell align="center">
