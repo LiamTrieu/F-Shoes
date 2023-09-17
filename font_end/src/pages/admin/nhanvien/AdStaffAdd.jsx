@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import staffApi from '../../../api/admin/nhanvien/nhanVienApi'
+import AdStaffQRCode from './AdStaffAddQRCode'
 import {
   Button,
   FormControl,
@@ -13,7 +14,7 @@ import {
 } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
@@ -33,32 +34,30 @@ export default function AddStaff() {
     role: 1,
     status: 1,
   }
-  const [qrDataArray, setQRCodeData] = useState('')
+  // const [qrDataArray, setQRCodeData] = useState('')
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
-  const handleScan = (qrData) => {
-    if (qrData) {
-      setQRCodeData(qrData)
-      const qrDataArray = qrData.split('|')
-      const citizenId = qrDataArray[0]
-      const fullName = qrDataArray[2]
-      const dateOfBirthRaw = qrDataArray[3]
-      const gender = qrDataArray[4]
+  // const handleScan = (qrData) => {
+  //   if (qrData?.text) {
+  //     setQRCodeData(qrData?.text)
+  //     const qrDataArray = qrData?.text.split('|')
+  //     const citizenId = qrDataArray[0]
+  //     const fullName = qrDataArray[2]
+  //     const dateOfBirthRaw = qrDataArray[3]
+  //     const gender = qrDataArray[4]
 
-      const dateOfBirth = dayjs(dateOfBirthRaw, 'DDMMYYYY').format('DD-MM-YYYY')
+  //     const dateBirth = dayjs(dateOfBirthRaw, 'DDMMYYYY').format('DD-MM-YYYY')
 
-      setStaffAdd({
-        ...staffAdd,
-        citizenId,
-        fullName,
-        dateBirth: dateOfBirth,
-        gender,
-      })
+  //     setStaffAdd({
+  //       ...staffAdd,
+  //       citizenId: citizenId,
+  //       fullName: fullName,
+  //       dateBirth: dateBirth,
+  //       gender: gender,
+  //     })
+  //     console.log('data', qrData)
+  //   }
+  // }
 
-      console.log('data', qrData)
-    } else {
-      console.error('Không tìm thấy mã QR.')
-    }
-  }
   const handleOpenQRScanner = () => {
     setQrScannerVisible(true)
   }
@@ -103,13 +102,15 @@ export default function AddStaff() {
               variant="contained"
               fullWidth
               color="success"
-              // component={Link}
               // to="/admin/staff/qr-code"
               onClick={handleOpenQRScanner}>
               Quét QR
             </Button>
             {qrScannerVisible && (
-              <QrReader delay={300} style={{ width: '100%' }} onResult={handleScan} />
+              <AdStaffQRCode
+                //<QrReader delay={300} style={{ width: '100%' }} onResult={handleScan} /> 
+                // setQrScannerVisible = {setQrScannerVisible}
+              />
             )}
           </Grid>
         </Grid>
@@ -120,6 +121,7 @@ export default function AddStaff() {
               id="outlined-basic"
               label="Họ Và Tên"
               variant="outlined"
+              value={staffAdd?.fullName}
               fullWidth
               onChange={(e) => setStaffAdd({ ...staffAdd, fullName: e.target.value })}
             />
@@ -129,6 +131,7 @@ export default function AddStaff() {
               id="outlined-basic"
               label="Email"
               variant="outlined"
+              value={staffAdd?.email}
               fullWidth
               onChange={(e) => setStaffAdd({ ...staffAdd, email: e.target.value })}
             />
@@ -141,6 +144,7 @@ export default function AddStaff() {
               id="outlined-basic"
               label="Số Điện Thoại"
               variant="outlined"
+              value={staffAdd?.phoneNumber}
               fullWidth
               onChange={(e) => setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })}
             />
@@ -150,6 +154,7 @@ export default function AddStaff() {
               id="outlined-basic"
               label="Số CCCD"
               variant="outlined"
+              value={staffAdd?.citizenId}
               fullWidth
               onChange={(e) => setStaffAdd({ ...staffAdd, citizenId: e.target.value })}
             />
@@ -162,9 +167,14 @@ export default function AddStaff() {
               <DatePicker
                 format={'DD-MM-YYYY'}
                 label="Ngày Sinh"
+                // value={staffAdd?.dateBirth}
                 sx={{ width: '100%' }}
                 onChange={(e) =>
-                  setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
+                  // setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
+                  setStaffAdd({
+                    ...staffAdd,
+                    dateBirth: dayjs(e).isValid() ? dayjs(e).format('DD-MM-YYYY') : '',
+                  })
                 }
               />
             </LocalizationProvider>
@@ -174,6 +184,7 @@ export default function AddStaff() {
               id="outlined-basic"
               label="Mật khẩu"
               variant="outlined"
+              value={staffAdd?.password}
               fullWidth
               onChange={(e) => setStaffAdd({ ...staffAdd, password: e.target.value })}
             />
