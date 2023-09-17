@@ -8,6 +8,7 @@ import { Avatar, Badge, IconButton, Tooltip } from '@mui/material'
 import { AiOutlineMenuFold } from 'react-icons/ai'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
+import '../assets/styles/admin.css'
 
 const drawerWidth = 250
 

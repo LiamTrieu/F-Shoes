@@ -64,6 +64,10 @@
     "react-qr-reader": {
       "react": "$react",
       "react-dom": "$react-dom"
+    },
+    "@cielblog/react-horizontal-timeline": {
+      "react": "$react",
+      "react-dom": "$react-dom"
     }
   }
 }

@@ -2,28 +2,35 @@ import React, { useState } from 'react'
 import './index.css'
 import {
   Button,
+  Chip,
   Container,
   InputAdornment,
   Paper,
   Stack,
+  Table,
+  TableHead,
   TextField,
-  Typography,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { SelectFilter } from '../../../components/admin/sanpham/SanPham'
-import { SiMicrosoftexcel } from 'react-icons/si'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { TbEyeEdit } from 'react-icons/tb'
+import { MdPublishedWithChanges } from 'react-icons/md'
 
 export default function AdProductPage() {
   const [category, setCategory] = useState('')
   const [brand, setBrand] = useState('')
-  const [material, setMaterial] = useState('')
-  const [sole, setSole] = useState('')
+  const [status, setStatus] = useState('')
+
   return (
     <div className="san-pham">
       <Container component={Paper} sx={{ py: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <TextField
+            sx={{ width: '50%' }}
             className="search-field"
             size="small"
             color="cam"
@@ -36,12 +43,12 @@ export default function AdProductPage() {
               ),
             }}
           />
-          <Button color="success" variant="contained" className="them-moi">
-            <SiMicrosoftexcel style={{ marginRight: '5px' }} />
-            Export excel
+          <Button color="cam" variant="contained" className="them-moi">
+            <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
+            Thêm mới
           </Button>
         </Stack>
-        <Stack mt={2} direction="row" justifyContent="start" alignItems="center" spacing={1}>
+        <Stack my={2} direction="row" justifyContent="start" alignItems="center" spacing={1}>
           <SelectFilter
             value={category}
             setValue={setCategory}
@@ -55,32 +62,57 @@ export default function AdProductPage() {
             data={[{ id: 2, name: 'Niked' }]}
           />
           <SelectFilter
-            value={material}
-            setValue={setMaterial}
-            label={'Chất liệu'}
-            data={[{ id: 3, name: 'Da con vịt' }]}
-          />
-          <SelectFilter
-            value={sole}
-            setValue={setSole}
-            label={'Đế giày'}
-            data={[{ id: 4, name: 'Đế đinh' }]}
+            value={status}
+            setValue={setStatus}
+            label={'Trạng thái'}
+            data={[{ id: 3, name: 'Đang bán' }]}
           />
         </Stack>
+        <Table className="tableCss">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center" width={'5%'}>
+                STT
+              </TableCell>
+              <TableCell align="center" width={'35%'}>
+                Tên sản phẩm
+              </TableCell>
+              <TableCell align="center" width={'15%'}>
+                Danh mục
+              </TableCell>
+              <TableCell align="center" width={'15%'}>
+                Hãng
+              </TableCell>
+              <TableCell align="center" width={'10%'}>
+                Số lượng
+              </TableCell>
+              <TableCell align="center" width={'10%'}>
+                Trạng thái
+              </TableCell>
+              <TableCell align="center" width={'10%'}>
+                Thao tác
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell align="center">999</TableCell>
+              <TableCell align="center" sx={{ maxWidth: '0px' }}>
+                Air Fore one
+              </TableCell>
+              <TableCell align="center">Giày nam</TableCell>
+              <TableCell align="center">Adidas</TableCell>
+              <TableCell align="center">100</TableCell>
+              <TableCell align="center">
+                <Chip className="chip-hoat-dong" label="Đang bán" size="small" />
+              </TableCell>
+              <TableCell align="center">
+                <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </Container>
-      <Paper sx={{ mt: 2 }}>
-        <Stack
-          sx={{ p: 2, pb: 0 }}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center">
-          <Typography fontWeight={500}>Danh sánh sản phẩm hiện có</Typography>
-          <Button color="cam" variant="contained" className="them-moi">
-            <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
-            Thêm mới
-          </Button>
-        </Stack>
-      </Paper>
     </div>
   )
 }
