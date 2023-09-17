@@ -23,5 +23,7 @@ public interface DiaChiService {
 
     Boolean update(String id, DiaChiRequest DiaChiRequest);
 
+    void delete(String id);
+
 
 }

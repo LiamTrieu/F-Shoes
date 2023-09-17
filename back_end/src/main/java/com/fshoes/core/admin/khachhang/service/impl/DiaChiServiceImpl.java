@@ -71,4 +71,9 @@ public class DiaChiServiceImpl implements DiaChiService {
         }
     }
 
+    @Override
+    public void delete(String id) {
+        diaChiRepository.deleteById(id);
+    }
+
 }

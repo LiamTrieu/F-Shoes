@@ -147,6 +147,7 @@ export default function AdCustomerDetail() {
           })
           handleClose()
           setDiaChi([...diaChi, newDiaChi])
+          loadDiaChi(initPage - 1, id)
         })
       }
     })
@@ -156,6 +157,7 @@ export default function AdCustomerDetail() {
     fillDetailDiaChi(idDC)
     setOpenUpdate(true)
     console.log(idDC)
+    console.log(detailDiaChi)
   }
   const handleCloseUpdate = () => setOpenUpdate(false)
   const [detailDiaChi, setDetailDiaChi] = useState({
@@ -169,6 +171,7 @@ export default function AdCustomerDetail() {
 
   const fillDetailDiaChi = (idDiaChi) => {
     DiaChiApi.getById(idDiaChi).then((response) => {
+      console.log(response.data.data)
       const { name, email, phoneNumber, specificAddress } = response.data.data
       // Chia chuỗi specificAddress thành các phần tử
       const addressParts = specificAddress.split(', ')
@@ -179,11 +182,52 @@ export default function AdCustomerDetail() {
         setTinh(tinh)
         setDetailDiaChi({
           ...detailDiaChi,
+          id: idDiaChi,
           name: name,
           phoneNumber: phoneNumber,
           email: email,
           specificAddress: address,
         })
+      }
+    })
+  }
+
+  const deleteDiaChi = (idDC) => {
+    const title = 'Xác nhận xóa địa chỉ?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        DiaChiApi.delete(idDC).then(() => {
+          toast.success('xóa địa chỉ thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          loadDiaChi(initPage - 1, id)
+        })
+      }
+    })
+  }
+
+  const onUpdateDiaChi = (detailDiaChi) => {
+    const title = 'Xác nhận Cập nhật địa chỉ?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        detailDiaChi.specificAddress = `${detailDiaChi.specificAddress}, ${xa}, ${huyen}, ${tinh}`
+
+        DiaChiApi.update(detailDiaChi.id, detailDiaChi)
+          .then(() => {
+            toast.success('Cập nhật địa chỉ thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            handleCloseUpdate()
+            loadDiaChi(initPage - 1, id)
+          })
+          .catch((error) => {
+            console.error('Lỗi khi cập nhật địa chỉ:', error)
+            toast.error('Đã xảy ra lỗi khi cập nhật địa chỉ', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
       }
     })
   }
@@ -291,7 +335,11 @@ export default function AdCustomerDetail() {
                       <IconButton aria-label="favorite" size="small">
                         <StarIcon />
                       </IconButton>
-                      <IconButton size="small" color="error" sx={{ float: 'right' }}>
+                      <IconButton
+                        onClick={() => deleteDiaChi(item.id)}
+                        size="small"
+                        color="error"
+                        sx={{ float: 'right' }}>
                         <DeleteIcon />
                       </IconButton>
                       <IconButton
@@ -494,11 +542,10 @@ export default function AdCustomerDetail() {
                 type="text"
                 size="small"
                 fullWidth
+                name="name"
                 value={detailDiaChi.name}
                 onChange={(e) => {
-                  const updatedDetailDiaChi = { ...detailDiaChi }
-                  updatedDetailDiaChi.name = e.target.value
-                  setDetailDiaChi(updatedDetailDiaChi)
+                  setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
                 }}
               />
             </Grid>
@@ -509,12 +556,11 @@ export default function AdCustomerDetail() {
                 variant="outlined"
                 type="text"
                 size="small"
+                name="email"
                 fullWidth
                 value={detailDiaChi.email}
                 onChange={(e) => {
-                  const updatedDetailDiaChi = { ...detailDiaChi }
-                  updatedDetailDiaChi.email = e.target.value
-                  setDetailDiaChi(updatedDetailDiaChi)
+                  setDetailDiaChi({ ...detailDiaChi, email: e.target.value })
                 }}
               />
             </Grid>
@@ -528,11 +574,10 @@ export default function AdCustomerDetail() {
                 type="text"
                 size="small"
                 fullWidth
+                name="phoneNumber"
                 value={detailDiaChi.phoneNumber}
                 onChange={(e) => {
-                  const updatedDetailDiaChi = { ...detailDiaChi }
-                  updatedDetailDiaChi.phoneNumber = e.target.value
-                  setDetailDiaChi(updatedDetailDiaChi)
+                  setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
                 }}
               />
             </Grid>
@@ -600,6 +645,7 @@ export default function AdCustomerDetail() {
                 type="text"
                 size="small"
                 fullWidth
+                name="specificAddress"
                 value={detailDiaChi.specificAddress}
                 onChange={(e) => {
                   const updatedDetailDiaChi = { ...detailDiaChi }
@@ -613,11 +659,11 @@ export default function AdCustomerDetail() {
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={12}>
               <Button
-                onClick={() => onCreateDiaChi(newDiaChi)}
+                onClick={() => onUpdateDiaChi(detailDiaChi)}
                 variant="contained"
                 color="cam"
                 sx={{ float: 'right' }}>
-                Update
+                Cập nhật
               </Button>
             </Grid>
           </Grid>

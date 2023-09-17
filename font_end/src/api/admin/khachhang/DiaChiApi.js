@@ -20,8 +20,12 @@ const DiaChiApi = {
   },
   update: (id, address) => {
     const url = `/dia-chi/update/${id}`
-    console.log(url)
     return axiosClient.put(url, address)
+  },
+
+  delete: (id) => {
+    const url = `/dia-chi/delete/${id}`
+    return axiosClient.delete(url)
   },
 }
 export default DiaChiApi
