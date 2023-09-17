@@ -1,10 +1,11 @@
 import axiosClient from '../../axios'
 
 const DiaChiApi = {
-  getAll: () => {
-    const url = `/dia-chi/get-all`
+  getAll: (p, idCustomer) => {
+    const url = `/dia-chi/get-all?p=${p}&idCustomer=${idCustomer}`
     return axiosClient.get(url)
   },
+
   get: (filter) => {
     const url = `/dia-chi/get-page`
     return axiosClient.get(url, { params: filter })

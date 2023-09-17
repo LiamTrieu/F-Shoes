@@ -23,13 +23,13 @@ public class DiaChiController {
     private DiaChiService diaChiService;
 
     @GetMapping("/get-all")
-    public List<?> getAll() {
-        return  diaChiService.getAll();
+    public ObjectRespone getAllByIdCustomer(@RequestParam(defaultValue = "0") int p,@RequestParam String idCustomer) {
+        return new ObjectRespone(diaChiService.getAllAddressByIdCustomer(p,idCustomer));
     }
 
     @GetMapping("/get-page")
-    public List<?> getPage(@RequestParam(defaultValue = "0") int p) {
-        return diaChiService.getPage(p).toList();
+    public ObjectRespone getPage(@RequestParam(defaultValue = "0") int p) {
+        return new ObjectRespone(diaChiService.getPage(p));
     }
 
     @GetMapping("/get-one/{id}")

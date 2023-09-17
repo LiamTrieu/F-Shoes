@@ -65,7 +65,7 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Override
     public void delete(String id) {
         Customer cu = khachHangRepository.findById(id).orElse(null);
-        cu.setStatus(Status.NGUNG_HOAT_DONG);
+        cu.setStatus(cu.getStatus());
         khachHangRepository.save(cu);
     }
 

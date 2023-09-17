@@ -95,7 +95,9 @@ export default function AdCustomerAdd() {
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12} md={6}>
               <TextField
-                placeholder="Tên khách hàng"
+                id="outlined-basic"
+                label="Tên khách hàng"
+                variant="outlined"
                 type="text"
                 size="small"
                 fullWidth
@@ -107,7 +109,9 @@ export default function AdCustomerAdd() {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                placeholder="Email"
+                id="outlined-basic"
+                label="Email"
+                variant="outlined"
                 type="text"
                 size="small"
                 fullWidth
@@ -121,7 +125,9 @@ export default function AdCustomerAdd() {
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12} md={6}>
               <TextField
-                placeholder="Số điện thoại"
+                id="outlined-basic"
+                label="Số điện thoại"
+                variant="outlined"
                 type="text"
                 size="small"
                 fullWidth
@@ -201,7 +207,9 @@ export default function AdCustomerAdd() {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                placeholder="Địa chỉ cụ thể"
+                id="outlined-basic"
+                label="Địa chỉ cụ thể"
+                variant="outlined"
                 type="text"
                 size="small"
                 fullWidth
@@ -220,7 +228,7 @@ export default function AdCustomerAdd() {
               <Button
                 onClick={() => onSubmit(khachHang)}
                 variant="contained"
-                color="success"
+                color="cam"
                 sx={{ float: 'right' }}>
                 Tạo Mới
               </Button>
