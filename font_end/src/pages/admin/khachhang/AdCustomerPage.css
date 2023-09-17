@@ -1,0 +1,43 @@
+.custom-accordion {
+  margin: 2px;
+}
+.custom-accordion-header {
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-bottom: 1px solid #c0c0c0;
+}
+
+.custom-accordion-header .MuiTypography-root {
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+.custom-accordion-header .MuiSvgIcon-root {
+  margin-right: 2px;
+  order: -1; /* Đảm bảo mũi tên nằm bên trái */
+}
+.star-icon .MuiIconButton-root {
+  margin-left: auto; /* Đẩy biểu tượng ngôi sao về bên phải */
+  float: left;
+}
+
+.css-1num9ec-MuiTableRow-root {
+  background-color: #f2721e;
+}
+
+.head-table {
+  color: white;
+}
+
+.accordion-content {
+  display: flex;
+  flex-direction: column-reverse; /* Đảm bảo mũi tên nằm bên trái và các dòng text xuống dòng */
+}
+/* .MuiButtonBase-root
+  MuiAccordionSummary-root
+  MuiAccordionSummary-gutters
+  custom-accordion-header
+  css-sh22l5-MuiButtonBase-root-MuiAccordionSummary-root {
+  background-color: gray;
+} */

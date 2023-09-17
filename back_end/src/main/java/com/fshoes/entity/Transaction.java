@@ -43,4 +43,11 @@ public class Transaction extends PrimaryEntity {
     @JoinColumn(name = "id_staff", referencedColumnName = "id")
     private Staff staff;
 
+    public Integer getStatus() {
+        return status.ordinal();
+    }
+
+    public void setStatus(Integer status) {
+        this.status = Status.values()[status];
+    }
 }
