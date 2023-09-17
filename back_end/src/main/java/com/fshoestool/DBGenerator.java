@@ -88,13 +88,13 @@ public class DBGenerator implements CommandLineRunner {
         //Customer
 
         //Promotion
-        Promotion promotion1 = Promotion.builder().name("Promotion 1").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(50).status(StatusVoucher.DANG_DIEN_RA).build();
+        Promotion promotion1 = Promotion.builder().name("Promotion 1").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(50).status(StatusVoucher.SAP_DIEN_RA).build();
         promotion1.setId(promotionRepository.save(promotion1).getId());
 
         Promotion promotion2 = Promotion.builder().name("Promotion 2").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(60).status(StatusVoucher.DANG_DIEN_RA).build();
         promotion2.setId(promotionRepository.save(promotion2).getId());
 
-        Promotion promotion3 = Promotion.builder().name("Promotion 3").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(70).status(StatusVoucher.DANG_DIEN_RA).build();
+        Promotion promotion3 = Promotion.builder().name("Promotion 3").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(70).status(StatusVoucher.DA_KET_THUC).build();
         promotion3.setId(promotionRepository.save(promotion3).getId());
 
         Promotion promotion4 = Promotion.builder().name("Promotion 4").timeStart(System.currentTimeMillis()).timeEnd(System.currentTimeMillis() + 86400000).type(true).value(80).status(StatusVoucher.DANG_DIEN_RA).build();

@@ -1,15 +1,20 @@
-import { Box, Button, Container, Grid, Paper, Stack, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Modal from '@mui/material/Modal'
-// import Menu from "@mui/joy/Menu";
-
-// import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
-// import Dropdown from "@mui/joy/Dropdown";
-// import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { DataGrid } from '@mui/x-data-grid'
 import { useNavigate, useParams } from 'react-router-dom'
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
@@ -18,7 +23,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import dayjs from 'dayjs'
-import Swal from 'sweetalert2'
+import confirmSatus from '../../../components/comfirmSwal'
+import { toast } from 'react-toastify'
 
 const style = {
   position: 'absolute',
@@ -66,41 +72,45 @@ const rows = [
 
 export default function AdPromotionDetail() {
   const [age, setAge] = React.useState('')
+  const theme = useTheme()
 
   let navigate = useNavigate()
   const { id } = useParams()
   const [updatePromotion, setUpdatePromotion] = useState({
     name: '',
     value: '',
-    type: false,
-    status: '0',
+    type: true,
+    status: 0,
     timeStart: '',
     timeEnd: '',
   })
 
-  const { name, value, timeStart, timeEnd } = updatePromotion
-
   const onSubmit = (e, id) => {
-    khuyenMaiApi
-      .UpdayePromotion(e, id)
-      .then(() => {
-        Swal.fire('update thành công', 'You clicked the button!', 'success')
-        navigate('/admin/promotion')
-      })
-      .catch(() => {
-        alert('update thất bại')
-      })
+    const title = 'bạn có muốn update không?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        khuyenMaiApi.UpdayePromotion(e, id).then(() => {
+          toast.success('update thành công', { position: toast.POSITION.TOP_RIGHT })
+          navigate('/admin/promotion')
+        })
+      } else {
+        toast.error('update thất bại', { position: toast.POSITION.TOP_RIGHT })
+      }
+    })
   }
 
   const detail = (id) => {
     khuyenMaiApi.getById(id).then((response) => {
       const formattedStartDate = dayjs(response.data.data.timeStart).format('DD-MM-YYYY HH:mm:ss')
       const formattedEndDate = dayjs(response.data.data.timeEnd).format('DD-MM-YYYY HH:mm:ss')
+      const convertStatus = parseInt(response.data.data.status, 10)
 
       setUpdatePromotion({
         ...response.data.data,
         timeStart: formattedStartDate,
         timeEnd: formattedEndDate,
+        status: convertStatus,
       })
       console.log(response.data)
     })
@@ -226,7 +236,7 @@ export default function AdPromotionDetail() {
                 color="success"
                 sx={{ float: 'right' }}
                 onClick={() => onSubmit(updatePromotion, id)}>
-                Tạo Mới
+                Update
               </Button>
             </Grid>
           </Grid>
@@ -247,18 +257,6 @@ export default function AdPromotionDetail() {
               spacing={2}
               sx={{ mt: 3, mb: 3 }}>
               <Typography>Trạng Thái:</Typography>
-              {/* <Dropdown>
-                  <MenuButton
-                    // endDecorator={<ArrowDropDown />}
-                    sx={{ border: "none" }}>
-                    Size
-                  </MenuButton>
-                  <Menu
-                    sx={{ minWidth: 160, "--ListItemDecorator-size": "24px" }}>
-                    <MenuItem>Smaller</MenuItem>
-                    <MenuItem>Larger</MenuItem>
-                  </Menu>
-                </Dropdown> */}
               <TextField
                 sx={{ mt: 2, width: '30%' }}
                 id="outlined-basic"
