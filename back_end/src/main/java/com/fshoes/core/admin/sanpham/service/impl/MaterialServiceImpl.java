@@ -6,7 +6,6 @@ import com.fshoes.core.admin.sanpham.repository.SpMaterialRepository;
 import com.fshoes.core.admin.sanpham.service.MaterialService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Material;
-import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -64,7 +63,7 @@ public class MaterialServiceImpl implements MaterialService {
     public Material chageDeleted(String id, Integer isDeleted) {
         try {
             Material material = materialRepository.findById(id).orElseThrow();
-            material.setDeleted(Status.values()[isDeleted]);
+            material.setDeleted(isDeleted);
             return materialRepository.save(material);
         } catch (Exception e) {
             return null;

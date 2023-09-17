@@ -6,7 +6,6 @@ import com.fshoes.core.admin.sanpham.repository.SpBrandRepository;
 import com.fshoes.core.admin.sanpham.service.BrandService;
 import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Brand;
-import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -64,7 +63,7 @@ public class BrandServiceImpl implements BrandService {
     public Brand chageDeleted(String id, Integer isDeleted) {
         try {
             Brand brand = brandRepository.findById(id).orElseThrow();
-            brand.setDeleted(Status.values()[isDeleted]);
+            brand.setDeleted(isDeleted);
             return brandRepository.save(brand);
         } catch (Exception e) {
             return null;

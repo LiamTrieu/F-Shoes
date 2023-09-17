@@ -25,9 +25,9 @@ const voucherApi = {
     const urlDeleteVoucher = `/voucher/delete/${id}`
     return axiosClient.delete(urlDeleteVoucher)
   },
-  searchVoucher: (pageableRequest, adVoucherSearch) => {
-    const urlSearchVoucher = `/voucher/search?startDateSearch=${adVoucherSearch.startDateSearch}&endDateSearch=${adVoucherSearch.endDateSearch}&pageSearch=${pageableRequest}&nameSearch=${adVoucherSearch.nameSearch}&typeSearch=${adVoucherSearch.typeSearch}&statusSearch=${adVoucherSearch.statusSearch}`
-    return axiosClient.get(urlSearchVoucher)
+  searchVoucher: (adVoucherSearch) => {
+    const urlSearchVoucher = `/voucher/search`
+    return axiosClient.get(urlSearchVoucher, { params: adVoucherSearch })
   },
   getPageCustomer: (p) => {
     const url = `/khach-hang/get-page?p=${p}`
