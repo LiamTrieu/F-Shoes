@@ -1,57 +1,8 @@
 package com.fshoestool;
 
-import com.fshoes.entity.Address;
-import com.fshoes.entity.Bill;
-import com.fshoes.entity.BillDetail;
-import com.fshoes.entity.BillHistory;
-import com.fshoes.entity.Brand;
-import com.fshoes.entity.Cart;
-import com.fshoes.entity.CartDetail;
-import com.fshoes.entity.Category;
-import com.fshoes.entity.Color;
-import com.fshoes.entity.Customer;
-import com.fshoes.entity.CustomerVoucher;
-import com.fshoes.entity.Image;
-import com.fshoes.entity.Material;
-import com.fshoes.entity.Product;
-import com.fshoes.entity.ProductDetail;
-import com.fshoes.entity.ProductPromotion;
-import com.fshoes.entity.Promotion;
-import com.fshoes.entity.Size;
-import com.fshoes.entity.Sole;
-import com.fshoes.entity.Staff;
-import com.fshoes.entity.Transaction;
-import com.fshoes.entity.Voucher;
-import com.fshoes.infrastructure.constant.PaymentMethod;
-import com.fshoes.infrastructure.constant.Status;
-import com.fshoes.infrastructure.constant.StatusBill;
-import com.fshoes.infrastructure.constant.StatusBillDetail;
-import com.fshoes.infrastructure.constant.StatusVoucher;
-import com.fshoes.infrastructure.constant.TypeBill;
-import com.fshoes.infrastructure.constant.TypeTransaction;
-import com.fshoes.infrastructure.constant.TypeVoucher;
-import com.fshoes.repository.AddressRepository;
-import com.fshoes.repository.BillDetailRepository;
-import com.fshoes.repository.BillHistoryRepository;
-import com.fshoes.repository.BillRepository;
-import com.fshoes.repository.BrandRepository;
-import com.fshoes.repository.CartDetailRepository;
-import com.fshoes.repository.CartRepository;
-import com.fshoes.repository.CategoryRepository;
-import com.fshoes.repository.ColorRepository;
-import com.fshoes.repository.CustomerRepository;
-import com.fshoes.repository.CustomerVoucherRepository;
-import com.fshoes.repository.ImageRepository;
-import com.fshoes.repository.MaterialRepository;
-import com.fshoes.repository.ProductDetailRepository;
-import com.fshoes.repository.ProductPromotionRepository;
-import com.fshoes.repository.ProductRepository;
-import com.fshoes.repository.PromotionRepository;
-import com.fshoes.repository.SizeRepository;
-import com.fshoes.repository.SoleRepository;
-import com.fshoes.repository.StaffRepository;
-import com.fshoes.repository.TransactionRepository;
-import com.fshoes.repository.VoucherRepository;
+import com.fshoes.entity.*;
+import com.fshoes.infrastructure.constant.*;
+import com.fshoes.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -357,267 +308,267 @@ public class DBGenerator implements CommandLineRunner {
         //bill
 
         //Sole
-        Sole sole1 = Sole.builder().name("Đế cao su").build();
+        Sole sole1 = Sole.builder().name("Đế cao su").deleted(Status.HOAT_DONG).build();
         sole1.setId(soleRepository.save(sole1).getId());
-        Sole sole2 = Sole.builder().name("Đế da").build();
+        Sole sole2 = Sole.builder().name("Đế da").deleted(Status.HOAT_DONG).build();
         sole2.setId(soleRepository.save(sole2).getId());
-        Sole sole3 = Sole.builder().name("Đế vàng").build();
+        Sole sole3 = Sole.builder().name("Đế vàng").deleted(Status.HOAT_DONG).build();
         sole3.setId(soleRepository.save(sole3).getId());
-        Sole sole4 = Sole.builder().name("Đế sắt").build();
+        Sole sole4 = Sole.builder().name("Đế sắt").deleted(Status.HOAT_DONG).build();
         sole4.setId(soleRepository.save(sole4).getId());
-        Sole sole5 = Sole.builder().name("Đế nhựa").build();
+        Sole sole5 = Sole.builder().name("Đế nhựa").deleted(Status.HOAT_DONG).build();
         sole5.setId(soleRepository.save(sole5).getId());
         //Sole
 
         //Size
-        Size size1 = Size.builder().size(36f).build();
+        Size size1 = Size.builder().size(36f).deleted(Status.HOAT_DONG).build();
         size1.setId(sizeRepository.save(size1).getId());
 
-        Size size2 = Size.builder().size(37f).build();
+        Size size2 = Size.builder().size(37f).deleted(Status.HOAT_DONG).build();
         size2.setId(sizeRepository.save(size2).getId());
 
-        Size size3 = Size.builder().size(38f).build();
+        Size size3 = Size.builder().size(38f).deleted(Status.HOAT_DONG).build();
         size3.setId(sizeRepository.save(size3).getId());
 
-        Size size4 = Size.builder().size(39f).build();
+        Size size4 = Size.builder().size(39f).deleted(Status.HOAT_DONG).build();
         size4.setId(sizeRepository.save(size4).getId());
 
-        Size size5 = Size.builder().size(40f).build();
+        Size size5 = Size.builder().size(40f).deleted(Status.HOAT_DONG).build();
         size5.setId(sizeRepository.save(size5).getId());
         //Size
 
         //Product
-        Product product1 = Product.builder().name("Adidas Superstar").build();
+        Product product1 = Product.builder().name("Adidas Superstar").deleted(Status.HOAT_DONG).build();
         product1.setId(productRepository.save(product1).getId());
-        Product product2 = Product.builder().name("Nike Air Force 1").build();
+        Product product2 = Product.builder().name("Nike Air Force 1").deleted(Status.HOAT_DONG).build();
         product2.setId(productRepository.save(product2).getId());
-        Product product3 = Product.builder().name("Converse Chuck Taylor").build();
+        Product product3 = Product.builder().name("Converse Chuck Taylor").deleted(Status.HOAT_DONG).build();
         product3.setId(productRepository.save(product3).getId());
-        Product product4 = Product.builder().name("Puma Suede").build();
+        Product product4 = Product.builder().name("Puma Suede").deleted(Status.HOAT_DONG).build();
         product4.setId(productRepository.save(product4).getId());
-        Product product5 = Product.builder().name("New Balance 990").build();
+        Product product5 = Product.builder().name("New Balance 990").deleted(Status.HOAT_DONG).build();
         product5.setId(productRepository.save(product5).getId());
         //Product
 
         //material
-        Material material1 = Material.builder().name("Da bò").build();
+        Material material1 = Material.builder().name("Da bò").deleted(Status.HOAT_DONG).build();
         material1.setId(materialRepository.save(material1).getId());
 
-        Material material2 = Material.builder().name("Da lộn").build();
+        Material material2 = Material.builder().name("Da lộn").deleted(Status.HOAT_DONG).build();
         material2.setId(materialRepository.save(material2).getId());
 
-        Material material3 = Material.builder().name("Vải canvas").build();
+        Material material3 = Material.builder().name("Vải canvas").deleted(Status.HOAT_DONG).build();
         material3.setId(materialRepository.save(material3).getId());
 
-        Material material4 = Material.builder().name("Nylon").build();
+        Material material4 = Material.builder().name("Nylon").deleted(Status.HOAT_DONG).build();
         material4.setId(materialRepository.save(material4).getId());
 
-        Material material5 = Material.builder().name("Suede").build();
+        Material material5 = Material.builder().name("Suede").deleted(Status.HOAT_DONG).build();
         material5.setId(materialRepository.save(material5).getId());
         //material
 
         //brand
-        Brand brand1 = Brand.builder().name("Nike").build();
+        Brand brand1 = Brand.builder().name("Nike").deleted(Status.HOAT_DONG).build();
         brand1.setId(brandRepository.save(brand1).getId());
 
-        Brand brand2 = Brand.builder().name("Adidas").build();
+        Brand brand2 = Brand.builder().name("Adidas").deleted(Status.HOAT_DONG).build();
         brand2.setId(brandRepository.save(brand2).getId());
 
-        Brand brand3 = Brand.builder().name("Puma").build();
+        Brand brand3 = Brand.builder().name("Puma").deleted(Status.HOAT_DONG).build();
         brand3.setId(brandRepository.save(brand3).getId());
 
-        Brand brand4 = Brand.builder().name("Reebok").build();
+        Brand brand4 = Brand.builder().name("Reebok").deleted(Status.HOAT_DONG).build();
         brand4.setId(brandRepository.save(brand4).getId());
 
-        Brand brand5 = Brand.builder().name("New Balance").build();
+        Brand brand5 = Brand.builder().name("New Balance").deleted(Status.HOAT_DONG).build();
         brand5.setId(brandRepository.save(brand5).getId());
         //brand
 
         //color
-        Color color1 = Color.builder().code("#8B0016").name("Màu Đỏ Đậm").build();
+        Color color1 = Color.builder().code("#8B0016").name("Màu Đỏ Đậm").deleted(Status.HOAT_DONG).build();
         color1.setId(colorRepository.save(color1).getId());
 
-        Color color2 = Color.builder().code("#00FF00").name("Màu Xanh Lá").build();
+        Color color2 = Color.builder().code("#00FF00").name("Màu Xanh Lá").deleted(Status.HOAT_DONG).build();
         color2.setId(colorRepository.save(color2).getId());
 
-        Color color3 = Color.builder().code("#0000FF").name("Màu Xanh Dương").build();
+        Color color3 = Color.builder().code("#0000FF").name("Màu Xanh Dương").deleted(Status.HOAT_DONG).build();
         color3.setId(colorRepository.save(color3).getId());
 
-        Color color4 = Color.builder().code("#FFFF00").name("Màu Vàng").build();
+        Color color4 = Color.builder().code("#FFFF00").name("Màu Vàng").deleted(Status.HOAT_DONG).build();
         color4.setId(colorRepository.save(color4).getId());
 
-        Color color5 = Color.builder().code("#FFA500").name("Màu Cam").build();
+        Color color5 = Color.builder().code("#FFA500").name("Màu Cam").deleted(Status.HOAT_DONG).build();
         color5.setId(colorRepository.save(color5).getId());
         //color
 
         //category
-        Category category1 = Category.builder().name("Giày lười").build();
+        Category category1 = Category.builder().name("Giày lười").deleted(Status.HOAT_DONG).build();
         category1.setId(categoryRepository.save(category1).getId());
 
-        Category category2 = Category.builder().name("Giày thời trang").build();
+        Category category2 = Category.builder().name("Giày thời trang").deleted(Status.HOAT_DONG).build();
         category2.setId(categoryRepository.save(category2).getId());
 
-        Category category3 = Category.builder().name("Giày nam").build();
+        Category category3 = Category.builder().name("Giày nam").deleted(Status.HOAT_DONG).build();
         category3.setId(categoryRepository.save(category3).getId());
 
-        Category category4 = Category.builder().name("Giày nữ").build();
+        Category category4 = Category.builder().name("Giày nữ").deleted(Status.HOAT_DONG).build();
         category4.setId(categoryRepository.save(category4).getId());
 
-        Category category5 = Category.builder().name("Giày thể thao").build();
+        Category category5 = Category.builder().name("Giày thể thao").deleted(Status.HOAT_DONG).build();
         category5.setId(categoryRepository.save(category5).getId());
         //Category
 
         //product detail
-        ProductDetail productDetail1 = ProductDetail.builder().code("PD001").price(BigDecimal.valueOf(100)).amount(50).description("Mô tả sản phẩm 1").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
+        ProductDetail productDetail1 = ProductDetail.builder().code("PD001").price(BigDecimal.valueOf(100)).deleted(Status.HOAT_DONG).amount(50).description("Mô tả sản phẩm 1").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
         productDetail1.setId(productDetailRepository.save(productDetail1).getId());
 
-        ProductDetail productDetail2 = ProductDetail.builder().code("PD002").price(BigDecimal.valueOf(90)).amount(45).description("Mô tả sản phẩm 2").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+        ProductDetail productDetail2 = ProductDetail.builder().code("PD002").price(BigDecimal.valueOf(90)).deleted(Status.HOAT_DONG).amount(45).description("Mô tả sản phẩm 2").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
         productDetail2.setId(productDetailRepository.save(productDetail2).getId());
 
-        ProductDetail productDetail3 = ProductDetail.builder().code("PD003").price(BigDecimal.valueOf(80)).amount(40).description("Mô tả sản phẩm 3").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
+        ProductDetail productDetail3 = ProductDetail.builder().code("PD003").price(BigDecimal.valueOf(80)).deleted(Status.HOAT_DONG).amount(40).description("Mô tả sản phẩm 3").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
         productDetail3.setId(productDetailRepository.save(productDetail3).getId());
 
-        ProductDetail productDetail4 = ProductDetail.builder().code("PD004").price(BigDecimal.valueOf(70)).amount(35).description("Mô tả sản phẩm 4").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
+        ProductDetail productDetail4 = ProductDetail.builder().code("PD004").price(BigDecimal.valueOf(70)).deleted(Status.HOAT_DONG).amount(35).description("Mô tả sản phẩm 4").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
         productDetail4.setId(productDetailRepository.save(productDetail4).getId());
 
-        ProductDetail productDetail5 = ProductDetail.builder().code("PD005").price(BigDecimal.valueOf(60)).amount(30).description("Mô tả sản phẩm 5").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
+        ProductDetail productDetail5 = ProductDetail.builder().code("PD005").price(BigDecimal.valueOf(60)).deleted(Status.HOAT_DONG).amount(30).description("Mô tả sản phẩm 5").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
         productDetail5.setId(productDetailRepository.save(productDetail5).getId());
 
-        ProductDetail productDetail6 = ProductDetail.builder().code("PD006").price(BigDecimal.valueOf(55)).amount(28).description("Mô tả sản phẩm 6").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
+        ProductDetail productDetail6 = ProductDetail.builder().code("PD006").price(BigDecimal.valueOf(55)).deleted(Status.HOAT_DONG).amount(28).description("Mô tả sản phẩm 6").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
         productDetail6.setId(productDetailRepository.save(productDetail6).getId());
 
-        ProductDetail productDetail7 = ProductDetail.builder().code("PD007").price(BigDecimal.valueOf(48)).amount(24).description("Mô tả sản phẩm 7").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+        ProductDetail productDetail7 = ProductDetail.builder().code("PD007").price(BigDecimal.valueOf(48)).deleted(Status.HOAT_DONG).amount(24).description("Mô tả sản phẩm 7").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
         productDetail7.setId(productDetailRepository.save(productDetail7).getId());
 
-        ProductDetail productDetail8 = ProductDetail.builder().code("PD008").price(BigDecimal.valueOf(50)).amount(25).description("Mô tả sản phẩm 8").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
+        ProductDetail productDetail8 = ProductDetail.builder().code("PD008").price(BigDecimal.valueOf(50)).deleted(Status.HOAT_DONG).amount(25).description("Mô tả sản phẩm 8").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
         productDetail8.setId(productDetailRepository.save(productDetail8).getId());
 
-        ProductDetail productDetail9 = ProductDetail.builder().code("PD009").price(BigDecimal.valueOf(45)).amount(23).description("Mô tả sản phẩm 9").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
+        ProductDetail productDetail9 = ProductDetail.builder().code("PD009").price(BigDecimal.valueOf(45)).deleted(Status.HOAT_DONG).amount(23).description("Mô tả sản phẩm 9").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
         productDetail9.setId(productDetailRepository.save(productDetail9).getId());
 
-        ProductDetail productDetail10 = ProductDetail.builder().code("PD010").price(BigDecimal.valueOf(40)).amount(20).description("Mô tả sản phẩm 10").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
+        ProductDetail productDetail10 = ProductDetail.builder().code("PD010").price(BigDecimal.valueOf(40)).deleted(Status.HOAT_DONG).amount(20).description("Mô tả sản phẩm 10").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
         productDetail10.setId(productDetailRepository.save(productDetail10).getId());
 
-        ProductDetail productDetail11 = ProductDetail.builder().code("PD011").price(BigDecimal.valueOf(35)).amount(18).description("Mô tả sản phẩm 11").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
+        ProductDetail productDetail11 = ProductDetail.builder().code("PD011").price(BigDecimal.valueOf(35)).deleted(Status.HOAT_DONG).amount(18).description("Mô tả sản phẩm 11").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
         productDetail11.setId(productDetailRepository.save(productDetail11).getId());
 
-        ProductDetail productDetail12 = ProductDetail.builder().code("PD012").price(BigDecimal.valueOf(30)).amount(15).description("Mô tả sản phẩm 12").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+        ProductDetail productDetail12 = ProductDetail.builder().code("PD012").price(BigDecimal.valueOf(30)).deleted(Status.HOAT_DONG).amount(15).description("Mô tả sản phẩm 12").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
         productDetail12.setId(productDetailRepository.save(productDetail12).getId());
 
-        ProductDetail productDetail13 = ProductDetail.builder().code("PD013").price(BigDecimal.valueOf(25)).amount(13).description("Mô tả sản phẩm 13").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
+        ProductDetail productDetail13 = ProductDetail.builder().code("PD013").price(BigDecimal.valueOf(25)).deleted(Status.HOAT_DONG).amount(13).description("Mô tả sản phẩm 13").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
         productDetail13.setId(productDetailRepository.save(productDetail13).getId());
 
-        ProductDetail productDetail14 = ProductDetail.builder().code("PD014").price(BigDecimal.valueOf(20)).amount(10).description("Mô tả sản phẩm 14").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
+        ProductDetail productDetail14 = ProductDetail.builder().code("PD014").price(BigDecimal.valueOf(20)).deleted(Status.HOAT_DONG).amount(10).description("Mô tả sản phẩm 14").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
         productDetail14.setId(productDetailRepository.save(productDetail14).getId());
 
-        ProductDetail productDetail15 = ProductDetail.builder().code("PD015").price(BigDecimal.valueOf(15)).amount(8).description("Mô tả sản phẩm 15").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
+        ProductDetail productDetail15 = ProductDetail.builder().code("PD015").price(BigDecimal.valueOf(15)).deleted(Status.HOAT_DONG).amount(8).description("Mô tả sản phẩm 15").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
         productDetail15.setId(productDetailRepository.save(productDetail15).getId());
 
-        ProductDetail productDetail16 = ProductDetail.builder().code("PD016").price(BigDecimal.valueOf(12)).amount(6).description("Mô tả sản phẩm 16").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
+        ProductDetail productDetail16 = ProductDetail.builder().code("PD016").price(BigDecimal.valueOf(12)).deleted(Status.HOAT_DONG).amount(6).description("Mô tả sản phẩm 16").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
         productDetail16.setId(productDetailRepository.save(productDetail16).getId());
 
-        ProductDetail productDetail17 = ProductDetail.builder().code("PD017").price(BigDecimal.valueOf(10)).amount(5).description("Mô tả sản phẩm 17").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+        ProductDetail productDetail17 = ProductDetail.builder().code("PD017").price(BigDecimal.valueOf(10)).deleted(Status.HOAT_DONG).amount(5).description("Mô tả sản phẩm 17").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
         productDetail17.setId(productDetailRepository.save(productDetail17).getId());
 
-        ProductDetail productDetail18 = ProductDetail.builder().code("PD018").price(BigDecimal.valueOf(18)).amount(9).description("Mô tả sản phẩm 18").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
+        ProductDetail productDetail18 = ProductDetail.builder().code("PD018").price(BigDecimal.valueOf(18)).deleted(Status.HOAT_DONG).amount(9).description("Mô tả sản phẩm 18").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
         productDetail18.setId(productDetailRepository.save(productDetail18).getId());
 
-        ProductDetail productDetail19 = ProductDetail.builder().code("PD019").price(BigDecimal.valueOf(19)).amount(9).description("Mô tả sản phẩm 19").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+        ProductDetail productDetail19 = ProductDetail.builder().code("PD019").price(BigDecimal.valueOf(19)).deleted(Status.HOAT_DONG).amount(9).description("Mô tả sản phẩm 19").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
         productDetail19.setId(productDetailRepository.save(productDetail19).getId());
 
-        ProductDetail productDetail20 = ProductDetail.builder().code("PD020").price(BigDecimal.valueOf(20)).amount(10).description("Mô tả sản phẩm 20").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
+        ProductDetail productDetail20 = ProductDetail.builder().code("PD020").price(BigDecimal.valueOf(20)).deleted(Status.HOAT_DONG).amount(10).description("Mô tả sản phẩm 20").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
         productDetail20.setId(productDetailRepository.save(productDetail20).getId());
 
-        ProductDetail productDetail21 = ProductDetail.builder().code("PD021").price(BigDecimal.valueOf(21)).amount(10).description("Mô tả sản phẩm 21").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
+        ProductDetail productDetail21 = ProductDetail.builder().code("PD021").price(BigDecimal.valueOf(21)).deleted(Status.HOAT_DONG).amount(10).description("Mô tả sản phẩm 21").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
         productDetail21.setId(productDetailRepository.save(productDetail21).getId());
 
-        ProductDetail productDetail22 = ProductDetail.builder().code("PD022").price(BigDecimal.valueOf(22)).amount(11).description("Mô tả sản phẩm 22").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
+        ProductDetail productDetail22 = ProductDetail.builder().code("PD022").price(BigDecimal.valueOf(22)).deleted(Status.HOAT_DONG).amount(11).description("Mô tả sản phẩm 22").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
         productDetail22.setId(productDetailRepository.save(productDetail22).getId());
 
-        ProductDetail productDetail23 = ProductDetail.builder().code("PD023").price(BigDecimal.valueOf(23)).amount(11).description("Mô tả sản phẩm 23").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
+        ProductDetail productDetail23 = ProductDetail.builder().code("PD023").price(BigDecimal.valueOf(23)).deleted(Status.HOAT_DONG).amount(11).description("Mô tả sản phẩm 23").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color1).category(category1).build();
         productDetail23.setId(productDetailRepository.save(productDetail23).getId());
 
-        ProductDetail productDetail24 = ProductDetail.builder().code("PD024").price(BigDecimal.valueOf(24)).amount(12).description("Mô tả sản phẩm 24").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+        ProductDetail productDetail24 = ProductDetail.builder().code("PD024").price(BigDecimal.valueOf(24)).deleted(Status.HOAT_DONG).amount(12).description("Mô tả sản phẩm 24").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
         productDetail24.setId(productDetailRepository.save(productDetail24).getId());
 
-        ProductDetail productDetail25 = ProductDetail.builder().code("PD025").price(BigDecimal.valueOf(25)).amount(12).description("Mô tả sản phẩm 25").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
+        ProductDetail productDetail25 = ProductDetail.builder().code("PD025").price(BigDecimal.valueOf(25)).deleted(Status.HOAT_DONG).amount(12).description("Mô tả sản phẩm 25").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
         productDetail25.setId(productDetailRepository.save(productDetail25).getId());
         //product detail
 
         //Image
-        Image image1 = Image.builder().url("https://shorturl.at/wCM25").defaultImage(true).productDetail(productDetail1).build();
+        Image image1 = Image.builder().url("https://shorturl.at/wCM25").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail1).build();
         image1.setId(imageRepository.save(image1).getId());
 
-        Image image2 = Image.builder().url("https://shorturl.at/dkFOZ").defaultImage(true).productDetail(productDetail2).build();
+        Image image2 = Image.builder().url("https://shorturl.at/dkFOZ").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail2).build();
         image2.setId(imageRepository.save(image2).getId());
 
-        Image image3 = Image.builder().url("https://shorturl.at/EIY58").defaultImage(true).productDetail(productDetail3).build();
+        Image image3 = Image.builder().url("https://shorturl.at/EIY58").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail3).build();
         image3.setId(imageRepository.save(image3).getId());
 
-        Image image4 = Image.builder().url("https://shorturl.at/boQ09").defaultImage(true).productDetail(productDetail4).build();
+        Image image4 = Image.builder().url("https://shorturl.at/boQ09").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail4).build();
         image4.setId(imageRepository.save(image4).getId());
 
-        Image image5 = Image.builder().url("https://shorturl.at/twRVW").defaultImage(true).productDetail(productDetail5).build();
+        Image image5 = Image.builder().url("https://shorturl.at/twRVW").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail5).build();
         image5.setId(imageRepository.save(image5).getId());
 
-        Image image6 = Image.builder().url("https://shorturl.at/goQ37").defaultImage(true).productDetail(productDetail6).build();
+        Image image6 = Image.builder().url("https://shorturl.at/goQ37").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail6).build();
         image6.setId(imageRepository.save(image6).getId());
 
-        Image image7 = Image.builder().url("https://shorturl.at/oGJPZ").defaultImage(true).productDetail(productDetail7).build();
+        Image image7 = Image.builder().url("https://shorturl.at/oGJPZ").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail7).build();
         image7.setId(imageRepository.save(image7).getId());
 
-        Image image8 = Image.builder().url("https://shorturl.at/abcyN").defaultImage(true).productDetail(productDetail8).build();
+        Image image8 = Image.builder().url("https://shorturl.at/abcyN").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail8).build();
         image8.setId(imageRepository.save(image8).getId());
 
-        Image image9 = Image.builder().url("https://shorturl.at/FOPS3").defaultImage(true).productDetail(productDetail9).build();
+        Image image9 = Image.builder().url("https://shorturl.at/FOPS3").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail9).build();
         image9.setId(imageRepository.save(image9).getId());
 
-        Image image10 = Image.builder().url("https://shorturl.at/mtvA3").defaultImage(true).productDetail(productDetail10).build();
+        Image image10 = Image.builder().url("https://shorturl.at/mtvA3").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail10).build();
         image10.setId(imageRepository.save(image10).getId());
 
-        Image image11 = Image.builder().url("https://shorturl.at/tvDM9").defaultImage(true).productDetail(productDetail11).build();
+        Image image11 = Image.builder().url("https://shorturl.at/tvDM9").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail11).build();
         image11.setId(imageRepository.save(image11).getId());
 
-        Image image12 = Image.builder().url("https://shorturl.at/dmsKW").defaultImage(true).productDetail(productDetail12).build();
+        Image image12 = Image.builder().url("https://shorturl.at/dmsKW").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail12).build();
         image12.setId(imageRepository.save(image12).getId());
 
-        Image image13 = Image.builder().url("https://shorturl.at/AGR39").defaultImage(true).productDetail(productDetail13).build();
+        Image image13 = Image.builder().url("https://shorturl.at/AGR39").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail13).build();
         image13.setId(imageRepository.save(image13).getId());
 
-        Image image14 = Image.builder().url("https://shorturl.at/lmrN2").defaultImage(true).productDetail(productDetail14).build();
+        Image image14 = Image.builder().url("https://shorturl.at/lmrN2").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail14).build();
         image14.setId(imageRepository.save(image14).getId());
 
-        Image image15 = Image.builder().url("https://shorturl.at/dfiko").defaultImage(true).productDetail(productDetail15).build();
+        Image image15 = Image.builder().url("https://shorturl.at/dfiko").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail15).build();
         image15.setId(imageRepository.save(image15).getId());
 
-        Image image16 = Image.builder().url("https://shorturl.at/ceU46").defaultImage(true).productDetail(productDetail16).build();
+        Image image16 = Image.builder().url("https://shorturl.at/ceU46").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail16).build();
         image16.setId(imageRepository.save(image16).getId());
 
-        Image image17 = Image.builder().url("https://shorturl.at/GHJMR").defaultImage(true).productDetail(productDetail17).build();
+        Image image17 = Image.builder().url("https://shorturl.at/GHJMR").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail17).build();
         image17.setId(imageRepository.save(image17).getId());
 
-        Image image18 = Image.builder().url("https://shorturl.at/KLVY1").defaultImage(true).productDetail(productDetail18).build();
+        Image image18 = Image.builder().url("https://shorturl.at/KLVY1").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail18).build();
         image18.setId(imageRepository.save(image18).getId());
 
-        Image image19 = Image.builder().url("https://shorturl.at/dfhyC").defaultImage(true).productDetail(productDetail19).build();
+        Image image19 = Image.builder().url("https://shorturl.at/dfhyC").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail19).build();
         image19.setId(imageRepository.save(image19).getId());
 
-        Image image20 = Image.builder().url("https://shorturl.at/aeyJO").defaultImage(true).productDetail(productDetail20).build();
+        Image image20 = Image.builder().url("https://shorturl.at/aeyJO").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail20).build();
         image20.setId(imageRepository.save(image20).getId());
 
-        Image image21 = Image.builder().url("https://shorturl.at/cdsy3").defaultImage(true).productDetail(productDetail21).build();
+        Image image21 = Image.builder().url("https://shorturl.at/cdsy3").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail21).build();
         image21.setId(imageRepository.save(image21).getId());
 
-        Image image22 = Image.builder().url("https://shorturl.at/imxTX").defaultImage(true).productDetail(productDetail22).build();
+        Image image22 = Image.builder().url("https://shorturl.at/imxTX").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail22).build();
         image22.setId(imageRepository.save(image22).getId());
 
-        Image image23 = Image.builder().url("https://shorturl.at/nAFGW").defaultImage(true).productDetail(productDetail23).build();
+        Image image23 = Image.builder().url("https://shorturl.at/nAFGW").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail23).build();
         image23.setId(imageRepository.save(image23).getId());
 
-        Image image24 = Image.builder().url("https://shorturl.at/mvxW6").defaultImage(true).productDetail(productDetail24).build();
+        Image image24 = Image.builder().url("https://shorturl.at/mvxW6").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail24).build();
         image24.setId(imageRepository.save(image24).getId());
 
-        Image image25 = Image.builder().url("https://shorturl.at/nvwX9").defaultImage(true).productDetail(productDetail25).build();
+        Image image25 = Image.builder().url("https://shorturl.at/nvwX9").deleted(Status.HOAT_DONG).defaultImage(true).productDetail(productDetail25).build();
         image25.setId(imageRepository.save(image25).getId());
         //Image
 

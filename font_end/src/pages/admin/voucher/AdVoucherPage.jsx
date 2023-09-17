@@ -48,7 +48,7 @@ export default function AdVoucherPage() {
 
   useEffect(() => {
     fetchData(initPage - 1, searchVoucher)
-  }, [initPage, listVoucher, searchVoucher])
+  }, [initPage, searchVoucher])
 
   const handelOnchangePage = (page) => {
     setInitPage(page)
@@ -247,7 +247,7 @@ export default function AdVoucherPage() {
                   <TableCell align="center">Mã</TableCell>
                   <TableCell align="center">Tên</TableCell>
                   <TableCell align="center">Giá trị</TableCell>
-                  <TableCell align="center">Giá trị (tối đa)</TableCell>
+                  <TableCell align="center">Tối đa</TableCell>
                   <TableCell align="center">Kiểu</TableCell>
                   <TableCell align="center">Điều kiện</TableCell>
                   <TableCell align="center">Số lượng</TableCell>
@@ -263,7 +263,7 @@ export default function AdVoucherPage() {
                     <TableCell align="center">{row.code}</TableCell>
                     <TableCell align="center">{row.name}</TableCell>
                     <TableCell align="center">{row.value}%</TableCell>
-                    <TableCell align="center">{row.maximumValue}</TableCell>
+                    <TableCell align="center">{row.maximumValue} VNĐ</TableCell>
                     <TableCell align="center">
                       {row.type === true ? (
                         <Chip color="info" label="Tất cả" />
@@ -271,7 +271,7 @@ export default function AdVoucherPage() {
                         <Chip color="warning" label="Cá nhân" />
                       )}
                     </TableCell>
-                    <TableCell align="center">{row.minimumAmount}</TableCell>
+                    <TableCell align="center">{row.minimumAmount} VNĐ</TableCell>
                     <TableCell align="center">{row.quantity}</TableCell>
                     <TableCell align="center">
                       {dayjs(row.startDate).format('DD-MM-YYYY')}
