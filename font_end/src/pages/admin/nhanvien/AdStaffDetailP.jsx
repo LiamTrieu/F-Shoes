@@ -45,11 +45,11 @@ export default function AdStaffDetail() {
     staffApi
       .getOne(id)
       .then((response) => {
-        const formattedEndDate = dayjs(response.data.dateBirth).format('DD-MM-YYYY')
+        const formatDateBirth = dayjs(response.data.dateBirth).format('DD-MM-YYYY')
         console.log('text')
         setStaffDetail({
           ...response.data,
-          dateBirth: formattedEndDate,
+          dateBirth: formatDateBirth,
         })
       })
       .catch(() => {

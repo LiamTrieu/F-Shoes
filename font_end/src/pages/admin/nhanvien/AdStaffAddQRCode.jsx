@@ -1,25 +1,45 @@
-import { Button, Card, CardContent, Container, Grid, Typography } from '@mui/material'
+import { Card, CardContent, Container, Grid, Typography } from '@mui/material'
+import dayjs from 'dayjs'
 import React, { useState } from 'react'
 import { QrReader } from 'react-qr-reader'
 
 export default function AddStaffAddQRCode({ onQRCodeScanned }) {
-  const [scanResultWebCam, setScanResultWebCam] = useState('')
-
-  const handleErrorWebCam = (error) => {
-    console.log(error)
+  const initStaff = {
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    dateBirth: '',
+    avatar: '',
+    citizenId: '',
+    gender: '',
+    password: '',
+    role: 1,
+    status: 1,
   }
+  const [qrDataArray, setQRCodeData] = useState('')
+  const [staffAdd, setStaffAdd] = useState(initStaff)
+  const handleScan = (qrData) => {
+    if (qrData?.text) {
+      setQRCodeData(qrData?.text)
+      const qrDataArray = qrData?.text.split('|')
+      const citizenId = qrDataArray[0]
+      const fullName = qrDataArray[2]
+      const dateOfBirthRaw = qrDataArray[3]
+      const gender = qrDataArray[4] === 'Nam'
 
-  const handleScanWebCam = (result) => {
-    if (result) {
-      setScanResultWebCam(result)
-      onQRCodeScanned(result)
+      const dateBirth = dayjs(dateOfBirthRaw, 'DDMMYYYY').format('DD-MM-YYYY')
+
+      setStaffAdd({
+        ...staffAdd,
+        citizenId: citizenId,
+        fullName: fullName,
+        dateBirth: dateBirth,
+        gender: gender,
+      })
+      console.log('data', qrData)
     }
   }
-  const handleResultWebCam = (result) => {
-    if (result) {
-      setScanResultWebCam(result)
-    }
-  }
+
   return (
     <Container>
       <Card>
@@ -28,25 +48,7 @@ export default function AddStaffAddQRCode({ onQRCodeScanned }) {
             Quét Mã QR Bằng Webcam
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xl={6} lg={6} md={6} sm={12} xs={12}>
-              <QrReader
-                delay={300}
-                style={{ width: '100%' }}
-                onError={handleErrorWebCam}
-                onScan={handleScanWebCam}
-                onResult={handleResultWebCam}
-              />
-            </Grid>
-            <Grid item xl={6} lg={6} md={6} sm={12} xs={12}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h5" gutterBottom>
-                    Mã QR đã quét:
-                  </Typography>
-                  <Typography variant="body1">{scanResultWebCam}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+              <QrReader delay={500} style={{ width: '100%' }} onResult={handleScan} />
           </Grid>
         </CardContent>
       </Card>
