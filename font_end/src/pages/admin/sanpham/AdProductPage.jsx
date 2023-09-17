@@ -18,7 +18,6 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import { TbEyeEdit } from 'react-icons/tb'
-import { MdPublishedWithChanges } from 'react-icons/md'
 
 export default function AdProductPage() {
   const [category, setCategory] = useState('')
