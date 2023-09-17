@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.hoadon.service;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
+import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
 import com.fshoes.entity.BillDetail;
 
 import java.util.List;
@@ -8,12 +9,13 @@ import java.util.List;
 public interface HDBillDetailService {
     BillDetail save(HDBillDetailRequest hdBillDetailRequest);
 
-    List<BillDetail> getBillDetailByBillId(String idBill);
+    List<HDBillDetailResponse> getBillDetailByBillId(String idBill);
 
     BillDetail updateBillDetail(String idBillDetail, HDBillDetailRequest hdBillDetailRequest);
 
-    List<BillDetail> getBillDetailByBillIdAndStatus(String idBill, Integer status);
+    List<HDBillDetailResponse> getBillDetailByBillIdAndStatus(String idBill, Integer status);
 
     BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
+
 
 }

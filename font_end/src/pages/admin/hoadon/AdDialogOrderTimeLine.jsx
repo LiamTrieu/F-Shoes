@@ -29,7 +29,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }))
 
-export default function CustomizedDialogs({ openDialog, setOpenDialog, listOrderTimeLine }) {
+export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrderTimeLine }) {
   const handleClose = () => {
     setOpenDialog(false)
   }
@@ -76,7 +76,7 @@ export default function CustomizedDialogs({ openDialog, setOpenDialog, listOrder
                     <TableCell align="center">
                       {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
                     </TableCell>
-                    <TableCell align="center">{row.staff ? row.staff.fullName : ''}</TableCell>
+                    <TableCell align="center">{row.createdBy}</TableCell>
                     <TableCell align="center">
                       <Stack direction="row" spacing={1}>
                         <Chip size="small" label={getStatus(row.statusBill)} color="primary" />

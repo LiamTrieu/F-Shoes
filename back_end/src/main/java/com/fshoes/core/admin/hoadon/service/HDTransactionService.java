@@ -1,11 +1,10 @@
 package com.fshoes.core.admin.hoadon.service;
 
-import com.fshoes.entity.Transaction;
+import com.fshoes.core.admin.hoadon.model.respone.HDTransactionResponse;
 
 import java.util.List;
 
 public interface HDTransactionService {
-
-    List<Transaction> getTransactionByBillId(String idBill);
+    List<HDTransactionResponse> getTransactionByBillId(String idBill);
 
 }

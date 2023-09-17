@@ -34,4 +34,12 @@ public class BillHistory extends PrimaryEntity {
     @ManyToOne
     @JoinColumn(name = "id_staff", referencedColumnName = "id")
     private Staff staff;
+
+    public Integer getStatusBill() {
+        return statusBill.ordinal();
+    }
+
+    public void setStatusBill(Integer statusBill) {
+        this.statusBill = StatusBill.values()[statusBill];
+    }
 }
