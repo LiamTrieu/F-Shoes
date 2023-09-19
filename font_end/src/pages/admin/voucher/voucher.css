@@ -1,0 +1,65 @@
+.voucher-css .MuiPaper-root {
+  padding: 2%;
+}
+
+.voucher-css td {
+  height: 0 !important;
+  font-size: 12px !important;
+}
+
+.voucher-css .filter fieldset {
+  border: none !important;
+}
+
+.voucher-css .filter .MuiInputBase-root .MuiSelect-select {
+  color: #fc7c27;
+}
+
+.voucher-css .MuiChip-root {
+  color: white;
+}
+.voucher-css .icon-css {
+  width: 25px;
+  height: 100%;
+}
+
+.voucher-css .MuiButton-root {
+  border-radius: 15px;
+  float: right !important;
+}
+
+.voucher-css p {
+  text-align: center;
+}
+
+.chip-sap-hoat-dong {
+  border: 1px solid #d9d9d9 !important;
+  color: #900d9e !important;
+  background: #f8edf6 !important;
+  border-color: #eca9e2 !important;
+}
+
+.chip-tat-ca {
+  border: 1px solid #d9d9d9 !important;
+  color: #900d9e !important;
+  background: #f8edf6 !important;
+  border-color: #eca9e2 !important;
+}
+.chip-gioi-han {
+  border: 1px solid #d9d9d9 !important;
+  color: #5a7edb !important;
+  background: #f0f6fa !important;
+  border-color: #28b3e1 !important;
+}
+
+/* .voucher-add p {
+  text-align: center;
+} */
+/* .voucher-add .MuiPaper-root {
+  margin-top: 2;
+  margin-bottom: 2;
+  padding: 1;
+} */
+/* .voucher-add .MuiPaper-root .MuiGrid-root {
+  margin-bottom: 3;
+} */

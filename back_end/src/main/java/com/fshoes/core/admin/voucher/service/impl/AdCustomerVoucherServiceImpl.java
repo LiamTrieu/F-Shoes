@@ -5,9 +5,7 @@ import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.service.AdCustomerVoucherService;
 import com.fshoes.core.common.PageableRequest;
-import com.fshoes.entity.Customer;
 import com.fshoes.entity.CustomerVoucher;
-import com.fshoes.entity.Voucher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,16 +41,7 @@ public class AdCustomerVoucherServiceImpl implements AdCustomerVoucherService {
     @Override
     public CustomerVoucher addCustomerVoucher(AdCustomerVoucherRequest adCustomerVoucherRequest) {
         try {
-            Customer customer = new Customer();
-            Voucher voucher = new Voucher();
-            CustomerVoucher customerVoucher = new CustomerVoucher();
-
-            customer.setId(adCustomerVoucherRequest.getIdCustomer());
-            voucher.setId(adCustomerVoucherRequest.getIdVoucher());
-
-            customerVoucher.setCustomer(customer);
-            customerVoucher.setVoucher(voucher);
-
+            CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
             return adCustomerVoucherRepository.save(customerVoucher);
         } catch (Exception e) {
             e.printStackTrace();

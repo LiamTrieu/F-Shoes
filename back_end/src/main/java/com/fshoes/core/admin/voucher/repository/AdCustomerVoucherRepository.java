@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface AdCustomerVoucherRepository extends CustomerVoucherRepository {
     @Query(value = """
-            select cv.id, c.full_name as customer, v.name as voucher, cv.status
+            select cv.id, c.full_name as customer, v.name as voucher
             from customer_voucher cv
             left join customer c on cv.id_customer = c.id
             left join voucher v on cv.id_voucher = v.id
@@ -20,7 +20,7 @@ public interface AdCustomerVoucherRepository extends CustomerVoucherRepository {
     List<AdCustomerVoucherRespone> getAll();
 
     @Query(value = """
-            select cv.id, c.full_name as customer, v.name as voucher, cv.status
+            select cv.id, c.full_name as customer, v.name as voucher
             from customer_voucher cv
             left join customer c on cv.id_customer = c.id
             left join voucher v on cv.id_voucher = v.id
@@ -28,7 +28,7 @@ public interface AdCustomerVoucherRepository extends CustomerVoucherRepository {
             """, nativeQuery = true)
     AdCustomerVoucherRespone getOneById(String id);
     @Query(value = """
-            select cv.id, c.full_name as customer, v.name as voucher, cv.status
+            select cv.id, c.full_name as customer, v.name as voucher
             from customer_voucher cv
             left join customer c on cv.id_customer = c.id
             left join voucher v on cv.id_voucher = v.id
