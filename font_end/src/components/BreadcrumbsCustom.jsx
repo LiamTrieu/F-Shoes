@@ -13,10 +13,10 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
           <Typography
             variant="h4"
             sx={{
-              color: 'layout.colorText',
+              color: 'black',
               textDecoration: 'none',
-              fontWeight: '400',
-              fontSize: 'calc(1.2rem + 0.15vw)',
+              fontWeight: '500',
+              fontSize: 'calc(0.9rem + 0.15vw)',
             }}
             component={e.link != null ? Link : ''}
             key={`listLink${index + 1}`}
@@ -31,25 +31,24 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
     <Typography
       sx={{
         textDecoration: 'none',
-        fontWeight: '400',
-        fontSize: 'calc(1.2rem + 0.15vw)',
+        fontWeight: '500',
+        fontSize: 'calc(0.9rem + 0.15vw)',
       }}
-      key={'listLink0'}
-      color="text.primary">
+      key={'listLink0'}>
       {nameHere}
-    </Typography>
+    </Typography>,
   )
   return (
     <Breadcrumbs
       separator={
         <Typography
           sx={{
-            fontSize: 'calc(1.2rem + 0.15vw)',
+            fontSize: 'calc(0.9rem + 0.15vw)',
           }}>
           /
         </Typography>
       }
-      sx={{ mb: 2 }}
+      sx={{ mb: 1 }}
       aria-label="breadcrumb">
       {breadcrumbs}
     </Breadcrumbs>

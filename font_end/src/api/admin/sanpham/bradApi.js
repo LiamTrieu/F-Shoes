@@ -1,6 +1,10 @@
 import axiosClient from '../../axios'
 
 const bradApi = {
+  findAll: () => {
+    const url = `/brand/find-all`
+    return axiosClient.get(url)
+  },
   getAll: () => {
     const url = `/brand`
     return axiosClient.get(url)

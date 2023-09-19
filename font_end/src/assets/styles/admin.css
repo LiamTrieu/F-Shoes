@@ -92,3 +92,7 @@
   word-wrap: break-word;
   text-overflow: ellipsis;
 }
+
+.color-cam {
+  color: #FC7C27;
+}
