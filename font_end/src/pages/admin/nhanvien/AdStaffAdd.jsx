@@ -110,7 +110,7 @@ export default function AddStaff() {
           <Grid item xs={3}></Grid>
           <Grid item xs={5}></Grid>
           <Grid item xs={3}>
-            <Button variant="contained" fullWidth color="success" onClick={handleOpenQRScanner}>
+            <Button color="cam" variant="contained" fullWidth onClick={handleOpenQRScanner}>
               Quét QR
             </Button>
             <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
@@ -232,7 +232,7 @@ export default function AddStaff() {
               onClick={() => handleStaffAdd(staffAdd)}
               variant="contained"
               fullWidth
-              color="success">
+              color="cam">
               Thêm Nhân Viên
             </Button>
           </Grid>

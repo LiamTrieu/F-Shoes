@@ -294,7 +294,7 @@ export default function AdStaffDetail() {
               onClick={() => handButtonUpdateStaff(id, staffDetail)}
               variant="contained"
               fullWidth
-              color="success"
+              color="cam"
               sx={{ float: 'right' }}>
               Cập Nhật
             </Button>
