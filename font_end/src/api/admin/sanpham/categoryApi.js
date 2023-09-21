@@ -1,6 +1,10 @@
 import axiosClient from '../../axios'
 
 const categoryApi = {
+  findAll: () => {
+    const url = `/category/find-all`
+    return axiosClient.get(url)
+  },
   getAll: () => {
     const url = `/category`
     return axiosClient.get(url)

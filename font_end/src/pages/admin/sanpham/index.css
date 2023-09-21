@@ -23,3 +23,18 @@
 .san-pham .search-field .Mui-focused fieldset {
   border-width: 1px !important;
 }
+
+.san-pham .filter .MuiSelect-select {
+  padding-left: 8px;
+  color: #fc7c27;
+  font-weight: 500;
+}
+
+.san-pham .filter fieldset {
+  border: none !important;
+}
+
+.san-pham .container {
+  padding-left: 20% !important;
+  padding-right: 20% !important;
+}

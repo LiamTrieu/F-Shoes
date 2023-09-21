@@ -19,7 +19,7 @@ import adBrandRoute from './adminroute/adbrandroute'
 const router = createBrowserRouter([
   {
     path: '/',
-    // element: <Navigate to={'/admin'} />,
+    element: <Navigate to={'/admin'} />,
     errorElement: <div>Trang này không tồn tại</div>,
     children: [{ index: true, element: <Home /> }, ...clientRoute],
   },

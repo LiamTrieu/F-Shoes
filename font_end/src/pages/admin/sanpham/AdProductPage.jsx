@@ -1,34 +1,72 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './index.css'
 import {
   Button,
   Chip,
   Container,
   InputAdornment,
+  MenuItem,
+  Pagination,
   Paper,
+  Select,
   Stack,
   Table,
   TableHead,
   TextField,
+  Typography,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import { SelectFilter } from '../../../components/admin/sanpham/SanPham'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import { TbEyeEdit } from 'react-icons/tb'
+import bradApi from '../../../api/admin/sanpham/bradApi'
+import categoryApi from '../../../api/admin/sanpham/categoryApi'
+import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
+import { Link } from 'react-router-dom'
 
 export default function AdProductPage() {
-  const [category, setCategory] = useState('')
-  const [brand, setBrand] = useState('')
-  const [status, setStatus] = useState('')
+  const [listBrand, setListBrand] = useState([])
+  const [listCategory, setListCategory] = useState([])
+  const [listProduct, setListProduct] = useState([])
+  const [total, setTotal] = useState([])
+  const [filter, setFilter] = useState({
+    category: null,
+    brand: null,
+    status: null,
+    name: '',
+    size: 5,
+    page: 1,
+  })
+
+  useEffect(() => {
+    bradApi.findAll().then((response) => {
+      setListBrand(response.data.data)
+    })
+    categoryApi.findAll().then((response) => {
+      setListCategory(response.data.data)
+    })
+  }, [])
+
+  useEffect(() => {
+    sanPhamApi.get(filter).then((response) => {
+      setListProduct(response.data.data.data)
+      setTotal(response.data.data.totalPages)
+      if (filter.page > response.data.data.totalPages)
+        setFilter({ ...filter, page: response.data.data.totalPages })
+    })
+  }, [filter])
 
   return (
     <div className="san-pham">
       <Container component={Paper} sx={{ py: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <TextField
+            onChange={(e) => {
+              console.log(e.target.value)
+              setFilter({ ...filter, name: e.target.value })
+            }}
             sx={{ width: '50%' }}
             className="search-field"
             size="small"
@@ -42,30 +80,67 @@ export default function AdProductPage() {
               ),
             }}
           />
-          <Button color="cam" variant="contained" className="them-moi">
+          <Button
+            component={Link}
+            to="/admin/product/add"
+            color="cam"
+            variant="contained"
+            className="them-moi">
             <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
             Thêm mới
           </Button>
         </Stack>
         <Stack my={2} direction="row" justifyContent="start" alignItems="center" spacing={1}>
-          <SelectFilter
-            value={category}
-            setValue={setCategory}
-            label={'Danh mục'}
-            data={[{ id: 1, name: 'Thể thao' }]}
-          />
-          <SelectFilter
-            value={brand}
-            setValue={setBrand}
-            label={'Thương hiệu'}
-            data={[{ id: 2, name: 'Niked' }]}
-          />
-          <SelectFilter
-            value={status}
-            setValue={setStatus}
-            label={'Trạng thái'}
-            data={[{ id: 3, name: 'Đang bán' }]}
-          />
+          <div className="filter">
+            <b>Danh mục:</b>
+            <Select
+              displayEmpty
+              size="small"
+              value={filter.category}
+              onChange={(e) => {
+                setFilter({ ...filter, category: e.target.value })
+              }}>
+              <MenuItem value={null}>Tất cả</MenuItem>
+              {listCategory?.map((item) => (
+                <MenuItem key={item?.id} value={item?.id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <b>Thương hiệu:</b>
+            <Select
+              displayEmpty
+              size="small"
+              value={filter.brand}
+              onChange={(e) => {
+                setFilter({ ...filter, brand: e.target.value })
+              }}>
+              <MenuItem value={null}>Tất cả</MenuItem>
+              {listBrand?.map((item) => (
+                <MenuItem key={item?.id} value={item?.id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <b>Trạng thái:</b>
+            <Select
+              displayEmpty
+              size="small"
+              value={filter.status}
+              onChange={(e) => {
+                setFilter({ ...filter, status: e.target.value })
+              }}>
+              <MenuItem value={null}>Tất cả</MenuItem>
+              {[
+                { id: 0, name: 'Đang bán' },
+                { id: 1, name: 'Ngừng bán' },
+              ].map((item) => (
+                <MenuItem key={item?.id} value={item?.id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
         </Stack>
         <Table className="tableCss">
           <TableHead>
@@ -80,7 +155,7 @@ export default function AdProductPage() {
                 Danh mục
               </TableCell>
               <TableCell align="center" width={'15%'}>
-                Hãng
+                Thương hiệu
               </TableCell>
               <TableCell align="center" width={'10%'}>
                 Số lượng
@@ -94,23 +169,64 @@ export default function AdProductPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell align="center">999</TableCell>
-              <TableCell align="center" sx={{ maxWidth: '0px' }}>
-                Air Fore one
-              </TableCell>
-              <TableCell align="center">Giày nam</TableCell>
-              <TableCell align="center">Adidas</TableCell>
-              <TableCell align="center">100</TableCell>
-              <TableCell align="center">
-                <Chip className="chip-hoat-dong" label="Đang bán" size="small" />
-              </TableCell>
-              <TableCell align="center">
-                <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
-              </TableCell>
-            </TableRow>
+            {listProduct.map((product) => {
+              return (
+                <TableRow>
+                  <TableCell align="center">{product.stt}</TableCell>
+                  <TableCell align="center" sx={{ maxWidth: '0px' }}>
+                    {product.name}
+                  </TableCell>
+                  <TableCell align="center">{product.category}</TableCell>
+                  <TableCell align="center">{product.brand}</TableCell>
+                  <TableCell align="center">{product.amount}</TableCell>
+                  <TableCell align="center">
+                    <Chip
+                      className={product.status === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'}
+                      label={product.status === 0 ? 'Đang bán' : 'Ngừng bán'}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell align="center">
+                    <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
+        <Stack
+          mt={2}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+          spacing={0}>
+          <Typography component="span" variant={'body2'} mt={0.5}>
+            <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+            <Select
+              onChange={(e) => {
+                setFilter({ ...filter, size: e.target.value })
+              }}
+              sx={{ height: '25px', mx: 0.5 }}
+              size="small"
+              value={filter.size}>
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={15}>15</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+            </Select>
+            <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>sản phẩm</Typography>
+          </Typography>
+          <Pagination
+            color="cam"
+            count={total}
+            page={filter.page}
+            onChange={(e, value) => {
+              e.preventDefault()
+              setFilter({ ...filter, page: value })
+            }}
+          />
+        </Stack>
       </Container>
     </div>
   )
