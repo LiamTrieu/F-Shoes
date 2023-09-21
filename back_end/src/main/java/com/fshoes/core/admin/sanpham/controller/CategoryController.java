@@ -19,4 +19,8 @@ public class CategoryController {
         return new ObjectRespone(categoryService.findAll());
     }
 
+    @GetMapping("get-list-category")
+    public ObjectRespone getListBrand() {
+        return new ObjectRespone(categoryService.getListCategory());
+    }
 }

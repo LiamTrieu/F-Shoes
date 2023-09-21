@@ -19,4 +19,9 @@ public class BrandController {
         return new ObjectRespone(brandService.findAll());
     }
 
+    @GetMapping("get-list-brand")
+    public ObjectRespone getListBrand() {
+        return new ObjectRespone(brandService.getListBrand());
+    }
+
 }
