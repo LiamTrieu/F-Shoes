@@ -2,8 +2,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Dialog,
-  DialogActions,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -17,7 +15,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   TextField,
@@ -31,8 +28,21 @@ import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
 import { toast } from 'react-toastify'
 import { useTheme } from '@emotion/react'
+import '../../../assets/styles/admin.css'
+import './voucher.css'
+import Empty from '../../../components/Empty'
 
 export default function AdVoucherAdd() {
+  const theme = useTheme()
+  const navigate = useNavigate()
+  const [isSelectVisible, setIsSelectVisible] = useState(false)
+  const [openCustomer, setOpenCustomer] = useState(false)
+  const [listCustomer, setListCustomer] = useState([])
+  const [initPage, setInitPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [dataFetched, setDataFetched] = useState(false)
+  const [selectedCustomerIds, setSelectedCustomerIds] = useState([])
+  const [selectAll, setSelectAll] = useState(false)
   const initialVoucher = {
     code: '',
     name: '',
@@ -43,45 +53,25 @@ export default function AdVoucherAdd() {
     quantity: 0,
     startDate: '',
     endDate: '',
-    status: 1,
+    listIdCustomer: selectedCustomerIds,
   }
-  const theme = useTheme()
-  const navigate = useNavigate()
-  const [isSelectVisible, setIsSelectVisible] = useState(false)
   const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
-  const [openCustomer, setOpenCustomer] = useState(false)
-  const [listCustomer, setListCustomer] = useState([])
-  const [initPage, setInitPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(0)
-  const [dataFetched, setDataFetched] = useState(false)
-  const [selected, setSelected] = useState([])
-  const [selectAll, setSelectAll] = useState(false)
 
   useEffect(() => {
-    if (selected.length === listCustomer.length) {
-      setSelectAll(true)
-    } else {
-      setSelectAll(false)
-    }
-  }, [selected, listCustomer])
+    handelCustomeFill(initPage)
+  }, [initPage])
 
-  const handleSelectAllClick = () => {
-    if (selectAll) {
-      setSelected([])
-    } else {
-      const newSelected = listCustomer.map((n) => n.id)
-      setSelected(newSelected)
-    }
-  }
+  const handleVoucherAdd = (voucherAdd, selectedCustomerIds) => {
+    const updatedVoucherAdd = { ...voucherAdd, listIdCustomer: selectedCustomerIds }
 
-  const handleVoucherAdd = (voucherAdd) => {
-    console.log('voucher :', voucherAdd)
+    console.log('Danh sách khách hàng được chọn:', selectedCustomerIds)
+    console.log('voucher:', updatedVoucherAdd)
     const title = 'Xác nhận thêm mới voucher?'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         voucherApi
-          .addVoucher(voucherAdd)
+          .addVoucher(updatedVoucherAdd)
           .then(() => {
             toast.success('Thêm mới voucher thành công', {
               position: toast.POSITION.TOP_RIGHT,
@@ -103,11 +93,13 @@ export default function AdVoucherAdd() {
       .then((response) => {
         setListCustomer(response.data.data.content)
         setTotalPages(response.data.data.totalPages)
-        setOpenCustomer(true)
         setDataFetched(true)
       })
-      .catch((error) => {
+      .catch(() => {
         setDataFetched(false)
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
+        })
       })
   }
 
@@ -116,23 +108,32 @@ export default function AdVoucherAdd() {
     handelCustomeFill(page - 1)
   }
 
-  const handleCheckboxClick = (customerId) => {
-    if (selected.includes(customerId)) {
-      setSelected(selected.filter((id) => id !== customerId))
+  const handleSelectAllChange = (event) => {
+    const selectedIds = event.target.checked ? listCustomer.map((row) => row.id) : []
+    setSelectedCustomerIds(selectedIds)
+    setSelectAll(event.target.checked)
+  }
+
+  const handleRowCheckboxChange = (event, customerId) => {
+    const selectedIndex = selectedCustomerIds.indexOf(customerId)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectedCustomerIds, customerId]
     } else {
-      setSelected([...selected, customerId])
+      newSelectedIds = [
+        ...selectedCustomerIds.slice(0, selectedIndex),
+        ...selectedCustomerIds.slice(selectedIndex + 1),
+      ]
     }
 
-    if (selected.length === listCustomer.length - 1) {
-      setSelectAll(true)
-    } else {
-      setSelectAll(false)
-    }
+    setSelectedCustomerIds(newSelectedIds)
+    setSelectAll(newSelectedIds.length === listCustomer.length)
   }
 
   return (
-    <div>
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 1 }}>
+    <div className="voucher-add">
+      <Paper elevation={3}>
         <Grid container spacing={2}>
           <Grid item xs={0.1}></Grid>
           <Grid item xs={11.8}>
@@ -270,7 +271,7 @@ export default function AdVoucherAdd() {
           </Grid>
           <Grid item xs={0.3}></Grid>
         </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid container spacing={2}>
           <Grid item xs={0.1}></Grid>
           <Grid item xs={3}>
             <FormControl size="small">
@@ -281,11 +282,10 @@ export default function AdVoucherAdd() {
                   value={0}
                   control={<Radio />}
                   label="Tất cả"
-                  onChange={() => {
+                  onClick={(e) => {
+                    setIsSelectVisible(false)
                     setVoucherAdd({ ...voucherAdd, type: 0 })
-                    handleSelectAllClick()
                   }}
-                  onClick={() => setIsSelectVisible(false)}
                   checked={isSelectVisible === false}
                 />
                 <FormControlLabel
@@ -293,8 +293,12 @@ export default function AdVoucherAdd() {
                   value={1}
                   control={<Radio />}
                   label="Cá nhân"
-                  onChange={(e) => setVoucherAdd({ ...voucherAdd, type: e.target.value })}
-                  onClick={() => setIsSelectVisible(true)}
+                  onClick={() => {
+                    setIsSelectVisible(true)
+                    setVoucherAdd({ ...voucherAdd, type: 1 })
+                    setSelectedCustomerIds([])
+                    setSelectAll(false)
+                  }}
                   checked={isSelectVisible === true}
                 />
               </RadioGroup>
@@ -303,7 +307,9 @@ export default function AdVoucherAdd() {
           <Grid item xs={2}>
             {isSelectVisible && (
               <Button
-                onClick={() => handelCustomeFill(initPage)}
+                onClick={() => {
+                  setOpenCustomer(true)
+                }}
                 sx={{ width: 150, float: 'left', mt: 3 }}
                 variant="contained">
                 Chọn
@@ -323,47 +329,54 @@ export default function AdVoucherAdd() {
                     width: '75%',
                   }}>
                   {dataFetched && (
-                    <TableContainer component={Paper}>
-                      <Table sx={{ width: '100%' }} aria-label="simple table">
-                        <TableHead>
-                          <TableRow>
+                    <Table className="tableCss" aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell width={'5%'}>
+                            <Checkbox
+                              name="tất cả"
+                              checked={selectAll}
+                              onChange={handleSelectAllChange}
+                            />
+                          </TableCell>
+                          <TableCell align="center" width={'25%'}>
+                            Tên
+                          </TableCell>
+                          <TableCell align="center" width={'20%'}>
+                            Số điện thoại
+                          </TableCell>
+                          <TableCell align="center" width={'25%'}>
+                            Email
+                          </TableCell>
+                          <TableCell align="center" width={'20%'}>
+                            Ngày sinh
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {listCustomer.map((row, index) => (
+                          <TableRow key={row.id}>
                             <TableCell>
-                              <Checkbox id="checkBoxAll" onChange={handleSelectAllClick} />
+                              <Checkbox
+                                key={row.id}
+                                checked={selectedCustomerIds.indexOf(row.id) !== -1}
+                                onChange={(event) => handleRowCheckboxChange(event, row.id)}
+                              />
                             </TableCell>
-                            <TableCell align="center">Tên</TableCell>
-                            <TableCell align="center">Số điện thoại</TableCell>
-                            <TableCell align="center">Email</TableCell>
-                            <TableCell align="center">Ngày sinh</TableCell>
+                            <TableCell align="center">{row.fullName}</TableCell>
+                            <TableCell align="center">{row.phoneNumber}</TableCell>
+                            <TableCell align="center">{row.email}</TableCell>
+                            <TableCell align="center">
+                              {dayjs(row.dateBirth).format('DD-MM-YYYY')}
+                            </TableCell>
                           </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {listCustomer.map((row, index) => (
-                            <TableRow
-                              key={row.id}
-                              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                              <TableCell>
-                                <Checkbox
-                                  id={row.id}
-                                  key={row.id}
-                                  onChange={() => handleCheckboxClick(row.id)}
-                                  checked={selected.includes(row.id)}
-                                />
-                              </TableCell>
-                              <TableCell align="center">{row.fullName}</TableCell>
-                              <TableCell align="center">{row.phoneNumber}</TableCell>
-                              <TableCell align="center">{row.email}</TableCell>
-                              <TableCell align="center">
-                                {dayjs(row.dateBirth).format('DD-MM-YYYY')}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                        ))}
+                      </TableBody>
+                    </Table>
                   )}
                   {!dataFetched && (
-                    <p style={{ textAlign: 'center' }}>
-                      <b>Không có dữ liệu</b>
+                    <p>
+                      <Empty />
                     </p>
                   )}
                   <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
@@ -388,7 +401,7 @@ export default function AdVoucherAdd() {
           <Grid item xs={5}></Grid>
           <Grid item xs={3}>
             <Button
-              onClick={() => handleVoucherAdd(voucherAdd)}
+              onClick={() => handleVoucherAdd(voucherAdd, selectedCustomerIds)}
               variant="contained"
               fullWidth
               color="success">

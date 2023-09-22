@@ -11,6 +11,7 @@ import {
   RadioGroup,
   TextField,
   Modal,
+  Box,
 } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -19,7 +20,19 @@ import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
 import { toast } from 'react-toastify'
-import { QrReader } from 'react-qr-reader'
+import { useZxing } from 'react-zxing'
+
+const styleModal = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+}
 
 export default function AddStaff() {
   const initStaff = {
@@ -29,23 +42,31 @@ export default function AddStaff() {
     dateBirth: '',
     avatar: '',
     citizenId: '',
-    gender: '',
+    gender: null,
     password: '',
     role: 1,
     status: 0,
   }
-  const [qrDataArray, setQRCodeData] = useState('')
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
-  console.log(qrDataArray)
+
+  const RenderVideo = () => {
+    const { ref } = useZxing({
+      onDecodeResult(result) {
+        handleScan(result)
+        setQrScannerVisible(false)
+      },
+      paused: !qrScannerVisible,
+    })
+    return <video ref={ref} width="100%" />
+  }
 
   const handleScan = (qrData) => {
     if (qrData?.text) {
-      setQRCodeData(qrData?.text)
       const qrDataArray = qrData?.text.split('|')
       const citizenId = qrDataArray[0]
       const fullName = qrDataArray[2]
       const dateOfBirthRaw = qrDataArray[3]
-      const gender = qrDataArray[4] === 'Nam' ? 'true' : 'false'
+      const gender = qrDataArray[4] === 'Nam'
 
       const dateBirth = dayjs(dateOfBirthRaw, 'DDMMYYYY').format('DD-MM-YYYY')
       // const dateBirth = dayjs(dateOfBirthRaw.data.dateBirth).format('DD-MM-YYYY')
@@ -110,25 +131,17 @@ export default function AddStaff() {
           <Grid item xs={3}></Grid>
           <Grid item xs={5}></Grid>
           <Grid item xs={3}>
-            <Button variant="contained" fullWidth color="success" onClick={handleOpenQRScanner}>
+            <Button color="cam" variant="contained" fullWidth onClick={handleOpenQRScanner}>
               Quét QR
             </Button>
-            <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
-              <div
-                style={{
-                  width: '400px',
-                  padding: '20px',
-                  backgroundColor: 'white',
-                  margin: 'auto',
-                  marginTop: '100px',
-                }}>
-                <h2>Quét Mã QR</h2>
-                <QrReader delay={300} onResult={handleScan} />
-                <button onClick={handleCloseQRScanner}>Đóng</button>
-              </div>
-            </Modal>
           </Grid>
         </Grid>
+        <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
+          <Box sx={styleModal}>
+            <RenderVideo />
+          </Box>
+        </Modal>
+
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
@@ -203,7 +216,7 @@ export default function AddStaff() {
           <Grid item xs={5.5}>
             <FormControl size="small">
               <FormLabel>Giới tính:</FormLabel>
-              <RadioGroup row>
+              <RadioGroup row value={staffAdd.gender}>
                 <FormControlLabel
                   name="genderUpdate"
                   value={true}
@@ -232,7 +245,7 @@ export default function AddStaff() {
               onClick={() => handleStaffAdd(staffAdd)}
               variant="contained"
               fullWidth
-              color="success">
+              color="cam">
               Thêm Nhân Viên
             </Button>
           </Grid>

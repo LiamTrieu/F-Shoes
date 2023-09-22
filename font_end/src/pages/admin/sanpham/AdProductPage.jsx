@@ -53,6 +53,8 @@ export default function AdProductPage() {
     sanPhamApi.get(filter).then((response) => {
       setListProduct(response.data.data.data)
       setTotal(response.data.data.totalPages)
+      if (filter.page > response.data.data.totalPages)
+        setFilter({ ...filter, page: response.data.data.totalPages })
     })
   }, [filter])
 
@@ -126,12 +128,12 @@ export default function AdProductPage() {
               size="small"
               value={filter.status}
               onChange={(e) => {
-                setFilter({ ...filter, brand: e.target.value })
+                setFilter({ ...filter, status: e.target.value })
               }}>
               <MenuItem value={null}>Tất cả</MenuItem>
               {[
                 { id: 0, name: 'Đang bán' },
-                { id: 1, name: 'Đã bán' },
+                { id: 1, name: 'Ngừng bán' },
               ].map((item) => (
                 <MenuItem key={item?.id} value={item?.id}>
                   {item.name}
@@ -153,7 +155,7 @@ export default function AdProductPage() {
                 Danh mục
               </TableCell>
               <TableCell align="center" width={'15%'}>
-                Hãng
+                Thương hiệu
               </TableCell>
               <TableCell align="center" width={'10%'}>
                 Số lượng

@@ -6,32 +6,28 @@ export default function DialogAddUpdate({ children, open, setOpen, title, button
   return (
     <Dialog
       fullWidth
-      maxWidth="xs"
+      maxWidth="sm"
       open={open}
       onClose={() => {
         setOpen(false)
       }}>
       <DialogContent>
-        <Typography
-          fontFamily={"'Montserrat', sans-serif"}
-          fontSize={'30px'}
-          fontWeight={500}
-          textAlign={'center'}>
+        <Typography mb={2} textAlign={'center'} fontWeight={'600'} variant="h5" color={'GrayText'}>
           {title}
         </Typography>
         {children}
-        <Stack direction="row" justifyContent="center" alignItems="flex-start" spacing={2}>
-          {buttonSubmit}
+        <Stack mt={2} direction="row" justifyContent="center" alignItems="flex-start" spacing={2}>
           <Button
             onClick={() => {
               setOpen(false)
             }}
             color="error"
             disableElevation
-            sx={{ ...spButton }}
-            variant="contained">
+            variant="contained"
+            sx={{ ...spButton }}>
             Hủy
           </Button>
+          {buttonSubmit}
         </Stack>
       </DialogContent>
     </Dialog>

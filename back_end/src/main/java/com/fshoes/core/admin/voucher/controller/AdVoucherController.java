@@ -27,7 +27,7 @@ public class AdVoucherController {
     }
 
     @GetMapping("/view/page")
-    public ObjectRespone getPageVoucher(@RequestParam( name = "numberPage") Integer page) {
+    public ObjectRespone getPageVoucher(@RequestParam(name = "numberPage") Integer page) {
         return new ObjectRespone(voucherService.getPageVoucher(page));
     }
 
