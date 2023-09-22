@@ -1,13 +1,22 @@
 import {
+  Box,
   Button,
+  Checkbox,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
   InputAdornment,
+  Modal,
+  Pagination,
   Paper,
   Radio,
   RadioGroup,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   TextField,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
@@ -17,9 +26,24 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
+import Empty from '../../../components/Empty'
+import confirmSatus from '../../../components/comfirmSwal'
+import { useTheme } from '@emotion/react'
+import { toast } from 'react-toastify'
 // import PercentIcon from "@mui/icons-material/Percent";
 
 export default function AdVoucherDetail() {
+  const theme = useTheme()
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [isSelectVisible, setIsSelectVisible] = useState(false)
+  const [openCustomer, setOpenCustomer] = useState(false)
+  const [listCustomer, setListCustomer] = useState([])
+  const [initPage, setInitPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [dataFetched, setDataFetched] = useState(false)
+  const [selectedCustomerIds, setSelectedCustomerIds] = useState([])
+  const [selectAll, setSelectAll] = useState(false)
   const initialVoucher = {
     code: '',
     name: '',
@@ -30,15 +54,22 @@ export default function AdVoucherDetail() {
     quantity: 0,
     startDate: '',
     endDate: '',
+    listIdCustomer: [],
   }
-  const { id } = useParams()
-  const navigate = useNavigate()
   const [voucherDetail, setVoucherDetail] = useState(initialVoucher)
-  const [isSelectVisible, setIsSelectVisible] = useState(false)
 
   useEffect(() => {
     fetchData(id)
+    handelCustomeFill(initPage)
+  }, [id, initPage])
+
+  useEffect(() => {
+    fetchListIdCustomer(id)
   }, [id])
+
+  useEffect(() => {
+    setVoucherDetail({ ...voucherDetail, listIdCustomer: selectedCustomerIds })
+  }, [voucherDetail, selectedCustomerIds])
 
   const fetchData = (id) => {
     voucherApi
@@ -60,17 +91,82 @@ export default function AdVoucherDetail() {
       })
   }
 
-  const handleUpdateVoucher = (idUpdate, voucherDetail) => {
-    console.log(voucherDetail)
+  const fetchListIdCustomer = (id) => {
     voucherApi
-      .updateVoucher(idUpdate, voucherDetail)
-      .then(() => {
-        alert('updateVoucher success!')
-        navigate('/admin/voucher')
+      .getListIdCustomerByIdVoucher(id)
+      .then((response) => {
+        setSelectedCustomerIds(response.data.data)
       })
       .catch(() => {
-        alert('updateVoucher error!')
+        console.log('NULL')
       })
+  }
+
+  const handleUpdateVoucher = (idUpdate, voucherDetail) => {
+    console.log(voucherDetail)
+    const title = 'Xác nhận cập nhật voucher?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        voucherApi
+          .updateVoucher(idUpdate, voucherDetail)
+          .then(() => {
+            toast.success('Cập nhật voucher thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            navigate('/admin/voucher')
+          })
+          .catch(() => {
+            toast.error('Cập nhật voucher thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
+      }
+    })
+  }
+
+  const handelCustomeFill = (initPage) => {
+    voucherApi
+      .getPageCustomer(initPage - 1)
+      .then((response) => {
+        setListCustomer(response.data.data.content)
+        setTotalPages(response.data.data.totalPages)
+        setDataFetched(true)
+      })
+      .catch(() => {
+        setDataFetched(false)
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const handelOnchangePage = (page) => {
+    setInitPage(page)
+    handelCustomeFill(page - 1)
+  }
+
+  const handleSelectAllChange = (event) => {
+    const selectedIds = event.target.checked ? listCustomer.map((row) => row.id) : []
+    setSelectedCustomerIds(selectedIds)
+    setSelectAll(event.target.checked)
+  }
+
+  const handleRowCheckboxChange = (event, customerId) => {
+    const selectedIndex = selectedCustomerIds.indexOf(customerId)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectedCustomerIds, customerId]
+    } else {
+      newSelectedIds = [
+        ...selectedCustomerIds.slice(0, selectedIndex),
+        ...selectedCustomerIds.slice(selectedIndex + 1),
+      ]
+    }
+
+    setSelectedCustomerIds(newSelectedIds)
+    setSelectAll(newSelectedIds.length === listCustomer.length)
   }
 
   return (
@@ -278,9 +374,90 @@ export default function AdVoucherDetail() {
           </Grid>
           <Grid item xs={2}>
             {isSelectVisible && (
-              <Button sx={{ width: 150, float: 'left', mt: 2.5 }} variant="contained">
+              <Button
+                onClick={() => {
+                  setOpenCustomer(true)
+                }}
+                sx={{ width: 150, float: 'left', mt: 3 }}
+                variant="contained">
                 Chọn
               </Button>
+            )}
+            {openCustomer && (
+              <Modal open={openCustomer} onClose={() => setOpenCustomer(false)}>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    bgcolor: 'background.paper',
+                    boxShadow: 100,
+                    p: 2,
+                    width: '75%',
+                  }}>
+                  {dataFetched && (
+                    <Table className="tableCss" aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell width={'5%'}>
+                            <Checkbox
+                              name="tất cả"
+                              checked={selectAll}
+                              onChange={handleSelectAllChange}
+                            />
+                          </TableCell>
+                          <TableCell align="center" width={'25%'}>
+                            Tên
+                          </TableCell>
+                          <TableCell align="center" width={'20%'}>
+                            Số điện thoại
+                          </TableCell>
+                          <TableCell align="center" width={'25%'}>
+                            Email
+                          </TableCell>
+                          <TableCell align="center" width={'20%'}>
+                            Ngày sinh
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {listCustomer.map((row, index) => (
+                          <TableRow key={row.id}>
+                            <TableCell>
+                              <Checkbox
+                                key={row.id}
+                                checked={selectedCustomerIds.indexOf(row.id) !== -1}
+                                onChange={(event) => handleRowCheckboxChange(event, row.id)}
+                              />
+                            </TableCell>
+                            <TableCell align="center">{row.fullName}</TableCell>
+                            <TableCell align="center">{row.phoneNumber}</TableCell>
+                            <TableCell align="center">{row.email}</TableCell>
+                            <TableCell align="center">
+                              {dayjs(row.dateBirth).format('DD-MM-YYYY')}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                  {!dataFetched && (
+                    <p>
+                      <Empty />
+                    </p>
+                  )}
+                  <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                    <Pagination
+                      page={initPage}
+                      onChange={(_, page) => handelOnchangePage(page)}
+                      count={totalPages}
+                      color="primary"
+                    />
+                  </Grid>
+                  <Button onClick={() => setOpenCustomer(false)}>Xác nhận</Button>
+                </Box>
+              </Modal>
             )}
           </Grid>
           <Grid item xs={6}></Grid>

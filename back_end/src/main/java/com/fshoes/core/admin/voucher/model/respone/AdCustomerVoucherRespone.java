@@ -8,6 +8,5 @@ public interface AdCustomerVoucherRespone extends IsIdentified {
 
     String getVoucher();
 
-    Integer getStatus();
 
 }

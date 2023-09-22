@@ -1,0 +1,84 @@
+.voucher-css .MuiPaper-root {
+  padding: 2%;
+}
+
+.voucher-css td {
+  height: 0 !important;
+  font-size: 12px !important;
+}
+
+.voucher-css .filter fieldset {
+  border: none !important;
+}
+
+.voucher-css .filter .MuiInputBase-root .MuiSelect-select {
+  color: #fc7c27;
+}
+
+.voucher-css .MuiChip-root {
+  color: white;
+}
+.voucher-css .icon-css .css-1x6if3e-MuiButtonBase-root-MuiButton-root {
+  font-size: 27px !important;
+  background-color: #fc7c27;
+}
+
+.voucher-css .icon-css .css-1x6if3e-MuiButtonBase-root-MuiButton-root:hover {
+  font-size: 27px !important;
+  background-color: #c56729;
+}
+
+.voucher-css .MuiButton-root {
+  border-radius: 15px;
+  float: right !important;
+}
+
+.voucher-css p {
+  text-align: center;
+}
+
+.dateTime .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  height: 0.6em !important;
+}
+.dateTime .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
+  line-height: 0.6em !important;
+  padding-top: 2px;
+  padding-bottom: 14px !important;
+}
+
+.voucher-css .search-voucher fieldset {
+  border-radius: 8px !important;
+  border-color: #fc7c27 !important;
+}
+
+.chip-sap-hoat-dong {
+  border: 1px solid #d9d9d9 !important;
+  color: #900d9e !important;
+  background: #f8edf6 !important;
+  border-color: #eca9e2 !important;
+}
+
+.chip-tat-ca {
+  border: 1px solid #d9d9d9 !important;
+  color: #900d9e !important;
+  background: #f8edf6 !important;
+  border-color: #eca9e2 !important;
+}
+.chip-gioi-han {
+  border: 1px solid #d9d9d9 !important;
+  color: #5a7edb !important;
+  background: #f0f6fa !important;
+  border-color: #28b3e1 !important;
+}
+
+/* .voucher-add p {
+  text-align: center;
+} */
+/* .voucher-add .MuiPaper-root {
+  margin-top: 2;
+  margin-bottom: 2;
+  padding: 1;
+} */
+/* .voucher-add .MuiPaper-root .MuiGrid-root {
+  margin-bottom: 3;
+} */
