@@ -1,5 +1,7 @@
 package com.fshoes.core.admin.khuyenmai.service;
 
+import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionAddRequest;
+import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionRequest;
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequestAdd;
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionSearch;
 import com.fshoes.core.admin.khuyenmai.model.respone.PromotionRespone;
@@ -25,7 +27,7 @@ public interface PromotionService {
 
     Promotion updateKhuyenMai(PromotionRequestAdd promotionRequest, String id) throws ParseException;
 
-     Page<PromotionRespone> searchByName(Integer page,  String Name) ;
+    Promotion addKhuyenMaiOnProduct(ProductPromotionAddRequest request) throws ParseException;
 
      //=======================================================================
 

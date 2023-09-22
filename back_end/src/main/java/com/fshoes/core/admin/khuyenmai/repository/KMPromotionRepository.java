@@ -22,7 +22,7 @@ public interface KMPromotionRepository extends PromotionRepository {
     // new
 
     @Query(value = """
-            select p.id, p.name, p.time_start as timeStart, p.time_end as timeEnd, p.value, p.status 
+            select p.id, p.name, p.time_start as timeStart, p.time_end as timeEnd, p.value, p.status ,p.type
             from Promotion p where (:#{#reg.name} IS NULL OR name like %:#{#reg.name}%)
             AND (:#{#reg.timeStart} IS NULL OR time_start >= :#{#reg.timeStart})
             AND (:#{#reg.timeEnd} IS NULL OR time_end <= :#{#reg.timeEnd})

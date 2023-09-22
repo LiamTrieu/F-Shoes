@@ -79,13 +79,25 @@ export default function AdPromotionDetail() {
   const [updatePromotion, setUpdatePromotion] = useState({
     name: '',
     value: '',
-    type: true,
-    status: 0,
+    type: '',
+    // status: 0,
     timeStart: '',
     timeEnd: '',
   })
 
   const onSubmit = (e, id) => {
+    if (
+      !updatePromotion.name ||
+      !updatePromotion.value ||
+      !updatePromotion.timeStart ||
+      !updatePromotion.timeEnd
+    ) {
+      // Hiển thị thông báo hoặc xử lý lỗi tại đây
+      toast.error('Vui lòng điền đầy đủ thông tin', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      return // Không gửi yêu cầu nếu có trường trống
+    }
     const title = 'bạn có muốn update không?'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
@@ -94,8 +106,6 @@ export default function AdPromotionDetail() {
           toast.success('update thành công', { position: toast.POSITION.TOP_RIGHT })
           navigate('/admin/promotion')
         })
-      } else {
-        toast.error('update thất bại', { position: toast.POSITION.TOP_RIGHT })
       }
     })
   }
@@ -120,7 +130,7 @@ export default function AdPromotionDetail() {
   }, [id])
 
   const handleChange = (event) => {
-    setAge(event.target.value)
+    setUpdatePromotion({ ...updatePromotion, type: event.target.value })
   }
 
   const [open, setOpen] = React.useState(false)
@@ -207,12 +217,11 @@ export default function AdPromotionDetail() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={updatePromotion?.type}
                     label="Quyền sử dụng"
                     onChange={handleChange}>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    <MenuItem value={false}>Tất cả</MenuItem>
+                    <MenuItem value={true}>Giới hạn</MenuItem>
                   </Select>
                 </FormControl>
               </Box>

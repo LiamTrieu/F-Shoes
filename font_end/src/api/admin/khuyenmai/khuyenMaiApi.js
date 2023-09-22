@@ -5,6 +5,11 @@ const khuyenMaiApi = {
     return axiosClient.get(GetAll)
   },
 
+  getAllProduct: () => {
+    const GetAll = `/promotion/get-product`
+    return axiosClient.get(GetAll)
+  },
+
   getPage: (totalPages) => {
     const urlPage = `/promotion/get-page`
     return axiosClient.get(urlPage, totalPages)
@@ -12,7 +17,7 @@ const khuyenMaiApi = {
 
   getAllPromotion: (filter) => {
     const urlPage = `/promotion/get-Promotion-filter`
-    return axiosClient.get(urlPage, filter)
+    return axiosClient.get(urlPage, { params: filter })
   },
 
   getById: (id) => {
@@ -23,6 +28,11 @@ const khuyenMaiApi = {
   addPromotion: (Promotion) => {
     const urlAddPromotion = `/promotion/add`
     return axiosClient.post(urlAddPromotion, Promotion)
+  },
+
+  addProductPromotion: (ProductPromotion) => {
+    const urlAddPromotion = `/promotion/add-product-promotion`
+    return axiosClient.post(urlAddPromotion, ProductPromotion)
   },
 
   UpdayePromotion: (UpdatePromotionRe, id) => {

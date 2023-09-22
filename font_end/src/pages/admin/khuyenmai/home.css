@@ -1,5 +1,46 @@
 .dateTime .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
   height: 0.6em !important;
-  width: 70%;
-  padding-right: 0 !important;
+}
+.dateTime .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
+  line-height: 0.6em !important;
+  padding-top: 2px;
+  padding-bottom: 14px !important;
+}
+
+.chip-sap-hoat-dong {
+  border: 1px solid #d9d9d9 !important;
+  color: #900d9e !important;
+  background: #f8edf6 !important;
+  border-color: #eca9e2 !important;
+}
+
+.chip-tat-ca {
+  border: 1px solid #d9d9d9 !important;
+  color: #cd853f !important;
+  background: #e8e8e8 !important;
+  border-color: #cd853f !important;
+}
+.chip-gioi-han {
+  border: 1px solid #d9d9d9 !important;
+  color: #5a7edb !important;
+  background: #f0f6fa !important;
+  border-color: #28b3e1 !important;
+}
+.promotion .search-promotion .MuiInputBase-root {
+  border-radius: 8px !important;
+}
+.promotion .search-promotion .MuiInputBase-root:hover fieldset {
+  border-color: #f2741f !important;
+}
+.promotion .menuItem {
+  border: none;
+}
+.promotion .filter .MuiSelect-select {
+  padding-left: 8px;
+  color: #fc7c27;
+  font-weight: 500;
+}
+
+.promotion .filter fieldset {
+  border: none !important;
 }

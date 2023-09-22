@@ -1,38 +1,38 @@
 import React, { useEffect, useState } from 'react'
-import Container from '@mui/material/Container'
 import {
   Box,
   Button,
   Chip,
-  Grid,
   IconButton,
+  InputAdornment,
+  MenuItem,
   Pagination,
   Paper,
+  Select,
   Stack,
   Table,
   TextField,
   Typography,
 } from '@mui/material'
+import { TbEyeEdit } from 'react-icons/tb'
 
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import AddIcon from '@mui/icons-material/Add'
 import { Link } from 'react-router-dom'
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
 import dayjs from 'dayjs'
-import CreateIcon from '@mui/icons-material/Create'
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+import SearchIcon from '@mui/icons-material/Search'
 import './home.css'
 
 export default function AdPromotionPage() {
   const [listKhuyenMai, setListKhuyenMai] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [filter, setFilter] = useState({
     page: 1,
@@ -44,46 +44,37 @@ export default function AdPromotionPage() {
     type: '',
   })
 
-  // useEffect(() => {
-  //   loadData(currentPage, searchByName)
-  // }, [currentPage, searchByName])
-
-  const handelOnchangePage = (Page) => {
-    loadData(Page)
-    setCurrentPage(Page)
-  }
-
   const handleDelete = (id) => {
     khuyenMaiApi.deletePromotion(id)
   }
 
   useEffect(() => {
-    loadData(filter)
-  }, [filter])
-
-  const loadData = (filter) => {
-    // khuyenMaiApi.getAll().then((response) => {
-    //   setListKhuyenMai(response.data.data)
-    //   setTotalPages(response.data.totalPages)
-    // })
     khuyenMaiApi.getAllPromotion(filter).then((response) => {
       setListKhuyenMai(response.data.data)
       setTotalPages(response.data.totalPages)
+
+      console.log(filter)
     })
-    console.log(filter)
-  }
+  }, [filter])
+
+  // const loadData = (filter) => {
+  //   khuyenMaiApi.getAllPromotion(filter).then((response) => {
+  //     setListKhuyenMai(response.data.data)
+  //     setTotalPages(response.data.totalPages)
+  //   })
+  //   console.log(filter)
+  // }
 
   return (
-    <Container>
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        <Box sx={{ width: '100%' }}>
-          <Grid container spacing={2}>
-            <Grid item xs={6} md={3}>
+    <>
+      <div className="promotion">
+        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+          <Box sx={{ width: '100%' }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <TextField
-                sx={{ width: '80%' }}
-                id="outlined"
-                label="Name"
-                type="text"
+                sx={{ width: '50%' }}
+                placeholder="Tìm kiếm theo tên khuyến mại"
+                className="search-promotion"
                 size="small"
                 onChange={(e) =>
                   setFilter({
@@ -91,65 +82,136 @@ export default function AdPromotionPage() {
                     name: e.target.value,
                   })
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon color="cam" />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </Grid>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
-                <DateTimePicker
-                  className="dateTime"
-                  onChange={(e) =>
-                    setFilter({
-                      ...filter,
-                      timeStart: dayjs(e).format('DD/MM/YYYY'),
-                    })
-                  }
-                  label="Ngày bắt đầu"
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
-                <DateTimePicker
-                  className="dateTime"
-                  onChange={(e) =>
-                    setFilter({
-                      ...filter,
-                      timeEnd: dayjs(e).format('DD/MM/YYYY'),
-                    })
-                  }
-                  label="Ngày kết thúc"
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-            {/* </Grid> */}
-            <Grid xs={6} md={3}>
+
+              {/* </Grid> */}
+
               <Button
-                sx={{ ml: 9, mt: 2, borderRadius: '15px' }}
-                color="success"
-                variant="outlined"
+                sx={{ borderRadius: '8px' }}
+                color="cam"
+                variant="contained"
                 component={Link}
                 to="/admin/promotion/add">
                 <AddIcon />
-                <Typography sx={{ ml: 0, fontWeight: '500' }}>Tạo Khuyến Mại</Typography>
+                <Typography sx={{ ml: 0, fontWeight: '500' }}>Thêm mới</Typography>
               </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Paper>
+            </Stack>
+            <Stack
+              my={2}
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+              spacing={2}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
+                  <DateTimePicker
+                    className="dateTime"
+                    format="DD/MM/YYYY HH:mm:ss"
+                    value={dayjs(filter?.timeStart)}
+                    onChange={(e) =>
+                      setFilter({
+                        ...filter,
+                        timeStart: dayjs(e).toDate().getTime(),
+                      })
+                    }
+                    label="Ngày bắt đầu"
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
+                  <DateTimePicker
+                    className="dateTime"
+                    format="DD/MM/YYYY HH:mm:ss"
+                    value={dayjs(filter?.timeEnd)}
+                    onChange={(e) =>
+                      setFilter({
+                        ...filter,
+                        timeEnd: dayjs(e).toDate().getTime(),
+                      })
+                    }
+                    label="Ngày kết thúc"
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+              <div className="filter">
+                <b>Quyền: </b>
+                <Select
+                  displayEmpty
+                  size="small"
+                  value={''}
+                  onChange={(e) => {
+                    setFilter({ ...filter, type: e.target.value })
+                  }}>
+                  <MenuItem value={''}>Quyền</MenuItem>
+                  <MenuItem value={0}>Tất cả</MenuItem>
+                  <MenuItem value={1}>Giới hạn</MenuItem>
+                  <MenuItem></MenuItem>
+                </Select>
+              </div>
+              <div className="filter">
+                <b>Trạng Thái: </b>
+                <Select
+                  displayEmpty
+                  size="small"
+                  value={''}
+                  onChange={(e) => {
+                    setFilter({ ...filter, status: e.target.value })
+                  }}>
+                  <MenuItem value={''}>Trạng thái</MenuItem>
+                  <MenuItem value={0}>Sắp diễn ra</MenuItem>
+                  <MenuItem value={1}>Đang diễn ra</MenuItem>
+                  <MenuItem value={2}>Đã kết thúc</MenuItem>
+                  <MenuItem></MenuItem>
+                </Select>
+              </div>
 
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        <TableContainer component={Paper} sx={{ width: '100%' }}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <div className="filter">
+                <b>Giá trị: </b>
+                <Select displayEmpty size="small" value={''}>
+                  <MenuItem value={''}>Giá trị</MenuItem>
+                  <MenuItem value={8}>Tăng dần</MenuItem>
+                  <MenuItem value={9}>Giảm dần</MenuItem>
+                  <MenuItem></MenuItem>
+                </Select>
+              </div>
+            </Stack>
+          </Box>
+        </Paper>
+
+        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+          <Table aria-label="simple table" className="tableCss">
             <TableHead>
               <TableRow>
-                <TableCell>STT</TableCell>
-                <TableCell align="center">Tên</TableCell>
-                <TableCell align="center">Giá trị</TableCell>
-                <TableCell align="center">Quyền</TableCell>
-                <TableCell align="center">Trạng thái</TableCell>
-                <TableCell align="center">Thời gian bắt đầu</TableCell>
-                <TableCell align="center">Thời gian kết thúc</TableCell>
-                <TableCell align="center">Hoạt động</TableCell>
+                <TableCell align="center" width={'5%'}>
+                  STT
+                </TableCell>
+                <TableCell align="center">Tên Khuyến Mại</TableCell>
+                <TableCell align="center" width={'6%'}>
+                  Giá trị
+                </TableCell>
+                <TableCell align="center" width={'10%'}>
+                  Quyền
+                </TableCell>
+                <TableCell align="center" width={'13%'}>
+                  Trạng thái
+                </TableCell>
+                <TableCell align="center" width={'15%'}>
+                  Thời gian bắt đầu
+                </TableCell>
+                <TableCell align="center" width={'15%'}>
+                  Thời gian kết thúc
+                </TableCell>
+                <TableCell align="center" width={'10%'}>
+                  Hoạt động
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -162,47 +224,44 @@ export default function AdPromotionPage() {
                   <TableCell align="center">{promotion.name}</TableCell>
                   <TableCell align="center">{promotion.value}%</TableCell>
                   <TableCell align="center">
-                    <Stack direction="row" sx={{ paddingLeft: '30px' }}>
-                      <Chip
-                        sx={{
-                          backgroundColor: promotion.type === true ? '#FFFF66' : '#99FFFF',
-                        }}
-                        label={promotion.type === true ? 'Tất cả' : 'Giới hạn'}
-                      />
-                    </Stack>
+                    {promotion.type}
+
+                    <Chip
+                      className={promotion.type === false ? 'chip-tat-ca ' : 'chip-gioi-han'}
+                      size="small"
+                      label={promotion.type === false ? 'Tất cả' : 'Giới hạn'}
+                    />
                   </TableCell>
                   <TableCell align="center">
-                    <Stack direction="row" spacing={1} sx={{ paddingLeft: '30px' }}>
-                      <Chip
-                        sx={{
-                          backgroundColor:
-                            promotion.status === 0
-                              ? '#00FF00'
-                              : promotion.status === 1
-                              ? '#99CCFF'
-                              : '#FFCC00',
-                        }}
-                        label={
-                          promotion.status === 0
-                            ? 'Sắp diễn ra'
-                            : promotion.status === 1
-                            ? 'Đang diễn ra'
-                            : 'Đã kết thúc'
-                        }
-                      />
-                    </Stack>
+                    <Chip
+                      className={
+                        promotion.status === 0
+                          ? 'chip-sap-hoat-dong'
+                          : promotion.status === 1
+                          ? 'chip-hoat-dong'
+                          : 'chip-khong-hoat-dong'
+                      }
+                      size="small"
+                      label={
+                        promotion.status === 0
+                          ? 'Sắp diễn ra'
+                          : promotion.status === 1
+                          ? 'Đang diễn ra'
+                          : 'Đã kết thúc'
+                      }
+                    />
                   </TableCell>
 
                   <TableCell align="center">
-                    {dayjs(promotion.timeStart).format('DD/MM/YYYY')}
+                    {dayjs(promotion.timeStart).format('DD/MM/YYYY HH:mm')}
                   </TableCell>
                   <TableCell align="center">
-                    {dayjs(promotion.timeEnd).format('DD/MM/YYYY')}
+                    {dayjs(promotion.timeEnd).format('DD/MM/YYYY HH:mm')}
                   </TableCell>
                   <TableCell>
                     <Link to={`/admin/promotion/get-one/${promotion.id}`}>
-                      <IconButton sx={{ marginLeft: '30px' }}>
-                        <CreateIcon sx={{ color: '#FFCC00' }} />
+                      <IconButton sx={{ marginLeft: '30px' }} color="cam">
+                        <TbEyeEdit />
                       </IconButton>
                     </Link>
                     <IconButton onClick={() => handleDelete(promotion.id)}>
@@ -213,26 +272,29 @@ export default function AdPromotionPage() {
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '10px',
-          }}>
-          <Pagination
-            page={filter.page}
-            onChange={(page) => {
-              setFilter({
-                ...filter,
-                page: page,
-              })
-            }}
-            count={totalPages}
-            variant="outlined"
-          />
-        </div>
-      </Paper>
-    </Container>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginTop: '10px',
+            }}>
+            <Pagination
+              page={filter.page}
+              color="cam"
+              onChange={(e, value) => {
+                e.preventDefault()
+                setFilter({
+                  ...filter,
+                  page: value,
+                })
+              }}
+              count={totalPages}
+              variant="outlined"
+            />
+          </div>
+        </Paper>
+      </div>
+    </>
   )
 }

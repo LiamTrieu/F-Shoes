@@ -14,4 +14,6 @@ public interface PromotionRespone extends IsIdentified {
 
     Integer getStatus();
 
+    Boolean getType();
+
 }
