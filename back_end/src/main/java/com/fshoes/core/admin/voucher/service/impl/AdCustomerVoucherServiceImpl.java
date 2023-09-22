@@ -60,4 +60,9 @@ public class AdCustomerVoucherServiceImpl implements AdCustomerVoucherService {
             return false;
         }
     }
+
+    @Override
+    public List<String> getIdCustomerByIdVoucher(String idVoucher) {
+        return adCustomerVoucherRepository.getListIdCustomerByIdVoucher(idVoucher);
+    }
 }

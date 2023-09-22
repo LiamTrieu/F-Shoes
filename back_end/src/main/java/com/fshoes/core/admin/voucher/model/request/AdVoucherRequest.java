@@ -31,7 +31,7 @@ public class AdVoucherRequest {
 
     private String endDate;
 
-    private Integer status;
+    private Integer status = 0;
 
     private List<String> listIdCustomer;
 

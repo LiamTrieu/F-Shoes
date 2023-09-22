@@ -18,9 +18,14 @@
 .voucher-css .MuiChip-root {
   color: white;
 }
-.voucher-css .icon-css {
-  width: 25px;
-  height: 100%;
+.voucher-css .icon-css .css-1x6if3e-MuiButtonBase-root-MuiButton-root {
+  font-size: 27px !important;
+  background-color: #fc7c27;
+}
+
+.voucher-css .icon-css .css-1x6if3e-MuiButtonBase-root-MuiButton-root:hover {
+  font-size: 27px !important;
+  background-color: #c56729;
 }
 
 .voucher-css .MuiButton-root {
@@ -30,6 +35,20 @@
 
 .voucher-css p {
   text-align: center;
+}
+
+.dateTime .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  height: 0.6em !important;
+}
+.dateTime .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
+  line-height: 0.6em !important;
+  padding-top: 2px;
+  padding-bottom: 14px !important;
+}
+
+.voucher-css .search-voucher fieldset {
+  border-radius: 8px !important;
+  border-color: #fc7c27 !important;
 }
 
 .chip-sap-hoat-dong {

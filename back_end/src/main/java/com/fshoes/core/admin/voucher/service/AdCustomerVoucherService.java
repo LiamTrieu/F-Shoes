@@ -18,4 +18,6 @@ public interface AdCustomerVoucherService {
     CustomerVoucher addCustomerVoucher(AdCustomerVoucherRequest adCustomerVoucherRequest);
 
     Boolean deleteCustomerVoucher(String id);
+
+    List<String> getIdCustomerByIdVoucher(String idVoucher);
 }

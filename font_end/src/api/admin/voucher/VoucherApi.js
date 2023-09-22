@@ -33,6 +33,11 @@ const voucherApi = {
     const url = `/khach-hang/get-page?p=${p}`
     return axiosClient.get(url)
   },
+
+  getListIdCustomerByIdVoucher: (idVoucher) => {
+    const urlListIdCustomerByIdVoucher = `/customerVoucher/view/list-id-customer/${idVoucher}`
+    return axiosClient.get(urlListIdCustomerByIdVoucher)
+  },
 }
 
 export default voucherApi

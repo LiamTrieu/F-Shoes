@@ -53,7 +53,6 @@ export default function AdVoucherAdd() {
     quantity: 0,
     startDate: '',
     endDate: '',
-    status: 1,
     listIdCustomer: selectedCustomerIds,
   }
   const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
@@ -98,6 +97,9 @@ export default function AdVoucherAdd() {
       })
       .catch(() => {
         setDataFetched(false)
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
+        })
       })
   }
 
