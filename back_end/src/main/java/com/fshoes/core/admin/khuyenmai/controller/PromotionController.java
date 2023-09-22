@@ -1,9 +1,12 @@
 package com.fshoes.core.admin.khuyenmai.controller;
 
 
+import com.fshoes.core.admin.khuyenmai.model.request.AddProductRequest;
+import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionAddRequest;
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequestAdd;
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionSearch;
 import com.fshoes.core.admin.khuyenmai.model.respone.PromotionRespone;
+import com.fshoes.core.admin.khuyenmai.service.ProductPromotionAddService;
 import com.fshoes.core.admin.khuyenmai.service.impl.PromotionServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
@@ -14,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
@@ -26,14 +28,11 @@ public class PromotionController {
     @Autowired
     private PromotionServiceImpl khuyenMaiService;
 
-    @GetMapping("/get-all")
-    public ObjectRespone getAll() {
-        return new ObjectRespone(khuyenMaiService.getAll());
-    }
-
-    @GetMapping("/get-page")
-    public PageReponse<PromotionRespone> getPage(PromotionRequestAdd request) {
-        return (khuyenMaiService.getPage(request));
+    @Autowired
+    private ProductPromotionAddService productPromotionAddService;
+    @GetMapping("/get-product")
+    public ObjectRespone getAllProduct(){
+        return new ObjectRespone( productPromotionAddService.getAll());
     }
 
     @GetMapping("/get-one/{id}")
@@ -56,17 +55,14 @@ public class PromotionController {
         return new ObjectRespone(khuyenMaiService.deleteKhuyenMai(id));
     }
 
-    @GetMapping("/search-by-name")
-    public ObjectRespone getByName(@RequestParam(name = "textSearch") String textSearch,
-                                       @RequestParam("page") Integer page){
-
-        return new ObjectRespone(khuyenMaiService.searchByName(page,textSearch));
-
-    }
-
     @GetMapping("/get-Promotion-filter")
     public PageReponse<PromotionRespone> getAllPro(PromotionSearch filter){
         return new PageReponse<>(khuyenMaiService.getAllPromotion(filter));
+    }
+
+    @PostMapping("/add-product-promotion")
+    public ObjectRespone addProductPromotion(ProductPromotionAddRequest request) throws ParseException {
+        return new ObjectRespone(khuyenMaiService.addKhuyenMaiOnProduct(request));
     }
 
 

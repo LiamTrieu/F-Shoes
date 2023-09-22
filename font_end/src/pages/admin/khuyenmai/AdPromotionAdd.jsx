@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Container,
   Grid,
   Paper,
@@ -9,13 +10,13 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Modal from '@mui/material/Modal'
-import { DataGrid } from '@mui/x-data-grid'
+
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -25,6 +26,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
 
 const style = {
   position: 'absolute',
@@ -33,54 +39,53 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: 800,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
   boxShadow: 24,
+  borderRadius: '20px',
   p: 4,
 }
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'firstName', headerName: 'First name', width: 130 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 90,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (params) => `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-  },
-]
-
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-]
-
 export default function AdPromotionAdd() {
   const theme = useTheme()
+  const [getProduct, setGetProduct] = useState([])
 
-  const [age, setAge] = React.useState('')
+  const [selectAll, setSelectAll] = useState(false)
+  const [selectedRows, setSelectedRows] = useState([])
+
+  const toggleSelectAll = () => {
+    setSelectAll(!selectAll)
+    setSelectedRows(selectAll ? [] : getProduct)
+  }
+
+  const handleRowCheckboxChange = (row) => {
+    const selectedIndex = selectedRows.indexOf(row)
+    const newSelected = [...selectedRows]
+
+    if (selectedIndex === -1) {
+      newSelected.push(row)
+    } else {
+      newSelected.splice(selectedIndex, 1)
+    }
+
+    setSelectedRows(newSelected)
+  }
+
+  const fetchProduct = () => {
+    khuyenMaiApi.getAllProduct().then((response) => {
+      setGetProduct(response.data.data)
+    })
+  }
+  useEffect(() => {
+    fetchProduct()
+  }, [])
 
   let navigate = useNavigate()
+
+  const productDetailId = selectedRows.map((row) => row.id)
 
   const [addPromotionRe, setAddPromotionRe] = useState({
     name: '',
     value: '',
-    type: true,
+    type: '',
     status: '2',
     timeStart: '',
     timeEnd: '',
@@ -91,6 +96,19 @@ export default function AdPromotionAdd() {
   }
 
   const onSubmit = (e) => {
+    if (
+      !addPromotionRe.name ||
+      !addPromotionRe.value ||
+      !addPromotionRe.timeStart ||
+      !addPromotionRe.timeEnd
+    ) {
+      toast.error('Vui lòng điền đầy đủ thông tin', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      return
+    }
+
+    console.log(productDetailId)
     const title = 'bạn có muốn add Khuyến mại không'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
@@ -102,18 +120,22 @@ export default function AdPromotionAdd() {
         })
         navigate('/admin/promotion')
       }
+      // if (result.isConfirmed) {
+      //   khuyenMaiApi.addProductPromotion(e).then(() => {
+      //     toast.success('Add thành công', {
+      //       position: toast.POSITION.TOP_RIGHT,
+      //     })
+      //   })
+      //   navigate('/admin/promotion')
+      // }
     })
-  }
-
-  const handleChange = (event) => {
-    setAge(event.target.value)
   }
 
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   return (
-    <Container>
+    <>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Box sx={{ pt: 4 }}>
           <Typography sx={{ fontSize: '30px', fontWeight: 1000 }}>Khuyến Mại</Typography>
@@ -191,12 +213,11 @@ export default function AdPromotionAdd() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    name="type"
                     label="Quyền sử dụng"
-                    onChange={handleChange}>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    onChange={(e) => handleInputChange(e)}>
+                    <MenuItem value={0}>Tất cả</MenuItem>
+                    <MenuItem value={1}>Giới hạn</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -265,21 +286,48 @@ export default function AdPromotionAdd() {
               />
             </Stack>
             <div style={{ height: 400, width: '100%' }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
-                  },
-                }}
-                pageSizeOptions={[5, 10]}
-                checkboxSelection
-              />
+              <Table sx={{ minWidth: 650 }} aria-label="simple table" className="tableCss">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ width: '8%' }}>
+                      <Checkbox checked={selectAll} onChange={toggleSelectAll} />
+                    </TableCell>
+                    <TableCell align="center" sx={{ width: '8%' }}>
+                      STT
+                    </TableCell>
+                    <TableCell align="center" sx={{ width: '30%' }}>
+                      Tên sản phẩm
+                    </TableCell>
+                    <TableCell align="center">Danh mục</TableCell>
+                    <TableCell align="center">Hãng</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {getProduct.map((row, index) => (
+                    <TableRow
+                      key={row.id}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedRows.includes(row)}
+                          onChange={() => handleRowCheckboxChange(row)}
+                        />
+                      </TableCell>
+                      <TableCell align="center" component="th" scope="row">
+                        {index + 1}
+                      </TableCell>
+
+                      <TableCell align="center">{row.name}</TableCell>
+                      <TableCell align="center">{row.category}</TableCell>
+                      <TableCell align="center">{row.brand}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </Box>
         </Modal>
       </div>
-    </Container>
+    </>
   )
 }
