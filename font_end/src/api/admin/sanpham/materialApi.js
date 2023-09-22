@@ -1,30 +1,13 @@
 import axiosClient from '../../axios'
 
 const materialApi = {
-  getAll: () => {
-    const url = `/material`
+  findAll: () => {
+    const url = `/material/find-all`
     return axiosClient.get(url)
   },
-  get: (filter) => {
-    const url = `/material/page`
-    return axiosClient.get(url, { params: filter })
-  },
-  deleted: (id, isDeleted) => {
-    const url = `/material/deleted/${id}`
-    return axiosClient.put(url, isDeleted)
-  },
-  getById: (id) => {
-    const url = `/material/get/${id}`
+  getList: () => {
+    const url = `/material/get-list`
     return axiosClient.get(url)
-  },
-  add: (material) => {
-    const url = `/material/add`
-    return axiosClient.post(url, material)
-  },
-  update: (id, material) => {
-    const url = `/material/update/${id}`
-    console.log(url)
-    return axiosClient.put(url, material)
   },
 }
 export default materialApi

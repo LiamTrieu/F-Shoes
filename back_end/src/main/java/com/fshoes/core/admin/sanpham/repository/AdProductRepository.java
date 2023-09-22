@@ -2,11 +2,15 @@ package com.fshoes.core.admin.sanpham.repository;
 
 import com.fshoes.core.admin.sanpham.model.request.ProductFilterRequest;
 import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
+import com.fshoes.entity.Product;
+import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface AdProductRepository extends ProductRepository {
@@ -27,4 +31,6 @@ public interface AdProductRepository extends ProductRepository {
                 group by p.name, c.name, b.name, p.deleted,p.id
                 """, nativeQuery = true)
     Page<ProductResponse> getAllProduct(ProductFilterRequest filter, Pageable pageable);
+
+    List<Product> findAllByDeleted(Status status);
 }
