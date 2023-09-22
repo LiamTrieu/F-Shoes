@@ -1,6 +1,5 @@
 import {
   Chip,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -45,31 +44,25 @@ const AdBillTransaction = (props) => {
                   {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
                 </TableCell>
                 <TableCell align="center">
-                  <Stack direction="row" spacing={1}>
-                    <Chip
-                      size="small"
-                      label={row.type ? 'Thanh toán' : 'Hoàn tiền'}
-                      color="primary"
-                    />
-                  </Stack>
+                  <Chip
+                    className={row.type ? 'chip-thanh-toan' : 'chip-hoan-tien'}
+                    label={row.type ? 'Thanh toán' : 'Hoàn tiền'}
+                    size="small"
+                  />
                 </TableCell>
                 <TableCell align="center">
-                  <Stack direction="row" spacing={1}>
-                    <Chip
-                      size="small"
-                      label={row.paymentMethod === 1 ? 'Tiền mặt' : 'Chuyển khoản'}
-                      color="primary"
-                    />
-                  </Stack>
+                  <Chip
+                    className={row.paymentMethod === 1 ? 'chip-tien-mat' : 'chip-chuyen-khoan'}
+                    label={row.paymentMethod === 1 ? 'Tiền mặt' : 'Chuyển khoản'}
+                    size="small"
+                  />
                 </TableCell>
                 <TableCell align="center">
-                  <Stack direction="row" spacing={1}>
-                    <Chip
-                      size="small"
-                      label={row.status === 0 ? 'Thành công' : 'Không thành công'}
-                      color="primary"
-                    />
-                  </Stack>
+                  <Chip
+                    className={row.status === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'}
+                    label={row.status === 0 ? 'Thành công' : 'Không thành công'}
+                    size="small"
+                  />
                 </TableCell>
                 <TableCell align="center">{row.note}</TableCell>
                 <TableCell align="center">{row.fullName}</TableCell>

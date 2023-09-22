@@ -1,3 +1,4 @@
+import '../hoadon/hoaDonStyle.css'
 import {
   Paper,
   Grid,
@@ -6,13 +7,13 @@ import {
   Stack,
   TableContainer,
   Table,
-  TableHead,
   TableRow,
   TableCell,
   TableBody,
   Box,
   IconButton,
   TextField,
+  Typography,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -29,6 +30,12 @@ import AdTimeLineBill from './AdTimeLineBill'
 import hoaDonChiTietApi from '../../../api/admin/hoadon/hoaDonChiTiet'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import BillHistoryDialog from './AdDialogOrderTimeLine'
+import { getStatusStyle } from './getStatusStyle'
+
+import Empty from '../../../components/Empty'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+
+const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
 
 export default function AdBillDetail() {
   const tableRowStyle = {
@@ -51,28 +58,67 @@ export default function AdBillDetail() {
   const [loadingListBillDetail, setLoadingListBillDetail] = useState(true)
   const [openDialog, setOpenDialog] = useState(false) // Trạng thái của dialog transaction list
   // const [billConfirmRequest, setBillConfirmRequest] = useState()
-  const [totalMoneyProduct, setTotalMoneyProduct] = useState(0)
+  // const [totalMoneyProduct, setTotalMoneyProduct] = useState(0)
+  // const [billConfirmRequest, setBillConfirmRequest] = useState({
+  //   idVoucher: null,
+  //   idCustomer: null,
+  //   fullName: '',
+  //   phoneNumber: '',
+  //   address: '',
+  //   note: '',
+  //   status: 2,
+  //   noteBillHistory: '',
+  //   idStaff: '03c942e0-149f-4829-aecb-356acce6f763',
+  //   listHdctReq: [],
+  // })
 
-  // Hàm để xác định nội dung của nút dựa trên trạng thái
-  const getButtonText = (billDetail) => {
-    let buttonText = null
-
-    switch (billDetail.status) {
-      case 1:
-        buttonText = 'Xác nhận đơn hàng'
-        break
-      case 2:
-        buttonText = 'Xác nhận giao hàng'
-        break
-      case 7:
-      case 0:
-        buttonText = null
-        break
-      default:
-        buttonText = 'Hoàn thành'
+  const genBtnHandleBill = (billDetail) => {
+    if (billDetail.type) {
+      switch (billDetail.status) {
+        case 1:
+          return (
+            <Button
+              variant="contained"
+              color="cam"
+              style={{ textTransform: 'none' }}
+              onClick={() => setOpenDialog(true)}>
+              Xác nhận đơn hàng
+            </Button>
+          )
+        case 2:
+          return (
+            <Button
+              variant="contained"
+              color="cam"
+              style={{ textTransform: 'none' }}
+              onClick={() => setOpenDialog(true)}>
+              Xác nhận giao hàng
+            </Button>
+          )
+        case 7:
+        case 0:
+          return (
+            <Button
+              variant="contained"
+              color="cam"
+              style={{ textTransform: 'none' }}
+              onClick={() => setOpenDialog(true)}>
+              Chi tiết 3
+            </Button>
+          )
+        default:
+          return (
+            <Button
+              variant="contained"
+              color="cam"
+              style={{ textTransform: 'none' }}
+              onClick={() => setOpenDialog(true)}>
+              Chi tiết 4
+            </Button>
+          )
+      }
     }
-
-    return buttonText
+    return null
   }
 
   useEffect(() => {
@@ -91,25 +137,25 @@ export default function AdBillDetail() {
       .getOne(id)
       .then((response) => {
         setBillDetail(response.data.data)
-        setLoading(false) // Đã tải xong dữ liệu, ngừng hiển thị loader
+        setLoading(false)
       })
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get page: ', error)
-        setLoading(false) // Ngừng hiển thị loader nếu có lỗi
+        setLoading(false)
       })
   }
   //timeline
   const getBillHistoryByIdBill = (id) => {
-    setLoadingTimeline(true) // Bắt đầu tải lịch sử đơn hàng - hiển thị load=))
+    setLoadingTimeline(true)
     lichSuHoaDonApi
       .getByIdBill(id)
       .then((response) => {
         setListOrderTimeLine(response.data.data)
-        setLoadingTimeline(false) // Đã tải xong lịch sử đơn hàng, ngừng hiển thị loader
+        setLoadingTimeline(false)
       })
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get orderTimeline: ', error)
-        setLoadingTimeline(false) // Ngừng hiển thị loader nếu có lỗi
+        setLoadingTimeline(false)
       })
   }
   //transaction
@@ -128,22 +174,23 @@ export default function AdBillDetail() {
   }
 
   const getBillDetailByIdBill = (id) => {
-    setLoadingListBillDetail(true) // Bắt đầu tải danh sách hoá đơn chi tiết - hiển thị load=))
+    setLoadingListBillDetail(true)
     hoaDonChiTietApi
       .getByIdBill(id)
       .then((response) => {
         setListBillDetail(response.data.data)
-        setLoadingListBillDetail(false) // tải xong danh sách hdct, ngừng hiển thị loader
+        setLoadingListBillDetail(false)
       })
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get orderTimeline: ', error)
-        setLoadingListBillDetail(false) // Ngừng hiển thị loader nếu có lỗi
+        setLoadingListBillDetail(false)
       })
   }
 
   return (
-    <div>
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+    <div className="hoa-don">
+      <BreadcrumbsCustom listLink={listHis} nameHere={'Chi tiết hoá đơn'} />
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
         <h3>Lịch sử đơn hàng</h3>
         {/* timeline */}
         {loadingTimeline ? (
@@ -152,30 +199,16 @@ export default function AdBillDetail() {
           <AdTimeLineBill key="unique-key" orderTimeLine={listOrderTimeLine} />
         )}
       </Paper>
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>
         <Grid container justifyContent="space-between" alignItems="center">
-          {loading ? (
-            <div>Loading...</div>
-          ) : (
-            <Grid item>
-              {billDetail.status !== 7 && billDetail.status !== 0 && (
-                <Button
-                  variant="contained"
-                  color="cam"
-                  style={{ textTransform: 'none', marginRight: '10px' }}>
-                  {getButtonText(billDetail)}
-                </Button>
-              )}
-            </Grid>
-          )}
+          {!loading && genBtnHandleBill(billDetail)}
 
-          <Grid item>
+          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
             <Button
               variant="contained"
               color="cam"
-              style={{ textTransform: 'none', marginRight: '50px' }}
-              onClick={() => setOpenDialog(true)} // Mở dialog khi bấm nút
-            >
+              style={{ textTransform: 'none' }}
+              onClick={() => setOpenDialog(true)}>
               Chi tiết
             </Button>
             {loading ? (
@@ -187,77 +220,88 @@ export default function AdBillDetail() {
                 listOrderTimeLine={listOrderTimeLine}
               />
             )}
-          </Grid>
+          </Stack>
         </Grid>
       </Paper>
       {/* Thông tin đơn hàng */}
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <h3>Thông tin đơn hàng</h3>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="cam"
-              style={{ textTransform: 'none', marginRight: '50px' }}>
-              Cập nhật
-            </Button>
-          </Grid>
-        </Grid>
+        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
+          <h3>Thông tin đơn hàng</h3>
+          <Button variant="contained" color="cam" style={{ textTransform: 'none' }}>
+            Cập nhật
+          </Button>
+        </Stack>
         <hr />
-
-        {/*  Nếu đang tải dữ liệu, hiển thị loader hoặc thông báo loading */}
         {loading ? (
           <div>Loading...</div>
         ) : (
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <label>Mã: </label>
-              {billDetail?.code}
+          <div>
+            <Grid container spacing={2} className="billDetailInfo">
+              <Grid item xs={12} sm={4}>
+                <Typography>
+                  <label>Mã: </label>
+                  {billDetail?.code}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography>
+                  <label>Tên khách hàng: </label>
+                  {billDetail?.fullName ? billDetail.fullName : 'Khách lẻ'}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography>
+                  <Stack direction="row" spacing={1}>
+                    <label>Trạng thái: </label>
+                    <Chip
+                      className={getStatusStyle(billDetail.status)}
+                      label={getStatus(billDetail.status)}
+                      size="small"
+                    />
+                  </Stack>
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography>
+                  <label>Sđt người nhận: </label>
+                  {billDetail?.recipientPhoneNumber ? billDetail.recipientPhoneNumber : ''}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography>
+                  <Stack direction="row" spacing={1}>
+                    <label>Loại:</label>
+                    {billDetail.type ? (
+                      <Chip className="chip-giao-hang" label=" Giao hàng" size="small" />
+                    ) : (
+                      <Chip className="chip-tai-quay" label=" Tại quầy" size="small" />
+                    )}
+                  </Stack>
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography>
+                  <label>Tên người nhận: </label>
+                  {billDetail?.recipientName ? billDetail.recipientName : ''}
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <label>Tên khách hàng: </label>
-              {billDetail?.fullName ? billDetail.fullName : 'Khách lẻ'}
-            </Grid>
-            <Grid item xs={6}>
-              <Stack direction="row" spacing={1}>
-                <label>Trạng thái: </label>
-                <Chip size="small" label={getStatus(billDetail.status)} color="primary" />
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <label>Sđt người nhận: </label>
-              {billDetail?.recipientPhoneNumber ? billDetail.recipientPhoneNumber : ''}
-            </Grid>
-            <Grid item xs={6}>
-              <Stack direction="row" spacing={1}>
-                <label>Loại: </label>
-                <Chip
-                  size="small"
-                  label={billDetail.type ? 'Giao hàng' : 'Tại Quầy'}
-                  color="primary"
-                />
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <label>Tên người nhận: </label>
-              {billDetail?.recipientName ? billDetail.recipientName : ''}
-            </Grid>
-          </Grid>
+          </div>
         )}
       </Paper>
       {/* Lịch sử thanh toán */}
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 2 }}>
         <h3>Lịch sử thanh toán</h3>
         {loadingTransaction ? (
           <div>Loading...</div>
+        ) : listTransaction.length <= 0 ? (
+          <Empty />
         ) : (
           <AdBillTransaction listTransaction={listTransaction} />
         )}
       </Paper>
       {/* Hoá đơn chi tiếts */}
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 2 }}>
         <h3>Hoá đơn chi tiết</h3>
         {loadingListBillDetail ? (
           <div>Loading BillDetail...</div>
@@ -265,9 +309,10 @@ export default function AdBillDetail() {
           <div>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TableContainer sx={{ maxHeight: 300, marginBottom: 5 }}>
+                <TableContainer
+                  sx={{ maxHeight: 300, marginBottom: 5 }}
+                  className="table-container-custom-scrollbar">
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead></TableHead>
                     <TableBody>
                       {listBillDetail.map((row, index) => (
                         <TableRow key={'billDetail' + row.id} sx={tableRowStyle}>
@@ -280,13 +325,13 @@ export default function AdBillDetail() {
                               <span>
                                 <del
                                   style={{
-                                    color: 'black',
-                                    textDecorationColor: 'black',
+                                    color: 'gray',
+                                    textDecorationColor: 'gray',
                                     textDecorationLine: 'line-through',
                                   }}>
-                                  {' '}
                                   {formatCurrency(row.productPrice)}
                                 </del>
+
                                 <span
                                   style={{
                                     color: 'red',
@@ -333,7 +378,7 @@ export default function AdBillDetail() {
                             </Box>
                           </TableCell>
                           <TableCell align="center">
-                            {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}1
+                            {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
                             <br />
                           </TableCell>
                         </TableRow>
@@ -341,20 +386,6 @@ export default function AdBillDetail() {
                     </TableBody>
                   </Table>
                 </TableContainer>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={7}></Grid>
-              <Grid item xs={5} style={{ fontWeight: '800' }}>
-                <b>Tiền hàng: 120000</b> <br />
-                <br />
-                <b>Phí vận chuyển: {formatCurrency(billDetail.moneyShip)}</b>
-                <br />
-                <br />
-                <b>Giảm giá: {formatCurrency(billDetail.moneyReduced)}</b>
-                <br />
-                <br />
-                <b>Tổng tiền: 120000</b>
               </Grid>
             </Grid>
           </div>

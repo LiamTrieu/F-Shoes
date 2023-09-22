@@ -1,3 +1,4 @@
+import '../hoadon/hoaDonStyle.css'
 import * as React from 'react'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
@@ -9,7 +10,6 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Chip,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +19,7 @@ import {
 } from '@mui/material'
 import dayjs from 'dayjs'
 import { getStatus } from '../../../services/constants/statusHoaDon'
+import { getStatusStyle } from './getStatusStyle'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -35,7 +36,7 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
   }
 
   return (
-    <div>
+    <div className="hoa-don">
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -78,9 +79,11 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
                     </TableCell>
                     <TableCell align="center">{row.createdBy}</TableCell>
                     <TableCell align="center">
-                      <Stack direction="row" spacing={1}>
-                        <Chip size="small" label={getStatus(row.statusBill)} color="primary" />
-                      </Stack>
+                      <Chip
+                        className={getStatusStyle(row.statusBill)}
+                        label={getStatus(row.statusBill)}
+                        size="small"
+                      />
                     </TableCell>
                     <TableCell align="center">{row.note}</TableCell>
                   </TableRow>
