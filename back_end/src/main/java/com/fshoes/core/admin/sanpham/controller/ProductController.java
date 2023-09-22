@@ -17,7 +17,11 @@ public class ProductController {
     private ProductService productService;
     @GetMapping
     public ObjectRespone getAllProducts(ProductFilterRequest filter) {
-        System.out.println(filter);
         return new ObjectRespone(new PageReponse<>(productService.getProduct(filter)));
+    }
+
+    @GetMapping("/get-list")
+    public ObjectRespone getListProduct(){
+        return new ObjectRespone(productService.listProducts());
     }
 }

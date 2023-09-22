@@ -23,7 +23,7 @@ export default function Empty() {
               </g>
             </g>
           </svg>
-          <p style={{ color: 'rgba(0, 0, 0, 0.25)', marginTop: '2px' }}>No Data</p>
+          <p style={{ color: 'rgba(0, 0, 0, 0.25)', marginTop: '0px' }}>No Data</p>
         </div>
       </div>
     </div>
