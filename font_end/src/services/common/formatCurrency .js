@@ -1,5 +1,5 @@
-import numeral from "numeral";
+import numeral from 'numeral'
 
 export const formatCurrency = (money) => {
-  return numeral(money).format("0,0") + " VNĐ";
-};
+  return numeral(money).format('0,0') + ' ₫'
+}

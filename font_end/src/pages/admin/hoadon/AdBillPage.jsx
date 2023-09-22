@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from 'react'
+import '../hoadon/hoaDonStyle.css'
 import {
   Paper,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   Pagination,
   Button,
   Grid,
   TextField,
-  Typography,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
-  Stack,
   Chip,
   IconButton,
 } from '@mui/material'
@@ -32,6 +29,7 @@ import { FaPlusCircle } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import { IoEye } from 'react-icons/io5'
+import { getStatusStyle } from './getStatusStyle'
 
 export default function AdBillPage() {
   const tableRowStyle = {
@@ -90,16 +88,15 @@ export default function AdBillPage() {
 
   const handleStartDateChange = (newValue) => {
     const formattedStartDate = dayjs(newValue).format('DD-MM-YYYY')
-    const startDateString = `${formattedStartDate} 00:00:00`
+    const startDateString = `${formattedStartDate} `
     const updatedFilter = { ...filter, startDate: startDateString, page: 1 }
     setFilter(updatedFilter)
     setStartDate(newValue)
   }
 
   const handleEndDateChange = (newValue) => {
-    const formattedEndDate = dayjs(newValue).format('DD-MM-YYYY')
-    const endDateString = `${formattedEndDate} 23:59:59`
-    const updatedFilter = { ...filter, endDate: endDateString, page: 1 }
+    const formattedEndDate = dayjs(newValue).add(1, 'day').format('DD-MM-YYYY')
+    const updatedFilter = { ...filter, endDate: formattedEndDate, page: 1 }
     setFilter(updatedFilter)
     setEndDate(newValue)
   }
@@ -131,12 +128,11 @@ export default function AdBillPage() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif' }}>
+    <div className="hoa-don">
       <h3>Hoá đơn</h3>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={5} style={{ margin: '25px', padding: '8px' }}>
-            {' '}
             <TextField
               value={inputSearch}
               onChange={handleInputSearch}
@@ -145,13 +141,19 @@ export default function AdBillPage() {
               type="text"
               size="small"
               style={{ width: '100%' }}
+              color="cam"
             />
           </Grid>
-          <Grid item xs={2.5} style={{ margin: '20px' }}></Grid>
-          <Grid item xs={2.5} style={{ margin: '20px' }}>
-            <Button sx={{ ml: 1, mt: 2 }} color="success" variant="contained">
-              <FaPlusCircle />
-              <Typography sx={{ ml: 1 }}>Tạo Hoá đơn</Typography>
+          <Grid item xs={3.5} style={{ margin: '20px' }}></Grid>
+          <Grid item xs={2} style={{ margin: '20px' }}>
+            <Button
+              style={{
+                borderRadius: '5px',
+              }}
+              color="cam"
+              variant="contained">
+              <FaPlusCircle style={{ fontSize: '17px' }} />
+              Tạo hoá đơn
             </Button>
           </Grid>
         </Grid>
@@ -186,120 +188,132 @@ export default function AdBillPage() {
               </DemoContainer>
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={2} style={{ marginTop: '15px' }}>
+          <Grid item xs={3} style={{ marginTop: '15px' }}>
             <FormControl fullWidth>
-              <InputLabel htmlFor="hd-select-status" shrink>
-                Trạng thái
-              </InputLabel>
-              <Select
-                id="hd-select-status"
-                value={statusBill}
-                onChange={handleChangeSelectStatusBill}
-                label="Trạng thái"
-                style={{ height: '40px' }}
-                inputProps={{
-                  name: 'Trạng thái',
-                  id: 'hd-select-status',
-                }}>
-                <MenuItem value="all">Tất cả</MenuItem>
-                <MenuItem value="0">{getStatus(0)}</MenuItem>
-                <MenuItem value="1">{getStatus(1)}</MenuItem>
-                <MenuItem value="2">{getStatus(2)}</MenuItem>
-                <MenuItem value="3">{getStatus(3)}</MenuItem>
-                <MenuItem value="4">{getStatus(4)}</MenuItem>
-                <MenuItem value="5">{getStatus(5)}</MenuItem>
-                <MenuItem value="6">{getStatus(6)}</MenuItem>
-                <MenuItem value="7">{getStatus(7)}</MenuItem>
-              </Select>
+              <div className="filter">
+                <b>Trạng thái:</b>
+                <Select
+                  displayEmpty
+                  size="small"
+                  value={statusBill}
+                  onChange={handleChangeSelectStatusBill}>
+                  <MenuItem value="all">Tất cả</MenuItem>
+                  {[
+                    { id: 0, name: 'Đã huỷ' },
+                    { id: 1, name: 'Chờ xác nhận' },
+                    { id: 2, name: 'Đã xác nhận' },
+                    { id: 3, name: 'Đang vận chuyển' },
+                    { id: 4, name: 'Đã giao hàng' },
+                    { id: 5, name: 'Đã thanh toán' },
+                    { id: 6, name: 'Chờ thanh toán' },
+                    { id: 7, name: 'Hoàn thành' },
+                  ]?.map((item) => (
+                    <MenuItem key={item?.id} value={item?.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
             </FormControl>
           </Grid>
-          <Grid item xs={2} style={{ marginTop: '15px', marginLeft: '25px' }}>
+          <Grid item xs={2} style={{ marginTop: '15px', marginLeft: '5px' }}>
             <FormControl fullWidth>
-              <InputLabel htmlFor="hd-select-type" shrink>
-                Loại:
-              </InputLabel>
-              <Select
-                id="hd-select-type"
-                value={typeBill}
-                onChange={handleChangeSelectTypeBill}
-                style={{ height: '40px' }}
-                label="Loại"
-                inputProps={{
-                  name: 'Loại',
-                  id: 'hd-select-type',
-                }}>
-                <MenuItem value="all">Tất cả</MenuItem>
-                <MenuItem value="false">Tại quầy</MenuItem>
-                <MenuItem value="true">Giao hàng</MenuItem>
-              </Select>
+              <div className="filter">
+                <b>Loại:</b>
+                <Select
+                  displayEmpty
+                  size="small"
+                  value={typeBill}
+                  onChange={handleChangeSelectTypeBill}>
+                  <MenuItem value="all">Tất cả</MenuItem>
+                  {[
+                    { id: true, name: 'Giao hàng' },
+                    { id: false, name: 'Tại quầy' },
+                  ]?.map((item) => (
+                    <MenuItem key={item?.id} value={item?.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
             </FormControl>
           </Grid>
         </Grid>
       </Paper>
 
       <Paper elevation={3}>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">#</TableCell>
-                <TableCell align="center">Mã</TableCell>
-                <TableCell align="center">Tổng sản phẩm</TableCell>
-                <TableCell align="center">Tổng số tiền</TableCell>
-                <TableCell align="center">Tên khách hàng</TableCell>
-                <TableCell align="center">Số điện thoại KH</TableCell>
-                <TableCell align="center">Ngày tạo</TableCell>
-                <TableCell align="center">Loại hoá đơn</TableCell>
-                <TableCell align="center">Trạng thái</TableCell>
-                <TableCell align="center">Hành động</TableCell>
+        <Table className="tableCss">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center" style={{ width: '5%' }}>
+                #
+              </TableCell>
+              <TableCell align="center" style={{ width: '8%' }}>
+                Mã
+              </TableCell>
+              <TableCell align="center" style={{ width: '8%' }}>
+                Tổng SP
+              </TableCell>
+              <TableCell align="center">Tổng số tiền</TableCell>
+              <TableCell align="center">Tên khách hàng</TableCell>
+              <TableCell align="center">Ngày tạo</TableCell>
+              <TableCell align="center">Loại hoá đơn</TableCell>
+              <TableCell align="center">Trạng thái</TableCell>
+              <TableCell align="center">Hành động</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {listHoaDon.map((row, index) => (
+              <TableRow key={row.code} sx={tableRowStyle}>
+                <TableCell align="center" style={{ width: '5%' }}>
+                  {index + 1}
+                </TableCell>
+                <TableCell align="center" style={{ width: '8%' }}>
+                  {row.code}
+                </TableCell>
+                <TableCell align="center" style={{ width: '8%' }}>
+                  {row.totalProduct !== null ? row.totalProduct : 0}
+                </TableCell>
+                <TableCell align="center">
+                  {row.totalMoney !== null ? formatCurrency(row.totalMoney) : 0}
+                </TableCell>
+                <TableCell align="center">
+                  {row.fullName !== null ? (
+                    row.fullName
+                  ) : (
+                    <Chip className="chip-khach-le" label="Khách lẻ" size="small" />
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {dayjs(row.createdAt).format('DD/MM/YYYY  HH:mm')}
+                </TableCell>
+                <TableCell align="center">
+                  {row.type ? (
+                    <Chip className="chip-giao-hang" label="Giao hàng" size="small" />
+                  ) : (
+                    <Chip className="chip-tai-quay" label="Tại quầy" size="small" />
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  <Chip
+                    className={getStatusStyle(row.status)}
+                    label={getStatus(row.status)}
+                    size="small"
+                  />
+                </TableCell>
+                <TableCell align="center">
+                  <Link to={`/admin/bill-detail/${row.id}`}>
+                    <Tooltip title="Xem chi tiết">
+                      <IconButton>
+                        <IoEye fontSize={'25px'} color="#FC7C27" />
+                      </IconButton>
+                    </Tooltip>
+                  </Link>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {listHoaDon.map((row, index) => (
-                <TableRow key={row.code} sx={tableRowStyle}>
-                  <TableCell align="center">{index + 1}</TableCell>
-                  <TableCell align="center">{row.code}</TableCell>
-                  <TableCell align="center">
-                    {row.totalProduct !== null ? row.totalProduct : 0}
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.totalMoney !== null ? formatCurrency(row.totalMoney) : 0}
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.fullName !== null ? row.fullName : 'Khách lẻ'}
-                  </TableCell>
-                  <TableCell align="center">{row.phoneNumber}</TableCell>
-                  <TableCell align="center">
-                    {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
-                  </TableCell>
-                  <TableCell align="center">
-                    <Stack direction="row" spacing={1}>
-                      <Chip
-                        size="small"
-                        label={row.type ? 'Giao hàng' : 'Tại Quầy'}
-                        color="primary"
-                      />
-                    </Stack>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Stack direction="row" spacing={1}>
-                      <Chip size="small" label={getStatus(row.status)} color="primary" />
-                    </Stack>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Link to={`/admin/bill-detail/${row.id}`}>
-                      <Tooltip title="Xem chi tiết">
-                        <IconButton color="#C0C0C0'">
-                          <IoEye style={{ fontSize: '20px' }} />
-                        </IconButton>
-                      </Tooltip>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            ))}
+          </TableBody>
+        </Table>
         <div
           style={{
             display: 'flex',
@@ -313,6 +327,7 @@ export default function AdBillPage() {
             onChange={handlePageChange}
             count={totalPages}
             variant="outlined"
+            color="cam"
           />
         </div>
       </Paper>
