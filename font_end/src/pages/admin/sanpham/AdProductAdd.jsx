@@ -26,9 +26,12 @@ export default function AdProductAdd() {
               size="small"
               className="search-field"
               id="combo-box-demo"
+              onChange={(_, e) => {
+                console.log(e)
+              }}
               options={[
-                { label: 'The Shawshank Redemption', year: 1994 },
-                { label: 'The Godfather', year: 1972 },
+                { label: 'The Shawshank Redemption', id: 1994 },
+                { label: 'The Godfather', id: 1972 },
               ]}
               renderInput={(params) => (
                 <TextField color="cam" {...params} label="Nhập tên sản phẩm" />

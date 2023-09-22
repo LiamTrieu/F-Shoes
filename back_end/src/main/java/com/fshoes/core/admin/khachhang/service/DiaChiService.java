@@ -4,6 +4,7 @@ import com.fshoes.core.admin.khachhang.model.request.DiaChiRequest;
 import com.fshoes.core.admin.khachhang.model.respone.DiaChiRespone;
 import com.fshoes.entity.Address;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,4 +27,11 @@ public interface DiaChiService {
     void delete(String id);
 
 
+    ResponseEntity<?> getAllProvince();
+
+    ResponseEntity<?> getAllDistrict(Integer idProvince);
+
+    ResponseEntity<?> getAllWard(Integer idDistrict);
+
+    Boolean updateDefault(String idCustomer, String idAdrress);
 }
