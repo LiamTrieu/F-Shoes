@@ -45,4 +45,9 @@ public class DiaChiController {
     public void delete(@PathVariable String id){
         diaChiService.delete(id);
     }
+
+    @PutMapping("/status")
+    public ObjectRespone updateStatus(@RequestParam String id, @RequestParam String idCustomer){
+        return new ObjectRespone(diaChiService.updateDefault(idCustomer,id));
+    }
 }

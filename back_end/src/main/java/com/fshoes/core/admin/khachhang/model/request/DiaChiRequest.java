@@ -20,6 +20,12 @@ public class DiaChiRequest {
 
     private String idCustomer;
 
+    private String provinceId;
+
+    private String districtId;
+
+    private String wardId;
+
 
     public Address newAddress (Address address) {
         address.setName(this.name);
@@ -27,6 +33,9 @@ public class DiaChiRequest {
         address.setEmail(this.email);
         address.setSpecificAddress(this.specificAddress);
         address.setType(this.getType());
+        address.setProvinceId(this.provinceId);
+        address.setDistrictId(this.districtId);
+        address.setWardId(this.wardId);
         return address;
     }
 }

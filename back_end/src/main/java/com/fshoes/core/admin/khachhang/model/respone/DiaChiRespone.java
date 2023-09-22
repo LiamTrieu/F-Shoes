@@ -8,6 +8,10 @@ public interface DiaChiRespone extends IsIdentified {
     String getPhoneNumber();
     String getEmail();
     String getSpecificAddress();
+
+    Integer getProvinceId();
+    Integer getDistrictId();
+    Integer getWardId();
     Boolean getType();
 
 }

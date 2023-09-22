@@ -86,8 +86,7 @@ export default function AdProductAdd() {
               fullWidth
               size="small"
               className="search-field"
-              id="combo-box-demo"
-              options={products.map((product) => {
+              id="combo-box-demo"{products.map((product) => {
                 return { label: product.name, value: product.id }
               })}
               renderInput={(params) => (

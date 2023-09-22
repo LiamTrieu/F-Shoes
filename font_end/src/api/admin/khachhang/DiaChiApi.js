@@ -27,5 +27,10 @@ const DiaChiApi = {
     const url = `/dia-chi/delete/${id}`
     return axiosClient.delete(url)
   },
+
+  updateStatus: (id, idCustomer) => {
+    const url = `/dia-chi/status?id=${id}&idCustomer=${idCustomer}`
+    return axiosClient.put(url)
+  },
 }
 export default DiaChiApi

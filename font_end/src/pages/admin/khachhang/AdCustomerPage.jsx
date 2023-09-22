@@ -10,13 +10,14 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 import dayjs from 'dayjs'
-import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Toast from '../../../components/Toast'
 import { toast } from 'react-toastify'
@@ -93,10 +94,11 @@ export default function AdCustomerPage() {
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
           <TextField
             id="outlined-basic"
-            sx={{ width: '400px' }}
+            sx={{ width: '40%' }}
             label="Tên hoặc số điện thoại khách hàng"
             variant="outlined"
             size="small"
+            color="cam"
             onChange={(e) => setPageSearch({ textSearch: e.target.value })}
           />
           <Button
@@ -112,25 +114,22 @@ export default function AdCustomerPage() {
           <Table className="tableCss">
             <TableHead>
               <TableRow>
-                <TableCell align="center">
-                  <span className="head-table">#</span>
+                <TableCell align="center" width={'5%'}>
+                  <span className="head-table">STT</span>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" width={'25%'}>
                   <span className="head-table">Email</span>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" width={'12%'}>
                   <span className="head-table">Họ tên</span>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" width={'15%'}>
                   <span className="head-table">Ngày sinh</span>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" width={'15%'}>
                   <span className="head-table">Số điện thoại</span>
                 </TableCell>
-                <TableCell align="center">
-                  <span className="head-table">Ngày tạo</span>
-                </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" width={'10%'}>
                   <span className="head-table">Thao tác</span>
                 </TableCell>
               </TableRow>
@@ -143,23 +142,26 @@ export default function AdCustomerPage() {
                   <TableCell align="center">{row.fullName}</TableCell>
                   <TableCell align="center">{dayjs(row.dateBirth).format('MM/DD/YYYY')}</TableCell>
                   <TableCell align="center">{row.phoneNumber}</TableCell>
-                  <TableCell align="center">{dayjs(row.createdAt).format('MM/DD/YYYY')}</TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      color="cam"
-                      component={Link}
-                      to={`/admin/customer/getOne/${row.id}`}
-                      sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      onClick={() => deleteKhachHang(row.id)}
-                      sx={{ fontSize: 24, marginLeft: 2 }} // Tùy chỉnh kiểu
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    <Tooltip title="Xem chi tiết">
+                      <IconButton
+                        color="cam"
+                        component={Link}
+                        to={`/admin/customer/getOne/${row.id}`}
+                        sx={{ fontSize: 20 }} // Tùy chỉnh kiểu
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Xóa">
+                      <IconButton
+                        color="error"
+                        onClick={() => deleteKhachHang(row.id)}
+                        sx={{ fontSize: 20 }} // Tùy chỉnh kiểu
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

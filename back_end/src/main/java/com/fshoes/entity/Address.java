@@ -32,6 +32,15 @@ public class Address extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_EMAIL)
     private String email;
 
+    @Column(length = EntityProperties.LENGTH_ID)
+    private String provinceId;
+
+    @Column(length = EntityProperties.LENGTH_ID)
+    private String districtId;
+
+    @Column(length = EntityProperties.LENGTH_ID)
+    private String wardId;
+
     @Column(length = EntityProperties.LENGTH_ADDRESS)
     private String specificAddress;
 
