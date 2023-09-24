@@ -111,7 +111,9 @@ export default function AdCustomerPage() {
               listStaff.map((row, index) => (
                 <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell align="center">{index + 1}</TableCell>
-                  <TableCell align="center">{row.avatar}</TableCell>
+                  <TableCell align="center">
+                    <img width={'100%'} src={row.avatar} alt="anh" />
+                  </TableCell>
                   <TableCell align="center">{row.fullName}</TableCell>
                   <TableCell align="center">{row.email}</TableCell>
                   <TableCell align="center">{row.phoneNumber}</TableCell>

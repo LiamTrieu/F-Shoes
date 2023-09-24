@@ -19,7 +19,21 @@ public class CloudinaryImage {
             return (String) map.get("url");
         }catch (Exception e){
             e.printStackTrace();
-            return "Upload fail";
+            return null;
+        }
+    }
+
+    public String uploadAvatar(MultipartFile imageFile) {
+        Map params = ObjectUtils.asMap(
+                "folder", "avatar",
+                "resource_type", "image"
+        );
+        try {
+            Map result = cloudinary.uploader().upload(imageFile.getBytes(), params);
+            return (String) result.get("url");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

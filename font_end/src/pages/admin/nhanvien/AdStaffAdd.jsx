@@ -40,14 +40,13 @@ export default function AddStaff() {
     email: '',
     phoneNumber: '',
     dateBirth: '',
-    avatar: '',
     citizenId: '',
-    gender: null,
-    password: '',
-    role: 1,
-    status: 0,
+    role: '',
+    gender: '',
+    avatar: null,
   }
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
+  const [image, setImage] = useState(null)
 
   const RenderVideo = () => {
     const { ref } = useZxing({
@@ -73,7 +72,7 @@ export default function AddStaff() {
 
       setStaffAdd({
         ...staffAdd,
-        citizenId: citizenId,
+        citizenId: citizenId, 
         fullName: fullName,
         dateBirth: dateBirth,
         gender: gender,
@@ -82,7 +81,6 @@ export default function AddStaff() {
         password: initStaff.password,
         avatar: initStaff.password,
         role: initStaff.role,
-        status: initStaff.status,
       })
       setQrScannerVisible(false)
     }
@@ -121,6 +119,18 @@ export default function AddStaff() {
         })
       }
     })
+  }
+
+  const handleImageChange = (event) => {
+    let file = event.target.files[0]
+    if (file) {
+      setStaffAdd({ ...staffAdd, avatar: file })
+      const reader = new FileReader()
+      reader.onload = () => {
+        setImage(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
   }
   return (
     <div>
@@ -202,18 +212,6 @@ export default function AddStaff() {
             </LocalizationProvider>
           </Grid>
           <Grid item xs={5.5}>
-            <TextField
-              id="outlined-basic"
-              label="Mật khẩu"
-              variant="outlined"
-              fullWidth
-              onChange={(e) => setStaffAdd({ ...staffAdd, password: e.target.value })}
-            />
-          </Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
             <FormControl size="small">
               <FormLabel>Giới tính:</FormLabel>
               <RadioGroup row value={staffAdd.gender}>
@@ -233,6 +231,34 @@ export default function AddStaff() {
                 />
               </RadioGroup>
             </FormControl>
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={0.5}></Grid>
+          <Grid item xs={5.5}>
+            <h4>Chọn ảnh nhân viên</h4>
+            <div
+              onClick={() => {
+                document.getElementById('select-avatar').click()
+              }}
+              style={{
+                border: '1px solid black',
+                cursor: 'pointer',
+                height: '100px',
+                width: '100px',
+              }}>
+              {image && (
+                <img src={image} alt="Chọn ảnh" style={{ width: '100%', height: '100%' }} />
+              )}
+              {!image && 'Chọn ảnh'}
+            </div>
+            <input
+              hidden
+              id="select-avatar"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
           </Grid>
         </Grid>
 

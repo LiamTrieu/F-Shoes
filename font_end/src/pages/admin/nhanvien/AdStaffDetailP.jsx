@@ -26,14 +26,15 @@ export default function AdStaffDetail() {
     phoneNumber: '',
     dateBirth: '',
     citizenId: '',
-    password: null,
     role: '',
     gender: '',
     status: '',
-    avatar: '',
+    avatar: null,
   }
   const { id } = useParams()
   const [staffDetail, setStaffDetail] = useState(initStaff)
+  const [image, setImage] = useState(null)
+
   const navigate = useNavigate()
   const theme = useTheme()
 
@@ -46,7 +47,6 @@ export default function AdStaffDetail() {
       .getOne(id)
       .then((response) => {
         const formatDateBirth = dayjs(response.data.dateBirth).format('DD-MM-YYYY')
-        console.log('text')
         setStaffDetail({
           ...response.data,
           dateBirth: formatDateBirth,
@@ -58,8 +58,6 @@ export default function AdStaffDetail() {
   }
 
   const handButtonUpdateStaff = (id, staffDetail) => {
-    console.log(id)
-    console.log(staffDetail)
     const title = 'Xác nhận cập nhật nhân viên?'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
@@ -100,13 +98,13 @@ export default function AdStaffDetail() {
     })
   }
 
-  const setSelectImage = useState(null)
   const handleImageChange = (event) => {
-    const file = event.target.files[0]
+    let file = event.target.files[0]
     if (file) {
+      setStaffDetail({ ...staffDetail, avatar: file })
       const reader = new FileReader()
       reader.onload = () => {
-        setSelectImage(reader.result)
+        setImage(reader.result)
       }
       reader.readAsDataURL(file)
     }
@@ -195,13 +193,12 @@ export default function AdStaffDetail() {
           <Grid item xs={5.5}>
             <FormControl size="small">
               <FormLabel>Chức vụ:</FormLabel>
-              <RadioGroup row>
+              <RadioGroup row value={staffDetail?.role}>
                 <FormControlLabel
                   name="roleUpdate"
                   value={0}
                   control={<Radio />}
                   label="Quản lý"
-                  checked={staffDetail?.role === '0'}
                   onChange={handleRoleRadioChange}
                 />
                 <FormControlLabel
@@ -209,7 +206,6 @@ export default function AdStaffDetail() {
                   value={1}
                   control={<Radio />}
                   label="Nhân viên"
-                  checked={staffDetail?.role === '1'}
                   onChange={handleRoleRadioChange}
                 />
               </RadioGroup>
@@ -281,7 +277,28 @@ export default function AdStaffDetail() {
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
             <h4>Chọn ảnh nhân viên</h4>
-            <input type="file" accept="image/*" onChange={handleImageChange} />
+            <div
+              onClick={() => {
+                document.getElementById('select-avatar').click()
+              }}
+              style={{
+                border: '1px solid black',
+                cursor: 'pointer',
+                height: '100px',
+                width: '100px',
+              }}>
+              {image && (
+                <img src={image} alt="Chọn ảnh" style={{ width: '100%', height: '100%' }} />
+              )}
+              {!image && 'Chọn ảnh'}
+            </div>
+            <input
+              hidden
+              id="select-avatar"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
           </Grid>
         </Grid>
 

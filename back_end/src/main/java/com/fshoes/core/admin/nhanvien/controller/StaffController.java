@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,7 +38,7 @@ public class StaffController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity add(@RequestBody StaffRequest staffRequest) throws ParseException {
+    public ResponseEntity add(@ModelAttribute StaffRequest staffRequest) throws ParseException {
         return new ResponseEntity(service.add(staffRequest), HttpStatus.OK);
     }
 
@@ -47,7 +48,8 @@ public class StaffController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity update(@PathVariable("id") String id, @RequestBody StaffRequest staffRequest) throws ParseException {
+    public ResponseEntity update(@PathVariable("id") String id,
+                                 @ModelAttribute StaffRequest staffRequest) throws ParseException {
         return new ResponseEntity(service.update(staffRequest, id), HttpStatus.OK);
     }
 }
