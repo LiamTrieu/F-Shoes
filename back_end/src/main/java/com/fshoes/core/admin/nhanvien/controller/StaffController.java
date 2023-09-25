@@ -3,6 +3,7 @@ package com.fshoes.core.admin.nhanvien.controller;
 import com.fshoes.core.admin.nhanvien.model.request.SearchStaff;
 import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
 import com.fshoes.core.admin.nhanvien.service.StaffService;
+import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,11 +31,8 @@ public class StaffController {
     }
 
     @GetMapping("/search-getPage")
-    public PageReponse hienthiPageNo(int page, String searchTen) {
-        SearchStaff searchStaff = new SearchStaff();
-        searchStaff.setPage(page);
-        searchStaff.setSearchTen(searchTen);
-        return new PageReponse<>(service.searchStaff(searchStaff));
+    public ObjectRespone hienthiPageNo(@ModelAttribute SearchStaff searchStaff) {
+        return new ObjectRespone(service.searchStaff(searchStaff));
     }
 
     @PostMapping("/add")
@@ -51,5 +49,10 @@ public class StaffController {
     public ResponseEntity update(@PathVariable("id") String id,
                                  @ModelAttribute StaffRequest staffRequest) throws ParseException {
         return new ResponseEntity(service.update(staffRequest, id), HttpStatus.OK);
+    }
+
+    @PutMapping("/delete/{id}")
+    public ObjectRespone delete(@PathVariable("id") String id){
+        return new ObjectRespone(service.delete(id));
     }
 }

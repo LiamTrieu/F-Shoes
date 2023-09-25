@@ -13,8 +13,6 @@ import java.util.List;
 public interface StaffService {
     List<Staff> getAll();
 
-    Page<StaffRespone> getStaff(Integer page);
-
     Page<StaffRespone> searchStaff(SearchStaff searchStaff);
 
     StaffRespone getOne(String id);
@@ -23,4 +21,5 @@ public interface StaffService {
 
     Boolean update(StaffRequest staffRequest, String id) throws ParseException;
 
+    Staff delete(String id);
 }

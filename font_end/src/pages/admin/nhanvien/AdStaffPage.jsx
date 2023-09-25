@@ -12,70 +12,135 @@ import {
   Tooltip,
   IconButton,
   Chip,
+  Select,
+  MenuItem,
+  InputAdornment,
+  Stack,
 } from '@mui/material'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import staffApi from '../../../api/admin/nhanvien/nhanVienApi'
 import { useEffect, useState } from 'react'
-import { IoEye } from 'react-icons/io5'
+import { TbEyeEdit } from 'react-icons/tb'
 import dayjs from 'dayjs'
+import './AdStaffPage.css'
+import confirmSatus from '../../../components/comfirmSwal'
+import { useTheme } from '@emotion/react'
+import SearchIcon from '@mui/icons-material/Search'
 
 export default function AdCustomerPage() {
+  const theme = useTheme()
   const [listStaff, setListStaff] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setToTalPages] = useState(0)
-  const [tenSearch, setTenSearch] = useState('')
-
-  const fetchData = (currentPage, tenSearch) => {
-    staffApi
-      .get(currentPage, tenSearch)
-      .then((response) => {
-        console.log(response.data)
-        setListStaff(response.data.data)
-        setToTalPages(response.data.totalPages)
-      })
-      .catch(() => {
-        alert('Error: Không tải dữ liệu API')
-      })
-  }
+  const [searchStaff, setSearchStaff] = useState({
+    searchTen: '',
+    genderSearch: '',
+    statusSearch: '',
+    roleSearch: '',
+    size: 5,
+    page: 1,
+  })
 
   useEffect(() => {
-    console.log(currentPage)
-    console.log(tenSearch)
-    console.log(staffApi.get)
-    fetchData(currentPage, tenSearch)
-  }, [currentPage, tenSearch])
+    fetchData(searchStaff)
+  }, [searchStaff])
 
-  const Search = (e) => {
-    setTenSearch(e.target.value)
+  const fetchData = (searchStaff) => {
+    staffApi.get(searchStaff).then((response) => {
+      console.log(response.data.data.content)
+      setListStaff(response.data.data.content)
+      setToTalPages(response.data.data.totalPages)
+      if (searchStaff.page > response.data.data.totalPages)
+        if (response.data.data.totalPages > 0) {
+          setSearchStaff({ ...searchStaff, page: response.data.data.totalPages })
+        }
+    })
   }
 
-  const handlePageChange = (event, newPage) => {
-    fetchData(newPage)
-    setCurrentPage(newPage)
+  const deleteNhanVien = (id) => {
+    const title = 'Xác nhận thay đổi trạng thái hoạt động?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        staffApi.delete(id).then(() => {
+          toast.success('Thay đổi trạng thái hoạt động thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          fetchData(searchStaff)
+        })
+      }
+    })
   }
 
   return (
-    <div>
+    <div className="nhanvien">
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        <TextField
-          sx={{ width: '50%' }}
-          onChange={Search}
-          id="outlined-basic"
-          label="Tìm kiếm nhân viên bằng tên"
-          variant="outlined"
-          size="small"
-        />
-        <Button
-          variant="contained"
-          style={{ float: 'right' }}
-          color="cam"
-          component={Link}
-          to="/admin/staff/add">
-          <Typography sx={{ ml: 1 }}>Tạo Nhân Viên</Typography>
-        </Button>
-      </Paper>
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        <Table aria-label="simple table" className="tableCss">
+        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+          <TextField
+            onChange={(e) => {
+              setSearchStaff({ ...searchStaff, searchTen: e.target.value })
+            }}
+            sx={{ width: '30%' }}
+            className="search-field"
+            size="small"
+            color="cam"
+            placeholder="Tìm kiếm tên hoặc sđt hoặc email"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="cam" />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <div className="filter">
+            <b>Giới tính: </b>
+            <Select
+              displayEmpty
+              size="small"
+              value={searchStaff.genderSearch}
+              onChange={(e) => setSearchStaff({ ...searchStaff, genderSearch: e.target.value })}>
+              <MenuItem value={''}>Tất cả</MenuItem>
+              <MenuItem value={'true'}>Nam</MenuItem>
+              <MenuItem value={'false'}>Nữ</MenuItem>
+            </Select>
+          </div>
+          <div className="filter">
+            <b>Chức vụ: </b>
+            <Select
+              displayEmpty
+              size="small"
+              value={searchStaff.roleSearch}
+              onChange={(e) => setSearchStaff({ ...searchStaff, roleSearch: e.target.value })}>
+              <MenuItem value={''}>Tất cả</MenuItem>
+              <MenuItem value={'1'}>Quản lí</MenuItem>
+              <MenuItem value={'0'}>Nhân viên</MenuItem>
+            </Select>
+          </div>
+          <div className="filter">
+            <b>Trạng thái: </b>
+            <Select
+              displayEmpty
+              size="small"
+              value={searchStaff.statusSearch}
+              onChange={(e) => setSearchStaff({ ...searchStaff, statusSearch: e.target.value })}>
+              <MenuItem value={''}>Tất cả</MenuItem>
+              <MenuItem value={'0'}>Hoạt động</MenuItem>
+              <MenuItem value={'1'}>Không hoạt động</MenuItem>
+              <MenuItem></MenuItem>
+            </Select>
+          </div>
+          <Button
+            variant="contained"
+            style={{ float: 'right' }}
+            color="cam"
+            component={Link}
+            to="/admin/staff/add">
+            <Typography sx={{ ml: 1 }}>Tạo Nhân Viên</Typography>
+          </Button>
+        </Stack>
+
+        <Table aria-label="simple table" className="tableCss mt-5">
           <TableHead>
             <TableRow>
               <TableCell width={'5%'}>STT</TableCell>
@@ -97,6 +162,9 @@ export default function AdCustomerPage() {
               <TableCell align="center" width={'8%'}>
                 Giới tính
               </TableCell>
+              <TableCell align="center" width={'8%'}>
+                Chức vụ
+              </TableCell>
               {/* <TableCell align="center">CCCD</TableCell> */}
               <TableCell align="center" width={'15%'}>
                 Trạng thái
@@ -108,9 +176,9 @@ export default function AdCustomerPage() {
           </TableHead>
           <TableBody>
             {listStaff && listStaff.length > 0 ? (
-              listStaff.map((row, index) => (
+              listStaff.map((row) => (
                 <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell align="center">{index + 1}</TableCell>
+                  <TableCell align="center">{row.stt}</TableCell>
                   <TableCell align="center">
                     <img width={'100%'} src={row.avatar} alt="anh" />
                   </TableCell>
@@ -119,13 +187,24 @@ export default function AdCustomerPage() {
                   <TableCell align="center">{row.phoneNumber}</TableCell>
                   <TableCell align="center">{dayjs(row.dateBirth).format('DD-MM-YYYY')}</TableCell>
                   <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
+                  <TableCell align="center">{row.role === 0 ? 'Nhân viên' : 'Quản lí'}</TableCell>
                   {/* <TableCell align="center">{row.citizenId}</TableCell> */}
                   <TableCell align="center">
-                    <Chip
-                      className={row.status === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'}
-                      label={row.status === 0 ? 'Hoạt động' : 'Không hoạt động'}
-                      size="small"
-                    />
+                    {row.status === 0 ? (
+                      <Chip
+                        onClick={() => deleteNhanVien(row.id)}
+                        className="chip-hoat-dong"
+                        size="small"
+                        label="Hoạt động"
+                      />
+                    ) : (
+                      <Chip
+                        onClick={() => deleteNhanVien(row.id)}
+                        className="chip-khong-hoat-dong"
+                        size="small"
+                        label="Không hoạt động"
+                      />
+                    )}
                   </TableCell>
                   <TableCell align="center">
                     <Tooltip title="Xem chi tiết">
@@ -133,7 +212,7 @@ export default function AdCustomerPage() {
                         color="black"
                         component={Link}
                         to={`/admin/staff/detail/${row.id}`}>
-                        <IoEye style={{ fontSize: '20px' }} />
+                        <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
                       </IconButton>
                     </Tooltip>
                   </TableCell>
@@ -155,8 +234,11 @@ export default function AdCustomerPage() {
           <Pagination
             color="cam"
             defaultPage={1}
-            page={currentPage}
-            onChange={handlePageChange}
+            page={searchStaff.page}
+            onChange={(e, value) => {
+              e.preventDefault()
+              setSearchStaff({ ...searchStaff, page: value })
+            }}
             count={totalPages}
           />
         </div>
