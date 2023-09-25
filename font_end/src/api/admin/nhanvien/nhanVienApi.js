@@ -2,9 +2,9 @@ import axios from 'axios'
 import axiosClient from '../../axios'
 
 const staffApi = {
-  get: (page, filter) => {
-    const url = `/staff/search-getPage?page=${page}&searchTen=${filter}`
-    return axiosClient.get(url)
+  get: (searchStaff) => {
+    const url = `/staff/search-getPage`
+    return axiosClient.get(url, { params: searchStaff })
   },
   getOne: (id) => {
     const url = `/staff/detail/${id}`
@@ -44,6 +44,11 @@ const staffApi = {
         'Content-Type': 'multipart/form-data',
       },
     })
+  },
+
+  delete: (id) => {
+    const url = `/staff/delete/${id}`
+    return axiosClient.put(url)
   },
 }
 export default staffApi

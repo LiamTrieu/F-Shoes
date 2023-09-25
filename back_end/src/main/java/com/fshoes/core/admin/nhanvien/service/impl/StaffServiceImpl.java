@@ -39,16 +39,10 @@ public class StaffServiceImpl implements StaffService {
         return repo.findAll();
     }
 
-    @Override
-    public Page<StaffRespone> getStaff(Integer page) {
-        Pageable pageable = PageRequest.of(page, 5);
-        return repo.staffProveti(pageable);
-    }
 
     @Override
     public Page<StaffRespone> searchStaff(SearchStaff searchStaff) {
-        int page = searchStaff.getPage() < 1 ? 0 : searchStaff.getPage() - 1;
-        Pageable pageable = PageRequest.of(page, 5);
+        Pageable pageable = PageRequest.of(searchStaff.getPage() - 1, searchStaff.getSize());
         return repo.searchStaff(searchStaff, pageable);
     }
 
@@ -90,12 +84,27 @@ public class StaffServiceImpl implements StaffService {
         Optional<Staff> optional = repo.findById(id);
         if (optional.isPresent()) {
             Staff staff = staffRequest.tranStaff(optional.get());
-            staff.setAvatar(cloudinaryImage.uploadAvatar(staffRequest.getAvatar()));
+            if(staffRequest.getAvatar() != null) {
+                staff.setAvatar(cloudinaryImage.uploadAvatar(staffRequest.getAvatar()));
+            }
             repo.save(staff);
             return true;
+
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Staff delete(String id) {
+        Staff staff = repo.findById(id).orElse(null);
+        assert staff != null;
+        if(staff.getStatus()==0){
+            staff.setStatus(1);
+        }else {
+            staff.setStatus(0);
+        }
+        return repo.save(staff);
     }
 
     private String generatePassword() {

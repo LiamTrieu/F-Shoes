@@ -5,48 +5,40 @@ import {
   Button,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Grid,
   Paper,
   Radio,
   RadioGroup,
   TextField,
+  CircularProgress,
+  Typography, // Thêm CircularProgress
 } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
-import { useTheme } from '@emotion/react'
+import './AdStaffPage.css'
 
 export default function AdStaffDetail() {
-  const initStaff = {
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    dateBirth: '',
-    citizenId: '',
-    role: '',
-    gender: '',
-    status: '',
-    avatar: null,
-  }
   const { id } = useParams()
-  const [staffDetail, setStaffDetail] = useState(initStaff)
+  const [staffDetail, setStaffDetail] = useState({ avatar: null, gender: '', role: '' }) // Khởi tạo giá trị ban đầu cho gender và role
   const [image, setImage] = useState(null)
-
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const theme = useTheme()
 
   useEffect(() => {
     loadData(id)
   }, [id])
 
   const loadData = (id) => {
+    setLoading(true)
+
     staffApi
       .getOne(id)
       .then((response) => {
         const formatDateBirth = dayjs(response.data.dateBirth).format('DD-MM-YYYY')
+        console.log(response.data)
         setStaffDetail({
           ...response.data,
           dateBirth: formatDateBirth,
@@ -55,39 +47,15 @@ export default function AdStaffDetail() {
       .catch(() => {
         console.error('Error')
       })
-  }
-
-  const handButtonUpdateStaff = (id, staffDetail) => {
-    const title = 'Xác nhận cập nhật nhân viên?'
-    const text = ''
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        staffApi.update(id, staffDetail).then(() => {
-          console.log(staffDetail)
-          toast.success('Cập nhật nhân viên thành công!', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          navigate('/admin/staff')
-        })
-      } else {
-        toast.error('Cập nhật nhân viên thất bại', {
-          position: toast.POSITION.TOP_RIGHT,
-        })
-      }
-    })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const handleRoleRadioChange = (event) => {
     setStaffDetail({
       ...staffDetail,
-      role: parseInt(event.target.value),
-    })
-  }
-
-  const handleStatusRadioChange = (event) => {
-    setStaffDetail({
-      ...staffDetail,
-      status: parseInt(event.target.value),
+      role: event.target.value,
     })
   }
 
@@ -110,17 +78,87 @@ export default function AdStaffDetail() {
     }
   }
 
+  const handleButtonUpdateStaff = () => {
+    const title = 'Xác nhận cập nhật nhân viên?'
+    const text = ''
+    confirmSatus(title, text).then((result) => {
+      if (result.isConfirmed) {
+        setLoading(true)
+
+        staffApi
+          .update(id, staffDetail)
+          .then(() => {
+            toast.success('Cập nhật nhân viên thành công!', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            navigate('/admin/staff')
+          })
+          .catch(() => {
+            toast.error('Cập nhật nhân viên thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
+          .finally(() => {
+            setLoading(false)
+          })
+      } else {
+        toast.error('Cập nhật nhân viên thất bại', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
+    })
+  }
+
   return (
-    <div>
+    <div className="nhanvienadd">
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <h2>Nhân viên</h2>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
+          <Grid item xs={7}>
+            <div
+              onClick={() => {
+                document.getElementById('select-avatar').click()
+              }}
+              style={{
+                border: '2px dashed #ddd',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                height: '150px',
+                width: '150px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}>
+              {staffDetail.avatar || image ? (
+                <img
+                  src={image || staffDetail.avatar}
+                  alt="Ảnh nhân viên"
+                  style={{ width: '100%', height: '100%' }}
+                />
+              ) : (
+                'Chọn ảnh'
+              )}
+            </div>
+            <input
+              hidden
+              id="select-avatar"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
+            <Typography>Họ và tên</Typography>
             <TextField
-              label="Họ và Tên"
+              size="small"
               type="text"
-              value={staffDetail?.fullName}
+              value={staffDetail.fullName || ''}
               onChange={(e) => {
                 setStaffDetail({
                   ...staffDetail,
@@ -134,10 +172,11 @@ export default function AdStaffDetail() {
             />
           </Grid>
           <Grid item xs={5.5}>
+            <Typography>Email</Typography>
             <TextField
-              label="Email"
+              size="small"
               type="text"
-              value={staffDetail?.email}
+              value={staffDetail.email || ''}
               onChange={(e) => {
                 setStaffDetail({
                   ...staffDetail,
@@ -154,10 +193,11 @@ export default function AdStaffDetail() {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
+            <Typography>Số Điện Thoại</Typography>
             <TextField
-              label="Số điện thoại"
               type="text"
-              value={staffDetail?.phoneNumber}
+              size="small"
+              value={staffDetail.phoneNumber || ''}
               onChange={(e) => {
                 setStaffDetail({
                   ...staffDetail,
@@ -171,10 +211,11 @@ export default function AdStaffDetail() {
             />
           </Grid>
           <Grid item xs={5.5}>
+            <Typography>Số CCCD</Typography>
             <TextField
-              label="Số CCCD"
+              size="small"
               type="text"
-              value={staffDetail?.citizenId}
+              value={staffDetail.citizenId || ''}
               onChange={(e) => {
                 setStaffDetail({
                   ...staffDetail,
@@ -190,34 +231,41 @@ export default function AdStaffDetail() {
         </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
+          <Grid item xs={2.5}>
+            <Typography>Giới tính</Typography>
             <FormControl size="small">
-              <FormLabel>Chức vụ:</FormLabel>
-              <RadioGroup row value={staffDetail?.role}>
-                <FormControlLabel
-                  name="roleUpdate"
-                  value={0}
-                  control={<Radio />}
-                  label="Quản lý"
-                  onChange={handleRoleRadioChange}
-                />
-                <FormControlLabel
-                  name="roleUpdate"
-                  value={1}
-                  control={<Radio />}
-                  label="Nhân viên"
-                  onChange={handleRoleRadioChange}
-                />
+              <RadioGroup
+                name="gender"
+                row
+                value={staffDetail.gender}
+                onChange={handleGenderRadioChange}>
+                <FormControlLabel value={true} control={<Radio />} label="Nam" />
+                <FormControlLabel value={false} control={<Radio />} label="Nữ" />
               </RadioGroup>
             </FormControl>
           </Grid>
+          <Grid item xs={3}>
+            <Typography>Chức vụ</Typography>
+            <FormControl size="small">
+              <RadioGroup
+                name="gender"
+                row
+                value={staffDetail.role}
+                onChange={handleRoleRadioChange}>
+                <FormControlLabel value={0} control={<Radio />} label="Nhân viên" />
+                <FormControlLabel value={1} control={<Radio />} label="Quản lí" />
+              </RadioGroup>
+            </FormControl>
+          </Grid>
+
           <Grid item xs={5.5}>
+            <Typography>Ngày sinh</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 format={'DD-MM-YYYY'}
-                label="Ngày sinh"
+                className="small-datepicker"
                 sx={{ width: '100%' }}
-                value={dayjs(staffDetail?.dateBirth, 'DD-MM-YYYY')}
+                value={dayjs(staffDetail.dateBirth, 'DD-MM-YYYY')}
                 onChange={(e) => {
                   setStaffDetail({
                     ...staffDetail,
@@ -230,91 +278,26 @@ export default function AdStaffDetail() {
         </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
-            <FormControl size="small">
-              <FormLabel>Trạng thái:</FormLabel>
-              <RadioGroup row value={staffDetail?.status}>
-                <FormControlLabel
-                  name="statusUpdate"
-                  value={0}
-                  control={<Radio />}
-                  label="Hoạt động"
-                  onChange={handleStatusRadioChange}
-                />
-                <FormControlLabel
-                  name="statusUpdate"
-                  value={1}
-                  control={<Radio />}
-                  label="Không hoạt động"
-                  onChange={handleStatusRadioChange}
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-          <Grid item xs={3}>
-            <FormControl size="small">
-              <FormLabel>Giới tính:</FormLabel>
-              <RadioGroup row value={staffDetail?.gender}>
-                <FormControlLabel
-                  name="genderUpdate"
-                  value={true}
-                  control={<Radio />}
-                  label="Nam"
-                  onChange={handleGenderRadioChange}
-                />
-                <FormControlLabel
-                  name="genderUpdate"
-                  value={false}
-                  control={<Radio />}
-                  label="Nữ"
-                  onChange={handleGenderRadioChange}
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
-            <h4>Chọn ảnh nhân viên</h4>
-            <div
-              onClick={() => {
-                document.getElementById('select-avatar').click()
-              }}
-              style={{
-                border: '1px solid black',
-                cursor: 'pointer',
-                height: '100px',
-                width: '100px',
-              }}>
-              {image && (
-                <img src={image} alt="Chọn ảnh" style={{ width: '100%', height: '100%' }} />
-              )}
-              {!image && 'Chọn ảnh'}
-            </div>
-            <input
-              hidden
-              id="select-avatar"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
           <Grid item xs={3}></Grid>
           <Grid item xs={5}></Grid>
           <Grid item xs={3}>
-            <Button
-              onClick={() => handButtonUpdateStaff(id, staffDetail)}
-              variant="contained"
-              fullWidth
-              color="cam"
-              sx={{ float: 'right' }}>
-              Cập Nhật
-            </Button>
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              {loading && (
+                <div
+                  style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 9999,
+                  }}>
+                  <CircularProgress size={50} />
+                </div>
+              )}
+              <Button onClick={handleButtonUpdateStaff} variant="contained" fullWidth color="cam">
+                {loading ? 'Đang cập nhật...' : 'Cập Nhật Nhân Viên'}
+              </Button>
+            </div>
           </Grid>
         </Grid>
       </Paper>
