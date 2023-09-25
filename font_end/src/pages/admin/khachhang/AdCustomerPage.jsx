@@ -140,7 +140,7 @@ export default function AdCustomerPage() {
           <Table className="tableCss mt-5">
             <TableHead>
               <TableRow>
-                <TableCell align="center" width={'5%'}>
+                <TableCell align="center" width={'7%'}>
                   <span className="head-table">STT</span>
                 </TableCell>
                 <TableCell align="center" width={'25%'}>
