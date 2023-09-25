@@ -21,4 +21,7 @@ public interface ProductPromotionService {
     Page<ProductPromotion> ProductPromotionPage(Integer page, Integer pageSize);
 
 
+    List<String> getIdProductAndProductDetailByIdPromotion(String idPromotion);
+    List<String> getIdProductDetailByIdPromotion(String idPromotion);
+
 }

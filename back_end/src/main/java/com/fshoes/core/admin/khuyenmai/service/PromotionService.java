@@ -15,17 +15,11 @@ import java.util.List;
 
 public interface PromotionService {
 
-
-     List<PromotionRespone> getAll() ;
-
-    PageReponse<PromotionRespone> getPage(PromotionRequestAdd request);
     Promotion getOne(String id);
 
     Promotion deleteKhuyenMai( String id);
 
-     Promotion addKhuyenMai(PromotionRequestAdd promotionRequest) throws ParseException;
-
-    Promotion updateKhuyenMai(PromotionRequestAdd promotionRequest, String id) throws ParseException;
+    Promotion updateKhuyenMai(ProductPromotionAddRequest request, String id) throws ParseException;
 
     Promotion addKhuyenMaiOnProduct(ProductPromotionAddRequest request) throws ParseException;
 

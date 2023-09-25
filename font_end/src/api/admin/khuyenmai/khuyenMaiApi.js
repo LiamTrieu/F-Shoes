@@ -5,9 +5,18 @@ const khuyenMaiApi = {
     return axiosClient.get(GetAll)
   },
 
-  getAllProduct: () => {
+  getAllProduct: (filter) => {
     const GetAll = `/promotion/get-product`
-    return axiosClient.get(GetAll)
+    return axiosClient.get(GetAll, { params: filter })
+  },
+  getAllProductDetail: (filterDetail) => {
+    const GetAllDtail = `/promotion/get-product-detail`
+    return axiosClient.get(GetAllDtail, { params: filterDetail })
+  },
+
+  getAllProductDetailByProduct: (filterDetail, id) => {
+    const GetAllDtail = `/promotion/get-product-detail-by-product/${id}`
+    return axiosClient.get(GetAllDtail, { params: filterDetail })
   },
 
   getPage: (totalPages) => {
@@ -23,6 +32,16 @@ const khuyenMaiApi = {
   getById: (id) => {
     const getPageById = `/promotion/get-one/${id}`
     return axiosClient.get(getPageById)
+  },
+
+  getProductAndProductDetailById: (idPromotion) => {
+    const getProductById = `/product-promotion/list-product/${idPromotion}`
+    return axiosClient.get(getProductById)
+  },
+
+  getProductDetailById: (idPromotion) => {
+    const getProductById = `/product-promotion/list-product-detail/${idPromotion}`
+    return axiosClient.get(getProductById)
   },
 
   addPromotion: (Promotion) => {
