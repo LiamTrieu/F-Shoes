@@ -53,4 +53,5 @@ public interface AdVoucherRepository extends VoucherRepository {
     or ((v.startDate <= :dateNow and v.endDate > :dateNow) and v.status != 1)
     """)
     List<Voucher> getAllVoucherWrong(Long dateNow);
+    
 }

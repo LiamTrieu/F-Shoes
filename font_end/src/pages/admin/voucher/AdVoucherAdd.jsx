@@ -92,6 +92,7 @@ export default function AdVoucherAdd() {
       .getPageCustomer(initPage - 1)
       .then((response) => {
         setListCustomer(response.data.data.content)
+        console.log(response.data.data.content)
         setTotalPages(response.data.data.totalPages)
         setDataFetched(true)
       })

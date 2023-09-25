@@ -30,7 +30,7 @@ const voucherApi = {
     return axiosClient.get(urlSearchVoucher, { params: adVoucherSearch })
   },
   getPageCustomer: (p) => {
-    const url = `/khach-hang/get-page?p=${p}`
+    const url = `/khach-hang/search`
     return axiosClient.get(url)
   },
 
