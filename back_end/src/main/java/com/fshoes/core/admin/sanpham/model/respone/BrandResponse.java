@@ -6,4 +6,6 @@ public interface BrandResponse extends IsIdentified {
     String getName();
 
     Integer getDeleted();
+
+    Long getCreatedAt();
 }

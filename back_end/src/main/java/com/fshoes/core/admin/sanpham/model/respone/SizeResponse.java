@@ -6,4 +6,6 @@ public interface SizeResponse extends IsIdentified {
     Float getSize();
 
     Integer getDeleted();
+
+    Long getCreatedAt();
 }

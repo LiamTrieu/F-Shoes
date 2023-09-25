@@ -82,3 +82,7 @@
 /* .voucher-add .MuiPaper-root .MuiGrid-root {
   margin-bottom: 3;
 } */
+
+.voucher-add .css-1qcnqou-MuiButtonBase-root-MuiButton-root:hover {
+  background-color: #c25e1c;
+}

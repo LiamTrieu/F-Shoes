@@ -43,7 +43,7 @@ export default function AdBrandPage() {
   const [brandUpdate, setBrandUpdate] = useState({ id: 0, name: '' })
   const [listBrand, setListBrand] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
-  const [filter, setFilter] = useState({ page: 1, size: 5, textSearch: '' })
+  const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
   const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
 
   useEffect(() => {
@@ -53,11 +53,11 @@ export default function AdBrandPage() {
   const fetchData = (filter) => {
     setIsBackdrop(true)
     bradApi
-      .get(filter)
+      .getBrand(filter)
       .then((response) => {
         const res = response.data
-        setListBrand(res.data)
-        setPageRespone({ currentPage: res.currentPage, totalPages: res.totalPages })
+        setListBrand(res.data.content)
+        setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
       })
       .catch((error) => {
         console.log(error)
@@ -65,14 +65,14 @@ export default function AdBrandPage() {
     setIsBackdrop(false)
   }
 
-  const addProduct = () => {
+  const addBrand = () => {
     setIsBackdrop(true)
     const title = 'Xác nhận Thêm mới thương hiệu?'
     const text = ''
     setOpenAdd(false)
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        bradApi.add(brand).then((res) => {
+        bradApi.addBrand(brand).then((res) => {
           if (res.data.success) {
             setIsBackdrop(false)
             setOpenAdd(false)
@@ -94,14 +94,14 @@ export default function AdBrandPage() {
     })
     setIsBackdrop(false)
   }
-  const updateProduct = () => {
+  const updateBrand = () => {
     setIsBackdrop(true)
     const title = 'Xác nhận cập nhập thương hiệu?'
     const text = ''
     setOpenUpdate(false)
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        bradApi.update(brandUpdate.id, { name: brandUpdate.name }).then((res) => {
+        bradApi.updateBrand(brandUpdate.id, { name: brandUpdate.name }).then((res) => {
           if (res.data.success) {
             setIsBackdrop(false)
             setBrand({ name: '' })
@@ -128,26 +128,29 @@ export default function AdBrandPage() {
     else setBrandUpdate({ ...brandUpdate, name: e.target.value })
   }
 
-  const setDeleted = (id, isDeleted) => {
+  const setDeleted = (id) => {
     const title = 'Xác nhận thay đổi hoạt động?'
     const text = 'Ẩn hoạt động sẽ làm ẩn thương hiệu khỏi nơi khác'
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        bradApi.deleted(id, isDeleted).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            if (!isDeleted) {
-              toast.success('Đã bật trạng thái hoạt động', {
+        bradApi
+          .swapBrand(id)
+          .then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              toast.success('Thay đổi trạng thái hoạt động thành công', {
                 position: toast.POSITION.TOP_RIGHT,
               })
-            } else {
-              toast.error('Đã tắt trạng thái hoạt động', {
-                position: toast.POSITION.TOP_RIGHT,
-              })
+              fetchData(filter)
             }
+          })
+          .catch(() => {
+            setIsBackdrop(false)
+            toast.error('Thay đổi trạng thái hoạt động thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
             fetchData(filter)
-          }
-        })
+          })
       }
     })
   }
@@ -178,7 +181,7 @@ export default function AdBrandPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setFilter({ ...filter, textSearch: e.target.value })
+                setFilter({ ...filter, name: e.target.value })
               }}
               inputProps={{ style: { height: '20px' } }}
               size="small"
@@ -203,7 +206,7 @@ export default function AdBrandPage() {
                 buttonSubmit={
                   <Button
                     onClick={() => {
-                      openAdd ? addProduct() : updateProduct()
+                      openAdd ? addBrand() : updateBrand()
                     }}
                     color="primary"
                     disableElevation
@@ -219,25 +222,25 @@ export default function AdBrandPage() {
                   }}
                   defaultValue={brand.name}
                   fullWidth
-                  sx={{
-                    my: 2,
-                    '& .MuiInputBase-root fieldset': {
-                      borderColor: theme.palette.layout.colorText,
-                      color: theme.palette.layout.colorText,
-                    },
-                    '& .MuiInputBase-root': {
-                      ' &.Mui-focused fieldset': {
-                        borderColor: theme.palette.layout.colorText,
-                      },
-                      borderColor: theme.palette.layout.colorText,
-                      color: theme.palette.layout.colorText,
-                    },
-                    '& .MuiInputBase-root:hover fieldset': {
-                      borderColor: 'gray',
-                    },
-                  }}
+                  // sx={{
+                  //   my: 2,
+                  //   '& .MuiInputBase-root fieldset': {
+                  //     borderColor: theme.palette.layout.colorText,
+                  //     color: theme.palette.layout.colorText,
+                  //   },
+                  //   '& .MuiInputBase-root': {
+                  //     ' &.Mui-focused fieldset': {
+                  //       borderColor: theme.palette.layout.colorText,
+                  //     },
+                  //     borderColor: theme.palette.layout.colorText,
+                  //     color: theme.palette.layout.colorText,
+                  //   },
+                  //   '& .MuiInputBase-root:hover fieldset': {
+                  //     borderColor: 'gray',
+                  //   },
+                  // }}
                   inputProps={{
-                    style: { color: theme.palette.layout.colorText },
+                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
@@ -253,7 +256,7 @@ export default function AdBrandPage() {
                 buttonSubmit={
                   <Button
                     onClick={() => {
-                      updateProduct()
+                      updateBrand()
                     }}
                     color="primary"
                     disableElevation
@@ -269,25 +272,25 @@ export default function AdBrandPage() {
                   }}
                   defaultValue={brandUpdate.name}
                   fullWidth
-                  sx={{
-                    my: 2,
-                    '& .MuiInputBase-root fieldset': {
-                      borderColor: theme.palette.layout.colorText,
-                      color: theme.palette.layout.colorText,
-                    },
-                    '& .MuiInputBase-root': {
-                      ' &.Mui-focused fieldset': {
-                        borderColor: theme.palette.layout.colorText,
-                      },
-                      borderColor: theme.palette.layout.colorText,
-                      color: theme.palette.layout.colorText,
-                    },
-                    '& .MuiInputBase-root:hover fieldset': {
-                      borderColor: 'gray',
-                    },
-                  }}
+                  // sx={{
+                  //   my: 2,
+                  //   '& .MuiInputBase-root fieldset': {
+                  //     borderColor: theme.palette.layout.colorText,
+                  //     color: theme.palette.layout.colorText,
+                  //   },
+                  //   '& .MuiInputBase-root': {
+                  //     ' &.Mui-focused fieldset': {
+                  //       borderColor: theme.palette.layout.colorText,
+                  //     },
+                  //     borderColor: theme.palette.layout.colorText,
+                  //     color: theme.palette.layout.colorText,
+                  //   },
+                  //   '& .MuiInputBase-root:hover fieldset': {
+                  //     borderColor: 'gray',
+                  //   },
+                  // }}
                   inputProps={{
-                    style: { color: theme.palette.layout.colorText },
+                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
@@ -330,14 +333,13 @@ export default function AdBrandPage() {
                       <TableCell align="center">{index + 1}</TableCell>
                       <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">
-                        {dayjs(row.createAt).format('DD/MM/YYYY')}
+                        {dayjs(row.createdAt).format('DD/MM/YYYY')}
                       </TableCell>
                       <TableCell align="center">
                         <Switch
                           checked={!row.deleted}
                           onChange={(e) => {
-                            const isDel = !e.target.checked
-                            setDeleted(row.id, isDel)
+                            setDeleted(row.id)
                           }}
                           size="small"
                         />

@@ -1,11 +1,11 @@
 package com.fshoes.core.admin.sanpham.controller;
 
+import com.fshoes.core.admin.sanpham.model.request.CategoryFilterRequest;
+import com.fshoes.core.admin.sanpham.model.request.CategoryRequest;
 import com.fshoes.core.admin.sanpham.service.CategoryService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/category")
@@ -20,7 +20,27 @@ public class CategoryController {
     }
 
     @GetMapping("get-list")
-    public ObjectRespone getListBrand() {
+    public ObjectRespone getListCategory() {
         return new ObjectRespone(categoryService.getListCategory());
+    }
+
+    @GetMapping("")
+    public ObjectRespone getCategory(CategoryFilterRequest categoryFilterRequest) {
+        return new ObjectRespone(categoryService.getCategory(categoryFilterRequest));
+    }
+
+    @PostMapping("/add")
+    public ObjectRespone addCategory(@RequestBody CategoryRequest categoryRequest) {
+        return new ObjectRespone(categoryService.addCategory(categoryRequest));
+    }
+
+    @PutMapping("/update/{id}")
+    public ObjectRespone updateCategory(@PathVariable String id, @RequestBody CategoryRequest categoryRequest) {
+        return new ObjectRespone(categoryService.updateCategory(id, categoryRequest));
+    }
+
+    @DeleteMapping("/swap/{id}")
+    public ObjectRespone deleteCategory(@PathVariable String id) {
+        return new ObjectRespone(categoryService.swapCategory(id));
     }
 }

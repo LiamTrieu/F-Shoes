@@ -385,19 +385,19 @@ public class DBGenerator implements CommandLineRunner {
         //brand
 
         //color
-        Color color1 = Color.builder().code("#8B0016").name("Đỏ Đậm").deleted(Status.HOAT_DONG).build();
+        Color color1 = Color.builder().code("#8B0016").name("Red Devil").deleted(Status.HOAT_DONG).build();
         color1.setId(colorRepository.save(color1).getId());
 
-        Color color2 = Color.builder().code("#00FF00").name("Xanh Lá").deleted(Status.HOAT_DONG).build();
+        Color color2 = Color.builder().code("#00FF00").name("Green").deleted(Status.HOAT_DONG).build();
         color2.setId(colorRepository.save(color2).getId());
 
-        Color color3 = Color.builder().code("#0000FF").name("Xanh Dương").deleted(Status.HOAT_DONG).build();
+        Color color3 = Color.builder().code("#0000FF").name("Blue").deleted(Status.HOAT_DONG).build();
         color3.setId(colorRepository.save(color3).getId());
 
-        Color color4 = Color.builder().code("#FFFF00").name("Vàng").deleted(Status.HOAT_DONG).build();
+        Color color4 = Color.builder().code("#FFFF00").name("Yellow").deleted(Status.HOAT_DONG).build();
         color4.setId(colorRepository.save(color4).getId());
 
-        Color color5 = Color.builder().code("#FFA500").name("Cam").deleted(Status.HOAT_DONG).build();
+        Color color5 = Color.builder().code("#FFA500").name("Orange").deleted(Status.HOAT_DONG).build();
         color5.setId(colorRepository.save(color5).getId());
         //color
 

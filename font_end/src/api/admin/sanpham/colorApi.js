@@ -9,5 +9,21 @@ const colorApi = {
     const url = `/color/get-list`
     return axiosClient.get(url)
   },
+  getColor: (filter) => {
+    const url = `/color`
+    return axiosClient.get(url, { params: filter })
+  },
+  addColor: (color) => {
+    const url = `/color/add`
+    return axiosClient.post(url, color)
+  },
+  updateColor: (id, color) => {
+    const url = `/color/update/${id}`
+    return axiosClient.put(url, color)
+  },
+  swapColor: (id) => {
+    const url = `/color/swap/${id}`
+    return axiosClient.delete(url)
+  },
 }
 export default colorApi
