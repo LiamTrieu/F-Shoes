@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Checkbox,
   Grid,
@@ -13,7 +12,7 @@ import {
 import React, { useEffect, useState } from 'react'
 
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -110,6 +109,7 @@ export default function AdPromotionAdd() {
 
     console.log('ID của sản phẩm đã chọn:', selectedProductIds)
   }
+
   useEffect(() => {
     // Lấy danh sách chi tiết sản phẩm của các sản phẩm đã chọn
     if (selectedProductIds.length > 0) {
@@ -163,13 +163,6 @@ export default function AdPromotionAdd() {
     const addProductPromotion = { ...addPromotionRe, idProductDetail: selectProductDetail }
     console.log('danh sach da chon:', selectProductDetail)
 
-    const dulicatename = getProduct.some((product) => (product.name = addPromotionRe.name))
-    if (dulicatename) {
-      toast.error('Tên đã tồn tại', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
-      return
-    }
     if (
       !addPromotionRe.name ||
       !addPromotionRe.value ||
@@ -181,6 +174,8 @@ export default function AdPromotionAdd() {
       })
       return
     }
+
+    // Check if the parsedValue is a valid integer
 
     const timeStart = dayjs(addPromotionRe.timeStart, 'DD/MM/YYYY')
     const timeEnd = dayjs(addPromotionRe.timeEnd, 'DD/MM/YYYY')

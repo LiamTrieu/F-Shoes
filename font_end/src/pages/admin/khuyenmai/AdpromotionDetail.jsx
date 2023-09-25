@@ -1,11 +1,9 @@
 import {
-  Box,
   Button,
   Checkbox,
   Grid,
   Pagination,
   Paper,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +14,6 @@ import {
   useTheme,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import Modal from '@mui/material/Modal'
 import { useNavigate, useParams } from 'react-router-dom'
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
@@ -26,18 +23,6 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
 import { toast } from 'react-toastify'
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 800,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-}
 
 export default function AdPromotionDetail() {
   const theme = useTheme()
@@ -52,6 +37,7 @@ export default function AdPromotionDetail() {
   const [selectedRows, setSelectedRows] = useState([])
   const [totalPagesDetailByProduct, setTotalPagesDetailByProduct] = useState(0)
   const [filterDetailByProduct, setFilterDetailProduct] = useState({ page: 1, size: 5 })
+  const [selectedProductIds, setSelectedProductIds] = useState([])
 
   let navigate = useNavigate()
   const { id } = useParams()
@@ -114,21 +100,48 @@ export default function AdPromotionDetail() {
     const selectedProductIds = getProduct
       .filter((row) => newSelected.includes(row.id))
       .map((selectedProduct) => selectedProduct.id)
-    if (selectedProductIds.length > 0) {
-      khuyenMaiApi
-        .getAllProductDetailByProduct(filterDetailByProduct, selectedProductIds)
-        .then((response) => {
-          setGetProductDetailByProduct(response.data.data.data)
-          setTotalPagesDetailByProduct(response.data.data.totalPages)
-        })
-    } else {
-      // toast.success('Không có sản phẩm được chọn', {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // })
-    }
+    setSelectedProductIds(selectedProductIds)
+    // if (selectedProductIds.length > 0) {
+    //   khuyenMaiApi
+    //     .getAllProductDetailByProduct(filterDetailByProduct, selectedProductIds)
+    //     .then((response) => {
+    //       setGetProductDetailByProduct(response.data.data.data)
+    //       setTotalPagesDetailByProduct(response.data.data.totalPages)
+    //     })
+    // } else {
+    //   // toast.success('Không có sản phẩm được chọn', {
+    //   //   position: toast.POSITION.TOP_RIGHT,
+    //   // })
+    // }
 
     console.log('ID của sản phẩm đã chọn:', selectedProductIds)
   }
+
+  useEffect(() => {
+    // Lấy danh sách chi tiết sản phẩm của các sản phẩm đã chọn
+    if (selectedProductIds.length > 0) {
+      const promises = selectedProductIds.map((productId) => {
+        return khuyenMaiApi.getAllProductDetailByProduct(filterDetailByProduct, productId)
+      })
+
+      Promise.all(promises)
+        .then((responses) => {
+          const allProductDetails = responses.flatMap((response) => response.data.data.data)
+          setGetProductDetailByProduct(allProductDetails)
+          const itemsPerPage = filterDetailByProduct.size // Kích thước trang
+          const totalPages = Math.ceil(allProductDetails.length / itemsPerPage)
+          setTotalPagesDetailByProduct(totalPages)
+          // setTotalPagesDetailByProduct(allProductDetails.length - 1)
+        })
+        .catch((error) => {
+          console.error('Error fetching product details:', error)
+        })
+    } else {
+      // Nếu không có sản phẩm nào được chọn, bạn có thể xử lý ở đây (ví dụ: xóa danh sách chi tiết sản phẩm)
+      setGetProductDetailByProduct([])
+      setTotalPagesDetailByProduct(0)
+    }
+  }, [selectedProductIds])
 
   const onSubmit = (e, id) => {
     if (
@@ -142,6 +155,15 @@ export default function AdPromotionDetail() {
         position: toast.POSITION.TOP_RIGHT,
       })
       return // Không gửi yêu cầu nếu có trường trống
+    }
+
+    const timeStart = dayjs(updatePromotion.timeStart, 'DD/MM/YYYY')
+    const timeEnd = dayjs(updatePromotion.timeEnd, 'DD/MM/YYYY')
+    if (!timeStart.isValid() || !timeEnd.isValid() || timeStart.isAfter(timeEnd)) {
+      toast.error('Ngày bắt đầu phải bé hơn ngày kêt thúc', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      return
     }
     const title = 'bạn có muốn update không?'
     const text = ''
