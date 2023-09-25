@@ -1,9 +1,14 @@
 import {
   Box,
   Button,
+  Chip,
   IconButton,
+  InputAdornment,
+  MenuItem,
   Pagination,
   Paper,
+  Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -17,59 +22,39 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 import dayjs from 'dayjs'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import DeleteIcon from '@mui/icons-material/Delete'
 import Toast from '../../../components/Toast'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
 import './AdCustomerPage.css'
-
-// import SearchIcon from "@mui/icons-material/Search";
+import { TbEyeEdit } from 'react-icons/tb'
+import SearchIcon from '@mui/icons-material/Search'
 
 export default function AdCustomerPage() {
   const theme = useTheme()
   const [listKhachHang, setListKhachHang] = useState([])
-  const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
-  const [pageSearch, setPageSearch] = useState({ textSearch: '' })
+  const [searchKhachHang, setSearchKhachHang] = useState({
+    nameSearch: '',
+    gender: '',
+    statusSearch: '',
+    size: 5,
+    page: 1,
+  })
 
   useEffect(() => {
-    fetchData(initPage - 1, pageSearch)
-  }, [initPage, pageSearch])
+    fetchData(searchKhachHang)
+  }, [searchKhachHang])
 
-  const handleOnChangePage = (page) => {
-    setInitPage(page)
-  }
-
-  const updateKhachHangListAfterDelete = (id) => {
-    // Lọc ra các khách hàng mà không có id bị xóa
-    const updatedListKhachHang = listKhachHang.filter((khachHang) => khachHang.id !== id)
-    setListKhachHang(updatedListKhachHang)
-  }
-
-  const fetchData = (initPage, pageSearch) => {
-    if (pageSearch.textSearch !== '') {
-      khachHangApi
-        .search(initPage, pageSearch.textSearch)
-        .then((response) => {
-          setListKhachHang(response.data.data.content)
-          setTotalPages(response.data.data.totalPages)
-        })
-        .catch((error) => {
-          console.error('Error:', error)
-        })
-    } else {
-      khachHangApi
-        .get(initPage)
-        .then((response) => {
-          setListKhachHang(response.data.data.content)
-          setTotalPages(response.data.data.totalPages)
-        })
-        .catch((error) => {
-          console.error('Error:', error)
-        })
-    }
+  const fetchData = (searchKhachHang) => {
+    khachHangApi.get(searchKhachHang).then((response) => {
+      setListKhachHang(response.data.data.content)
+      setTotalPages(response.data.data.totalPages)
+      if (searchKhachHang.page > response.data.data.totalPages)
+        if (response.data.data.totalPages > 0) {
+          setSearchKhachHang({ ...searchKhachHang, page: response.data.data.totalPages })
+        }
+    })
   }
 
   const deleteKhachHang = (id) => {
@@ -81,40 +66,81 @@ export default function AdCustomerPage() {
           toast.success('Xóa khách hàng thành công', {
             position: toast.POSITION.TOP_RIGHT,
           })
-          updateKhachHangListAfterDelete(id)
+          fetchData(searchKhachHang)
         })
       }
     })
   }
 
   return (
-    <div>
+    <div className="khachhang">
       <Box>
         <Toast />
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-          <TextField
-            id="outlined-basic"
-            sx={{ width: '40%' }}
-            label="Tên hoặc số điện thoại khách hàng"
-            variant="outlined"
-            size="small"
-            color="cam"
-            onChange={(e) => setPageSearch({ textSearch: e.target.value })}
-          />
-          <Button
-            variant="contained"
-            style={{ float: 'right' }}
-            color="cam"
-            component={Link}
-            to="/admin/customer/add">
-            <Typography sx={{ ml: 1 }}>Tạo khách hàng</Typography>
-          </Button>
-        </Paper>
-        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-          <Table className="tableCss">
+          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+            <TextField
+              sx={{ width: '40%' }}
+              className="search-field"
+              size="small"
+              color="cam"
+              value={searchKhachHang.nameSearch || ''}
+              placeholder="Tìm kiếm tên hoặc sđt hoặc email"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="cam" />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e) => {
+                setSearchKhachHang({ ...searchKhachHang, nameSearch: e.target.value })
+              }}
+            />
+            <div className="filter">
+              <b>Giới tính: </b>
+              <Select
+                displayEmpty
+                size="small"
+                value={searchKhachHang.gender}
+                onChange={(e) =>
+                  setSearchKhachHang({ ...searchKhachHang, gender: e.target.value })
+                }>
+                <MenuItem value={''}>Tất cả</MenuItem>
+                <MenuItem value={'true'}>Nam</MenuItem>
+                <MenuItem value={'false'}>Nữ</MenuItem>
+              </Select>
+            </div>
+
+            <div className="filter">
+              <b>Trạng thái: </b>
+              <Select
+                displayEmpty
+                size="small"
+                value={searchKhachHang.statusSearch}
+                onChange={(e) =>
+                  setSearchKhachHang({ ...searchKhachHang, statusSearch: e.target.value })
+                }>
+                <MenuItem value={''}>Tất cả</MenuItem>
+                <MenuItem value={'0'}>Hoạt động</MenuItem>
+                <MenuItem value={'1'}>Không hoạt động</MenuItem>
+                <MenuItem></MenuItem>
+              </Select>
+            </div>
+            <Button
+              variant="contained"
+              style={{ float: 'right' }}
+              color="cam"
+              className="them-moi"
+              component={Link}
+              to="/admin/customer/add">
+              <Typography sx={{ ml: 1 }}>Tạo khách hàng</Typography>
+            </Button>
+          </Stack>
+
+          <Table className="tableCss mt-5">
             <TableHead>
               <TableRow>
-                <TableCell align="center" width={'5%'}>
+                <TableCell align="center" width={'7%'}>
                   <span className="head-table">STT</span>
                 </TableCell>
                 <TableCell align="center" width={'25%'}>
@@ -129,42 +155,59 @@ export default function AdCustomerPage() {
                 <TableCell align="center" width={'15%'}>
                   <span className="head-table">Số điện thoại</span>
                 </TableCell>
+                <TableCell align="center" width={'15%'}>
+                  <span className="head-table">Giới tính</span>
+                </TableCell>
+                <TableCell align="center" width={'15%'}>
+                  <span className="head-table">Trạng thái</span>
+                </TableCell>
                 <TableCell align="center" width={'10%'}>
                   <span className="head-table">Thao tác</span>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {listKhachHang.map((row, index) => (
-                <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell align="center">{index + 1}</TableCell>
-                  <TableCell align="center">{row.email}</TableCell>
-                  <TableCell align="center">{row.fullName}</TableCell>
-                  <TableCell align="center">{dayjs(row.dateBirth).format('MM/DD/YYYY')}</TableCell>
-                  <TableCell align="center">{row.phoneNumber}</TableCell>
-                  <TableCell align="center">
-                    <Tooltip title="Xem chi tiết">
-                      <IconButton
-                        color="cam"
-                        component={Link}
-                        to={`/admin/customer/getOne/${row.id}`}
-                        sx={{ fontSize: 20 }} // Tùy chỉnh kiểu
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Xóa">
-                      <IconButton
-                        color="error"
-                        onClick={() => deleteKhachHang(row.id)}
-                        sx={{ fontSize: 20 }} // Tùy chỉnh kiểu
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {listKhachHang.map((row) => {
+                return (
+                  <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell align="center">{row.stt}</TableCell>
+                    <TableCell align="center">{row.email}</TableCell>
+                    <TableCell align="center">{row.fullName}</TableCell>
+                    <TableCell align="center">
+                      {dayjs(row.dateBirth).format('MM/DD/YYYY')}
+                    </TableCell>
+                    <TableCell align="center">{row.phoneNumber}</TableCell>
+                    <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
+                    <TableCell align="center">
+                      {row.status === 0 ? (
+                        <Chip
+                          onClick={() => deleteKhachHang(row.id)}
+                          className="chip-hoat-dong"
+                          size="small"
+                          label="Hoạt động"
+                        />
+                      ) : (
+                        <Chip
+                          className="chip-khong-hoat-dong"
+                          size="small"
+                          label="Không hoạt động"
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Tooltip title="Xem chi tiết">
+                        <IconButton
+                          color="cam"
+                          component={Link}
+                          to={`/admin/customer/getOne/${row.id}`}
+                          sx={{ fontSize: 20 }}>
+                          <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
           <div
@@ -174,8 +217,11 @@ export default function AdCustomerPage() {
               marginTop: '10px',
             }}>
             <Pagination
-              page={initPage}
-              onChange={(_, page) => handleOnChangePage(page)}
+              page={searchKhachHang.page}
+              onChange={(e, value) => {
+                e.preventDefault()
+                setSearchKhachHang({ ...searchKhachHang, page: value })
+              }}
               count={totalPages}
               color="cam"
             />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import './index.css'
 import {
   Button,
@@ -25,6 +25,7 @@ import bradApi from '../../../api/admin/sanpham/bradApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
 import { Link } from 'react-router-dom'
+import Empty from '../../../components/Empty'
 
 export default function AdProductPage() {
   const [listBrand, setListBrand] = useState([])
@@ -54,7 +55,9 @@ export default function AdProductPage() {
       setListProduct(response.data.data.data)
       setTotal(response.data.data.totalPages)
       if (filter.page > response.data.data.totalPages)
-        setFilter({ ...filter, page: response.data.data.totalPages })
+        if (response.data.data.totalPages > 0) {
+          setFilter({ ...filter, page: response.data.data.totalPages })
+        }
     })
   }, [filter])
 
@@ -142,91 +145,91 @@ export default function AdProductPage() {
             </Select>
           </div>
         </Stack>
-        <Table className="tableCss">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" width={'5%'}>
-                STT
-              </TableCell>
-              <TableCell align="center" width={'35%'}>
-                Tên sản phẩm
-              </TableCell>
-              <TableCell align="center" width={'15%'}>
-                Danh mục
-              </TableCell>
-              <TableCell align="center" width={'15%'}>
-                Thương hiệu
-              </TableCell>
-              <TableCell align="center" width={'10%'}>
-                Số lượng
-              </TableCell>
-              <TableCell align="center" width={'10%'}>
-                Trạng thái
-              </TableCell>
-              <TableCell align="center" width={'10%'}>
-                Thao tác
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {listProduct.map((product) => {
-              return (
+        {listProduct.length > 0 ? (
+          <Fragment>
+            <Table className="tableCss">
+              <TableHead>
                 <TableRow>
-                  <TableCell align="center">{product.stt}</TableCell>
-                  <TableCell align="center" sx={{ maxWidth: '0px' }}>
-                    {product.name}
+                  <TableCell align="center" width={'5%'}>
+                    STT
                   </TableCell>
-                  <TableCell align="center">{product.category}</TableCell>
-                  <TableCell align="center">{product.brand}</TableCell>
-                  <TableCell align="center">{product.amount}</TableCell>
-                  <TableCell align="center">
-                    <Chip
-                      className={product.status === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'}
-                      label={product.status === 0 ? 'Đang bán' : 'Ngừng bán'}
-                      size="small"
-                    />
+                  <TableCell width={'35%'}>Tên sản phẩm</TableCell>
+                  <TableCell width={'15%'}>Danh mục</TableCell>
+                  <TableCell width={'15%'}>Thương hiệu</TableCell>
+                  <TableCell align="center" width={'10%'}>
+                    Số lượng
                   </TableCell>
-                  <TableCell align="center">
-                    <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
+                  <TableCell width={'10%'}>Trạng thái</TableCell>
+                  <TableCell width={'10%'} align="center">
+                    Thao tác
                   </TableCell>
                 </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-        <Stack
-          mt={2}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="flex-start"
-          spacing={0}>
-          <Typography component="span" variant={'body2'} mt={0.5}>
-            <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
-            <Select
-              onChange={(e) => {
-                setFilter({ ...filter, size: e.target.value })
-              }}
-              sx={{ height: '25px', mx: 0.5 }}
-              size="small"
-              value={filter.size}>
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={15}>15</MenuItem>
-              <MenuItem value={20}>20</MenuItem>
-            </Select>
-            <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>sản phẩm</Typography>
-          </Typography>
-          <Pagination
-            color="cam"
-            count={total}
-            page={filter.page}
-            onChange={(e, value) => {
-              e.preventDefault()
-              setFilter({ ...filter, page: value })
-            }}
-          />
-        </Stack>
+              </TableHead>
+              <TableBody>
+                {listProduct.map((product) => {
+                  return (
+                    <TableRow>
+                      <TableCell align="center">{product.stt}</TableCell>
+                      <TableCell sx={{ maxWidth: '0px' }}>{product.name}</TableCell>
+                      <TableCell>{product.category}</TableCell>
+                      <TableCell>{product.brand}</TableCell>
+                      <TableCell align="center">{product.amount}</TableCell>
+                      <TableCell>
+                        <Chip
+                          className={
+                            product.status === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'
+                          }
+                          label={product.status === 0 ? 'Đang bán' : 'Ngừng bán'}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+            <Stack
+              mt={2}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-start"
+              spacing={0}>
+              <Typography component="span" variant={'body2'} mt={0.5}>
+                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+                <Select
+                  onChange={(e) => {
+                    setFilter({ ...filter, size: e.target.value })
+                  }}
+                  sx={{ height: '25px', mx: 0.5 }}
+                  size="small"
+                  value={filter.size}>
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={15}>15</MenuItem>
+                  <MenuItem value={20}>20</MenuItem>
+                </Select>
+                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                  sản phẩm
+                </Typography>
+              </Typography>
+              <Pagination
+                color="cam"
+                count={total}
+                page={filter.page}
+                onChange={(e, value) => {
+                  e.preventDefault()
+                  setFilter({ ...filter, page: value })
+                }}
+              />
+            </Stack>
+          </Fragment>
+        ) : (
+          <Empty />
+        )}
       </Container>
     </div>
   )

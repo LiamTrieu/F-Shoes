@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { Autocomplete, Box, Button, Grid, Paper, TextField, Typography } from '@mui/material'
+import {
+  Autocomplete,
+  Box,
+  Button,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  Paper,
+  Radio,
+  RadioGroup,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -25,6 +37,7 @@ export default function AdCustomerAdd() {
     email: '',
     phoneNumber: '',
     dateBirth: '',
+    gender: null,
   })
   const [diaChi, setDiaChi] = useState({
     name: '',
@@ -110,12 +123,6 @@ export default function AdCustomerAdd() {
         // Thêm mới khách hàng
         khachHangApi.addKhachHang(khachHang).then((response) => {
           let khachHangId = response.data.data.id
-          console.log(khachHangId)
-          // Cập nhật id của khách hàng trong địa chỉ
-          // setDiaChi({ ...diaChi, idCustomer: response.data.data.id })
-          // console.log(diaChi)
-
-          // thêm 1 phần tử obj
           const obj = {
             name: diaChi.name,
             phoneNumber: diaChi.phoneNumber,
@@ -140,7 +147,7 @@ export default function AdCustomerAdd() {
   }
 
   return (
-    <div>
+    <div className="khachhangadd">
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Box sx={{ pt: 4 }}>
           <h1>Khách hàng</h1>
@@ -251,7 +258,7 @@ export default function AdCustomerAdd() {
           </Grid>
 
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 2 }}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={3.5}>
               <Typography>Ngày sinh</Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
@@ -264,6 +271,30 @@ export default function AdCustomerAdd() {
                   />
                 </DemoContainer>
               </LocalizationProvider>
+            </Grid>
+            <Grid item xs={12} md={2.5}>
+              <FormControl size="small">
+                <Typography>Giới tính</Typography>
+                <RadioGroup
+                  row
+                  // value={khachHang.gender ? 'true' : 'false'}
+                  onChange={(e) => {
+                    setKhachHang({ ...khachHang, gender: e.target.value })
+                  }}>
+                  <FormControlLabel
+                    name="genderUpdate"
+                    value="true"
+                    control={<Radio />}
+                    label="Nam"
+                  />
+                  <FormControlLabel
+                    name="genderUpdate"
+                    value="false"
+                    control={<Radio />}
+                    label="Nữ"
+                  />
+                </RadioGroup>
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography>Địa chỉ cụ thể</Typography>

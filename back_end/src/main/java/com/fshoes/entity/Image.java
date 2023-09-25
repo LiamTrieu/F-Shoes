@@ -34,4 +34,5 @@ public class Image extends PrimaryEntity {
     public void setDeleted(Integer deleted) {
         this.deleted = Status.values()[deleted];
     }
+
 }

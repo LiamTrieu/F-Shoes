@@ -4,23 +4,27 @@ import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
 import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillHistoryRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillUpdateSttRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepositpory;
-import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
 import com.fshoes.entity.BillHistory;
 import com.fshoes.entity.Customer;
+import com.fshoes.entity.Staff;
+import com.fshoes.entity.Transaction;
 import com.fshoes.entity.Voucher;
 import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.infrastructure.constant.TypeBill;
 import com.fshoes.repository.CustomerRepository;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.StaffRepository;
+import com.fshoes.repository.TransactionRepository;
 import com.fshoes.repository.VoucherRepository;
 import com.fshoes.util.DateUtil;
 import jakarta.transaction.Transactional;
@@ -58,6 +62,9 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Autowired
     private ProductDetailRepository productDetailRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
 
     @Autowired
@@ -247,6 +254,43 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public HDBillResponse getOne(String id) {
         return hdBillRepositpory.getBillResponse(id);
+    }
+
+    @Override
+    public Bill updateStatusBill(String idBill, HDBillUpdateSttRequest hdBillUpdateSttRequest) {
+        Bill bill = hdBillRepositpory.findById(idBill).get();
+        bill.setStatus(hdBillUpdateSttRequest.getStatusBill());
+        HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
+                .note(hdBillUpdateSttRequest.getNoteBillHistory())
+                .idStaff(hdBillUpdateSttRequest.getIdStaff())
+                .bill(bill)
+                .build();
+        hdBillHistoryService.save(hdBillHistoryRequest);
+        return hdBillRepositpory.save(bill);
+    }
+
+    @Transactional
+    @Override
+    public Bill confirmPayment(String idBill, HDConfirmPaymentRequest hdConfirmPaymentRequest) {
+        Bill bill = hdBillRepositpory.findById(idBill).get();
+        Staff staff = staffRepository.findById(hdConfirmPaymentRequest.getIdStaff()).get();
+        Transaction transaction = new Transaction();
+        transaction.setPaymentMethod(hdConfirmPaymentRequest.getPaymentMethod());
+        transaction.setType(hdConfirmPaymentRequest.getType());
+        transaction.setBill(bill);
+        transaction.setStatus(hdConfirmPaymentRequest.getStatus());
+        transaction.setNote(hdConfirmPaymentRequest.getNote());
+        transaction.setTotalMoney(bill.getTotalMoney());
+        transaction.setStaff(staff);
+        transactionRepository.save(transaction);
+        BillHistory billHistory = new BillHistory();
+        billHistory.setStatusBill(5);
+        billHistory.setBill(bill);
+        billHistory.setNote(hdConfirmPaymentRequest.getNote());
+        billHistory.setStaff(staff);
+        hdBillHistoryRepository.save(billHistory);
+        bill.setStatus(5);
+        return hdBillRepositpory.save(bill);
     }
 
     // Phương thức để tạo mã hóa đơn duy nhất

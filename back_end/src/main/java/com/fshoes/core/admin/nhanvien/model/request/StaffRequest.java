@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 
@@ -28,9 +29,7 @@ public class StaffRequest {
 
     private Boolean gender;
 
-    private String password;
-
-    private String avatar;
+    private MultipartFile avatar;
 
     private String CitizenId;
 
@@ -40,14 +39,12 @@ public class StaffRequest {
 
     public Staff tranStaff(Staff staff) throws ParseException {
         staff.setFullName(this.getFullName());
-        staff.setAvatar(this.getAvatar());
         staff.setDateBirth(DateUtil.parseDateLong(this.getDateBirth()));
         staff.setPhoneNumber(this.getPhoneNumber());
         staff.setEmail(this.getEmail());
         staff.setGender(this.getGender());
         staff.setCitizenId(this.getCitizenId());
         staff.setRole(this.getRole());
-        System.out.println(this.status);
         staff.setStatus(status);
         return staff;
     }

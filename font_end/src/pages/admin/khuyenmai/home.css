@@ -7,6 +7,38 @@
   padding-bottom: 14px !important;
 }
 
+.promotion .css-1wexrzr-MuiInputBase-root-MuiOutlinedInput-root {
+  margin-top: 20px !important;
+}
+/* .MuiStack-root {
+  padding-top: 30px !important;
+} */
+
+.promotion .css-a643pv-MuiStack-root {
+  padding-top: 20px !important;
+}
+.promotionAdd .css-a643pv-MuiStack-root {
+  padding-top: 30px !important;
+}
+.promotionUpdate .css-a643pv-MuiStack-root {
+  padding-top: 30px !important;
+}
+.promotion .css-x6y40x-MuiFormLabel-root-MuiInputLabel-root.Mui-error {
+  padding-top: 30px !important;
+}
+
+.promotion .css-x6y40x-MuiFormLabel-root-MuiInputLabel-root {
+  padding-top: 30px !important;
+}
+
+.timeStartAdd .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  height: 0.6em !important;
+}
+.timeStartAdd .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
+  line-height: 0.6em !important;
+  padding-top: 2px;
+  padding-bottom: 14px !important;
+}
 .chip-sap-hoat-dong {
   border: 1px solid #d9d9d9 !important;
   color: #900d9e !important;

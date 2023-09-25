@@ -7,9 +7,15 @@ public interface ProductResponse extends IsIdentified {
 
     String getName();
 
+    String getDescription();
+
     String getCategory();
 
+    String getCategoryId();
+
     String getBrand();
+
+    String getBrandId();
 
     Integer getAmount();
 

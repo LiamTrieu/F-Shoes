@@ -16,7 +16,8 @@ public interface HDBillHistoryRepository extends BillHistoryRepository {
             SELECT bh.id, bh.created_at as createdAt, bh.status_bill as statusBill,
             bh.note as note, bh.created_by as createdBy
             FROM bill_history bh LEFT JOIN bill b ON bh.id_bill = b.id
-            WHERE b.id = :idBill                       
+            WHERE b.id = :idBill    
+            ORDER BY bh.created_at ASC                  
             """, nativeQuery = true)
     List<HDBillHistoryResponse> getListBillHistoryByIdBill(@Param("idBill") String idBill);
 

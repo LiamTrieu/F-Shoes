@@ -2,6 +2,8 @@ package com.fshoes.core.admin.khuyenmai.repository;
 
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionSearch;
 import com.fshoes.core.admin.khuyenmai.model.respone.PromotionRespone;
+import com.fshoes.entity.Promotion;
+import com.fshoes.entity.Voucher;
 import com.fshoes.repository.PromotionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ public interface KMPromotionRepository extends PromotionRepository {
             AND (:#{#reg.timeEnd} IS NULL OR time_end <= :#{#reg.timeEnd})
             AND (:#{#reg.status} IS NULL OR status = :#{#reg.status})
             AND (:#{#reg.type} IS NULL OR type = :#{#reg.type})
+            order by p.created_at desc 
             """, nativeQuery = true)
         Page<PromotionRespone> getPromotion(@Param("reg") PromotionSearch reg, Pageable pageable);
 
@@ -36,4 +39,12 @@ public interface KMPromotionRepository extends PromotionRepository {
                        from Promotion p 
             """, nativeQuery = true)
     Page<PromotionRespone> getPagePromotion(Pageable pageable);
+
+    @Query("""
+    select p from Promotion p
+    where (p.timeStart > :dateNow and p.status != 0)
+    or (p.timeEnd <= :dateNow and p.status != 2)
+    or ((p.timeStart <= :dateNow and p.timeEnd > :dateNow) and p.status != 1)
+    """)
+    List<Promotion> getAllPromotionWrong(Long dateNow);
 }
