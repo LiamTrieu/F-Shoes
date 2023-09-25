@@ -35,6 +35,7 @@ import Empty from '../../../components/Empty'
 import { Stomp } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
+var stompClient = null
 export default function AdVoucherPage() {
   const [listVoucher, setListVoucher] = useState([])
   const [listVoucherUpdate, setListVoucherUpdate] = useState([])
