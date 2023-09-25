@@ -29,6 +29,8 @@ public class ProductDetail extends PrimaryEntity {
 
     private BigDecimal price;
 
+    private Integer weight;
+
     private Status deleted = Status.HOAT_DONG;
 
     public Integer getDeleted() {

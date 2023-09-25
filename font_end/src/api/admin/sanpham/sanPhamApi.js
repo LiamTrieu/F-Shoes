@@ -1,3 +1,4 @@
+import axios from 'axios'
 import axiosClient from '../../axios'
 
 const sanPhamApi = {
@@ -8,6 +9,22 @@ const sanPhamApi = {
   getList: () => {
     const url = `/product/get-list`
     return axiosClient.get(url)
+  },
+  getListImage: (idColor) => {
+    const url = `/product/get-list-image/${idColor}`
+    return axiosClient.get(url)
+  },
+  uploadImage: (formData, nameFolder) => {
+    const url = `/product/upload-image/${nameFolder}`
+    return axios.post(`http://localhost:8080/api${url}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  },
+  addProuct: (request) => {
+    const url = `/product/add`
+    return axiosClient.post(url, request)
   },
 }
 export default sanPhamApi

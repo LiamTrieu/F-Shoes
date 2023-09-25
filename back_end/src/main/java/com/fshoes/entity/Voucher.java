@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
+@ToString
 @Table(name = "voucher")
 public class Voucher extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_CODE, unique = true)

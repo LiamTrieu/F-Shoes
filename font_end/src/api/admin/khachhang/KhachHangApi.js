@@ -1,17 +1,13 @@
 import axiosClient from '../../axios'
 const khachHangApi = {
-  get: (p) => {
-    const url = `/khach-hang/get-page?p=${p}`
-    return axiosClient.get(url)
-  },
   getOne: (id) => {
     const url = `/khach-hang/get-one/${id}`
     return axiosClient.get(url)
   },
 
-  search: (p, textSearch) => {
-    const url = `/khach-hang/search?p=${p}&textSearch=${textSearch}`
-    return axiosClient.get(url)
+  get: (searchKhachHang) => {
+    const url = `/khach-hang/search`
+    return axiosClient.get(url, { params: searchKhachHang })
   },
 
   addKhachHang: (khachhang) => {

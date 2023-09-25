@@ -50,7 +50,6 @@
 /* Đường kẻ ngăn các các cell */
 .tableCss .MuiTableCell-root {
   border-right: 1px solid white;
-  padding: 4px;
   flex: 1;
   min-width: auto;
   box-sizing: border-box;

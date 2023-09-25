@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.khuyenmai.service.impl;
 
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionRequest;
+import com.fshoes.core.admin.khuyenmai.repository.KMProductPromotionRepository;
 import com.fshoes.core.admin.khuyenmai.service.ProductPromotionService;
 import com.fshoes.entity.ProductPromotion;
 import com.fshoes.repository.ProductPromotionRepository;
@@ -17,6 +18,9 @@ public class ProductPromotionServiceImpl implements ProductPromotionService {
 
     @Autowired
     private ProductPromotionRepository productPromotionRepository;
+
+    @Autowired
+    private KMProductPromotionRepository kmProductPromotionRepository;
     @Override
     public List<ProductPromotion> getAll() {
         return productPromotionRepository.findAll();
@@ -47,5 +51,15 @@ public class ProductPromotionServiceImpl implements ProductPromotionService {
     public Page<ProductPromotion> ProductPromotionPage(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page,pageSize);
         return productPromotionRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<String> getIdProductAndProductDetailByIdPromotion(String idPromotion) {
+        return kmProductPromotionRepository.getIdProductAndProductDetailByIdPromotion(idPromotion);
+    }
+
+    @Override
+    public List<String> getIdProductDetailByIdPromotion(String idPromotion) {
+        return kmProductPromotionRepository.getIdProductDetailByIdPromotion(idPromotion);
     }
 }

@@ -4,7 +4,6 @@ import {
   Button,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Grid,
   Paper,
   Radio,
@@ -12,15 +11,17 @@ import {
   TextField,
   Modal,
   Box,
+  Typography,
 } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
-import { useTheme } from '@emotion/react'
 import { toast } from 'react-toastify'
 import { useZxing } from 'react-zxing'
+import './AdStaffAdd.css'
+import CircularProgress from '@mui/material/CircularProgress'
 
 const styleModal = {
   position: 'absolute',
@@ -34,20 +35,41 @@ const styleModal = {
   p: 4,
 }
 
-export default function AddStaff() {
+const imageContainerStyle = {
+  border: '2px dashed #ddd',
+  borderRadius: '50%',
+  cursor: 'pointer',
+  height: '150px',
+  width: '150px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column',
+  overflow: 'hidden',
+}
+
+const imageStyle = {
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+}
+
+const AddStaff = () => {
   const initStaff = {
     fullName: '',
     email: '',
     phoneNumber: '',
     dateBirth: '',
-    avatar: '',
     citizenId: '',
-    gender: null,
-    password: '',
-    role: 1,
-    status: 0,
+    role: 0,
+    gender: '',
+    avatar: null,
   }
+
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
+  const [image, setImage] = useState(null)
+  const [loading, setLoading] = useState(false) // Thêm state loading
+  const [confirmClicked, setConfirmClicked] = useState(false) // Thêm state để theo dõi xác nhận
 
   const RenderVideo = () => {
     const { ref } = useZxing({
@@ -69,7 +91,6 @@ export default function AddStaff() {
       const gender = qrDataArray[4] === 'Nam'
 
       const dateBirth = dayjs(dateOfBirthRaw, 'DDMMYYYY').format('DD-MM-YYYY')
-      // const dateBirth = dayjs(dateOfBirthRaw.data.dateBirth).format('DD-MM-YYYY')
 
       setStaffAdd({
         ...staffAdd,
@@ -79,10 +100,8 @@ export default function AddStaff() {
         gender: gender,
         email: initStaff.email,
         phoneNumber: initStaff.phoneNumber,
-        password: initStaff.password,
-        avatar: initStaff.password,
+        avatar: initStaff.avatar,
         role: initStaff.role,
-        status: initStaff.status,
       })
       setQrScannerVisible(false)
     }
@@ -91,46 +110,83 @@ export default function AddStaff() {
   const handleOpenQRScanner = () => {
     setQrScannerVisible(true)
   }
+
   const handleCloseQRScanner = () => {
     setQrScannerVisible(false)
   }
 
   const [staffAdd, setStaffAdd] = useState(initStaff)
-  const theme = useTheme()
   const navigate = useNavigate()
 
-  const handleGenderRadioChange = (e) => {
-    setStaffAdd({ ...staffAdd, gender: Boolean(e.target.value) })
-  }
-
   const handleStaffAdd = () => {
-    console.log('staff :', staffAdd)
+    setConfirmClicked(true) // Đánh dấu người dùng đã xác nhận
+
     const title = 'Xác nhận thêm mới nhân viên?'
     const text = ''
-    confirmSatus(title, text, theme).then((result) => {
+    confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
-        staffApi.add(staffAdd).then(() => {
-          toast.success('Thêm mới nhân viên thành công!', {
-            position: toast.POSITION.TOP_RIGHT,
+        setLoading(true) // Bắt đầu hiển thị CircularProgress
+        staffApi
+          .add(staffAdd)
+          .then(() => {
+            toast.success('Thêm mới nhân viên thành công!', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+
+            navigate('/admin/staff')
           })
-          navigate('/admin/staff')
-        })
+          .catch((error) => {
+            toast.error('Thêm khách hàng thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
+          .finally(() => {
+            setLoading(false) // Kết thúc hiển thị CircularProgress
+          })
       } else {
+        // Người dùng không xác nhận
         toast.error('Thêm khách hàng thất bại', {
           position: toast.POSITION.TOP_RIGHT,
         })
       }
     })
   }
+
+  const handleImageChange = (event) => {
+    let file = event.target.files[0]
+    if (file) {
+      setStaffAdd({ ...staffAdd, avatar: file })
+      const reader = new FileReader()
+      reader.onload = () => {
+        setImage(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   return (
-    <div>
+    <div className="nhanvienadd">
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <h2>Nhân viên</h2>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={5}></Grid>
-          <Grid item xs={3}>
+          <Grid item xs={7}>
+            <div
+              onClick={() => {
+                document.getElementById('select-avatar').click()
+              }}
+              style={imageContainerStyle}>
+              {image ? <img src={image} alt="Chọn ảnh" style={imageStyle} /> : 'Chọn ảnh'}
+            </div>
+            <input
+              hidden
+              id="select-avatar"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </Grid>
+          <Grid item xs={2.5}>
             <Button color="cam" variant="contained" fullWidth onClick={handleOpenQRScanner}>
               Quét QR
             </Button>
@@ -141,13 +197,13 @@ export default function AddStaff() {
             <RenderVideo />
           </Box>
         </Modal>
-
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
+            <Typography>Họ Và Tên</Typography>
             <TextField
               id="outlined-basic"
-              label="Họ Và Tên"
+              size="small"
               variant="outlined"
               value={staffAdd?.fullName}
               fullWidth
@@ -155,9 +211,10 @@ export default function AddStaff() {
             />
           </Grid>
           <Grid item xs={5.5}>
+            <Typography>Email</Typography>
             <TextField
               id="outlined-basic"
-              label="Email"
+              size="small"
               variant="outlined"
               fullWidth
               onChange={(e) => setStaffAdd({ ...staffAdd, email: e.target.value })}
@@ -167,19 +224,21 @@ export default function AddStaff() {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
+            <Typography>Số Điện Thoại</Typography>
             <TextField
               id="outlined-basic"
-              label="Số Điện Thoại"
               variant="outlined"
+              size="small"
               fullWidth
               onChange={(e) => setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })}
             />
           </Grid>
           <Grid item xs={5.5}>
+            <Typography>Số CCCD</Typography>
             <TextField
               id="outlined-basic"
-              label="Số CCCD"
               variant="outlined"
+              size="small"
               value={staffAdd?.citizenId}
               fullWidth
               onChange={(e) => setStaffAdd({ ...staffAdd, citizenId: e.target.value })}
@@ -189,12 +248,11 @@ export default function AddStaff() {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={5.5}>
+            <Typography>Ngày sinh</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                format={'DD-MM-YYYY'}
-                label="Ngày Sinh"
-                value={dayjs(staffAdd?.dateBirth, 'DD-MM-YYYY')}
                 sx={{ width: '100%' }}
+                className="small-datepicker"
                 onChange={(e) =>
                   setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
                 }
@@ -202,52 +260,45 @@ export default function AddStaff() {
             </LocalizationProvider>
           </Grid>
           <Grid item xs={5.5}>
-            <TextField
-              id="outlined-basic"
-              label="Mật khẩu"
-              variant="outlined"
-              fullWidth
-              onChange={(e) => setStaffAdd({ ...staffAdd, password: e.target.value })}
-            />
-          </Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
+            <Typography>Giới tính</Typography>
             <FormControl size="small">
-              <FormLabel>Giới tính:</FormLabel>
-              <RadioGroup row value={staffAdd.gender}>
-                <FormControlLabel
-                  name="genderUpdate"
-                  value={true}
-                  control={<Radio />}
-                  label="Nam"
-                  onChange={handleGenderRadioChange}
-                />
-                <FormControlLabel
-                  name="genderUpdate"
-                  value={false}
-                  control={<Radio />}
-                  label="Nữ"
-                  onChange={handleGenderRadioChange}
-                />
+              <RadioGroup
+                row
+                value={staffAdd.gender}
+                onChange={(e) => setStaffAdd({ ...staffAdd, gender: e.target.value })}>
+                <FormControlLabel name="gioiTinh" value="true" control={<Radio />} label="Nam" />
+                <FormControlLabel name="gioiTinh" value="false" control={<Radio />} label="Nữ" />
               </RadioGroup>
             </FormControl>
           </Grid>
         </Grid>
-
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={3}></Grid>
           <Grid item xs={5}></Grid>
           <Grid item xs={3}>
-            <Button
-              onClick={() => handleStaffAdd(staffAdd)}
-              variant="contained"
-              fullWidth
-              color="cam">
-              Thêm Nhân Viên
-            </Button>
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              {confirmClicked && loading && (
+                <div
+                  style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 9999,
+                  }}>
+                  <CircularProgress size={50} />
+                </div>
+              )}
+              <Button
+                onClick={handleStaffAdd}
+                variant="contained"
+                fullWidth
+                color="cam"
+                disabled={loading}>
+                {loading ? 'Đang thêm...' : 'Thêm Nhân Viên'}
+              </Button>
+            </div>
           </Grid>
         </Grid>
         <Grid item xs={0.5}></Grid>
@@ -255,3 +306,5 @@ export default function AddStaff() {
     </div>
   )
 }
+
+export default AddStaff

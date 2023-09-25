@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 public interface StaffRespone extends IsIdentified {
 
+    Integer getStt();
+
     @Value("#{target.full_name}")
     String getfullName();
 
@@ -30,7 +32,7 @@ public interface StaffRespone extends IsIdentified {
     String getCitizenId();
 
     @Value("#{target.role}")
-    String getRole();
+    Integer getRole();
 
     @Value("#{target.status}")
     Integer getStatus();

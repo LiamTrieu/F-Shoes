@@ -1,0 +1,25 @@
+.small-datepicker .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  height: 0.5em;
+  width: 420px;
+}
+.small-datepicker .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
+  line-height: 0.5em;
+  padding-bottom: 10px;
+  padding-top: 2px;
+}
+.MuiStack-root {
+  padding-top: 0px !important;
+}
+.nhanvienadd .MuiButton-root {
+  border-radius: 8px !important;
+  text-transform: none !important;
+  box-shadow: none;
+}
+
+.nhanvienadd .MuiButton-root:active {
+  box-shadow: none;
+}
+
+.nhanvienadd .MuiButton-root:hover {
+  box-shadow: none;
+}

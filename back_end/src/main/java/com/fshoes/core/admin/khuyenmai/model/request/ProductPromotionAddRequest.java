@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.khuyenmai.model.request;
 
+import com.fshoes.core.common.PageableRequest;
 import com.fshoes.entity.Promotion;
 import com.fshoes.util.DateUtil;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ProductPromotionAddRequest {
+public class ProductPromotionAddRequest extends PageableRequest {
 
     private String name;
 

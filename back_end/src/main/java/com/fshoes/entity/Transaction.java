@@ -50,4 +50,20 @@ public class Transaction extends PrimaryEntity {
     public void setStatus(Integer status) {
         this.status = Status.values()[status];
     }
+
+    public Integer getPaymentMethod() {
+        return paymentMethod.ordinal();
+    }
+
+    public void setPaymentMethod(Integer paymentMethod) {
+        this.paymentMethod = PaymentMethod.values()[paymentMethod];
+    }
+
+    public Integer getType() {
+        return type.ordinal();
+    }
+
+    public void setType(Integer type) {
+        this.type = TypeTransaction.values()[type];
+    }
 }

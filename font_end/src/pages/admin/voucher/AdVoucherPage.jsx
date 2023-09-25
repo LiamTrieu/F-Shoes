@@ -1,8 +1,10 @@
 import {
   Button,
   Chip,
+  Collapse,
   Grid,
   IconButton,
+  Input,
   InputAdornment,
   MenuItem,
   Paper,
@@ -18,7 +20,7 @@ import {
   Typography,
 } from '@mui/material'
 import Pagination from '@mui/material/Pagination'
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import voucherApi from '../../../api/admin/voucher/VoucherApi'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
@@ -31,7 +33,107 @@ import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import './voucher.css'
 import '../../../assets/styles/admin.css'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Empty from '../../../components/Empty'
+
+function Row(props) {
+  const { row, searchVoucher, fetchData } = props
+
+  const [open, setOpen] = React.useState(false)
+
+  const handelDeleteVoucher = (idDelete) => {
+    const title = 'Xác nhận hủy voucher?'
+    const text = ''
+    confirmSatus(title, text).then((result) => {
+      if (result.isConfirmed) {
+        voucherApi
+          .deleteVoucher(idDelete)
+          .then(() => {
+            toast.success('Hủy voucher thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            fetchData(searchVoucher)
+          })
+          .catch(() => {
+            toast.error('Hủy voucher thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
+      }
+    })
+  }
+
+  return (
+    <Fragment>
+      <TableRow>
+        <TableCell align="center">
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell align="center">{row.code}</TableCell>
+        <TableCell align="center">{row.name}</TableCell>
+        <TableCell align="center">
+          {row.type === 0 ? (
+            <Chip className="chip-tat-ca" size="small" label="Tất cả" />
+          ) : (
+            <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
+          )}
+        </TableCell>
+        <TableCell align="center">{dayjs(row.startDate).format('DD/MM/YYYY HH:mm')}</TableCell>
+        <TableCell align="center">{dayjs(row.endDate).format('DD/MM/YYYY HH:mm')}</TableCell>
+        <TableCell align="center">
+          {row.status === 2 ? (
+            <Chip className="chip-khong-hoat-dong" size="small" label="Đã kết thúc" />
+          ) : row.status === 1 ? (
+            <Chip
+              className="chip-hoat-dong"
+              size="small"
+              label="Đang diễn ra"
+              onClick={() => handelDeleteVoucher(row.id)}
+            />
+          ) : (
+            <Chip className="chip-sap-hoat-dong" size="small" label="Sắp diễn ra" />
+          )}
+        </TableCell>
+        <TableCell align="center">
+          <Link to={`/admin/voucher/${row.id}/detail`}>
+            <Tooltip title="Xem chi tiết">
+              <IconButton>
+                <TbEyeEdit className="icon-css" />
+              </IconButton>
+            </Tooltip>
+          </Link>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Table sx={{ minWidth: 650 }} size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">Giá trị</TableCell>
+                  <TableCell align="center">Giá trị tối đa</TableCell>
+                  <TableCell align="center">Điều kiện</TableCell>
+                  <TableCell align="center">Số lượng</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow key={row.id}>
+                  <TableCell align="center">{row.value}%</TableCell>
+                  <TableCell align="center">{row.maximumValue} VNĐ</TableCell>
+                  <TableCell align="center">{row.minimumAmount} VNĐ</TableCell>
+                  <TableCell align="center">{row.quantity}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </Fragment>
+  )
+}
 
 export default function AdVoucherPage() {
   const [listVoucher, setListVoucher] = useState([])
@@ -89,28 +191,6 @@ export default function AdVoucherPage() {
     }
   }
 
-  const handelDeleteVoucher = (idDelete) => {
-    const title = 'Xác nhận hủy voucher?'
-    const text = ''
-    confirmSatus(title, text).then((result) => {
-      if (result.isConfirmed) {
-        voucherApi
-          .deleteVoucher(idDelete)
-          .then(() => {
-            toast.success('Hủy voucher thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(searchVoucher)
-          })
-          .catch(() => {
-            toast.error('Hủy voucher thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          })
-      }
-    })
-  }
-
   useEffect(() => {
     fetchData(searchVoucher)
   }, [searchVoucher])
@@ -122,7 +202,7 @@ export default function AdVoucherPage() {
           <Grid item xs={6}>
             <TextField
               className="search-voucher"
-              placeholder="Tìm voucher theo mã hoặc tên"
+              placeholder="Tìm voucher theo mã"
               type="text"
               size="small"
               fullWidth
@@ -150,9 +230,10 @@ export default function AdVoucherPage() {
               </Button>
             </Link>
           </Grid>
+          <Grid item xs={3}></Grid>
         </Grid>
         <Grid container sx={{ mt: 1 }} spacing={2}>
-          <Grid item xs={3} className="dateTime">
+          <Grid item xs={3.5} className="dateTime">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm'}
@@ -173,7 +254,7 @@ export default function AdVoucherPage() {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={3} className="dateTime">
+          <Grid item xs={3.5} className="dateTime">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm'}
@@ -194,8 +275,7 @@ export default function AdVoucherPage() {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
+          <Grid item xs={5}>
             <Stack direction="row" justifyContent="start" alignItems="center" spacing={1}>
               <div className="filter">
                 <b>Kiểu</b>
@@ -232,10 +312,11 @@ export default function AdVoucherPage() {
             <Table className="tableCss" sx={{ mt: 4 }}>
               <TableHead>
                 <TableRow>
+                  <TableCell align="center" width={'5%'}></TableCell>
                   <TableCell align="center" width={'10%'}>
                     Mã
                   </TableCell>
-                  <TableCell align="center" width={'15%'}>
+                  <TableCell align="center" width={'10%'}>
                     Tên
                   </TableCell>
                   <TableCell align="center" width={'10%'}>
@@ -257,46 +338,7 @@ export default function AdVoucherPage() {
               </TableHead>
               <TableBody>
                 {listVoucher.map((row) => (
-                  <TableRow>
-                    <TableCell align="center">{row.code}</TableCell>
-                    <TableCell align="center">{row.name}</TableCell>
-                    <TableCell align="center">
-                      {row.type === 0 ? (
-                        <Chip className="chip-tat-ca" size="small" label="Tất cả" />
-                      ) : (
-                        <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
-                      )}
-                    </TableCell>
-                    <TableCell align="center">
-                      {dayjs(row.startDate).format('DD/MM/YYYY HH:mm')}
-                    </TableCell>
-                    <TableCell align="center">
-                      {dayjs(row.endDate).format('DD/MM/YYYY HH:mm')}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.status === 2 ? (
-                        <Chip className="chip-khong-hoat-dong" size="small" label="Đã kết thúc" />
-                      ) : row.status === 1 ? (
-                        <Chip
-                          className="chip-hoat-dong"
-                          size="small"
-                          label="Đang diễn ra"
-                          onClick={() => handelDeleteVoucher(row.id)}
-                        />
-                      ) : (
-                        <Chip className="chip-sap-hoat-dong" size="small" label="Sắp diễn ra" />
-                      )}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Link to={`/admin/voucher/${row.id}/detail`}>
-                        <Tooltip title="Xem chi tiết">
-                          <IconButton>
-                            <TbEyeEdit style={{ color: '#c56729', fontSize: '30px' }} />
-                          </IconButton>
-                        </Tooltip>
-                      </Link>
-                    </TableCell>
-                  </TableRow>
+                  <Row key={row.id} row={row} searchVoucher={searchVoucher} fetchData={fetchData} />
                 ))}
               </TableBody>
             </Table>

@@ -1,0 +1,13 @@
+.khachhangdetail .MuiButton-root {
+  border-radius: 8px !important;
+  text-transform: none !important;
+  box-shadow: none;
+}
+
+.khachhangdetail .MuiButton-root:active {
+  box-shadow: none;
+}
+
+.khachhangdetail .MuiButton-root:hover {
+  box-shadow: none;
+}
