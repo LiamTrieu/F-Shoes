@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.khuyenmai.controller;
 
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionRequest;
+import com.fshoes.core.admin.khuyenmai.service.ProductPromotionService;
 import com.fshoes.core.admin.khuyenmai.service.impl.ProductPromotionServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,9 @@ public class ProductPromotionController {
 
     @Autowired
 
-    private ProductPromotionServiceImpl productPromotionService;
+    private ProductPromotionService productPromotionService;
+
+
 
     @GetMapping("/get-all")
     public ObjectRespone getAll() {
@@ -44,6 +47,16 @@ public class ProductPromotionController {
     @GetMapping("/page")
     public ObjectRespone pageProductPromotion(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "2") Integer pageSize){
         return new ObjectRespone(productPromotionService.ProductPromotionPage(page,pageSize));
+    }
+
+    @GetMapping("/list-product/{idPromotion}")
+    public ObjectRespone getIdProductAndProductDetailByIdPromotion(@PathVariable String idPromotion){
+        return new ObjectRespone(productPromotionService.getIdProductAndProductDetailByIdPromotion(idPromotion));
+    }
+
+    @GetMapping("/list-product-detail/{idPromotion}")
+    public ObjectRespone getIdProductDetailByIdPromotion(@PathVariable String idPromotion){
+        return new ObjectRespone(productPromotionService.getIdProductDetailByIdPromotion(idPromotion));
     }
 
 

@@ -1,11 +1,17 @@
 package com.fshoes.core.admin.khuyenmai.service;
 
+import com.fshoes.core.admin.khuyenmai.model.request.GetProductDetailByIdProduct;
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionRequest;
+import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionSearch;
 import com.fshoes.core.admin.khuyenmai.model.respone.AddProductPromotionResponse;
+import com.fshoes.core.common.PageReponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface ProductPromotionAddService {
 
-    List<AddProductPromotionResponse> getAll();
+    PageReponse<AddProductPromotionResponse> getAllProductDetail(ProductPromotionSearch req);
+    PageReponse<AddProductPromotionResponse> getAll(ProductPromotionSearch req);
+    PageReponse<AddProductPromotionResponse> getProductDetailByProduct(GetProductDetailByIdProduct req, String id);
 }

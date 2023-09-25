@@ -160,7 +160,9 @@ export default function AdProductPage() {
                     Số lượng
                   </TableCell>
                   <TableCell width={'10%'}>Trạng thái</TableCell>
-                  <TableCell width={'10%'}>Thao tác</TableCell>
+                  <TableCell width={'10%'} align="center">
+                    Thao tác
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -181,7 +183,7 @@ export default function AdProductPage() {
                           size="small"
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
                       </TableCell>
                     </TableRow>

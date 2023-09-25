@@ -1,21 +1,22 @@
 import {
   Box,
   Button,
-  Container,
+  Checkbox,
   Grid,
+  Pagination,
   Paper,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
   useTheme,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
 import Modal from '@mui/material/Modal'
-import { DataGrid } from '@mui/x-data-grid'
 import { useNavigate, useParams } from 'react-router-dom'
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
@@ -38,41 +39,19 @@ const style = {
   p: 4,
 }
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'firstName', headerName: 'First name', width: 130 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 90,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (params) => `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-  },
-]
-
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-]
-
 export default function AdPromotionDetail() {
-  const [age, setAge] = React.useState('')
   const theme = useTheme()
+  const [getProduct, setGetProduct] = useState([])
+  const [selectAllProduct, setSelectAllProduct] = useState(false)
+  const [totalPages, setTotalPages] = useState(0)
+  const [selectedRowsProduct, setSelectedRowsProduct] = useState([])
+  const [filter, setFilter] = useState({ page: 1, size: 5, nameProduct: '' })
+
+  const [selectAll, setSelectAll] = useState(false)
+  const [getProductDetailByProduct, setGetProductDetailByProduct] = useState([])
+  const [selectedRows, setSelectedRows] = useState([])
+  const [totalPagesDetailByProduct, setTotalPagesDetailByProduct] = useState(0)
+  const [filterDetailByProduct, setFilterDetailProduct] = useState({ page: 1, size: 5 })
 
   let navigate = useNavigate()
   const { id } = useParams()
@@ -83,7 +62,73 @@ export default function AdPromotionDetail() {
     // status: 0,
     timeStart: '',
     timeEnd: '',
+    idProductDetail: selectedRows,
   })
+  const handleSelectAllChange = (event) => {
+    const selectedIds = event.target.checked
+      ? getProductDetailByProduct.map((row) => row.productDetail)
+      : []
+    setSelectedRows(selectedIds)
+    setSelectAll(event.target.checked)
+  }
+
+  const handleRowCheckboxChange = (event, ProductDetailId) => {
+    const selectedIndex = selectedRows.indexOf(ProductDetailId)
+    let newSelected = []
+
+    if (selectedIndex === -1) {
+      newSelected = [...selectedRows, ProductDetailId]
+    } else {
+      newSelected = [
+        ...selectedRows.slice(0, selectedIndex),
+        ...selectedRows.slice(selectedIndex + 1),
+      ]
+    }
+
+    setSelectedRows(newSelected)
+    setSelectAll(newSelected.length === getProductDetailByProduct.length)
+  }
+
+  const handleSelectAllChangeProduct = (event) => {
+    const selectedIds = event.target.checked ? getProduct.map((row) => row.id) : []
+    setSelectedRowsProduct(selectedIds)
+    setSelectAllProduct(event.target.checked)
+  }
+
+  const handleRowCheckboxChange1 = (event, ProductId) => {
+    const selectedIndex = selectedRowsProduct.indexOf(ProductId)
+    let newSelected = []
+
+    if (selectedIndex === -1) {
+      newSelected = [...selectedRowsProduct, ProductId]
+    } else {
+      newSelected = [
+        ...selectedRowsProduct.slice(0, selectedIndex),
+        ...selectedRowsProduct.slice(selectedIndex + 1),
+      ]
+    }
+
+    setSelectedRowsProduct(newSelected)
+    setSelectAllProduct(newSelected.length === getProduct.length)
+
+    const selectedProductIds = getProduct
+      .filter((row) => newSelected.includes(row.id))
+      .map((selectedProduct) => selectedProduct.id)
+    if (selectedProductIds.length > 0) {
+      khuyenMaiApi
+        .getAllProductDetailByProduct(filterDetailByProduct, selectedProductIds)
+        .then((response) => {
+          setGetProductDetailByProduct(response.data.data.data)
+          setTotalPagesDetailByProduct(response.data.data.totalPages)
+        })
+    } else {
+      // toast.success('Không có sản phẩm được chọn', {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // })
+    }
+
+    console.log('ID của sản phẩm đã chọn:', selectedProductIds)
+  }
 
   const onSubmit = (e, id) => {
     if (
@@ -125,57 +170,85 @@ export default function AdPromotionDetail() {
       console.log(response.data)
     })
   }
+  const getLisProduct = (id) => {
+    khuyenMaiApi
+      .getProductAndProductDetailById(id)
+      .then((response) => {
+        setSelectedRowsProduct(response.data.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  const getLisProductDetail = (id) => {
+    khuyenMaiApi
+      .getProductDetailById(id)
+      .then((response) => {
+        setSelectedRows(response.data.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
   useEffect(() => {
     detail(id)
   }, [id])
 
-  const handleChange = (event) => {
-    setUpdatePromotion({ ...updatePromotion, type: event.target.value })
-  }
+  useEffect(() => {
+    getLisProduct(id)
+  }, [id])
 
-  const [open, setOpen] = React.useState(false)
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  useEffect(() => {
+    getLisProductDetail(id)
+  }, [id])
+
+  useEffect(() => {
+    setUpdatePromotion({ ...updatePromotion, idProductDetail: selectedRows })
+  }, [updatePromotion, selectedRows])
+
+  useEffect(() => {
+    khuyenMaiApi.getAllProduct(filter).then((response) => {
+      setGetProduct(response.data.data.data)
+      setTotalPages(response.data.data.totalPages)
+    })
+  }, [filter])
   return (
-    <Container>
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
-        <Box sx={{ pt: 4 }}>
-          <Typography sx={{ fontSize: '30px', fontWeight: 1000 }}>Khuyến Mại</Typography>
-          <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
-            <Grid item xs={12} md={6}>
+    <>
+      <div className="promotionUpdate">
+        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%' }}>
+          <Grid container spacing={2} sx={{ pl: 2 }}>
+            <Grid item xs={5.5} sx={{ mt: 0.7 }}>
+              <Typography sx={{ fontSize: '30px', fontWeight: 1000, mb: 2 }}>Khuyến Mại</Typography>
               <TextField
                 id="outlined-basic"
                 variant="outlined"
-                size="large"
+                size="small"
                 sx={{ width: '100%' }}
                 name="name"
                 value={updatePromotion?.name}
                 onChange={(e) => setUpdatePromotion({ ...updatePromotion, name: e.target.value })}
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
+
               <TextField
                 id="outlined-basic"
                 variant="outlined"
-                size="large"
-                sx={{ width: '100%' }}
+                size="small"
+                sx={{ width: '100%', marginTop: '30px' }}
                 name="value"
                 value={updatePromotion?.value}
                 onChange={(e) => setUpdatePromotion({ ...updatePromotion, value: e.target.value })}
               />
-            </Grid>
-          </Grid>
 
-          <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
-            <Grid item xs={12} md={6}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DateTimePicker']}>
                   <DateTimePicker
                     label="từ ngày"
-                    size="large"
+                    size="small"
                     format={'DD-MM-YYYY HH:mm:ss'}
                     sx={{ width: '100%' }}
                     name="timeStart"
+                    className="dateTime "
                     value={dayjs(updatePromotion?.timeStart, 'DD-MM-YYYY HH:mm:ss')}
                     onChange={(e) => {
                       setUpdatePromotion({
@@ -186,16 +259,16 @@ export default function AdPromotionDetail() {
                   />
                 </DemoContainer>
               </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={6}>
+
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DateTimePicker']}>
                   <DateTimePicker
                     label="Đến ngày"
                     format={'DD-MM-YYYY HH:mm:ss'}
-                    size="large"
+                    size="small"
                     sx={{ width: '100%' }}
                     name="timeEnd"
+                    className="dateTime "
                     value={dayjs(updatePromotion?.timeEnd, 'DD-MM-YYYY HH:mm:ss')}
                     onChange={(e) => {
                       setUpdatePromotion({
@@ -206,105 +279,160 @@ export default function AdPromotionDetail() {
                   />
                 </DemoContainer>
               </LocalizationProvider>
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
-            <Grid item xs={6}>
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Quyền sử dụng</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={updatePromotion?.type}
-                    label="Quyền sử dụng"
-                    onChange={handleChange}>
-                    <MenuItem value={false}>Tất cả</MenuItem>
-                    <MenuItem value={true}>Giới hạn</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </Grid>
-
-            <Grid item xs={6}>
               <Button
                 variant="contained"
                 color="success"
-                sx={{ float: 'left' }}
-                onClick={handleOpen}>
-                Chọn
-              </Button>
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                color="success"
-                sx={{ float: 'right' }}
+                sx={{ marginTop: '30px' }}
                 onClick={() => onSubmit(updatePromotion, id)}>
                 Update
               </Button>
             </Grid>
+
+            <Grid item xs={6.5}>
+              <div style={{ height: 400, width: '100%', marginTop: '62px' }}>
+                <Table sx={{ minWidth: '100%' }} aria-label="simple table" className="tableCss">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ width: '8%' }}>
+                        <Checkbox
+                          checked={selectAllProduct}
+                          onChange={handleSelectAllChangeProduct}
+                        />
+                      </TableCell>
+                      <TableCell align="center" sx={{ width: '8%' }}>
+                        STT
+                      </TableCell>
+
+                      <TableCell align="center" sx={{ width: '30%' }}>
+                        Tên sản phẩm
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {getProduct.map((row, index) => (
+                      <TableRow
+                        key={row.id}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        <TableCell>
+                          <Checkbox
+                            key={row.id}
+                            checked={selectedRowsProduct.indexOf(row.id) !== -1}
+                            onChange={(event) => handleRowCheckboxChange1(event, row.id)}
+                          />
+                        </TableCell>
+                        <TableCell align="center" component="th" scope="row">
+                          {index + 1}
+                        </TableCell>
+
+                        <TableCell align="center">{row.name}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: '10px',
+                  }}>
+                  <Pagination
+                    page={filter.page}
+                    color="cam"
+                    onChange={(e, value) => {
+                      e.preventDefault()
+                      setFilter({
+                        ...filter,
+                        page: value,
+                      })
+                    }}
+                    count={totalPages}
+                    variant="outlined"
+                  />
+                </div>
+              </div>
+            </Grid>
           </Grid>
-        </Box>
-      </Paper>
-      <div>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
-          <Box sx={style}>
-            <TextField id="standard-basic" label="Search" variant="standard" />
-            <Stack
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-              spacing={2}
-              sx={{ mt: 3, mb: 3 }}>
-              <Typography>Trạng Thái:</Typography>
-              <TextField
-                sx={{ mt: 2, width: '30%' }}
-                id="outlined-basic"
-                label="Từ ngày"
-                type="date"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-              <TextField
-                sx={{ mt: 2, width: '30%' }}
-                id="outlined-basic"
-                label="Từ ngày"
-                type="date"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Stack>
+
+          <Typography
+            sx={{
+              fontSize: '30px',
+              fontWeight: 600,
+              marginBottom: '20px',
+              marginLeft: '20px',
+              mt: 3,
+            }}>
+            Chi tiết sản phẩm
+          </Typography>
+          <Grid item xs={12}>
             <div style={{ height: 400, width: '100%' }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
-                  },
-                }}
-                pageSizeOptions={[5, 10]}
-                checkboxSelection
-              />
+              <Table sx={{ minWidth: 650 }} aria-label="simple table" className="tableCss">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ width: '8%' }}>
+                      <Checkbox checked={selectAll} onChange={handleSelectAllChange} />
+                    </TableCell>
+                    <TableCell align="center" sx={{ width: '8%' }}>
+                      STT
+                    </TableCell>
+
+                    <TableCell align="center" sx={{ width: '30%' }}>
+                      Tên sản phẩm
+                    </TableCell>
+                    <TableCell align="center" sx={{ width: '30%' }}>
+                      Thể loại
+                    </TableCell>
+                    <TableCell align="center" sx={{ width: '30%' }}>
+                      Thương hiệu
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {getProductDetailByProduct.map((row, index) => (
+                    <TableRow
+                      key={row.productDetail}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell>
+                        <Checkbox
+                          key={row.productDetail}
+                          checked={selectedRows.indexOf(row.productDetail) !== -1}
+                          onChange={(event) => handleRowCheckboxChange(event, row.productDetail)}
+                        />
+                      </TableCell>
+                      <TableCell align="center" component="th" scope="row">
+                        {index + 1}
+                      </TableCell>
+
+                      <TableCell align="center">{row.name}</TableCell>
+                      <TableCell align="center">{row.category}</TableCell>
+                      <TableCell align="center">{row.brand}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '10px',
+                }}>
+                <Pagination
+                  page={filterDetailByProduct.page}
+                  color="cam"
+                  onChange={(e, value) => {
+                    e.preventDefault()
+                    setFilterDetailProduct({
+                      ...filterDetailByProduct,
+                      page: value,
+                    })
+                  }}
+                  count={totalPagesDetailByProduct}
+                  variant="outlined"
+                />
+              </div>
             </div>
-          </Box>
-        </Modal>
+          </Grid>
+        </Paper>
       </div>
-    </Container>
+    </>
   )
 }

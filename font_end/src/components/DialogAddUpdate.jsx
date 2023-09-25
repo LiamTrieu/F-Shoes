@@ -25,7 +25,7 @@ export default function DialogAddUpdate({ children, open, setOpen, title, button
             disableElevation
             variant="contained"
             sx={{ ...spButton }}>
-            Hủy
+            Đóng
           </Button>
           {buttonSubmit}
         </Stack>

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.text.ParseException;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,6 +24,8 @@ public class PromotionRequestAdd extends PageableRequest {
     private Integer value;
 
     private Integer status;
+
+    private List<String> idProductDetail;
 
     public Promotion newPromotion(Promotion promotion) throws ParseException {
         promotion.setName(this.name);

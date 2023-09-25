@@ -24,15 +24,22 @@ import AddIcon from '@mui/icons-material/Add'
 import { Link } from 'react-router-dom'
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
 import dayjs from 'dayjs'
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import SearchIcon from '@mui/icons-material/Search'
 import './home.css'
+import confirmSatus from '../../../components/comfirmSwal'
+import { useTheme } from '@emotion/react'
+import { toast } from 'react-toastify'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function AdPromotionPage() {
+  const theme = useTheme()
   const [listKhuyenMai, setListKhuyenMai] = useState([])
+  const [listKhuyenMaiUpdate, setListKhuyenMaiUpdate] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [filter, setFilter] = useState({
     page: 1,
@@ -40,35 +47,84 @@ export default function AdPromotionPage() {
     name: '',
     timeStart: '',
     timeEnd: '',
-    status: '',
-    type: '',
+    status: null,
+    type: null,
   })
 
-  const handleDelete = (id) => {
-    khuyenMaiApi.deletePromotion(id)
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/promotionUpdates', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        setListKhuyenMaiUpdate(data)
+      }
+    })
   }
 
   useEffect(() => {
+    const updatedKhuyenMai = listKhuyenMai.map((khuyenMai) => {
+      const matchedData = listKhuyenMaiUpdate.find((item) => item.id === khuyenMai.id)
+      if (matchedData) {
+        return {
+          ...khuyenMai,
+          status: matchedData.status,
+        }
+      } else {
+        return khuyenMai
+      }
+    })
+    setListKhuyenMai(updatedKhuyenMai)
+  }, [listKhuyenMaiUpdate, listKhuyenMai])
+
+  const handleDelete = (id) => {
+    if (listKhuyenMai?.status === 2) {
+      toast.success('Khuyến mại đã kết thúc', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    } else {
+      const title = 'Bạn có muốn chuyển trạng thái không'
+      const text = ''
+
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          khuyenMaiApi.deletePromotion(id).then(() => {
+            fecthData()
+            toast.success('Chuyển trạng thái thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
+        }
+      })
+    }
+  }
+
+  useEffect(() => {
+    fecthData(filter)
+  }, [filter])
+
+  const fecthData = (filter) => {
     khuyenMaiApi.getAllPromotion(filter).then((response) => {
       setListKhuyenMai(response.data.data)
       setTotalPages(response.data.totalPages)
 
       console.log(filter)
     })
-  }, [filter])
-
-  // const loadData = (filter) => {
-  //   khuyenMaiApi.getAllPromotion(filter).then((response) => {
-  //     setListKhuyenMai(response.data.data)
-  //     setTotalPages(response.data.totalPages)
-  //   })
-  //   console.log(filter)
-  // }
+  }
 
   return (
     <>
       <div className="promotion">
-        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+        <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
           <Box sx={{ width: '100%' }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <TextField
@@ -114,14 +170,20 @@ export default function AdPromotionPage() {
                   <DateTimePicker
                     className="dateTime"
                     format="DD/MM/YYYY HH:mm:ss"
-                    value={dayjs(filter?.timeStart)}
+                    // value={dayjs(filter?.timeStart, 'DD/MM/YYYY HH:mm:ss')}
                     onChange={(e) =>
                       setFilter({
                         ...filter,
                         timeStart: dayjs(e).toDate().getTime(),
                       })
                     }
-                    label="Ngày bắt đầu"
+                    slotProps={{
+                      actionBar: {
+                        actions: ['clear'],
+                        onClick: () => setFilter({ ...filter, timeStart: '' }),
+                      },
+                    }}
+                    // label="Ngày bắt đầu"
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -129,43 +191,34 @@ export default function AdPromotionPage() {
                 <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
                   <DateTimePicker
                     className="dateTime"
-                    format="DD/MM/YYYY HH:mm:ss"
-                    value={dayjs(filter?.timeEnd)}
+                    format={'DD/MM/YYYY HH:mm:ss'}
+                    // value={dayjs(filter?.timeEnd, 'DD/MM/YYYY HH:mm:ss')}
                     onChange={(e) =>
                       setFilter({
                         ...filter,
                         timeEnd: dayjs(e).toDate().getTime(),
                       })
                     }
-                    label="Ngày kết thúc"
+                    slotProps={{
+                      actionBar: {
+                        actions: ['clear'],
+                        onClick: () => setFilter({ ...filter, timeEnd: '' }),
+                      },
+                    }}
+                    // label="Ngày kết thúc"
                   />
                 </DemoContainer>
               </LocalizationProvider>
-              <div className="filter">
-                <b>Quyền: </b>
-                <Select
-                  displayEmpty
-                  size="small"
-                  value={''}
-                  onChange={(e) => {
-                    setFilter({ ...filter, type: e.target.value })
-                  }}>
-                  <MenuItem value={''}>Quyền</MenuItem>
-                  <MenuItem value={0}>Tất cả</MenuItem>
-                  <MenuItem value={1}>Giới hạn</MenuItem>
-                  <MenuItem></MenuItem>
-                </Select>
-              </div>
               <div className="filter">
                 <b>Trạng Thái: </b>
                 <Select
                   displayEmpty
                   size="small"
-                  value={''}
+                  value={filter.status}
                   onChange={(e) => {
                     setFilter({ ...filter, status: e.target.value })
                   }}>
-                  <MenuItem value={''}>Trạng thái</MenuItem>
+                  <MenuItem value={null}>Trạng thái</MenuItem>
                   <MenuItem value={0}>Sắp diễn ra</MenuItem>
                   <MenuItem value={1}>Đang diễn ra</MenuItem>
                   <MenuItem value={2}>Đã kết thúc</MenuItem>
@@ -173,7 +226,7 @@ export default function AdPromotionPage() {
                 </Select>
               </div>
 
-              <div className="filter">
+              {/* <div className="filter">
                 <b>Giá trị: </b>
                 <Select displayEmpty size="small" value={''}>
                   <MenuItem value={''}>Giá trị</MenuItem>
@@ -181,7 +234,7 @@ export default function AdPromotionPage() {
                   <MenuItem value={9}>Giảm dần</MenuItem>
                   <MenuItem></MenuItem>
                 </Select>
-              </div>
+              </div> */}
             </Stack>
           </Box>
         </Paper>
@@ -196,9 +249,6 @@ export default function AdPromotionPage() {
                 <TableCell align="center">Tên Khuyến Mại</TableCell>
                 <TableCell align="center" width={'6%'}>
                   Giá trị
-                </TableCell>
-                <TableCell align="center" width={'10%'}>
-                  Quyền
                 </TableCell>
                 <TableCell align="center" width={'13%'}>
                   Trạng thái
@@ -224,16 +274,8 @@ export default function AdPromotionPage() {
                   <TableCell align="center">{promotion.name}</TableCell>
                   <TableCell align="center">{promotion.value}%</TableCell>
                   <TableCell align="center">
-                    {promotion.type}
-
                     <Chip
-                      className={promotion.type === false ? 'chip-tat-ca ' : 'chip-gioi-han'}
-                      size="small"
-                      label={promotion.type === false ? 'Tất cả' : 'Giới hạn'}
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Chip
+                      onClick={() => handleDelete(promotion.id)}
                       className={
                         promotion.status === 0
                           ? 'chip-sap-hoat-dong'
@@ -264,9 +306,6 @@ export default function AdPromotionPage() {
                         <TbEyeEdit />
                       </IconButton>
                     </Link>
-                    <IconButton onClick={() => handleDelete(promotion.id)}>
-                      <RestoreFromTrashIcon sx={{ color: '#FF0000' }} />
-                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}

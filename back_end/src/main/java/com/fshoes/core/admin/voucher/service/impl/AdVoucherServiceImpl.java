@@ -153,7 +153,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
         return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
 
-//    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void cornJobCheckVoucher() {
         boolean flag = true;
