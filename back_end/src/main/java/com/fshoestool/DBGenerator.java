@@ -105,19 +105,19 @@ public class DBGenerator implements CommandLineRunner {
         //Promotion
 
         //Staff
-        Staff staff1 = Staff.builder().fullName("Lê Thị A").dateBirth(System.currentTimeMillis()).CitizenId("1234567890123456").phoneNumber("0123456789").email("staff1@example.com").gender(true).password("password1").avatar(null).role(0).status(Status.HOAT_DONG).build();
+        Staff staff1 = Staff.builder().fullName("Lê Thị A").dateBirth(System.currentTimeMillis()).CitizenId("1234567890123456").phoneNumber("0123456789").email("staff1@example.com").gender(true).password("password1").avatar("https://shorturl.at/CDP27").role(0).status(Status.HOAT_DONG).build();
         staff1.setId(staffRepository.save(staff1).getId());
 
-        Staff staff2 = Staff.builder().fullName("Lê Thị B").dateBirth(System.currentTimeMillis()).CitizenId("2345678901234567").phoneNumber("0123456788").email("staff2@example.com").gender(true).password("password2").avatar(null).role(0).status(Status.HOAT_DONG).build();
+        Staff staff2 = Staff.builder().fullName("Lê Thị B").dateBirth(System.currentTimeMillis()).CitizenId("2345678901234567").phoneNumber("0123456788").email("staff2@example.com").gender(true).password("password2").avatar("https://shorturl.at/eqIR9").role(0).status(Status.HOAT_DONG).build();
         staff2.setId(staffRepository.save(staff2).getId());
 
-        Staff staff3 = Staff.builder().fullName("Lê Thị C").dateBirth(System.currentTimeMillis()).CitizenId("3456789012345678").phoneNumber("0123456787").email("staff3@example.com").gender(true).password("password3").avatar(null).role(0).status(Status.HOAT_DONG).build();
+        Staff staff3 = Staff.builder().fullName("Lê Thị C").dateBirth(System.currentTimeMillis()).CitizenId("3456789012345678").phoneNumber("0123456787").email("staff3@example.com").gender(true).password("password3").avatar("https://shorturl.at/juFOV").role(0).status(Status.HOAT_DONG).build();
         staff3.setId(staffRepository.save(staff3).getId());
 
-        Staff staff4 = Staff.builder().fullName("Lê Thị D").dateBirth(System.currentTimeMillis()).CitizenId("4567890123456789").phoneNumber("0123456786").email("staff4@example.com").gender(true).password("password4").avatar(null).role(0).status(Status.HOAT_DONG).build();
+        Staff staff4 = Staff.builder().fullName("Lê Thị D").dateBirth(System.currentTimeMillis()).CitizenId("4567890123456789").phoneNumber("0123456786").email("staff4@example.com").gender(true).password("password4").avatar("https://shorturl.at/pCFQU").role(0).status(Status.HOAT_DONG).build();
         staff4.setId(staffRepository.save(staff4).getId());
 
-        Staff staff5 = Staff.builder().fullName("Lê Thị E").dateBirth(System.currentTimeMillis()).CitizenId("5678901234567890").phoneNumber("0123456785").email("staff5@example.com").gender(true).password("password5").avatar(null).role(0).status(Status.HOAT_DONG).build();
+        Staff staff5 = Staff.builder().fullName("Lê Thị E").dateBirth(System.currentTimeMillis()).CitizenId("5678901234567890").phoneNumber("0123456785").email("staff5@example.com").gender(true).password("password5").avatar("https://shorturl.at/rAGJV").role(0).status(Status.HOAT_DONG).build();
         staff5.setId(staffRepository.save(staff5).getId());
         //Staff
 

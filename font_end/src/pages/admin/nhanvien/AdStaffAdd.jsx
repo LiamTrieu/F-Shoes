@@ -223,16 +223,7 @@ const AddStaff = () => {
         </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
-            <Typography>Số Điện Thoại</Typography>
-            <TextField
-              id="outlined-basic"
-              variant="outlined"
-              size="small"
-              fullWidth
-              onChange={(e) => setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })}
-            />
-          </Grid>
+
           <Grid item xs={5.5}>
             <Typography>Số CCCD</Typography>
             <TextField
@@ -244,21 +235,20 @@ const AddStaff = () => {
               onChange={(e) => setStaffAdd({ ...staffAdd, citizenId: e.target.value })}
             />
           </Grid>
+          <Grid item xs={5.5}>
+            <Typography>Số Điện Thoại</Typography>
+            <TextField
+              id="outlined-basic"
+              variant="outlined"
+              size="small"
+              fullWidth
+              onChange={(e) => setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })}
+            />
+          </Grid>
         </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
-            <Typography>Ngày sinh</Typography>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                sx={{ width: '100%' }}
-                className="small-datepicker"
-                onChange={(e) =>
-                  setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
-                }
-              />
-            </LocalizationProvider>
-          </Grid>
+
           <Grid item xs={5.5}>
             <Typography>Giới tính</Typography>
             <FormControl size="small">
@@ -270,6 +260,18 @@ const AddStaff = () => {
                 <FormControlLabel name="gioiTinh" value="false" control={<Radio />} label="Nữ" />
               </RadioGroup>
             </FormControl>
+          </Grid>
+          <Grid item xs={5.5}>
+            <Typography>Ngày sinh</Typography>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                sx={{ width: '100%' }}
+                className="small-datepicker"
+                onChange={(e) =>
+                  setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
+                }
+              />
+            </LocalizationProvider>
           </Grid>
         </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
