@@ -21,4 +21,10 @@ public interface HDTransactionRepository extends TransactionRepository {
             """, nativeQuery = true)
     List<HDTransactionResponse> getTransactionByBillId(@Param("idBill") String idBill);
 
+    @Query(value = """
+            SELECT COUNT(t.id)
+            FROM datn_website_fshoes.transaction t where id_bill = :idBill
+            """, nativeQuery = true)
+    Integer countTransactionByBill(@Param("idBill") String idBill);
+
 }
