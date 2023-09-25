@@ -32,5 +32,17 @@ public interface AdProductRepository extends ProductRepository {
                 """, nativeQuery = true)
     Page<ProductResponse> getAllProduct(ProductFilterRequest filter, Pageable pageable);
 
-    List<Product> findAllByDeleted(Status status);
+    @Query(value = """
+            select p.id, p.name, c.name as category, c.id as categoryId, b.id as brandId,
+                b.name as brand, p.deleted as status, MAX(pd.description) as description
+                from product p
+                join product_detail pd
+                on p.id = pd.id_product
+                join category c on pd.id_category = c.id
+                join brand b on pd.id_brand = b.id
+                where p.deleted = 0
+                group by p.name, c.name, b.name, p.deleted,p.id, p.created_at, c.id, b.id
+                order by p.created_at desc
+                """, nativeQuery = true)
+    List<ProductResponse> getListProduct();
 }

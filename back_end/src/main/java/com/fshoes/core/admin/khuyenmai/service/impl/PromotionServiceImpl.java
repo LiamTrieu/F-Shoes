@@ -2,17 +2,10 @@ package com.fshoes.core.admin.khuyenmai.service.impl;
 
 import com.fshoes.core.admin.khuyenmai.model.request.AddProductRequest;
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionAddRequest;
-import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionRequest;
-import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequestAdd;
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionSearch;
-import com.fshoes.core.admin.khuyenmai.model.respone.AddProductPromotionResponse;
 import com.fshoes.core.admin.khuyenmai.model.respone.PromotionRespone;
 import com.fshoes.core.admin.khuyenmai.repository.KMPromotionRepository;
-import com.fshoes.core.admin.khuyenmai.repository.ProductPromotionAddRepository;
 import com.fshoes.core.admin.khuyenmai.service.PromotionService;
-import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
-import com.fshoes.core.common.PageReponse;
-import com.fshoes.entity.Product;
 import com.fshoes.entity.ProductDetail;
 import com.fshoes.entity.ProductPromotion;
 import com.fshoes.entity.Promotion;
@@ -23,16 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PromotionServiceImpl implements PromotionService {
@@ -49,7 +41,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void cronJobCheckPromotion(){
         boolean flag = true;

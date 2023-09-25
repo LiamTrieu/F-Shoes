@@ -12,7 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,6 +25,8 @@ public class ProductDetailRequest {
     private String idBrand;
 
     private String idSole;
+
+    private String description;
 
     private String idMaterial;
 
@@ -41,11 +42,11 @@ public class ProductDetailRequest {
 
     private String amount;
 
-    private Integer indexDefault = -1;
+    private String weight;
 
-    private List<String> idImage;
+    private List<String> listImage;
 
-    private List<MultipartFile> images;
+
 
     public ProductDetail tranDetail(ProductDetail productDetail){
         Brand brand = new Brand();
@@ -76,21 +77,14 @@ public class ProductDetailRequest {
         color.setId(this.idColor);
         productDetail.setColor(color);
 
-        productDetail.setCode(this.genCode());
+        productDetail.setDescription(description);
+
         productDetail.setPrice(BigDecimal.valueOf(Long.parseLong(this.price)));
+
+        productDetail.setWeight(Integer.parseInt(this.weight));
+
         productDetail.setAmount(Integer.valueOf(this.amount));
         return productDetail;
     }
 
-
-    public String genCode(){
-        return new StringBuffer()
-                .append(idProduct)
-                .append(idBrand)
-                .append(idColor)
-                .append(idMaterial)
-                .append(idSole)
-                .append(idCategory)
-                .toString();
-    }
 }

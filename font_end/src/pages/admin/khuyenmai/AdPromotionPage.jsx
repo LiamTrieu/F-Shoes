@@ -39,6 +39,7 @@ var stompClient = null
 export default function AdPromotionPage() {
   const theme = useTheme()
   const [listKhuyenMai, setListKhuyenMai] = useState([])
+  const [listKhuyenMaiUpdate, setListKhuyenMaiUpdate] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [filter, setFilter] = useState({
     page: 1,
@@ -54,7 +55,36 @@ export default function AdPromotionPage() {
     const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
     stompClient = Stomp.over(socket)
     stompClient.debug = () => {}
-  })
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/promotionUpdates', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        setListKhuyenMaiUpdate(data)
+      }
+    })
+  }
+
+  useEffect(() => {
+    const updatedKhuyenMai = listKhuyenMai.map((khuyenMai) => {
+      const matchedData = listKhuyenMaiUpdate.find((item) => item.id === khuyenMai.id)
+      if (matchedData) {
+        return {
+          ...khuyenMai,
+          status: matchedData.status,
+        }
+      } else {
+        return khuyenMai
+      }
+    })
+    setListKhuyenMai(updatedKhuyenMai)
+  }, [listKhuyenMaiUpdate, listKhuyenMai])
 
   const handleDelete = (id) => {
     if (listKhuyenMai?.status === 2) {
