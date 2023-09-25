@@ -60,7 +60,7 @@ export default function AdminMenu() {
             primary="Quản lý đơn hàng"
           />
         </ListItemButton>
-        <ListItemButton className="mt-3">
+        <ListItemButton className="mt-3" component={Link} to="/admin/sell">
           <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
             <Box component={CiMoneyBill} sx={{ fontSize: '25px' }} />
           </ListItemIcon>
@@ -160,7 +160,7 @@ export default function AdminMenu() {
           <ListItemText
             sx={{ m: 0, p: 0 }}
             primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
-            primary="Khuyến mãi"
+            primary="Khuyến mại"
           />
         </ListItemButton>
         <ListItemButton className="mt-3" sx={{ mb: 0 }} onClick={handleClickOpenMenuAccount}>
