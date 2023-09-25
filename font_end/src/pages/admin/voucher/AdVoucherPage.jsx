@@ -4,7 +4,6 @@ import {
   Collapse,
   Grid,
   IconButton,
-  Input,
   InputAdornment,
   MenuItem,
   Paper,
@@ -36,6 +35,8 @@ import '../../../assets/styles/admin.css'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Empty from '../../../components/Empty'
+import { Stomp } from '@stomp/stompjs'
+import SockJS from 'sockjs-client'
 
 function Row(props) {
   const { row, searchVoucher, fetchData } = props
@@ -135,8 +136,10 @@ function Row(props) {
   )
 }
 
+var stompClient = null
 export default function AdVoucherPage() {
   const [listVoucher, setListVoucher] = useState([])
+  const [listVoucherUpdate, setListVoucherUpdate] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [dataFetched, setDataFetched] = useState(false)
   const [searchVoucher, setSearchVoucher] = useState({
@@ -147,6 +150,51 @@ export default function AdVoucherPage() {
     statusSearch: '',
     page: 1,
   })
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
+
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/voucherUpdates', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        setListVoucherUpdate(data)
+      }
+    })
+  }
+
+  useEffect(() => {
+    const updatedVouchers = listVoucher.map((voucher) => {
+      const matchedData = listVoucherUpdate.find((item) => item.id === voucher.id)
+      if (matchedData) {
+        return {
+          ...voucher,
+          code: matchedData.code,
+          name: matchedData.name,
+          value: matchedData.value,
+          maximumValue: matchedData.maximumValue,
+          type: matchedData.type,
+          minimumAmount: matchedData.minimumAmount,
+          quantity: matchedData.quantity,
+          startDate: matchedData.startDate,
+          endDate: matchedData.endDate,
+          status: matchedData.status,
+        }
+      } else {
+        return voucher
+      }
+    })
+    setListVoucher(updatedVouchers)
+  }, [listVoucher, listVoucherUpdate])
 
   const handelOnchangePage = (page) => {
     setSearchVoucher({ ...searchVoucher, page: page })

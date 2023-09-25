@@ -2,11 +2,15 @@ import {
   Autocomplete,
   Box,
   Button,
+  FormControl,
+  FormControlLabel,
   Grid,
   IconButton,
   Modal,
   Pagination,
   Paper,
+  Radio,
+  RadioGroup,
   TextField,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
@@ -31,6 +35,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Toast from '../../../components/Toast'
 import './AdCustomerAdd.css'
+import './AdCustomerDetail.css'
 import StarBorderPurple500SharpIcon from '@mui/icons-material/StarBorderPurple500Sharp'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 const style = {
@@ -61,6 +66,7 @@ export default function AdCustomerDetail() {
     email: '',
     phoneNumber: '',
     dateBirth: null,
+    gender: '',
   })
 
   // Nạp dữ liệu khách hàng khi thành phần được tạo ra (hoặc khi tham số id thay đổi)
@@ -92,6 +98,7 @@ export default function AdCustomerDetail() {
 
   const loadData = (id) => {
     khachHangApi.getOne(id).then((response) => {
+      console.log(response.data.data)
       const formattedBirthDate = dayjs(response.data.data.dateBirth).format('DD-MM-YYYY')
       // Khởi tạo trạng thái khách hàng khi tải dữ liệu
       setKhachHang({ ...response.data.data, dateBirth: formattedBirthDate })
@@ -117,7 +124,8 @@ export default function AdCustomerDetail() {
       fieldName === 'fullName' ||
       fieldName === 'email' ||
       fieldName === 'phoneNumber' ||
-      fieldName === 'dateBirth'
+      fieldName === 'dateBirth' ||
+      fieldName === 'gender' // Thêm trường giới tính vào đây
     ) {
       updatedKhachHang[fieldName] = fieldValue
     }
@@ -361,7 +369,7 @@ export default function AdCustomerDetail() {
     })
   }
   return (
-    <div>
+    <div className="khachhangdetail">
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%' }}>
         <Toast />
         <Box>
@@ -426,6 +434,19 @@ export default function AdCustomerDetail() {
                     />
                   </DemoContainer>
                 </LocalizationProvider>
+              </Grid>
+              <Grid item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
+                <Typography>Giới tính</Typography>
+                <FormControl component="fieldset">
+                  <RadioGroup
+                    row
+                    name="gender"
+                    value={khachHang.gender}
+                    onChange={(e) => updateKhachHang(e)}>
+                    <FormControlLabel value="true" control={<Radio />} label="Nam" />
+                    <FormControlLabel value="false" control={<Radio />} label="Nữ" />
+                  </RadioGroup>
+                </FormControl>
               </Grid>
               <Grid item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
                 <Button

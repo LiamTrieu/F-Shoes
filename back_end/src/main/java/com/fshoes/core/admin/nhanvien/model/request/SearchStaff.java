@@ -7,8 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SearchStaff extends PageableRequest {
-    private Integer searchMa;
 
     private String searchTen;
+
+    private Boolean genderSearch;
+
+    private Integer statusSearch;
+
+    private Integer roleSearch;
 
 }

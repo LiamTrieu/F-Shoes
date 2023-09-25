@@ -34,6 +34,16 @@
   display: flex;
   flex-direction: column-reverse; /* Đảm bảo mũi tên nằm bên trái và các dòng text xuống dòng */
 }
+
+.khachhang .filter .MuiSelect-select {
+  padding-left: 8px;
+  color: #fc7c27;
+  font-weight: 500;
+}
+
+.khachhang .filter fieldset {
+  border: none !important;
+}
 /* .MuiButtonBase-root
   MuiAccordionSummary-root
   MuiAccordionSummary-gutters
@@ -41,3 +51,20 @@
   css-sh22l5-MuiButtonBase-root-MuiAccordionSummary-root {
   background-color: gray;
 } */
+
+.khachhang .MuiButton-root {
+  border-radius: 8px !important;
+  text-transform: none !important;
+  box-shadow: none;
+}
+
+.khachhang .MuiButton-root:active {
+  box-shadow: none;
+}
+
+.khachhang .MuiButton-root:hover {
+  box-shadow: none;
+}
+.khachhang .search-field .MuiInputBase-root:hover fieldset {
+  border-color: #f2741f !important;
+}
