@@ -258,7 +258,7 @@ export default function AdCustomerAdd() {
           </Grid>
 
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 2 }}>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={3.5}>
               <Typography>Ngày sinh</Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
@@ -272,16 +272,14 @@ export default function AdCustomerAdd() {
                 </DemoContainer>
               </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} md={0.5}></Grid>
             <Grid item xs={12} md={2.5}>
               <FormControl size="small">
                 <Typography>Giới tính</Typography>
                 <RadioGroup
                   row
-                  value={khachHang.gender ? 'true' : 'false'}
+                  // value={khachHang.gender ? 'true' : 'false'}
                   onChange={(e) => {
-                    const isNam = e.target.value === 'true'
-                    setKhachHang({ ...khachHang, gender: isNam })
+                    setKhachHang({ ...khachHang, gender: e.target.value })
                   }}>
                   <FormControlLabel
                     name="genderUpdate"
