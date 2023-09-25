@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Checkbox,
   FormControl,
@@ -7,7 +6,6 @@ import {
   FormLabel,
   Grid,
   InputAdornment,
-  Modal,
   Pagination,
   Paper,
   Radio,
@@ -31,12 +29,14 @@ import { useTheme } from '@emotion/react'
 import '../../../assets/styles/admin.css'
 import './voucher.css'
 import Empty from '../../../components/Empty'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+
+const listBreadcrumbs = [{ name: 'Khuyến mãi', link: '/admin/voucher' }]
 
 export default function AdVoucherAdd() {
   const theme = useTheme()
   const navigate = useNavigate()
   const [isSelectVisible, setIsSelectVisible] = useState(false)
-  const [openCustomer, setOpenCustomer] = useState(false)
   const [listCustomer, setListCustomer] = useState([])
   const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
@@ -133,114 +133,101 @@ export default function AdVoucherAdd() {
 
   return (
     <div className="voucher-add">
-      <Paper elevation={3}>
-        <Grid container spacing={2}>
-          <Grid item xs={0.1}></Grid>
-          <Grid item xs={11.8}>
-            <h1>Thêm mới Voucher</h1>
-          </Grid>
-          <Grid item xs={0.1}></Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.1}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Mã voucher"
-              type="text"
-              size="small"
-              fullWidth
-              onChange={(e) => setVoucherAdd({ ...voucherAdd, code: e.target.value })}
-            />
-          </Grid>
-          <Grid item xs={0.6}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Tên voucher"
-              type="text"
-              size="small"
-              fullWidth
-              onChange={(e) => setVoucherAdd({ ...voucherAdd, name: e.target.value })}
-            />
-          </Grid>
-          <Grid item xs={0.3}></Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.1}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Giá trị"
-              type="number"
-              size="small"
-              fullWidth
-              onChange={(e) => setVoucherAdd({ ...voucherAdd, value: Number(e.target.value) })}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                inputProps: { min: 0, max: 100 },
-              }}
-            />
-          </Grid>
-          <Grid item xs={0.6}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Giá trị tối đa"
-              type="number"
-              size="small"
-              fullWidth
-              onChange={(e) =>
-                setVoucherAdd({
-                  ...voucherAdd,
-                  maximumValue: Number(e.target.value),
-                })
-              }
-              InputProps={{
-                endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-              }}
-            />
-          </Grid>
-          <Grid item xs={0.3}></Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.1}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Số lượng"
-              type="number"
-              variant="outlined"
-              size="small"
-              fullWidth
-              onChange={(e) =>
-                setVoucherAdd({
-                  ...voucherAdd,
-                  quantity: Number(e.target.value),
-                })
-              }
-            />
-          </Grid>
-          <Grid item xs={0.6}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Điều kiện"
-              type="number"
-              size="small"
-              fullWidth
-              onChange={(e) =>
-                setVoucherAdd({
-                  ...voucherAdd,
-                  minimumAmount: Number(e.target.value),
-                })
-              }
-              InputProps={{
-                endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-              }}
-            />
-          </Grid>
-          <Grid item xs={0.3}></Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.1}></Grid>
-          <Grid item xs={5.5}>
+      <BreadcrumbsCustom nameHere={'Thêm khuyến mãi'} listLink={listBreadcrumbs} />
+      <Paper sx={{ p: 2 }}>
+        <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
+          <Grid item xs={4}>
+            <div>
+              <TextField
+                label="Mã voucher"
+                type="text"
+                size="small"
+                fullWidth
+                onChange={(e) => setVoucherAdd({ ...voucherAdd, code: e.target.value })}
+                sx={{ mb: 2 }}
+              />
+            </div>
+            {/* -------------------------------------------------------------------------------------------------------- */}
+            <div>
+              <TextField
+                label="Tên voucher"
+                type="text"
+                size="small"
+                fullWidth
+                onChange={(e) => setVoucherAdd({ ...voucherAdd, name: e.target.value })}
+                sx={{ mb: 2 }}
+              />
+            </div>
+            {/* -------------------------------------------------------------------------------------------------------- */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+              <TextField
+                label="Giá trị"
+                type="number"
+                size="small"
+                fullWidth
+                onChange={(e) => setVoucherAdd({ ...voucherAdd, value: Number(e.target.value) })}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                  inputProps: { min: 0, max: 100 },
+                }}
+                sx={{ marginRight: '8px' }}
+              />
+              {/* -------------------------------------------------------------------------------------------------------- */}
+              <TextField
+                label="Giá trị tối đa"
+                type="number"
+                size="small"
+                fullWidth
+                onChange={(e) =>
+                  setVoucherAdd({
+                    ...voucherAdd,
+                    maximumValue: Number(e.target.value),
+                  })
+                }
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                }}
+                sx={{ marginLeft: '8px' }}
+              />
+            </div>
+            {/* -------------------------------------------------------------------------------------------------------- */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+              <TextField
+                label="Số lượng"
+                type="number"
+                variant="outlined"
+                size="small"
+                fullWidth
+                onChange={(e) =>
+                  setVoucherAdd({
+                    ...voucherAdd,
+                    quantity: Number(e.target.value),
+                  })
+                }
+                sx={{ marginRight: '8px' }}
+              />
+              {/* -------------------------------------------------------------------------------------------------------- */}
+              <TextField
+                label="Điều kiện"
+                type="number"
+                size="small"
+                fullWidth
+                onChange={(e) =>
+                  setVoucherAdd({
+                    ...voucherAdd,
+                    minimumAmount: Number(e.target.value),
+                  })
+                }
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                }}
+                sx={{ marginLeft: '8px' }}
+              />
+            </div>
+            {/* -------------------------------------------------------------------------------------------------------- */}
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
+                className="dateTime"
                 format={'DD-MM-YYYY HH:mm:ss'}
                 onChange={(e) =>
                   setVoucherAdd({
@@ -249,14 +236,13 @@ export default function AdVoucherAdd() {
                   })
                 }
                 label="Từ ngày"
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', mb: 2 }}
               />
             </LocalizationProvider>
-          </Grid>
-          <Grid item xs={0.6}></Grid>
-          <Grid item xs={5.5}>
+            {/* -------------------------------------------------------------------------------------------------------- */}
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
+                className="dateTime"
                 format={'DD-MM-YYYY HH:mm:ss'}
                 onChange={(e) =>
                   setVoucherAdd({
@@ -265,151 +251,114 @@ export default function AdVoucherAdd() {
                   })
                 }
                 label="Đến ngày"
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', mb: 2 }}
               />
             </LocalizationProvider>
-          </Grid>
-          <Grid item xs={0.3}></Grid>
-        </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={0.1}></Grid>
-          <Grid item xs={3}>
-            <FormControl size="small">
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
               <FormLabel>Kiểu</FormLabel>
-              <RadioGroup row>
-                <FormControlLabel
-                  name="typeAdd"
-                  value={0}
-                  control={<Radio />}
-                  label="Tất cả"
-                  onClick={(e) => {
-                    setIsSelectVisible(false)
-                    setVoucherAdd({ ...voucherAdd, type: 0 })
-                  }}
-                  checked={isSelectVisible === false}
-                />
-                <FormControlLabel
-                  name="typeAdd"
-                  value={1}
-                  control={<Radio />}
-                  label="Cá nhân"
-                  onClick={() => {
-                    setIsSelectVisible(true)
-                    setVoucherAdd({ ...voucherAdd, type: 1 })
-                    setSelectedCustomerIds([])
-                    setSelectAll(false)
-                  }}
-                  checked={isSelectVisible === true}
-                />
-              </RadioGroup>
-            </FormControl>
+              <FormControl size="small" sx={{ flex: 1, ml: 2 }}>
+                <RadioGroup row>
+                  <FormControlLabel
+                    name="typeAdd"
+                    value={0}
+                    control={<Radio />}
+                    label="Tất cả"
+                    onClick={(e) => {
+                      setIsSelectVisible(false)
+                      setVoucherAdd({ ...voucherAdd, type: 0 })
+                    }}
+                    checked={isSelectVisible === false}
+                  />
+                  <FormControlLabel
+                    name="typeAdd"
+                    value={1}
+                    control={<Radio />}
+                    label="Cá nhân"
+                    onClick={() => {
+                      setIsSelectVisible(true)
+                      setVoucherAdd({ ...voucherAdd, type: 1 })
+                      setSelectedCustomerIds([])
+                      setSelectAll(false)
+                    }}
+                    checked={isSelectVisible === true}
+                  />
+                </RadioGroup>
+              </FormControl>
+            </div>
           </Grid>
-          <Grid item xs={2}>
-            {isSelectVisible && (
-              <Button
-                onClick={() => {
-                  setOpenCustomer(true)
-                }}
-                sx={{ width: 150, float: 'left', mt: 3 }}
-                variant="contained">
-                Chọn
-              </Button>
+          <Grid item xs={8}>
+            {dataFetched && (
+              <Table className="tableCss" aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell width={'5%'}>
+                      <Checkbox
+                        name="tất cả"
+                        checked={selectAll}
+                        onChange={handleSelectAllChange}
+                      />
+                    </TableCell>
+                    <TableCell align="center" width={'25%'}>
+                      Tên
+                    </TableCell>
+                    <TableCell align="center" width={'20%'}>
+                      Số điện thoại
+                    </TableCell>
+                    <TableCell align="center" width={'25%'}>
+                      Email
+                    </TableCell>
+                    <TableCell align="center" width={'20%'}>
+                      Ngày sinh
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {listCustomer.map((row, index) => (
+                    <TableRow key={row.id}>
+                      <TableCell>
+                        <Checkbox
+                          key={row.id}
+                          checked={selectedCustomerIds.indexOf(row.id) !== -1}
+                          onChange={(event) => handleRowCheckboxChange(event, row.id)}
+                        />
+                      </TableCell>
+                      <TableCell align="center">{row.fullName}</TableCell>
+                      <TableCell align="center">{row.phoneNumber}</TableCell>
+                      <TableCell align="center">{row.email}</TableCell>
+                      <TableCell align="center">
+                        {dayjs(row.dateBirth).format('DD-MM-YYYY')}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
-            {openCustomer && (
-              <Modal open={openCustomer} onClose={() => setOpenCustomer(false)}>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    bgcolor: 'background.paper',
-                    boxShadow: 100,
-                    p: 2,
-                    width: '75%',
-                  }}>
-                  {dataFetched && (
-                    <Table className="tableCss" aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell width={'5%'}>
-                            <Checkbox
-                              name="tất cả"
-                              checked={selectAll}
-                              onChange={handleSelectAllChange}
-                            />
-                          </TableCell>
-                          <TableCell align="center" width={'25%'}>
-                            Tên
-                          </TableCell>
-                          <TableCell align="center" width={'20%'}>
-                            Số điện thoại
-                          </TableCell>
-                          <TableCell align="center" width={'25%'}>
-                            Email
-                          </TableCell>
-                          <TableCell align="center" width={'20%'}>
-                            Ngày sinh
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {listCustomer.map((row, index) => (
-                          <TableRow key={row.id}>
-                            <TableCell>
-                              <Checkbox
-                                key={row.id}
-                                checked={selectedCustomerIds.indexOf(row.id) !== -1}
-                                onChange={(event) => handleRowCheckboxChange(event, row.id)}
-                              />
-                            </TableCell>
-                            <TableCell align="center">{row.fullName}</TableCell>
-                            <TableCell align="center">{row.phoneNumber}</TableCell>
-                            <TableCell align="center">{row.email}</TableCell>
-                            <TableCell align="center">
-                              {dayjs(row.dateBirth).format('DD-MM-YYYY')}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                  {!dataFetched && (
-                    <p>
-                      <Empty />
-                    </p>
-                  )}
-                  <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                    <Pagination
-                      page={initPage}
-                      onChange={(_, page) => handelOnchangePage(page)}
-                      count={totalPages}
-                      color="primary"
-                    />
-                  </Grid>
-                  <Button onClick={() => setOpenCustomer(false)}>Xác nhận</Button>
-                </Box>
-              </Modal>
+            {!dataFetched && (
+              <p>
+                <Empty />
+              </p>
             )}
-          </Grid>
-          <Grid item xs={6.6}></Grid>
-          <Grid item xs={0.3}></Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={5}></Grid>
-          <Grid item xs={3}>
-            <Button
-              onClick={() => handleVoucherAdd(voucherAdd, selectedCustomerIds)}
-              variant="contained"
-              fullWidth
-              color="success">
-              Thêm mới
-            </Button>
+            <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+              <Pagination
+                page={initPage}
+                onChange={(_, page) => handelOnchangePage(page)}
+                count={totalPages}
+                color="primary"
+              />
+            </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={0.5}></Grid>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+          <Button
+            sx={{ width: '150px', backgroundColor: '#FC7C27' }}
+            onClick={() => handleVoucherAdd(voucherAdd, selectedCustomerIds)}
+            variant="contained"
+            color="success">
+            Thêm mới
+          </Button>
+        </div>
       </Paper>
     </div>
   )

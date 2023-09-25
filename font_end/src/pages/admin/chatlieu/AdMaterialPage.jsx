@@ -43,7 +43,7 @@ export default function AdMaterialPage() {
   const [materialUpdate, setMaterialUpdate] = useState({ id: 0, name: '' })
   const [listMaterial, setListMaterial] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
-  const [filter, setFilter] = useState({ page: 1, size: 5, textSearch: '' })
+  const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
   const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
 
   useEffect(() => {
@@ -53,11 +53,11 @@ export default function AdMaterialPage() {
   const fetchData = (filter) => {
     setIsBackdrop(true)
     materialApi
-      .get(filter)
+      .getMaterial(filter)
       .then((response) => {
         const res = response.data
-        setListMaterial(res.data)
-        setPageRespone({ currentPage: res.currentPage, totalPages: res.totalPages })
+        setListMaterial(res.data.content)
+        setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
       })
       .catch((error) => {
         console.log(error)
@@ -72,7 +72,7 @@ export default function AdMaterialPage() {
     setOpenAdd(false)
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        materialApi.add(material).then((res) => {
+        materialApi.addMaterial(material).then((res) => {
           if (res.data.success) {
             setIsBackdrop(false)
             setOpenAdd(false)
@@ -101,7 +101,7 @@ export default function AdMaterialPage() {
     setOpenUpdate(false)
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        materialApi.update(materialUpdate.id, { name: materialUpdate.name }).then((res) => {
+        materialApi.updateMaterial(materialUpdate.id, { name: materialUpdate.name }).then((res) => {
           if (res.data.success) {
             setIsBackdrop(false)
             setMaterial({ name: '' })
@@ -127,26 +127,27 @@ export default function AdMaterialPage() {
     if (openAdd) setMaterial({ ...material, name: e.target.value })
     else setMaterialUpdate({ ...materialUpdate, name: e.target.value })
   }
-  const setDeleted = (id, isDeleted) => {
+  const setDeleted = (id) => {
     const title = 'Xác nhận thay đổi hoạt động?'
     const text = 'Ẩn hoạt động sẽ làm ẩn chất liệu khỏi nơi khác'
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        materialApi.deleted(id, isDeleted).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            if (!isDeleted) {
-              toast.success('Đã bật trạng thái hoạt động', {
+        materialApi
+          .swapMaterial(id)
+          .then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              toast.success('Thay đổi trạng thái hoạt động thành công', {
                 position: toast.POSITION.TOP_RIGHT,
               })
-            } else {
-              toast.error('Đã tắt trạng thái hoạt động', {
-                position: toast.POSITION.TOP_RIGHT,
-              })
+              fetchData(filter)
             }
-            fetchData(filter)
-          }
-        })
+          })
+          .catch(() => {
+            toast.error('Thay đổi trạng thái hoạt động thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
       }
     })
   }
@@ -177,7 +178,7 @@ export default function AdMaterialPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setFilter({ ...filter, textSearch: e.target.value })
+                setFilter({ ...filter, name: e.target.value })
               }}
               inputProps={{ style: { height: '20px' } }}
               size="small"
@@ -218,25 +219,25 @@ export default function AdMaterialPage() {
                   }}
                   defaultValue={material.name}
                   fullWidth
-                  sx={{
-                    my: 2,
-                    '& .MuiInputBase-root fieldset': {
-                      borderColor: theme.palette.layout.colorText,
-                      color: theme.palette.layout.colorText,
-                    },
-                    '& .MuiInputBase-root': {
-                      ' &.Mui-focused fieldset': {
-                        borderColor: theme.palette.layout.colorText,
-                      },
-                      borderColor: theme.palette.layout.colorText,
-                      color: theme.palette.layout.colorText,
-                    },
-                    '& .MuiInputBase-root:hover fieldset': {
-                      borderColor: 'gray',
-                    },
-                  }}
+                  // sx={{
+                  //   my: 2,
+                  //   '& .MuiInputBase-root fieldset': {
+                  //     borderColor: theme.palette.layout.colorText,
+                  //     color: theme.palette.layout.colorText,
+                  //   },
+                  //   '& .MuiInputBase-root': {
+                  //     ' &.Mui-focused fieldset': {
+                  //       borderColor: theme.palette.layout.colorText,
+                  //     },
+                  //     borderColor: theme.palette.layout.colorText,
+                  //     color: theme.palette.layout.colorText,
+                  //   },
+                  //   '& .MuiInputBase-root:hover fieldset': {
+                  //     borderColor: 'gray',
+                  //   },
+                  // }}
                   inputProps={{
-                    style: { color: theme.palette.layout.colorText },
+                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
@@ -268,25 +269,25 @@ export default function AdMaterialPage() {
                   }}
                   defaultValue={materialUpdate.name}
                   fullWidth
-                  sx={{
-                    my: 2,
-                    '& .MuiInputBase-root fieldset': {
-                      borderColor: theme.palette.layout.colorText,
-                      color: theme.palette.layout.colorText,
-                    },
-                    '& .MuiInputBase-root': {
-                      ' &.Mui-focused fieldset': {
-                        borderColor: theme.palette.layout.colorText,
-                      },
-                      borderColor: theme.palette.layout.colorText,
-                      color: theme.palette.layout.colorText,
-                    },
-                    '& .MuiInputBase-root:hover fieldset': {
-                      borderColor: 'gray',
-                    },
-                  }}
+                  // sx={{
+                  //   my: 2,
+                  //   '& .MuiInputBase-root fieldset': {
+                  //     borderColor: theme.palette.layout.colorText,
+                  //     color: theme.palette.layout.colorText,
+                  //   },
+                  //   '& .MuiInputBase-root': {
+                  //     ' &.Mui-focused fieldset': {
+                  //       borderColor: theme.palette.layout.colorText,
+                  //     },
+                  //     borderColor: theme.palette.layout.colorText,
+                  //     color: theme.palette.layout.colorText,
+                  //   },
+                  //   '& .MuiInputBase-root:hover fieldset': {
+                  //     borderColor: 'gray',
+                  //   },
+                  // }}
                   inputProps={{
-                    style: { color: theme.palette.layout.colorText },
+                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
@@ -335,8 +336,7 @@ export default function AdMaterialPage() {
                         <Switch
                           checked={!row.deleted}
                           onChange={(e) => {
-                            const isDel = !e.target.checked
-                            setDeleted(row.id, isDel)
+                            setDeleted(row.id)
                           }}
                           size="small"
                         />

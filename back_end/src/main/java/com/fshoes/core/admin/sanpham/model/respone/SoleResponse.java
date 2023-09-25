@@ -6,4 +6,6 @@ public interface SoleResponse extends IsIdentified {
     String getName();
 
     Integer getDeleted();
+
+    Long getCreatedAt();
 }

@@ -6,4 +6,6 @@ public interface CategoryResponse extends IsIdentified {
     String getName();
 
     Integer getDeleted();
+
+    Long getCreatedAt();
 }

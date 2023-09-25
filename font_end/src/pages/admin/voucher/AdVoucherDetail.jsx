@@ -30,14 +30,16 @@ import Empty from '../../../components/Empty'
 import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
 import { toast } from 'react-toastify'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 // import PercentIcon from "@mui/icons-material/Percent";
+
+const listBreadcrumbs = [{ name: 'Khuyến mãi', link: '/admin/voucher' }]
 
 export default function AdVoucherDetail() {
   const theme = useTheme()
   const { id } = useParams()
   const navigate = useNavigate()
   const [isSelectVisible, setIsSelectVisible] = useState(false)
-  const [openCustomer, setOpenCustomer] = useState(false)
   const [listCustomer, setListCustomer] = useState([])
   const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
@@ -170,148 +172,137 @@ export default function AdVoucherDetail() {
   }
 
   return (
-    <div>
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 1 }}>
-        <h1>Chi tiết Voucher</h1>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Mã voucher"
-              type="text"
-              size="small"
-              value={voucherDetail?.code}
-              onChange={(e) => {
-                setVoucherDetail({
-                  ...voucherDetail,
-                  code: e.target.value,
-                })
-              }}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Tên voucher"
-              type="text"
-              size="small"
-              value={voucherDetail?.name}
-              onChange={(e) => {
-                setVoucherDetail({
-                  ...voucherDetail,
-                  name: e.target.value,
-                })
-              }}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={0.5}></Grid>
-        </Grid>
-        {/*------------------------------------------------------------------------------------- */}
-
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Giá trị"
-              type="number"
-              size="small"
-              value={voucherDetail?.value}
-              onChange={(e) => {
-                setVoucherDetail({
-                  ...voucherDetail,
-                  value: Number(e.target.value),
-                })
-              }}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">%</InputAdornment>,
-              }}
-            />
-          </Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Giá trị tối đa"
-              type="number"
-              size="small"
-              value={voucherDetail?.maximumValue}
-              onChange={(e) => {
-                setVoucherDetail({
-                  ...voucherDetail,
-                  maximumValue: Number(e.target.value),
-                })
-              }}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-              }}
-            />
-          </Grid>
-          <Grid item xs={0.5}></Grid>
-        </Grid>
-        {/**?------------------------------------------------------------------------------------------------------- */}
-
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Số lượng"
-              type="number"
-              variant="outlined"
-              size="small"
-              value={voucherDetail?.quantity}
-              onChange={(e) => {
-                setVoucherDetail({
-                  ...voucherDetail,
-                  quantity: Number(e.target.value),
-                })
-              }}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={5.5}>
-            <TextField
-              label="Điều kiện"
-              type="number"
-              size="small"
-              value={voucherDetail?.minimumAmount}
-              onChange={(e) => {
-                setVoucherDetail({
-                  ...voucherDetail,
-                  minimumAmount: Number(e.target.value),
-                })
-              }}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-              }}
-            />
-          </Grid>
-          <Grid item xs={0.5}></Grid>
-        </Grid>
-        {/**?------------------------------------------------------------------------------------------------------- */}
-
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
+    <div className="voucher-detail">
+      <BreadcrumbsCustom nameHere={'Chi tiết khuyến mãi'} listLink={listBreadcrumbs} />
+      <Paper sx={{ p: 2 }}>
+        <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
+          <Grid item xs={4}>
+            <div>
+              <TextField
+                label="Mã voucher"
+                type="text"
+                size="small"
+                value={voucherDetail?.code}
+                onChange={(e) => {
+                  setVoucherDetail({
+                    ...voucherDetail,
+                    code: e.target.value,
+                  })
+                }}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ mb: 2 }}
+              />
+            </div>
+            {/* -------------------------------------------------------------------------------------------------------- */}
+            <div>
+              <TextField
+                label="Tên voucher"
+                type="text"
+                size="small"
+                value={voucherDetail?.name}
+                onChange={(e) => {
+                  setVoucherDetail({
+                    ...voucherDetail,
+                    name: e.target.value,
+                  })
+                }}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ mb: 2 }}
+              />
+            </div>
+            {/* -------------------------------------------------------------------------------------------------------- */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+              <TextField
+                label="Giá trị"
+                type="number"
+                size="small"
+                value={voucherDetail?.value}
+                onChange={(e) => {
+                  setVoucherDetail({
+                    ...voucherDetail,
+                    value: Number(e.target.value),
+                  })
+                }}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                }}
+                sx={{ marginRight: '8px' }}
+              />
+              {/* -------------------------------------------------------------------------------------------------------- */}
+              <TextField
+                label="Giá trị tối đa"
+                type="number"
+                size="small"
+                value={voucherDetail?.maximumValue}
+                onChange={(e) => {
+                  setVoucherDetail({
+                    ...voucherDetail,
+                    maximumValue: Number(e.target.value),
+                  })
+                }}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                }}
+                sx={{ marginLeft: '8px' }}
+              />
+            </div>
+            {/* -------------------------------------------------------------------------------------------------------- */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+              <TextField
+                label="Số lượng"
+                type="number"
+                variant="outlined"
+                size="small"
+                value={voucherDetail?.quantity}
+                onChange={(e) => {
+                  setVoucherDetail({
+                    ...voucherDetail,
+                    quantity: Number(e.target.value),
+                  })
+                }}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ marginRight: '8px' }}
+              />
+              {/* -------------------------------------------------------------------------------------------------------- */}
+              <TextField
+                label="Điều kiện"
+                type="number"
+                size="small"
+                value={voucherDetail?.minimumAmount}
+                onChange={(e) => {
+                  setVoucherDetail({
+                    ...voucherDetail,
+                    minimumAmount: Number(e.target.value),
+                  })
+                }}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                }}
+                sx={{ marginLeft: '8px' }}
+              />
+            </div>
+            {/* -------------------------------------------------------------------------------------------------------- */}
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm:ss'}
@@ -323,11 +314,10 @@ export default function AdVoucherDetail() {
                   })
                 }}
                 label="Từ ngày"
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', mb: 2 }}
               />
             </LocalizationProvider>
-          </Grid>
-          <Grid item xs={5.5}>
+            {/* -------------------------------------------------------------------------------------------------------- */}
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm:ss'}
@@ -339,147 +329,104 @@ export default function AdVoucherDetail() {
                   })
                 }}
                 label="Đến ngày"
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', mb: 2 }}
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={0.5}></Grid>
-        </Grid>
-        {/**?------------------------------------------------------------------------------------------------------- */}
-
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={3}>
-            <FormControl size="small">
-              <FormLabel>Kiểu</FormLabel>
-              <RadioGroup row value={voucherDetail?.type}>
-                <FormControlLabel
-                  name="typeUpdate"
-                  value={0}
-                  control={<Radio />}
-                  label="Tất cả"
-                  onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
-                  onClick={() => setIsSelectVisible(false)}
-                />
-                <FormControlLabel
-                  name="typeUpdate"
-                  value={1}
-                  control={<Radio />}
-                  label="Cá nhân"
-                  onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
-                  onClick={() => setIsSelectVisible(true)}
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-          <Grid item xs={2}>
-            {isSelectVisible && (
-              <Button
-                onClick={() => {
-                  setOpenCustomer(true)
-                }}
-                sx={{ width: 150, float: 'left', mt: 3 }}
-                variant="contained">
-                Chọn
-              </Button>
+          <Grid item xs={8}>
+            {dataFetched && (
+              <Table className="tableCss" aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell width={'5%'}>
+                      <Checkbox
+                        name="tất cả"
+                        checked={selectAll}
+                        onChange={handleSelectAllChange}
+                      />
+                    </TableCell>
+                    <TableCell align="center" width={'25%'}>
+                      Tên
+                    </TableCell>
+                    <TableCell align="center" width={'20%'}>
+                      Số điện thoại
+                    </TableCell>
+                    <TableCell align="center" width={'25%'}>
+                      Email
+                    </TableCell>
+                    <TableCell align="center" width={'20%'}>
+                      Ngày sinh
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {listCustomer.map((row, index) => (
+                    <TableRow key={row.id}>
+                      <TableCell>
+                        <Checkbox
+                          key={row.id}
+                          checked={selectedCustomerIds.indexOf(row.id) !== -1}
+                          onChange={(event) => handleRowCheckboxChange(event, row.id)}
+                        />
+                      </TableCell>
+                      <TableCell align="center">{row.fullName}</TableCell>
+                      <TableCell align="center">{row.phoneNumber}</TableCell>
+                      <TableCell align="center">{row.email}</TableCell>
+                      <TableCell align="center">
+                        {dayjs(row.dateBirth).format('DD-MM-YYYY')}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
-            {openCustomer && (
-              <Modal open={openCustomer} onClose={() => setOpenCustomer(false)}>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    bgcolor: 'background.paper',
-                    boxShadow: 100,
-                    p: 2,
-                    width: '75%',
-                  }}>
-                  {dataFetched && (
-                    <Table className="tableCss" aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell width={'5%'}>
-                            <Checkbox
-                              name="tất cả"
-                              checked={selectAll}
-                              onChange={handleSelectAllChange}
-                            />
-                          </TableCell>
-                          <TableCell align="center" width={'25%'}>
-                            Tên
-                          </TableCell>
-                          <TableCell align="center" width={'20%'}>
-                            Số điện thoại
-                          </TableCell>
-                          <TableCell align="center" width={'25%'}>
-                            Email
-                          </TableCell>
-                          <TableCell align="center" width={'20%'}>
-                            Ngày sinh
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {listCustomer.map((row, index) => (
-                          <TableRow key={row.id}>
-                            <TableCell>
-                              <Checkbox
-                                key={row.id}
-                                checked={selectedCustomerIds.indexOf(row.id) !== -1}
-                                onChange={(event) => handleRowCheckboxChange(event, row.id)}
-                              />
-                            </TableCell>
-                            <TableCell align="center">{row.fullName}</TableCell>
-                            <TableCell align="center">{row.phoneNumber}</TableCell>
-                            <TableCell align="center">{row.email}</TableCell>
-                            <TableCell align="center">
-                              {dayjs(row.dateBirth).format('DD-MM-YYYY')}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                  {!dataFetched && (
-                    <p>
-                      <Empty />
-                    </p>
-                  )}
-                  <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                    <Pagination
-                      page={initPage}
-                      onChange={(_, page) => handelOnchangePage(page)}
-                      count={totalPages}
-                      color="primary"
-                    />
-                  </Grid>
-                  <Button onClick={() => setOpenCustomer(false)}>Xác nhận</Button>
-                </Box>
-              </Modal>
+            {!dataFetched && (
+              <p>
+                <Empty />
+              </p>
             )}
+            <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+              <Pagination
+                page={initPage}
+                onChange={(_, page) => handelOnchangePage(page)}
+                count={totalPages}
+                color="primary"
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6}></Grid>
-          <Grid item xs={0.5}></Grid>
         </Grid>
-        {/**?------------------------------------------------------------------------------------------------------- */}
 
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={5}></Grid>
-          <Grid item xs={3}>
-            <Button
-              onClick={() => handleUpdateVoucher(id, voucherDetail)}
-              variant="contained"
-              fullWidth
-              color="warning">
-              Xác nhận
-            </Button>
-          </Grid>
-        </Grid>
-        <Grid item xs={0.5}></Grid>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <FormLabel>Kiểu</FormLabel>
+          <FormControl size="small" sx={{ flex: 1, ml: 2 }}>
+            <RadioGroup row value={voucherDetail?.type}>
+              <FormControlLabel
+                name="typeUpdate"
+                value={0}
+                control={<Radio />}
+                label="Tất cả"
+                onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
+                onClick={() => setIsSelectVisible(false)}
+              />
+              <FormControlLabel
+                name="typeUpdate"
+                value={1}
+                control={<Radio />}
+                label="Cá nhân"
+                onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
+                onClick={() => setIsSelectVisible(true)}
+              />
+            </RadioGroup>
+          </FormControl>
+          <Button
+            sx={{ width: '150px', backgroundColor: '#FC7C27' }}
+            onClick={() => handleUpdateVoucher(id, voucherDetail)}
+            variant="contained"
+            fullWidth
+            color="warning">
+            Cập nhật
+          </Button>
+        </div>
       </Paper>
     </div>
   )

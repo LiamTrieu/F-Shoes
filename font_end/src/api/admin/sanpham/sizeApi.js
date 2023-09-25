@@ -9,5 +9,21 @@ const sizeApi = {
     const url = `/size/get-list`
     return axiosClient.get(url)
   },
+  getSize: (filter) => {
+    const url = `/size`
+    return axiosClient.get(url, { params: filter })
+  },
+  addSize: (size) => {
+    const url = `/size/add`
+    return axiosClient.post(url, size)
+  },
+  updateSize: (id, size) => {
+    const url = `/size/update/${id}`
+    return axiosClient.put(url, size)
+  },
+  swapSize: (id) => {
+    const url = `/size/swap/${id}`
+    return axiosClient.delete(url)
+  },
 }
 export default sizeApi

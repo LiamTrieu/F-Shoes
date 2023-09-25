@@ -9,10 +9,12 @@ import lombok.Setter;
 public class ColorRequest {
 
     private String code;
+    private String name;
 
 
     public Color tranColor(Color color) {
         color.setCode(this.code);
+        color.setName(this.name);
         return color;
     }
 }

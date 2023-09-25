@@ -6,4 +6,6 @@ public interface MaterialResponse extends IsIdentified {
     String getName();
 
     Integer getDeleted();
+
+    Long getCreatedAt();
 }
