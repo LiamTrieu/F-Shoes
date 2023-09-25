@@ -28,8 +28,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { FaPlusCircle } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { formatCurrency } from '../../../services/common/formatCurrency '
-import { IoEye } from 'react-icons/io5'
 import { getStatusStyle } from './getStatusStyle'
+import { TbEyeEdit } from 'react-icons/tb'
 
 export default function AdBillPage() {
   const tableRowStyle = {
@@ -113,14 +113,12 @@ export default function AdBillPage() {
     setFilter(updatedFilter)
   }
 
-  // haqfm filter:
   const filterBill = (filter) => {
     hoaDonApi
       .getBillFilter(filter)
       .then((response) => {
         setListHoaDon(response.data.data)
         setTotalPages(response.data.totalPages)
-        console.log(response.data.data)
       })
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get filter: ', error)
@@ -305,7 +303,7 @@ export default function AdBillPage() {
                   <Link to={`/admin/bill-detail/${row.id}`}>
                     <Tooltip title="Xem chi tiết">
                       <IconButton>
-                        <IoEye fontSize={'25px'} color="#FC7C27" />
+                        <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
                       </IconButton>
                     </Tooltip>
                   </Link>

@@ -13,37 +13,37 @@ const AdTimeLineBill = (props) => {
     switch (status) {
       case 1:
         return {
-          color: '#00CC00', // Green
+          color: '#00CC00',
           icon: <FaRegFileAlt />,
         }
       case 2:
         return {
-          color: '#FFD700', // Yellow
+          color: '#FFD700',
           icon: <GiConfirmed />,
         }
       case 3:
         return {
-          color: '#FF5733', // Yellow
+          color: '#FF5733',
           icon: <FaTruck />,
         }
       case 4:
         return {
-          color: '#FF9933', // Yellow
+          color: '#FF9933',
           icon: <FaRegFileAlt />,
         }
       case 5:
         return {
-          color: '#FFC733', // Yellow
+          color: '#FFC733',
           icon: <MdPaid />,
         }
       case 6:
         return {
-          color: '#FFAA33', // Yellow
+          color: '#FFAA33',
           icon: <FaRegFileAlt />,
         }
       case 7:
         return {
-          color: '#FF1233', // Red
+          color: '#FF1233',
           icon: <IoCloudDoneSharp />,
         }
       case 0:

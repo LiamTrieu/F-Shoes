@@ -8,9 +8,17 @@ const hoaDonApi = {
     const url = `/bill/filter`
     return axiosClient.get(url, { params: filterBill })
   },
-  confirmBill: (billConfirmRequest) => {
-    const url = `/bill/confirm-order/{idBill}`
+  confirmBill: (idBill, billConfirmRequest) => {
+    const url = `/bill/confirm-order/${idBill}`
     return axiosClient.put(url, billConfirmRequest)
+  },
+  updateStatusBill: (idBill, updateBillRequest) => {
+    const url = `/bill/update-status/${idBill}`
+    return axiosClient.put(url, updateBillRequest)
+  },
+  confirmPayment: (idBill, confirmPaymentRequest) => {
+    const url = `/bill/confirm-payment/${idBill}`
+    return axiosClient.put(url, confirmPaymentRequest)
   },
 }
 

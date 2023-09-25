@@ -3,6 +3,8 @@ package com.fshoes.core.admin.hoadon.controller;
 import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
 import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillUpdateSttRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
@@ -59,4 +61,15 @@ public class HDBillController {
     public ObjectRespone getOne(@PathVariable("id") String id) {
         return new ObjectRespone(hdBillService.getOne(id));
     }
+
+    @PutMapping("/update-status/{id}")
+    public ObjectRespone updateStatus(@PathVariable("id") String id, @RequestBody HDBillUpdateSttRequest hdBillUpdateSttRequest) {
+        return new ObjectRespone(hdBillService.updateStatusBill(id, hdBillUpdateSttRequest));
+    }
+
+    @PutMapping("/confirm-payment/{id}")
+    public ObjectRespone confirmPayment(@PathVariable("id") String id, @RequestBody HDConfirmPaymentRequest hdConfirmPaymentRequest) {
+        return new ObjectRespone(hdBillService.confirmPayment(id, hdConfirmPaymentRequest));
+    }
+
 }
