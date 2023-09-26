@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Button,
+  Chip,
   Container,
   FormControl,
   IconButton,
@@ -18,6 +19,7 @@ import {
   TableHead,
   TextField,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import TableCell from '@mui/material/TableCell'
@@ -28,53 +30,10 @@ import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { LocalShipping } from '@mui/icons-material'
-const arrData = [
-  {
-    id: 2,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 40,
-    gia: '100.000',
-    soLuong: 1,
-    image: 'https://shorturl.at/tvLO2',
-    checked: false,
-  },
-  {
-    id: 1,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 41,
-    gia: '500.000',
-    soLuong: 3,
-    image: 'https://shorturl.at/tvLO2',
-    checked: false,
-  },
-  {
-    id: 1,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 41,
-    gia: '500.000',
-    soLuong: 3,
-    image: 'https://shorturl.at/tvLO2',
-    checked: false,
-  },
-  {
-    id: 1,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 41,
-    gia: '500.000',
-    soLuong: 3,
-    image: 'https://shorturl.at/tvLO2',
-    checked: false,
-  },
-  {
-    id: 1,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 41,
-    gia: '500.000',
-    soLuong: 3,
-    image: 'https://shorturl.at/tvLO2',
-    checked: false,
-  },
-]
+import sellApi from '../../../api/admin/sell/SellApi'
+import { TbEyeEdit } from 'react-icons/tb'
+import { Link } from 'react-router-dom'
+import dayjs from 'dayjs'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -109,127 +68,32 @@ const styleModalAddCustomer = {
   borderRadius: 1.5,
   boxShadow: 24,
 }
-
-const RowDataCustom = ({ cartDatas }) => {
-  return cartDatas.map((cart) => {
-    return (
-      <TableRow sx={{ border: 0 }} key={cart.id}>
-        <TableCell sx={{ px: 0 }}>
-          <IconButton color="error">
-            <CloseIcon />
-          </IconButton>
-        </TableCell>
-        <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
-          <Box component="span" display={{ sm: 'inline', xs: 'none' }}>
-            <img
-              alt="error"
-              src={cart.image}
-              style={{
-                maxWidth: '20%',
-                maxHeight: '20%',
-                verticalAlign: 'middle',
-              }}></img>
-          </Box>
-          <span
-            style={{
-              display: 'inline-block',
-              verticalAlign: 'middle',
-              marginLeft: '10px',
-              maxWidth: '70%',
-            }}>
-            <p style={{ margin: 0 }}>
-              <b>{cart.name}</b>
-            </p>
-            <p style={{ color: 'red', margin: '5px 0' }}>
-              <b>{cart.gia}&#8363;</b>
-            </p>
-            <p style={{ margin: 0 }}>size:{cart.size}</p>
-          </span>
-        </TableCell>
-        <TableCell sx={{ px: 0 }}>
-          <Box
-            width={'65px'}
-            display="flex"
-            alignItems="center"
-            sx={{
-              border: '1px solid gray',
-              borderRadius: '20px',
-            }}
-            p={'3px'}>
-            <IconButton sx={{ p: 0 }} size="small">
-              <RemoveIcon fontSize="1px" />
-            </IconButton>
-            <TextField
-              value="10"
-              inputProps={{ min: 1 }}
-              size="small"
-              sx={{
-                width: '30px ',
-                '& input': { p: 0, textAlign: 'center' },
-                '& fieldset': {
-                  border: 'none',
-                },
-              }}
-            />
-            <IconButton size="small" sx={{ p: 0 }}>
-              <AddIcon fontSize="1px" />
-            </IconButton>
-          </Box>
-        </TableCell>
-        <TableCell
-          sx={{
-            color: 'red',
-            fontWeight: 'bold',
-          }}>
-          {cart.gia * cart.soLuong}.000&#8363;
-        </TableCell>
-      </TableRow>
-    )
-  })
-}
 export default function SellFrom({ maHD }) {
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false)
   const [isShowProduct, setIsShowProduct] = useState(false)
   const [isShowProductDetail, setIsShowProductDetail] = useState(false)
+  const [listProduct, setListProduct] = useState([])
+  const [listKhachHang, setlistKhachHang] = useState([])
 
-  const RowDataProduct = ({ cartDatas }) => {
-    return cartDatas.map((cart) => {
-      return (
-        <TableRow key={cart.id}>
-          <TableCell width={'15%'} align="center">
-            <img width={'100%'} alt="error" src={cart.image} />
-          </TableCell>
-          <TableCell width={'65%'}>
-            <p style={{ margin: 0 }}>
-              <b>{cart.name}</b>
-            </p>
-          </TableCell>
-          <TableCell
-            width={'15%'}
-            align="center"
-            sx={{
-              color: 'red',
-              fontWeight: 'bold',
-            }}>
-            {cart.gia * cart.soLuong}.000&#8363;
-          </TableCell>
-          <TableCell width={'15%'} align="center">
-            <Button
-              onClick={() => {
-                setIsShowProductDetail(true)
-              }}
-              variant="outlined"
-              color="info"
-              size="small">
-              Chọn
-            </Button>
-          </TableCell>
-        </TableRow>
-      )
+  useEffect(() => {
+    fecthData()
+  }, [])
+  useEffect(() => {
+    fecthDataCustomer()
+  }, [])
+  const fecthData = () => {
+    sellApi.getAllProduct().then((response) => {
+      setListProduct(response.data.data)
     })
   }
+  const fecthDataCustomer = () => {
+    sellApi.getAllCustomer().then((response) => {
+      setlistKhachHang(response.data.data.data)
+    })
+  }
+
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -363,7 +227,40 @@ export default function SellFrom({ maHD }) {
                       </TableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody>{RowDataProduct({ cartDatas: arrData })}</TableBody>
+                  <TableBody>
+                    {listProduct.map((cart, index) => (
+                      <TableRow key={cart.id}>
+                        <TableCell width={'15%'} align="center">
+                          <img width={'100%'} alt="error" src={cart.url} />
+                        </TableCell>
+                        <TableCell width={'65%'}>
+                          <p style={{ margin: 0 }}>
+                            <b>{cart.name}</b>
+                          </p>
+                        </TableCell>
+                        <TableCell
+                          width={'15%'}
+                          align="center"
+                          sx={{
+                            color: 'red',
+                            fontWeight: 'bold',
+                          }}>
+                          {cart.price}.000&#8363;
+                        </TableCell>
+                        <TableCell width={'15%'} align="center">
+                          <Button
+                            onClick={() => {
+                              setIsShowProductDetail(true)
+                            }}
+                            variant="outlined"
+                            color="info"
+                            size="small">
+                            Chọn
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
                 </Table>
               </Box>
               <Modal
@@ -491,30 +388,101 @@ export default function SellFrom({ maHD }) {
           </Box>
         </Modal>
 
-        {arrData.length > 0 ? (
-          <Box>
-            <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>
+        <Box>
+          <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>
+            {listProduct.map((cart) => (
               <Table>
-                <TableBody>{RowDataCustom({ cartDatas: arrData })}</TableBody>
+                <TableRow sx={{ border: 0 }} key={cart.id}>
+                  <TableCell sx={{ px: 0 }}>
+                    <IconButton color="error">
+                      <CloseIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
+                    <Box component="span" display={{ sm: 'inline', xs: 'none' }}>
+                      <img
+                        alt="error"
+                        src={cart.url}
+                        style={{
+                          maxWidth: '20%',
+                          maxHeight: '20%',
+                          verticalAlign: 'middle',
+                        }}></img>
+                    </Box>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        marginLeft: '10px',
+                        maxWidth: '70%',
+                      }}>
+                      <p style={{ margin: 0 }}>
+                        <b>{cart.name}</b>
+                      </p>
+                      <p style={{ color: 'red', margin: '5px 0' }}>
+                        <b>{cart.price}.000&#8363;</b>
+                      </p>
+                      <p style={{ margin: 0 }}>size:{cart.size}</p>
+                    </span>
+                  </TableCell>
+                  <TableCell sx={{ px: 0 }}>
+                    <Box
+                      width={'65px'}
+                      display="flex"
+                      alignItems="center"
+                      sx={{
+                        border: '1px solid gray',
+                        borderRadius: '20px',
+                      }}
+                      p={'3px'}>
+                      <IconButton sx={{ p: 0 }} size="small">
+                        <RemoveIcon fontSize="1px" />
+                      </IconButton>
+                      <TextField
+                        value="10"
+                        inputProps={{ min: 1 }}
+                        size="small"
+                        sx={{
+                          width: '30px ',
+                          '& input': { p: 0, textAlign: 'center' },
+                          '& fieldset': {
+                            border: 'none',
+                          },
+                        }}
+                      />
+                      <IconButton size="small" sx={{ p: 0 }}>
+                        <AddIcon fontSize="1px" />
+                      </IconButton>
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: 'red',
+                      fontWeight: 'bold',
+                    }}>
+                    {cart.price * cart.amount}.000&#8363;
+                  </TableCell>
+                </TableRow>
               </Table>
-            </Box>
-            <Stack
-              m={2}
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-start"
-              spacing={2}>
-              <Typography fontWeight={'bold'}>Tổng tiền</Typography>
-              <Box>
-                <Typography fontWeight={'bold'} style={{ color: 'red' }}>
-                  100.000.000₫
-                </Typography>
-              </Box>
-            </Stack>
+            ))}
           </Box>
-        ) : (
+          <Stack
+            m={2}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            spacing={2}>
+            <Typography fontWeight={'bold'}>Tổng tiền</Typography>
+            <Box>
+              <Typography fontWeight={'bold'} style={{ color: 'red' }}>
+                100.000.000₫
+              </Typography>
+            </Box>
+          </Stack>
+        </Box>
+        {/* ) : (
           'Không có sản phẩm nào '
-        )}
+        )} */}
       </TableContainer>
       <Paper sx={{ mb: 7 }}>
         <Box p={2} sx={{ borderBottom: '1px dotted gray' }}>
@@ -528,7 +496,7 @@ export default function SellFrom({ maHD }) {
             sx={{ float: 'right' }}
             size="small"
             variant="contained"
-            color="info">
+            color="cam">
             <Person4Icon fontSize="small" /> Chọn khách hàng
           </Button>
           <Modal
@@ -639,6 +607,66 @@ export default function SellFrom({ maHD }) {
                 </Modal>
               </Container>
             </Box>
+            {/* <Table className="tableCss mt-5">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center" width={'7%'}>
+                    STT
+                  </TableCell>
+                  <TableCell align="center" width={'25%'}>
+                    Email
+                  </TableCell>
+                  <TableCell align="center" width={'12%'}>
+                    Họ tên
+                  </TableCell>
+                  <TableCell align="center" width={'15%'}>
+                    Ngày sinh
+                  </TableCell>
+                  <TableCell align="center" width={'15%'}>
+                    Số điện thoại
+                  </TableCell>
+                  <TableCell align="center" width={'15%'}>
+                    Giới tính
+                  </TableCell>
+                  <TableCell align="center" width={'15%'}>
+                    Trạng thái
+                  </TableCell>
+                  <TableCell align="center" width={'10%'}>
+                    Thao tác
+                  </TableCell>
+                </TableRow>
+              </TableHead> */}
+            {/* <TableBody>
+                {listKhachHang.map((row) => (
+                  <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell align="center">{row.stt}</TableCell>
+                    <TableCell align="center">{row.email}</TableCell>
+                    <TableCell align="center">{row.fullName}</TableCell>
+                    <TableCell align="center">
+                      {dayjs(row.dateBirth).format('MM/DD/YYYY')}
+                    </TableCell>
+                    <TableCell align="center">{row.phoneNumber}</TableCell>
+                    <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
+                    <TableCell align="center">
+                      {row.status === 0 ? (
+                        <Chip
+                          // onClick={() => deleteKhachHang(row.id)}
+                          className="chip-hoat-dong"
+                          size="small"
+                          label="Hoạt động"
+                        />
+                      ) : (
+                        <Chip
+                          className="chip-khong-hoat-dong"
+                          size="small"
+                          label="Không hoạt động"
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody> */}
+            {/* </Table> */}
           </Modal>
         </Box>
         <Box p={2}>

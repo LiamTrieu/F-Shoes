@@ -18,7 +18,8 @@ public class HDBillHistoryServiceImpl implements HDBillHistoryService {
     private HDBillHistoryRepository hdBillHistoryRepository;
 
     @Autowired
-    private AccountRepository staffRepository;
+    private AccountRepository accountRepository;
+
 
     @Override
     public List<HDBillHistoryResponse> getListBillHistoryByIdBill(String idBill) {
@@ -32,7 +33,7 @@ public class HDBillHistoryServiceImpl implements HDBillHistoryService {
             billHistory.setBill(hdBillHistoryRequest.getBill());
             billHistory.setNote(hdBillHistoryRequest.getNote());
             billHistory.setStatusBill(hdBillHistoryRequest.getBill().getStatus());
-            billHistory.setAccount(staffRepository.findById(hdBillHistoryRequest.getIdStaff()).get());
+            billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).get());
             return hdBillHistoryRepository.save(billHistory);
         } else {
             BillHistory billHistory = new BillHistory();

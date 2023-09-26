@@ -58,7 +58,7 @@ export default function OrderAdmin() {
   }
 
   return (
-    <Container maxWidth="lg">
+    <>
       <Stack
         mt={1}
         direction="row"
@@ -113,6 +113,6 @@ export default function OrderAdmin() {
         </Box>
       )}
       {statusOrder && <SellFrom maHD={statusOrder} />}
-    </Container>
+    </>
   )
 }
