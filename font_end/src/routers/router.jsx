@@ -15,6 +15,7 @@ import adColorRoute from './adminroute/adcolorroute'
 import adCategoryRoute from './adminroute/adcategoryroute'
 import adMaterialRoute from './adminroute/admaterialroute'
 import adBrandRoute from './adminroute/adbrandroute'
+import adSellRoute from './adminroute/adsell'
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
       ...adCategoryRoute,
       ...adMaterialRoute,
       ...adBrandRoute,
+      ...adSellRoute,
     ],
   },
 ])
