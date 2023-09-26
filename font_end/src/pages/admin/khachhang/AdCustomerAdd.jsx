@@ -25,6 +25,8 @@ import { useTheme } from '@emotion/react'
 import { toast } from 'react-toastify'
 import './AdCustomerAdd.css'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+const listBreadcrumbs = [{ name: 'Khách hàng', link: '/admin/customer' }]
 
 export default function AdCustomerAdd() {
   const theme = useTheme()
@@ -42,7 +44,6 @@ export default function AdCustomerAdd() {
   const [diaChi, setDiaChi] = useState({
     name: '',
     phoneNumber: '',
-    email: '',
     specificAddress: '',
     type: null,
     provinceId: null,
@@ -110,7 +111,6 @@ export default function AdCustomerAdd() {
       ...diaChi,
       name: khachHang.fullName,
       phoneNumber: khachHang.phoneNumber,
-      email: khachHang.email,
       type: true,
     })
   }
@@ -126,7 +126,6 @@ export default function AdCustomerAdd() {
           const obj = {
             name: diaChi.name,
             phoneNumber: diaChi.phoneNumber,
-            email: diaChi.email,
             specificAddress: diaChi.specificAddress,
             type: 0,
             idCustomer: khachHangId,
@@ -148,179 +147,221 @@ export default function AdCustomerAdd() {
 
   return (
     <div className="khachhangadd">
+      <BreadcrumbsCustom nameHere={'Thêm nhân viên'} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Box sx={{ pt: 4 }}>
-          <h1>Khách hàng</h1>
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 2 }}>
-            <Grid item xs={12} md={6}>
-              <Typography>Tên Khách hàng</Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                onChange={(e) => {
-                  setKhachHang({ ...khachHang, fullName: e.target.value })
-                  updateDiaChi()
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>Email</Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                onChange={(e) => {
-                  setKhachHang({ ...khachHang, email: e.target.value })
-                  updateDiaChi()
-                }}
-              />
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 2 }}>
-            <Grid item xs={12} md={6}>
-              <Typography>Số điện thoại</Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                onChange={(e) => {
-                  setKhachHang({ ...khachHang, phoneNumber: e.target.value })
-                  updateDiaChi()
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>Tỉnh</Typography>
-              <Box sx={{ minWidth: 120 }}>
-                <Autocomplete
-                  popupIcon={null}
-                  fullWidth
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={4}>
+                <h3>Thông tin nhân viên</h3>
+                <hr />
+                {/* <div
+              onClick={() => {
+                document.getElementById('select-avatar').click()
+              }}
+              className="image-container">
+              {image ? <img src={image} alt="Chọn ảnh" style={imageStyle} /> : 'Chọn ảnh'}
+            </div>
+            <input
+              hidden
+              id="select-avatar"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            /> */}
+                <Typography>
+                  <span className="required"> *</span>Họ Và Tên
+                </Typography>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  type="text"
                   size="small"
-                  className="search-field"
-                  id="combo-box-demo"
-                  value={selectedTinh}
-                  onChange={handleTinhChange}
-                  options={tinh.map((item) => ({ label: item.provinceName, id: item.provinceID }))}
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 2 }}>
-            <Grid item xs={12} md={6}>
-              <Typography>Huyện</Typography>
-              <Box sx={{ minWidth: 120 }}>
-                <Autocomplete
-                  popupIcon={null}
                   fullWidth
-                  size="small"
-                  className="search-field"
-                  id="huyen-autocomplete"
-                  value={selectedHuyen}
-                  onChange={handleHuyenChange}
-                  options={huyen.map((item) => ({ label: item.districtName, id: item.districtID }))}
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="nhập tên huyện" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>Xã</Typography>
-              <Box sx={{ minWidth: 120 }}>
-                <Autocomplete
-                  popupIcon={null}
-                  fullWidth
-                  size="small"
-                  className="search-field"
-                  id="xa-autocomplete"
-                  value={selectedXa}
-                  onChange={handleXaChange}
-                  options={xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="nhập tên Xã" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 2 }}>
-            <Grid item xs={12} md={3.5}>
-              <Typography>Ngày sinh</Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker']}>
-                  <DatePicker
-                    sx={{ width: '100%' }}
-                    className="small-datepicker"
-                    onChange={(e) =>
-                      setKhachHang({ ...khachHang, dateBirth: dayjs(e).format('DD-MM-YYYY') })
-                    }
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={2.5}>
-              <FormControl size="small">
-                <Typography>Giới tính</Typography>
-                <RadioGroup
-                  row
-                  // value={khachHang.gender ? 'true' : 'false'}
                   onChange={(e) => {
-                    setKhachHang({ ...khachHang, gender: e.target.value })
-                  }}>
-                  <FormControlLabel
-                    name="genderUpdate"
-                    value="true"
-                    control={<Radio />}
-                    label="Nam"
-                  />
-                  <FormControlLabel
-                    name="genderUpdate"
-                    value="false"
-                    control={<Radio />}
-                    label="Nữ"
-                  />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>Địa chỉ cụ thể</Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                onChange={(e) =>
-                  setDiaChi({
-                    ...diaChi,
-                    specificAddress:
-                      e.target.value +
-                      ', ' +
-                      selectedXa.label +
-                      ', ' +
-                      selectedHuyen.label +
-                      ', ' +
-                      selectedTinh.label,
-                  })
-                }
-              />
+                    setKhachHang({ ...khachHang, fullName: e.target.value })
+                    updateDiaChi()
+                  }}
+                />
+                <FormControl size="small">
+                  <Typography>
+                    <span className="required"> *</span>Giới tính
+                  </Typography>
+                  <RadioGroup
+                    row
+                    // value={khachHang.gender ? 'true' : 'false'}
+                    onChange={(e) => {
+                      setKhachHang({ ...khachHang, gender: e.target.value })
+                    }}>
+                    <FormControlLabel
+                      name="genderUpdate"
+                      value="true"
+                      control={<Radio />}
+                      label="Nam"
+                    />
+                    <FormControlLabel
+                      name="genderUpdate"
+                      value="false"
+                      control={<Radio />}
+                      label="Nữ"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={8}>
+                <h3>Thông tin chi tiết</h3>
+                <hr />
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  <Grid item xs={6}>
+                    <Typography>
+                      <span className="required"> *</span>Email
+                    </Typography>
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      type="text"
+                      size="small"
+                      fullWidth
+                      onChange={(e) => {
+                        setKhachHang({ ...khachHang, email: e.target.value })
+                        updateDiaChi()
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography>
+                      <span className="required"> *</span>Số điện thoại
+                    </Typography>
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      type="text"
+                      size="small"
+                      fullWidth
+                      onChange={(e) => {
+                        setKhachHang({ ...khachHang, phoneNumber: e.target.value })
+                        updateDiaChi()
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  <Grid item xs={4}>
+                    <Typography>
+                      <span className="required"> *</span>Tỉnh/thành phố
+                    </Typography>
+                    <Box sx={{ minWidth: 120 }}>
+                      <Autocomplete
+                        popupIcon={null}
+                        fullWidth
+                        size="small"
+                        className="search-field"
+                        id="combo-box-demo"
+                        value={selectedTinh}
+                        onChange={handleTinhChange}
+                        options={tinh.map((item) => ({
+                          label: item.provinceName,
+                          id: item.provinceID,
+                        }))}
+                        getOptionLabel={(options) => options.label}
+                        renderInput={(params) => (
+                          <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
+                        )}
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography>
+                      <span className="required"> *</span>Quận/huyện
+                    </Typography>
+                    <Box sx={{ minWidth: 120 }}>
+                      <Autocomplete
+                        popupIcon={null}
+                        fullWidth
+                        size="small"
+                        className="search-field"
+                        id="huyen-autocomplete"
+                        value={selectedHuyen}
+                        onChange={handleHuyenChange}
+                        options={huyen.map((item) => ({
+                          label: item.districtName,
+                          id: item.districtID,
+                        }))}
+                        getOptionLabel={(options) => options.label}
+                        renderInput={(params) => (
+                          <TextField placeholder="nhập tên huyện" color="cam" {...params} />
+                        )}
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography>
+                      <span className="required"> *</span>Xã/phường/thị trấn
+                    </Typography>
+                    <Box sx={{ minWidth: 120 }}>
+                      <Autocomplete
+                        popupIcon={null}
+                        fullWidth
+                        size="small"
+                        className="search-field"
+                        id="xa-autocomplete"
+                        value={selectedXa}
+                        onChange={handleXaChange}
+                        options={xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
+                        getOptionLabel={(options) => options.label}
+                        renderInput={(params) => (
+                          <TextField placeholder="nhập tên Xã" color="cam" {...params} />
+                        )}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  <Grid item xs={6}>
+                    <Typography>
+                      <span className="required"> *</span>Ngày sinh
+                    </Typography>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={['DatePicker']}>
+                        <DatePicker
+                          sx={{ width: '100%' }}
+                          className="small-datepicker"
+                          onChange={(e) =>
+                            setKhachHang({ ...khachHang, dateBirth: dayjs(e).format('DD-MM-YYYY') })
+                          }
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography>
+                      <span className="required"> *</span>Địa chỉ cụ thể
+                    </Typography>
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      type="text"
+                      size="small"
+                      fullWidth
+                      onChange={(e) =>
+                        setDiaChi({
+                          ...diaChi,
+                          specificAddress:
+                            e.target.value +
+                            ', ' +
+                            selectedXa.label +
+                            ', ' +
+                            selectedHuyen.label +
+                            ', ' +
+                            selectedTinh.label,
+                        })
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-
           <Grid container spacing={2} sx={{ pl: 10, pr: 10, mt: 3 }}>
             <Grid item xs={12}>
               <Button

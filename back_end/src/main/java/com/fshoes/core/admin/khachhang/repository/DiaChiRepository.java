@@ -13,12 +13,12 @@ import java.util.List;
 
 @Repository
 public interface DiaChiRepository extends AddressRepository {
-    @Query(value = "Select a.id, a.name, a.phone_number as phoneNumber, a.email, a.specific_address as specificAddress," +
+    @Query(value = "Select a.id, a.name, a.phone_number as phoneNumber, a.specific_address as specificAddress," +
             " a.type , province_id as provinceId, district_id as districtId," +
-            " ward_id as wardId from address a where a.id_customer = :idCustomer order by created_at desc"
+            " ward_id as wardId from address a where a.id_account = :idAccount order by created_at desc"
             , nativeQuery = true)
-    Page<DiaChiRespone> getPageAddressByIdCustomer(Pageable pageable, @Param("idCustomer") String idCustomer);
+    Page<DiaChiRespone> getPageAddressByIdCustomer(Pageable pageable, @Param("idAccount") String idAccount);
 
-    @Query(value = "Select * from address a where a.id_customer = :idCustomer", nativeQuery = true)
-    List<Address> getStatusAddressByIdCustomer(@Param("idCustomer") String idCustomer);
+    @Query(value = "Select * from address a where a.id_account = :idAccount", nativeQuery = true)
+    List<Address> getStatusAddressByIdCustomer(@Param("idAccount") String idAccount);
 }

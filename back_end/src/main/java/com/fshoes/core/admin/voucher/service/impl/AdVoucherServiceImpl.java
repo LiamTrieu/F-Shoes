@@ -8,7 +8,7 @@ import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
-import com.fshoes.entity.Customer;
+import com.fshoes.entity.Account;
 import com.fshoes.entity.CustomerVoucher;
 import com.fshoes.entity.Voucher;
 import com.fshoes.infrastructure.constant.StatusVoucher;
@@ -64,22 +64,22 @@ public class AdVoucherServiceImpl implements AdVoucherService {
         try {
             Voucher voucher = voucherRequest.newVoucher(new Voucher());
             adVoucherRepository.save(voucher);
-            List<Customer> customerList = khachHangRepository.findAll();
+            List<Account> customerList = khachHangRepository.findAll();
             List<CustomerVoucher> customerVoucherList = new ArrayList<>();
             if (voucherRequest.getType() == 0) {
-                for (Customer customer : customerList) {
+                for (Account customer : customerList) {
                     AdCustomerVoucherRequest adCustomerVoucherRequest = new AdCustomerVoucherRequest();
                     adCustomerVoucherRequest.setVoucher(voucher);
-                    adCustomerVoucherRequest.setCustomer(customer);
+                    adCustomerVoucherRequest.setAccount(customer);
                     CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
                     customerVoucherList.add(customerVoucher);
                 }
             } else {
                 for (String idCustomer : voucherRequest.getListIdCustomer()) {
-                    Customer customer = khachHangRepository.findById(idCustomer).get();
+                    Account customer = khachHangRepository.findById(idCustomer).get();
                     AdCustomerVoucherRequest adCustomerVoucherRequest = new AdCustomerVoucherRequest();
                     adCustomerVoucherRequest.setVoucher(voucher);
-                    adCustomerVoucherRequest.setCustomer(customer);
+                    adCustomerVoucherRequest.setAccount(customer);
                     CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
                     customerVoucherList.add(customerVoucher);
                 }
@@ -96,7 +96,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     @Transactional
     public Boolean updateVoucher(String id, AdVoucherRequest voucherRequest) throws ParseException {
         Optional<Voucher> optionalVoucher = adVoucherRepository.findById(id);
-        List<Customer> customerList = khachHangRepository.findAll();
+        List<Account> customerList = khachHangRepository.findAll();
         List<CustomerVoucher> customerVouchers = adCustomerVoucherRepository.getListCustomerVoucherByIdVoucher(id);
         for (CustomerVoucher customerVoucher : customerVouchers) {
             adCustomerVoucherRepository.deleteById(customerVoucher.getId());
@@ -107,19 +107,19 @@ public class AdVoucherServiceImpl implements AdVoucherService {
             voucherUpdate = adVoucherRepository.save(voucherRequest.newVoucher(voucher));
             List<CustomerVoucher> customerVoucherList = new ArrayList<>();
             if (voucherRequest.getType().equals(0)) {
-                for (Customer customer : customerList) {
+                for (Account customer : customerList) {
                     AdCustomerVoucherRequest adCustomerVoucherRequest = new AdCustomerVoucherRequest();
                     adCustomerVoucherRequest.setVoucher(voucher);
-                    adCustomerVoucherRequest.setCustomer(customer);
+                    adCustomerVoucherRequest.setAccount(customer);
                     CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
                     customerVoucherList.add(customerVoucher);
                 }
             } else {
                 for (String idCustomer : voucherRequest.getListIdCustomer()) {
-                    Customer customer = khachHangRepository.findById(idCustomer).get();
+                    Account customer = khachHangRepository.findById(idCustomer).get();
                     AdCustomerVoucherRequest adCustomerVoucherRequest = new AdCustomerVoucherRequest();
                     adCustomerVoucherRequest.setVoucher(voucher);
-                    adCustomerVoucherRequest.setCustomer(customer);
+                    adCustomerVoucherRequest.setAccount(customer);
                     CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
                     customerVoucherList.add(customerVoucher);
                 }

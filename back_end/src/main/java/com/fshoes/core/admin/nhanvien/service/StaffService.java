@@ -3,7 +3,7 @@ package com.fshoes.core.admin.nhanvien.service;
 import com.fshoes.core.admin.nhanvien.model.request.SearchStaff;
 import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
 import com.fshoes.core.admin.nhanvien.model.respone.StaffRespone;
-import com.fshoes.entity.Staff;
+import com.fshoes.entity.Account;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
@@ -11,15 +11,15 @@ import java.text.ParseException;
 import java.util.List;
 
 public interface StaffService {
-    List<Staff> getAll();
+    List<Account> getAll();
 
     Page<StaffRespone> searchStaff(SearchStaff searchStaff);
 
     StaffRespone getOne(String id);
 
-    Staff add(@Valid StaffRequest staffRequest) throws ParseException;
+    Account add(@Valid StaffRequest staffRequest) throws ParseException;
 
     Boolean update(StaffRequest staffRequest, String id) throws ParseException;
 
-    Staff delete(String id);
+    Account delete(String id);
 }

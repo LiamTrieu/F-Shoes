@@ -12,18 +12,11 @@ import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepositpory;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
-import com.fshoes.entity.Bill;
-import com.fshoes.entity.BillDetail;
-import com.fshoes.entity.BillHistory;
-import com.fshoes.entity.Customer;
-import com.fshoes.entity.Staff;
-import com.fshoes.entity.Transaction;
-import com.fshoes.entity.Voucher;
+import com.fshoes.entity.*;
 import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.infrastructure.constant.TypeBill;
-import com.fshoes.repository.CustomerRepository;
+import com.fshoes.repository.AccountRepository;
 import com.fshoes.repository.ProductDetailRepository;
-import com.fshoes.repository.StaffRepository;
 import com.fshoes.repository.TransactionRepository;
 import com.fshoes.repository.VoucherRepository;
 import com.fshoes.util.DateUtil;
@@ -49,7 +42,7 @@ public class HDBillServiceImpl implements HDBillService {
     private VoucherRepository voucherRepository;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private HDBillHistoryRepository hdBillHistoryRepository;
@@ -57,8 +50,6 @@ public class HDBillServiceImpl implements HDBillService {
     @Autowired
     private HDBillDetailRepository hdBillDetailRepository;
 
-    @Autowired
-    private StaffRepository staffRepository;
 
     @Autowired
     private ProductDetailRepository productDetailRepository;
@@ -135,7 +126,7 @@ public class HDBillServiceImpl implements HDBillService {
             if (hdBillRequest.getIdCustomer() == null) {
                 bill.setCustomer(null);
             } else {
-                Customer customer = customerRepository.findById(hdBillRequest.getIdCustomer()).orElse(null);
+                Account customer = accountRepository.findById(hdBillRequest.getIdCustomer()).orElse(null);
                 bill.setCustomer(customer);
             }
             bill.setFullName(hdBillRequest.getFullName());
@@ -152,7 +143,7 @@ public class HDBillServiceImpl implements HDBillService {
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
             billHistory.setNote(hdBillHistoryRequest.getNote());
-            billHistory.setStaff(staffRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
+            billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
             hdBillHistoryRepository.save(billHistory);
             return hdBillRepositpory.save(bill);
         } catch (Exception e) {
@@ -178,7 +169,7 @@ public class HDBillServiceImpl implements HDBillService {
                         BillHistory billHistory = new BillHistory();
                         billHistory.setBill(bill);
                         billHistory.setNote(hdBillHistoryRequest.getNote());
-                        billHistory.setStaff(staffRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
+                        billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
                         hdBillHistoryRepository.save(billHistory);
                         hdBillRepositpory.save(bill);
                     }
@@ -227,7 +218,7 @@ public class HDBillServiceImpl implements HDBillService {
             // Cập nhật thông tin hóa đơn và trạng thái
             bill.setStatus(2);
             bill.setVoucher(billConfirmRequest.getIdVoucher() != null ? voucherRepository.findById(billConfirmRequest.getIdVoucher()).orElse(null) : null);
-            bill.setCustomer(billConfirmRequest.getIdCustomer() != null ? customerRepository.findById(billConfirmRequest.getIdCustomer()).orElse(null) : null);
+            bill.setCustomer(billConfirmRequest.getIdCustomer() != null ? accountRepository.findById(billConfirmRequest.getIdCustomer()).orElse(null) : null);
             bill.setFullName(billConfirmRequest.getFullName());
             bill.setNote(billConfirmRequest.getNote());
             bill.setAddress(billConfirmRequest.getAddress());
@@ -273,7 +264,7 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public Bill confirmPayment(String idBill, HDConfirmPaymentRequest hdConfirmPaymentRequest) {
         Bill bill = hdBillRepositpory.findById(idBill).get();
-        Staff staff = staffRepository.findById(hdConfirmPaymentRequest.getIdStaff()).get();
+        Account staff = accountRepository.findById(hdConfirmPaymentRequest.getIdStaff()).get();
         Transaction transaction = new Transaction();
         transaction.setPaymentMethod(hdConfirmPaymentRequest.getPaymentMethod());
         transaction.setType(hdConfirmPaymentRequest.getType());
@@ -281,13 +272,13 @@ public class HDBillServiceImpl implements HDBillService {
         transaction.setStatus(hdConfirmPaymentRequest.getStatus());
         transaction.setNote(hdConfirmPaymentRequest.getNote());
         transaction.setTotalMoney(bill.getTotalMoney());
-        transaction.setStaff(staff);
+        transaction.setAccount(staff);
         transactionRepository.save(transaction);
         BillHistory billHistory = new BillHistory();
         billHistory.setStatusBill(5);
         billHistory.setBill(bill);
         billHistory.setNote(hdConfirmPaymentRequest.getNote());
-        billHistory.setStaff(staff);
+        billHistory.setAccount(staff);
         hdBillHistoryRepository.save(billHistory);
         bill.setStatus(5);
         return hdBillRepositpory.save(bill);
