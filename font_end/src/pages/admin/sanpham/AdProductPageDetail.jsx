@@ -4,7 +4,6 @@ import {
   Button,
   Chip,
   Container,
-  IconButton,
   InputAdornment,
   MenuItem,
   Pagination,
@@ -25,35 +24,49 @@ import { TbEyeEdit } from 'react-icons/tb'
 import bradApi from '../../../api/admin/sanpham/bradApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
-import { Link } from 'react-router-dom'
 import Empty from '../../../components/Empty'
+import colorApi from '../../../api/admin/sanpham/colorApi'
+import materialApi from '../../../api/admin/sanpham/materialApi'
+import sizeApi from '../../../api/admin/sanpham/sizeApi'
+import soleApi from '../../../api/admin/sanpham/soleApi'
+import { useParams } from 'react-router-dom'
 
-export default function AdProductPage() {
-  const [listBrand, setListBrand] = useState([])
-  const [listCategory, setListCategory] = useState([])
-  const [listProduct, setListProduct] = useState([])
+export default function AdProductPageDetail() {
+  const { id } = useParams()
+
+  const [listColor, setListColor] = useState([])
+  const [listMaterial, setListMaterial] = useState([])
+  const [listSize, setListSize] = useState([])
+  const [listSole, setListSole] = useState([])
+  const [listProductDetail, setListProductDetail] = useState([])
   const [total, setTotal] = useState([])
   const [filter, setFilter] = useState({
-    category: null,
-    brand: null,
-    status: null,
-    name: '',
+    product: id,
+    priceMin: 0,
+    priceMax: 0,
     size: 5,
     page: 1,
   })
 
   useEffect(() => {
-    bradApi.findAll().then((response) => {
-      setListBrand(response.data.data)
+    document.title = 'Admin - Sản phẩm chi tiết'
+    colorApi.findAll().then((response) => {
+      setListColor(response.data.data)
     })
-    categoryApi.findAll().then((response) => {
-      setListCategory(response.data.data)
+    materialApi.findAll().then((response) => {
+      setListMaterial(response.data.data)
+    })
+    sizeApi.findAll().then((response) => {
+      setListSize(response.data.data)
+    })
+    soleApi.findAll().then((response) => {
+      setListSole(response.data.data)
     })
   }, [])
 
   useEffect(() => {
-    sanPhamApi.get(filter).then((response) => {
-      setListProduct(response.data.data.data)
+    sanPhamApi.getProductDetail(filter).then((response) => {
+      setListProductDetail(response.data.data.data)
       setTotal(response.data.data.totalPages)
       if (filter.page > response.data.data.totalPages)
         if (response.data.data.totalPages > 0) {
@@ -84,43 +97,64 @@ export default function AdProductPage() {
               ),
             }}
           />
-          <Button
-            component={Link}
-            to="/admin/product/add"
-            color="cam"
-            variant="contained"
-            className="them-moi">
-            <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
-            Thêm mới
-          </Button>
         </Stack>
         <Stack my={2} direction="row" justifyContent="start" alignItems="center" spacing={1}>
           <div className="filter">
-            <b>Danh mục:</b>
+            <b>Màu sắc:</b>
             <Select
               displayEmpty
               size="small"
-              value={filter.category}
+              value={filter.color}
               onChange={(e) => {
                 setFilter({ ...filter, category: e.target.value })
               }}>
               <MenuItem value={null}>Tất cả</MenuItem>
-              {listCategory?.map((item) => (
+              {listColor?.map((item) => (
                 <MenuItem key={item?.id} value={item?.id}>
                   {item.name}
                 </MenuItem>
               ))}
             </Select>
-            <b>Thương hiệu:</b>
+            <b>Chất liệu:</b>
             <Select
               displayEmpty
               size="small"
-              value={filter.brand}
+              value={filter.material}
               onChange={(e) => {
                 setFilter({ ...filter, brand: e.target.value })
               }}>
               <MenuItem value={null}>Tất cả</MenuItem>
-              {listBrand?.map((item) => (
+              {listMaterial?.map((item) => (
+                <MenuItem key={item?.id} value={item?.id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <b>Kích cỡ:</b>
+            <Select
+              displayEmpty
+              size="small"
+              value={filter.sizeFilter}
+              onChange={(e) => {
+                setFilter({ ...filter, brand: e.target.value })
+              }}>
+              <MenuItem value={null}>Tất cả</MenuItem>
+              {listSize?.map((item) => (
+                <MenuItem key={item?.id} value={item?.id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <b>Đế giày:</b>
+            <Select
+              displayEmpty
+              size="small"
+              value={filter.sole}
+              onChange={(e) => {
+                setFilter({ ...filter, brand: e.target.value })
+              }}>
+              <MenuItem value={null}>Tất cả</MenuItem>
+              {listSole?.map((item) => (
                 <MenuItem key={item?.id} value={item?.id}>
                   {item.name}
                 </MenuItem>
@@ -146,7 +180,7 @@ export default function AdProductPage() {
             </Select>
           </div>
         </Stack>
-        {listProduct.length > 0 ? (
+        {listProductDetail.length > 0 ? (
           <Fragment>
             <Table className="tableCss">
               <TableHead>
@@ -167,13 +201,13 @@ export default function AdProductPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {listProduct.map((product) => {
+                {listProductDetail.map((product) => {
                   return (
                     <TableRow>
                       <TableCell align="center">{product.stt}</TableCell>
-                      <TableCell sx={{ maxWidth: '0px' }}>{product.name}</TableCell>
-                      <TableCell>{product.category}</TableCell>
-                      <TableCell>{product.brand}</TableCell>
+                      <TableCell sx={{ maxWidth: '0px' }}>{product?.name}</TableCell>
+                      <TableCell>{product?.category}</TableCell>
+                      <TableCell>{product?.brand}</TableCell>
                       <TableCell align="center">{product.amount}</TableCell>
                       <TableCell>
                         <Chip
@@ -185,12 +219,7 @@ export default function AdProductPage() {
                         />
                       </TableCell>
                       <TableCell align="center">
-                        <IconButton
-                          color="cam"
-                          component={Link}
-                          to={`/admin/product/${product.id}`}>
-                          <TbEyeEdit fontSize={'25px'} />
-                        </IconButton>
+                        <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
                       </TableCell>
                     </TableRow>
                   )

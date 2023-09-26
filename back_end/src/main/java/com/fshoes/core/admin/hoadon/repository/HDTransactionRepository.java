@@ -14,8 +14,8 @@ public interface HDTransactionRepository extends TransactionRepository {
     @Query(value = """
             SELECT ts.id, ts.total_money as totalMoney, ts.type as type, ts.payment_method as paymentMethod,
             		ts.status as status, ts.note as note, st.full_name as fullName
-            FROM transaction ts 
-                LEFT JOIN staff st ON ts.id_staff = st.id
+            FROM transaction ts
+                LEFT JOIN account st ON ts.id_account = st.id
                 LEFT JOIN bill b ON ts.id_bill = b.id
             WHERE b.id = :idBill
             """, nativeQuery = true)

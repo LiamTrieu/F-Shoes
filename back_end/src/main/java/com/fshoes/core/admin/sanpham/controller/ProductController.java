@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.sanpham.controller;
 
+import com.fshoes.core.admin.sanpham.model.request.PrdDetailFilterRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductDetailRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductFilterRequest;
 import com.fshoes.core.admin.sanpham.service.ProductService;
@@ -48,5 +49,10 @@ public class ProductController {
     @PostMapping("/add")
     public void addProductDetail(@RequestBody ProductDetailRequest request){
         productService.addProductDetail(request);
+    }
+
+    @GetMapping("/product-detail")
+    public ObjectRespone productDetail(PrdDetailFilterRequest request) {
+        return new ObjectRespone(productService.getProductDetail(request));
     }
 }
