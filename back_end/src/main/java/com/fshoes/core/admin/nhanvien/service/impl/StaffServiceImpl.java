@@ -5,8 +5,9 @@ import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
 import com.fshoes.core.admin.nhanvien.model.respone.StaffRespone;
 import com.fshoes.core.admin.nhanvien.repository.StaffRepositorys;
 import com.fshoes.core.admin.nhanvien.service.StaffService;
-import com.fshoes.entity.Staff;
+import com.fshoes.entity.Account;
 import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
+import com.fshoes.infrastructure.constant.RoleAccount;
 import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.infrastructure.email.Email;
 import com.fshoes.infrastructure.email.EmailSender;
@@ -35,7 +36,7 @@ public class StaffServiceImpl implements StaffService {
     private EmailSender emailSender;
 
     @Override
-    public List<Staff> getAll() {
+    public List<Account> getAll() {
         return repo.findAll();
     }
 
@@ -53,9 +54,9 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     @Transactional
-    public Staff add(@Valid StaffRequest staffRequest) throws ParseException {
+    public Account add(@Valid StaffRequest staffRequest) throws ParseException {
         Long dateBirth = DateUtil.parseDateLong(staffRequest.getDateBirth());
-        Staff staff = Staff.builder()
+        Account staff = Account.builder()
                 .fullName(staffRequest.getFullName())
                 .dateBirth(dateBirth)
                 .phoneNumber(staffRequest.getPhoneNumber())
@@ -63,7 +64,7 @@ public class StaffServiceImpl implements StaffService {
                 .gender(staffRequest.getGender())
                 .avatar(cloudinaryImage.uploadAvatar(staffRequest.getAvatar()))
                 .CitizenId(staffRequest.getCitizenId())
-                .role(staffRequest.getRole())
+                .role(RoleAccount.values()[staffRequest.getRole()])
                 .status(Status.values()[staffRequest.getStatus()])
                 .build();
         String password = generatePassword();
@@ -81,9 +82,9 @@ public class StaffServiceImpl implements StaffService {
     @Override
     @Transactional
     public Boolean update(StaffRequest staffRequest, String id) throws ParseException {
-        Optional<Staff> optional = repo.findById(id);
+        Optional<Account> optional = repo.findById(id);
         if (optional.isPresent()) {
-            Staff staff = staffRequest.tranStaff(optional.get());
+            Account staff = staffRequest.tranStaff(optional.get());
             if(staffRequest.getAvatar() != null) {
                 staff.setAvatar(cloudinaryImage.uploadAvatar(staffRequest.getAvatar()));
             }
@@ -96,8 +97,8 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public Staff delete(String id) {
-        Staff staff = repo.findById(id).orElse(null);
+    public Account delete(String id) {
+        Account staff = repo.findById(id).orElse(null);
         assert staff != null;
         if(staff.getStatus()==0){
             staff.setStatus(1);

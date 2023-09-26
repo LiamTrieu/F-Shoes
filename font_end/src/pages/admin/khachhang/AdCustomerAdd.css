@@ -23,3 +23,22 @@
 .khachhangadd .MuiButton-root:hover {
   box-shadow: none;
 }
+#select-avatar {
+  display: none;
+}
+
+/* Tùy chỉnh các ô input */
+.input-container input[type='text'],
+.input-container input[type='email'],
+.input-container input[type='tel'] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+/* Đánh dấu bắt buộc với dấu '*' màu đỏ */
+.required {
+  color: red;
+  font-weight: bold;
+}

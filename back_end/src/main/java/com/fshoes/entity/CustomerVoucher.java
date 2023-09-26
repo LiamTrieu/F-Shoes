@@ -21,8 +21,8 @@ import lombok.Setter;
 public class CustomerVoucher extends PrimaryEntity {
 
     @ManyToOne
-    @JoinColumn(name = "id_customer", referencedColumnName = "id")
-    private Customer customer;
+    @JoinColumn(name = "id_account", referencedColumnName = "id")
+    private Account account;
 
     @ManyToOne
     @JoinColumn(name = "id_voucher", referencedColumnName = "id")

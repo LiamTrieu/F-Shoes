@@ -5,7 +5,7 @@ import com.fshoes.core.admin.hoadon.model.respone.HDBillHistoryResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.entity.BillHistory;
-import com.fshoes.repository.StaffRepository;
+import com.fshoes.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class HDBillHistoryServiceImpl implements HDBillHistoryService {
     private HDBillHistoryRepository hdBillHistoryRepository;
 
     @Autowired
-    private StaffRepository staffRepository;
+    private AccountRepository staffRepository;
 
     @Override
     public List<HDBillHistoryResponse> getListBillHistoryByIdBill(String idBill) {
@@ -32,14 +32,14 @@ public class HDBillHistoryServiceImpl implements HDBillHistoryService {
             billHistory.setBill(hdBillHistoryRequest.getBill());
             billHistory.setNote(hdBillHistoryRequest.getNote());
             billHistory.setStatusBill(hdBillHistoryRequest.getBill().getStatus());
-            billHistory.setStaff(staffRepository.findById(hdBillHistoryRequest.getIdStaff()).get());
+            billHistory.setAccount(staffRepository.findById(hdBillHistoryRequest.getIdStaff()).get());
             return hdBillHistoryRepository.save(billHistory);
         } else {
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(hdBillHistoryRequest.getBill());
             billHistory.setNote(hdBillHistoryRequest.getNote());
             billHistory.setStatusBill(hdBillHistoryRequest.getBill().getStatus());
-            billHistory.setStaff(null);
+            billHistory.setAccount(null);
             return hdBillHistoryRepository.save(billHistory);
         }
 

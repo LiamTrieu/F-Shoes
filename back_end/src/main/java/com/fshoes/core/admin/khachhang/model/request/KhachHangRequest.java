@@ -1,8 +1,7 @@
 package com.fshoes.core.admin.khachhang.model.request;
 
-import com.fshoes.entity.Customer;
+import com.fshoes.entity.Account;
 import com.fshoes.infrastructure.constant.EntityProperties;
-import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.util.DateUtil;
 import jakarta.persistence.Column;
 import lombok.Getter;
@@ -30,7 +29,9 @@ public class KhachHangRequest {
 
     private Integer status = 1 ;
 
-   public Customer newCustomer(Customer customer) throws ParseException {
+    private Integer role = 2;
+
+   public Account newCustomer(Account customer) throws ParseException {
         customer.setAvatar(this.getAvatar());
         customer.setEmail(this.getEmail());
         customer.setFullName(this.getFullName());
@@ -38,7 +39,8 @@ public class KhachHangRequest {
         customer.setPhoneNumber(this.getPhoneNumber());
         customer.setGender(this.getGender());
         customer.setPassword(this.getPassword());
-       customer.setStatus(this.status);
+       customer.setStatus(this.getStatus());
+       customer.setRole(this.getRole());
         return customer;
    }
 }
