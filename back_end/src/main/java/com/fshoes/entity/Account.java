@@ -2,15 +2,12 @@ package com.fshoes.entity;
 
 import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.RoleAccount;
 import com.fshoes.infrastructure.constant.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -18,8 +15,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "staff")
-public class Staff extends PrimaryEntity {
+@Table(name = "account")
+public class Account extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_NAME)
     private String fullName;
 
@@ -41,7 +38,7 @@ public class Staff extends PrimaryEntity {
 
     private String avatar;
 
-    private Integer role = 0;
+    private RoleAccount role;
 
     private Status status = Status.HOAT_DONG;
 
@@ -51,5 +48,13 @@ public class Staff extends PrimaryEntity {
 
     public void setStatus(Integer status) {
         this.status = Status.values()[status];
+    }
+
+    public Integer getRole() {
+        return role.ordinal();
+    }
+
+    public void setRole(Integer role) {
+        this.role = RoleAccount.values()[role];
     }
 }

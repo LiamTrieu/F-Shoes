@@ -40,8 +40,8 @@ public class Transaction extends PrimaryEntity {
     private Bill bill;
 
     @ManyToOne
-    @JoinColumn(name = "id_staff", referencedColumnName = "id")
-    private Staff staff;
+    @JoinColumn(name = "id_account", referencedColumnName = "id")
+    private Account account;
 
     public Integer getStatus() {
         return status.ordinal();

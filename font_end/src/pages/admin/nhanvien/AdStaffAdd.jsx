@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import staffApi from '../../../api/admin/nhanvien/nhanVienApi'
 import {
   Button,
@@ -12,16 +12,22 @@ import {
   Modal,
   Box,
   Typography,
+  Autocomplete,
 } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
-import confirmSatus from '../../../components/comfirmSwal'
 import { toast } from 'react-toastify'
 import { useZxing } from 'react-zxing'
 import './AdStaffAdd.css'
 import CircularProgress from '@mui/material/CircularProgress'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import ghnAPI from '../../../api/admin/ghn/ghnApi'
+import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
+import confirmSatus from '../../../components/comfirmSwal'
+
+const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
 
 const styleModal = {
   position: 'absolute',
@@ -33,19 +39,6 @@ const styleModal = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
-}
-
-const imageContainerStyle = {
-  border: '2px dashed #ddd',
-  borderRadius: '50%',
-  cursor: 'pointer',
-  height: '150px',
-  width: '150px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexDirection: 'column',
-  overflow: 'hidden',
 }
 
 const imageStyle = {
@@ -68,8 +61,84 @@ const AddStaff = () => {
 
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
   const [image, setImage] = useState(null)
-  const [loading, setLoading] = useState(false) // Thêm state loading
-  const [confirmClicked, setConfirmClicked] = useState(false) // Thêm state để theo dõi xác nhận
+  const [loading, setLoading] = useState(false)
+  const [confirmClicked, setConfirmClicked] = useState(false)
+  const [tinh, setTinh] = useState([])
+  const [huyen, setHuyen] = useState([])
+  const [xa, setXa] = useState([])
+
+  const [diaChi, setDiaChi] = useState({
+    name: '',
+    phoneNumber: '',
+    specificAddress: '',
+    type: null,
+    provinceId: null,
+    districtId: null,
+    wardId: null,
+    idCustomer: '',
+  })
+
+  useEffect(() => {
+    loadTinh()
+  }, [])
+
+  const loadTinh = () => {
+    ghnAPI.getProvince().then((response) => {
+      setTinh(response.data)
+    })
+  }
+
+  const loadHuyen = (idProvince) => {
+    ghnAPI.getDistrict(idProvince).then((response) => {
+      setHuyen(response.data)
+    })
+  }
+
+  const loadXa = (idDistrict) => {
+    ghnAPI.getWard(idDistrict).then((response) => {
+      setXa(response.data)
+    })
+  }
+
+  const [selectedTinh, setSelectedTinh] = useState(null)
+  const handleTinhChange = (_, newValue) => {
+    setSelectedTinh(newValue)
+    setSelectedHuyen(null)
+    if (newValue) {
+      loadHuyen(newValue.id)
+      setDiaChi({ ...diaChi, provinceId: newValue.id })
+    } else {
+      setHuyen([])
+      setDiaChi({ ...diaChi, provinceId: null })
+    }
+  }
+
+  const [selectedHuyen, setSelectedHuyen] = useState(null)
+  const [selectedXa, setSelectedXa] = useState(null)
+  const handleHuyenChange = (_, newValue) => {
+    setSelectedHuyen(newValue)
+    setSelectedXa(null)
+    if (newValue) {
+      loadXa(newValue.id)
+      setDiaChi({ ...diaChi, districtId: newValue.id })
+    } else {
+      setXa([])
+      setDiaChi({ ...diaChi, districtId: null })
+    }
+  }
+  const handleXaChange = (_, newValue) => {
+    setSelectedXa(newValue)
+    setDiaChi({ ...diaChi, wardId: newValue.id })
+  }
+
+  const updateDiaChi = () => {
+    setDiaChi({
+      ...diaChi,
+      name: staffAdd.fullName,
+      phoneNumber: staffAdd.phoneNumber,
+      type: true,
+    })
+  }
 
   const RenderVideo = () => {
     const { ref } = useZxing({
@@ -119,33 +188,41 @@ const AddStaff = () => {
   const navigate = useNavigate()
 
   const handleStaffAdd = () => {
-    setConfirmClicked(true) // Đánh dấu người dùng đã xác nhận
+    setConfirmClicked(true)
 
     const title = 'Xác nhận thêm mới nhân viên?'
     const text = ''
     confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
-        setLoading(true) // Bắt đầu hiển thị CircularProgress
+        setLoading(true)
         staffApi
           .add(staffAdd)
-          .then(() => {
-            toast.success('Thêm mới nhân viên thành công!', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
+          .then((response) => {
+            console.log(response.data)
+            let khachHangId = response.data.id
+            const obj = {
+              name: diaChi.name,
+              phoneNumber: diaChi.phoneNumber,
+              specificAddress: diaChi.specificAddress,
+              type: 0,
+              idCustomer: khachHangId,
+              provinceId: diaChi.provinceId,
+              districtId: diaChi.districtId,
+              wardId: diaChi.wardId,
+            }
+            DiaChiApi.add(obj).then(() => {
+              toast.success('Thêm mới nhân viên thành công!', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
 
-            navigate('/admin/staff')
-          })
-          .catch((error) => {
-            toast.error('Thêm khách hàng thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
+              navigate('/admin/staff')
             })
           })
           .finally(() => {
-            setLoading(false) // Kết thúc hiển thị CircularProgress
+            setLoading(false)
           })
       } else {
-        // Người dùng không xác nhận
-        toast.error('Thêm khách hàng thất bại', {
+        toast.error('Thêm nhân viên thất bại', {
           position: toast.POSITION.TOP_RIGHT,
         })
       }
@@ -166,16 +243,30 @@ const AddStaff = () => {
 
   return (
     <div className="nhanvienadd">
+      <BreadcrumbsCustom nameHere={'Thêm nhân viên'} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
-        <h2>Nhân viên</h2>
+        <Button
+          color="cam"
+          className="btnqr"
+          variant="contained"
+          fullWidth
+          onClick={handleOpenQRScanner}>
+          Quét QR
+        </Button>
+        <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
+          <Box sx={styleModal}>
+            <RenderVideo />
+          </Box>
+        </Modal>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={7}>
+          <Grid item xs={4}>
+            <h3>Thông tin nhân viên</h3>
+            <hr />
             <div
               onClick={() => {
                 document.getElementById('select-avatar').click()
               }}
-              style={imageContainerStyle}>
+              className="image-container">
               {image ? <img src={image} alt="Chọn ảnh" style={imageStyle} /> : 'Chọn ảnh'}
             </div>
             <input
@@ -185,95 +276,207 @@ const AddStaff = () => {
               accept="image/*"
               onChange={handleImageChange}
             />
-          </Grid>
-          <Grid item xs={2.5}>
-            <Button color="cam" variant="contained" fullWidth onClick={handleOpenQRScanner}>
-              Quét QR
-            </Button>
-          </Grid>
-        </Grid>
-        <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
-          <Box sx={styleModal}>
-            <RenderVideo />
-          </Box>
-        </Modal>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
-            <Typography>Họ Và Tên</Typography>
+            <Typography>
+              <span className="required"> *</span>Họ Và Tên
+            </Typography>
             <TextField
               id="outlined-basic"
               size="small"
               variant="outlined"
               value={staffAdd?.fullName}
               fullWidth
-              onChange={(e) => setStaffAdd({ ...staffAdd, fullName: e.target.value })}
+              onChange={(e) => {
+                setStaffAdd({ ...staffAdd, fullName: e.target.value })
+                updateDiaChi()
+              }}
             />
           </Grid>
-          <Grid item xs={5.5}>
-            <Typography>Email</Typography>
-            <TextField
-              id="outlined-basic"
-              size="small"
-              variant="outlined"
-              fullWidth
-              onChange={(e) => setStaffAdd({ ...staffAdd, email: e.target.value })}
-            />
+          <Grid item xs={8}>
+            <h3>Thông tin chi tiết</h3>
+            <hr />
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={6}>
+                <Typography>
+                  <span className="required"> *</span>Số CCCD
+                </Typography>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  size="small"
+                  value={staffAdd?.citizenId}
+                  fullWidth
+                  onChange={(e) => setStaffAdd({ ...staffAdd, citizenId: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Typography>
+                  <span className="required"> *</span>Giới tính
+                </Typography>
+                <FormControl size="small">
+                  <RadioGroup
+                    row
+                    value={staffAdd.gender}
+                    onChange={(e) => setStaffAdd({ ...staffAdd, gender: e.target.value })}>
+                    <FormControlLabel
+                      name="gioiTinh"
+                      value="true"
+                      control={<Radio />}
+                      label="Nam"
+                    />
+                    <FormControlLabel
+                      name="gioiTinh"
+                      value="false"
+                      control={<Radio />}
+                      label="Nữ"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={6}>
+                <Typography>
+                  <span className="required"> *</span>Ngày sinh
+                </Typography>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: '100%' }}
+                    className="small-datepicker"
+                    onChange={(e) =>
+                      setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
+                    }
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography>
+                  <span className="required"> *</span>Email
+                </Typography>
+                <TextField
+                  id="outlined-basic"
+                  size="small"
+                  variant="outlined"
+                  fullWidth
+                  onChange={(e) => setStaffAdd({ ...staffAdd, email: e.target.value })}
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={4}>
+                <Typography>
+                  <span className="required"> *</span>Tỉnh/thành phố
+                </Typography>
+                <Box sx={{ minWidth: 120 }}>
+                  <Autocomplete
+                    popupIcon={null}
+                    fullWidth
+                    size="small"
+                    className="search-field"
+                    id="combo-box-demo"
+                    value={selectedTinh}
+                    onChange={handleTinhChange}
+                    options={tinh.map((item) => ({
+                      label: item.provinceName,
+                      id: item.provinceID,
+                    }))}
+                    getOptionLabel={(options) => options.label}
+                    renderInput={(params) => (
+                      <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
+                    )}
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography>
+                  <span className="required"> *</span>Quận/huyện
+                </Typography>
+                <Box sx={{ minWidth: 120 }}>
+                  <Autocomplete
+                    popupIcon={null}
+                    fullWidth
+                    size="small"
+                    className="search-field"
+                    id="huyen-autocomplete"
+                    value={selectedHuyen}
+                    onChange={handleHuyenChange}
+                    options={huyen.map((item) => ({
+                      label: item.districtName,
+                      id: item.districtID,
+                    }))}
+                    getOptionLabel={(options) => options.label}
+                    renderInput={(params) => (
+                      <TextField placeholder="nhập tên huyện" color="cam" {...params} />
+                    )}
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography>
+                  <span className="required"> *</span>Xã/phường/thị trấn
+                </Typography>
+                <Box sx={{ minWidth: 120 }}>
+                  <Autocomplete
+                    popupIcon={null}
+                    fullWidth
+                    size="small"
+                    className="search-field"
+                    id="xa-autocomplete"
+                    value={selectedXa}
+                    onChange={handleXaChange}
+                    options={xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
+                    getOptionLabel={(options) => options.label}
+                    renderInput={(params) => (
+                      <TextField placeholder="nhập tên Xã" color="cam" {...params} />
+                    )}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={6}>
+                <Typography>
+                  <span className="required"> *</span>Số Điện Thoại
+                </Typography>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  onChange={(e) => {
+                    setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })
+                    updateDiaChi()
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Typography>
+                  <span className="required"> *</span>Địa chỉ cụ thể
+                </Typography>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  type="text"
+                  size="small"
+                  fullWidth
+                  onChange={(e) =>
+                    setDiaChi({
+                      ...diaChi,
+                      specificAddress:
+                        e.target.value +
+                        ', ' +
+                        selectedXa.label +
+                        ', ' +
+                        selectedHuyen.label +
+                        ', ' +
+                        selectedTinh.label,
+                    })
+                  }
+                />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
 
-          <Grid item xs={5.5}>
-            <Typography>Số CCCD</Typography>
-            <TextField
-              id="outlined-basic"
-              variant="outlined"
-              size="small"
-              value={staffAdd?.citizenId}
-              fullWidth
-              onChange={(e) => setStaffAdd({ ...staffAdd, citizenId: e.target.value })}
-            />
-          </Grid>
-          <Grid item xs={5.5}>
-            <Typography>Số Điện Thoại</Typography>
-            <TextField
-              id="outlined-basic"
-              variant="outlined"
-              size="small"
-              fullWidth
-              onChange={(e) => setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })}
-            />
-          </Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={0.5}></Grid>
-
-          <Grid item xs={5.5}>
-            <Typography>Giới tính</Typography>
-            <FormControl size="small">
-              <RadioGroup
-                row
-                value={staffAdd.gender}
-                onChange={(e) => setStaffAdd({ ...staffAdd, gender: e.target.value })}>
-                <FormControlLabel name="gioiTinh" value="true" control={<Radio />} label="Nam" />
-                <FormControlLabel name="gioiTinh" value="false" control={<Radio />} label="Nữ" />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-          <Grid item xs={5.5}>
-            <Typography>Ngày sinh</Typography>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                sx={{ width: '100%' }}
-                className="small-datepicker"
-                onChange={(e) =>
-                  setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
-                }
-              />
-            </LocalizationProvider>
-          </Grid>
-        </Grid>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={0.5}></Grid>
           <Grid item xs={3}></Grid>

@@ -29,8 +29,6 @@ public class Address extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_PHONE)
     private String phoneNumber;
 
-    @Column(length = EntityProperties.LENGTH_EMAIL)
-    private String email;
 
     @Column(length = EntityProperties.LENGTH_ID)
     private String provinceId;
@@ -47,7 +45,7 @@ public class Address extends PrimaryEntity {
     private Boolean type;
 
     @ManyToOne
-    @JoinColumn(name = "id_customer", referencedColumnName = "id")
-    private Customer customer;
+    @JoinColumn(name = "id_account", referencedColumnName = "id")
+    private Account account;
 
 }

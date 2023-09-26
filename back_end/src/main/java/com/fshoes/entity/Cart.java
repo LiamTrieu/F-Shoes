@@ -28,8 +28,8 @@ public class Cart {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "id_customer", referencedColumnName = "id")
-    private Customer customer;
+    @JoinColumn(name = "id_account", referencedColumnName = "id")
+    private Account account;
 
     private Long createAt = getLongDate();
 

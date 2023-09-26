@@ -72,7 +72,7 @@ public class DiaChiServiceImpl implements DiaChiService {
         try {
             Address address = diaChiRequest.newAddress(new Address());
             address.setType(false);
-            address.setCustomer(khachHangRepository.findById(diaChiRequest.getIdCustomer()).orElse(null));
+            address.setAccount(khachHangRepository.findById(diaChiRequest.getIdCustomer()).orElse(null));
             return diaChiRepository.save(address);
         } catch (Exception e) {
             e.printStackTrace();
