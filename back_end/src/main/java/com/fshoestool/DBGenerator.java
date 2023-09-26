@@ -65,10 +65,11 @@ public class DBGenerator implements CommandLineRunner {
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(DBGenerator.class);
         ctx.close();
+
     }
 
     public void run(String... args) throws Exception {
-        Account customer1 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn A").dateBirth(System.currentTimeMillis()).phoneNumber("0123456789").email("customer1@example.com").gender(true).password("password1").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer1 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn A").dateBirth(System.currentTimeMillis()).phoneNumber("0123456781").email("customer1@example.com").gender(true).password("password1").avatar(null).status(Status.HOAT_DONG).build();
         customer1.setId(accountRepository.save(customer1).getId());
 
         Account customer2 = Account.builder().fullName("Nguyễn Văn B").dateBirth(System.currentTimeMillis()).phoneNumber("0234567890").email("customer2@example.com").gender(false).password("password2").avatar(null).status(Status.HOAT_DONG).build();

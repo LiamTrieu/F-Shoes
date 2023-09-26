@@ -2,6 +2,7 @@ package com.fshoes.core.admin.hoadon.service.impl;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillHistoryRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillHistoryResponse;
+import com.fshoes.core.admin.hoadon.repository.HDAccountRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.entity.BillHistory;
@@ -18,7 +19,7 @@ public class HDBillHistoryServiceImpl implements HDBillHistoryService {
     private HDBillHistoryRepository hdBillHistoryRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private HDAccountRepository accountRepository;
 
 
     @Override
@@ -33,7 +34,7 @@ public class HDBillHistoryServiceImpl implements HDBillHistoryService {
             billHistory.setBill(hdBillHistoryRequest.getBill());
             billHistory.setNote(hdBillHistoryRequest.getNote());
             billHistory.setStatusBill(hdBillHistoryRequest.getBill().getStatus());
-            billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).get());
+            billHistory.setAccount(accountRepository.findAll().get(0));
             return hdBillHistoryRepository.save(billHistory);
         } else {
             BillHistory billHistory = new BillHistory();

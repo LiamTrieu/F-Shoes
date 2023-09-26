@@ -21,7 +21,7 @@ public interface HDBillRepositpory extends BillRepository {
             b.created_by as creatdeBy, sum(bt.quantity) as totalProduct, b.status
             FROM bill b
             LEFT JOIN bill_detail bt ON b.id = bt.id_bill
-            LEFT JOIN customer c ON b.id_customer = c.id
+            LEFT JOIN account c ON b.id_customer = c.id
             WHERE (:status IS NULL OR b.status = :status)
             AND (:startDate IS NULL OR b.created_at >= :startDate
             AND :endDate IS NULL OR b.created_at <= :endDate)
@@ -59,7 +59,7 @@ public interface HDBillRepositpory extends BillRepository {
                   c.email as emailCustomer
             FROM bill b
                   LEFT JOIN bill_detail bt ON b.id = bt.id_bill
-                  LEFT JOIN Customer c ON b.id_customer= c.id
+                  LEFT JOIN Account c ON b.id_customer= c.id
             WHERE b.id = :id
                                       
             """, nativeQuery = true)

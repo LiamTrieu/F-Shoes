@@ -142,7 +142,7 @@ export default function AdBillDetail() {
         note: billDetail.note,
         status: 2,
         noteBillHistory: ghiChu,
-        idStaff: '099b241f-f2cf-448f-909d-55f288dfea5b',
+        idStaff: null,
         listHdctReq: listHDCT.map((item) => ({
           idProductDetail: item.productDetailId,
           idBill: billDetail.id,

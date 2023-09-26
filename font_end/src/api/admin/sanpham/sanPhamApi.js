@@ -26,5 +26,9 @@ const sanPhamApi = {
     const url = `/product/add`
     return axiosClient.post(url, request)
   },
+  getProductDetail: (request) => {
+    const url = `/product/product-detail`
+    return axiosClient.get(url, { params: request })
+  },
 }
 export default sanPhamApi

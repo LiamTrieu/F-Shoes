@@ -1,5 +1,6 @@
 import AdProductAdd from '../../pages/admin/sanpham/AdProductAdd'
 import AdProductPage from '../../pages/admin/sanpham/AdProductPage'
+import AdProductPageDetail from '../../pages/admin/sanpham/AdProductPageDetail'
 
 const adProductRoute = [
   {
@@ -9,6 +10,10 @@ const adProductRoute = [
       document.title = 'Admin - Sản phẩm'
       return null
     },
+  },
+  {
+    path: '/admin/product/:id',
+    element: <AdProductPageDetail />,
   },
   {
     path: '/admin/product/add',
