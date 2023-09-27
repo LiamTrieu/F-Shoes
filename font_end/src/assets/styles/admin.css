@@ -41,9 +41,9 @@
 
 /* Màu nền cho các ô cell tiêu đề */
 .tableCss .MuiTableHead-root .MuiTableRow-root .MuiTableCell-root {
-  background-color: #FC7C27 !important;
-  color: #ffffff;
-  font-weight: 600;
+  /* background-color: #FC7C27 !important; */
+  /* color: #ffffff; */
+  font-weight: 700;
   font-size: 15px;
 }
 
@@ -87,7 +87,6 @@
 /* Giữ nguyên hình dạng table với bất kỳ màn hình nào */
 .tableCss th,
 .tableCss td {
-  overflow: hidden;
   word-wrap: break-word;
   text-overflow: ellipsis;
 }

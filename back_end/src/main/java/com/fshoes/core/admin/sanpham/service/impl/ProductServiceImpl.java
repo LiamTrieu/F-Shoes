@@ -4,6 +4,7 @@ import com.fshoes.core.admin.sanpham.model.request.PrdDetailFilterRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductDetailRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductFilterRequest;
 import com.fshoes.core.admin.sanpham.model.respone.ProductDetailResponse;
+import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
 import com.fshoes.core.admin.sanpham.repository.AdImageRepository;
 import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
@@ -66,7 +67,10 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Async
     public void addProductDetail(ProductDetailRequest request) {
-        ProductDetail productDetail = productDetailRepository.save(request.tranDetail(new ProductDetail()));
+        String code = "PD" + (productDetailRepository.count() + 1);
+        ProductDetail newProductDetail = new ProductDetail();
+        newProductDetail.setCode(code);
+        ProductDetail productDetail = productDetailRepository.save(request.tranDetail(newProductDetail));
         request.getListImage().forEach(i -> {
             Image image = new Image();
             image.setProductDetail(productDetail);
@@ -77,7 +81,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageReponse<ProductDetailResponse> getProductDetail(PrdDetailFilterRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
         return new PageReponse<>(productDetailRepository.getAllProductDetail(request, pageable));
+    }
+
+    @Override
+    public ProductMaxPriceResponse getMaxPriceProductId(String productId) {
+        return productDetailRepository.getProductMaxPrice(productId);
     }
 }
