@@ -27,5 +27,5 @@ public interface ProductDetailResponse extends IsIdentified {
 
     BigDecimal getPrice();
 
-    Boolean getDeleted();
+    Integer getDeleted();
 }

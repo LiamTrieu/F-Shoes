@@ -9,9 +9,22 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class PrdDetailFilterRequest extends PageableRequest {
+
     private String product;
 
-    private String priceMin;
+    private String name;
 
-    private String priceMax;
+    private String color;
+
+    private String material;
+
+    private String sizeFilter;
+
+    private String sole;
+
+    private Integer status;
+
+    private BigDecimal priceMin;
+
+    private BigDecimal priceMax;
 }

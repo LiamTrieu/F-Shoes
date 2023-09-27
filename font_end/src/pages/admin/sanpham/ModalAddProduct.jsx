@@ -5,9 +5,16 @@ import './index.css'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import bradApi from '../../../api/admin/sanpham/bradApi'
 
-export default function ModalAddProduct({ open, setOpen }) {
+export default function ModalAddProduct({ open, setOpen, title, dataProduct }) {
   const [categorys, setCategorys] = useState([])
   const [brands, setBrands] = useState([])
+  const [product, setProduct] = useState({
+    id: dataProduct.id,
+    name: dataProduct.nameProduct,
+    idCategory: dataProduct.idCategory,
+    idBrand: dataProduct.idBrand,
+    description: dataProduct.description,
+  })
 
   useEffect(() => {
     try {
@@ -30,7 +37,7 @@ export default function ModalAddProduct({ open, setOpen }) {
     <DialogAddUpdate
       open={open}
       setOpen={setOpen}
-      title={'Thêm mới sản phẩm'}
+      title={title}
       buttonSubmit={
         <Button
           style={{ boxShadow: 'none', textTransform: 'none', borderRadius: '8px' }}
@@ -41,6 +48,7 @@ export default function ModalAddProduct({ open, setOpen }) {
       }>
       <div className="san-pham">
         <TextField
+          defaultValue={dataProduct.nameProduct}
           color="cam"
           className="search-field"
           size="small"
@@ -49,6 +57,7 @@ export default function ModalAddProduct({ open, setOpen }) {
         />
         <Autocomplete
           popupIcon={null}
+          defaultValue={{ label: dataProduct.nameCategory, value: dataProduct.idCategory }}
           fullWidth
           size="small"
           className="search-field mt-3"
@@ -60,6 +69,7 @@ export default function ModalAddProduct({ open, setOpen }) {
         />
         <Autocomplete
           popupIcon={null}
+          defaultValue={{ label: dataProduct.nameBrand, value: dataProduct.idBrand }}
           fullWidth
           size="small"
           className="search-field mt-3"
@@ -70,6 +80,7 @@ export default function ModalAddProduct({ open, setOpen }) {
           renderInput={(params) => <TextField color="cam" {...params} label="Thương hiệu" />}
         />
         <TextField
+          defaultValue={dataProduct.description}
           color="cam"
           className="mt-3 search-field"
           label="Mô tả sản phẩm"

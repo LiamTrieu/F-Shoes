@@ -28,6 +28,8 @@ import materialApi from '../../../api/admin/sanpham/materialApi'
 import colorApi from '../../../api/admin/sanpham/colorApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
 
+import confirmSatus from '../../../components/comfirmSwal'
+
 import { RiDeleteBin2Line } from 'react-icons/ri'
 import { MdImageSearch } from 'react-icons/md'
 import { RiImageAddFill } from 'react-icons/ri'
@@ -281,24 +283,30 @@ export default function AdProductAdd() {
   const navigator = useNavigate()
   const saveProductDetail = () => {
     try {
-      newProductDetails.forEach((product) => {
-        sanPhamApi.addProuct({
-          idSole: product.sole.value,
-          idMaterial: product.material.value,
-          idProduct: product.product.value,
-          idBrand: product.product.brandId,
-          idCategory: product.product.categoryId,
-          idSize: product.size.value,
-          idColor: product.color.value,
-          price: product.price,
-          amount: product.amount,
-          weight: product.weight,
-          description: product.product.description,
-          listImage: product.images,
-        })
+      const title = 'Xác nhận thêm sản phẩm?'
+      const text = ''
+      confirmSatus(title, text).then((result) => {
+        if (result.isConfirmed) {
+          newProductDetails.forEach((product) => {
+            sanPhamApi.addProuct({
+              idSole: product.sole.value,
+              idMaterial: product.material.value,
+              idProduct: product.product.value,
+              idBrand: product.product.brandId,
+              idCategory: product.product.categoryId,
+              idSize: product.size.value,
+              idColor: product.color.value,
+              price: product.price,
+              amount: product.amount,
+              weight: product.weight,
+              description: product.product.description,
+              listImage: product.images,
+            })
+          })
+          toast.success('Thêm sản phẩm thành công')
+          navigator('/admin/product')
+        }
       })
-      toast.success('Thêm sản phẩm thành công')
-      navigator('/admin/product')
     } catch (error) {
       console.error(error)
       toast.error('Thêm sản phẩm thất bại')
@@ -307,7 +315,7 @@ export default function AdProductAdd() {
 
   return (
     <div className="san-pham">
-      <ModalAddProduct setOpen={setOpen} open={open} />
+      <ModalAddProduct title={'Thêm mới sản phẩm'} setOpen={setOpen} open={open} />
       <BreadcrumbsCustom nameHere={'Thêm sản phẩm'} listLink={listBreadcrumbs} />
       <Paper sx={{ py: 2 }}>
         <Container className="container" sx={{ paddingBottom: '10px' }}>

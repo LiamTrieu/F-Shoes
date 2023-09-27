@@ -88,7 +88,7 @@ export default function AdProductPage() {
             component={Link}
             to="/admin/product/add"
             color="cam"
-            variant="contained"
+            variant="outlined"
             className="them-moi">
             <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
             Thêm mới
@@ -206,6 +206,7 @@ export default function AdProductPage() {
               <Typography component="span" variant={'body2'} mt={0.5}>
                 <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
                 <Select
+                  color="cam"
                   onChange={(e) => {
                     setFilter({ ...filter, size: e.target.value })
                   }}
@@ -223,6 +224,7 @@ export default function AdProductPage() {
                 </Typography>
               </Typography>
               <Pagination
+                variant="outlined"
                 color="cam"
                 count={total}
                 page={filter.page}
