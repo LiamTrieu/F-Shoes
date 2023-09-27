@@ -17,7 +17,7 @@ public interface AdminSellGetCustomerRepository extends AccountRepository {
             "gender, created_at as createdAt, status from account " +
             "where  (:#{#AKS.nameSearch} is null or full_name like %:#{#AKS.nameSearch}% or email like %:#{#AKS.nameSearch}% or phone_number like %:#{#AKS.nameSearch}%) " +
             "and (:#{#AKS.gender} is null or gender=:#{#AKS.gender}) " +
-            "and (:#{#AKS.statusSearch} is null or status=:#{#AKS.statusSearch}) " +
+            "and (:#{#AKS.statusSearch} is null or status=:#{#AKS.statusSearch}) and role = 2 " +
             "order by created_at desc", nativeQuery = true)
     Page<GetALlCustomerResponse> FindKhachHang(Pageable pageable, AdCustomerRequest AKS);
 
