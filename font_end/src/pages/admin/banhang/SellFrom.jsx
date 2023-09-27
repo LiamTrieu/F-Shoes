@@ -19,7 +19,6 @@ import {
   TableHead,
   TextField,
   Toolbar,
-  Tooltip,
   Typography,
 } from '@mui/material'
 import TableCell from '@mui/material/TableCell'
@@ -31,9 +30,9 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { LocalShipping } from '@mui/icons-material'
 import sellApi from '../../../api/admin/sell/SellApi'
-import { TbEyeEdit } from 'react-icons/tb'
-import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
+import './sell.css'
+import ModelSell from './ModelSell'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -42,17 +41,6 @@ const styleModalProduct = {
   transform: 'translate(-50%, -50%)',
   width: { xs: '90vw', md: '80vw' },
   height: '600px',
-  bgcolor: 'white',
-  borderRadius: 1.5,
-  boxShadow: 24,
-}
-const styleModalProductDetail = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: { xs: '60vw', md: '30vw' },
-  height: '300px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
@@ -72,25 +60,41 @@ export default function SellFrom({ maHD }) {
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false)
-  const [isShowProduct, setIsShowProduct] = useState(false)
-  const [isShowProductDetail, setIsShowProductDetail] = useState(false)
-  const [listProduct, setListProduct] = useState([])
+  const [showModal, setShowModal] = useState(false)
+  const [listProductCart, setListProductCart] = useState([])
   const [listKhachHang, setlistKhachHang] = useState([])
 
-  useEffect(() => {
-    fecthData()
-  }, [])
+  const openAddProductModal = () => {
+    setShowModal(true)
+  }
+
   useEffect(() => {
     fecthDataCustomer()
+    fecthDataProductCart()
   }, [])
-  const fecthData = () => {
-    sellApi.getAllProduct().then((response) => {
-      setListProduct(response.data.data)
+  const fecthDataProductCart = () => {
+    sellApi.getAllProductCart().then((response) => {
+      setListProductCart(response.data.data)
     })
   }
   const fecthDataCustomer = () => {
     sellApi.getAllCustomer().then((response) => {
       setlistKhachHang(response.data.data.data)
+    })
+  }
+
+  const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
+    // originalPrice là giá gốc của sản phẩm, discountPercentage là phần trăm giảm giá
+    const discountAmount = (discountPercentage / 100) * originalPrice
+    const discountedPrice = originalPrice - discountAmount
+    return discountedPrice
+  }
+
+  const formatPrice = (price) => {
+    // Sử dụng hàm toLocaleString để định dạng tiền tệ
+    return price.toLocaleString('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
     })
   }
 
@@ -101,10 +105,9 @@ export default function SellFrom({ maHD }) {
           <Typography fontWeight={'bold'} variant="h6" display={'inline'}>
             Sản phẩm
           </Typography>
+
           <Button
-            onClick={() => {
-              setIsShowProduct(true)
-            }}
+            onClick={openAddProductModal}
             sx={{ float: 'right' }}
             size="small"
             variant="contained"
@@ -112,302 +115,52 @@ export default function SellFrom({ maHD }) {
             <AddIcon fontSize="small" /> Thêm sản phẩm
           </Button>
         </Box>
-        <Modal
-          open={isShowProduct}
-          onClose={() => {
-            setIsShowProduct(false)
-          }}>
-          <Box sx={styleModalProduct}>
-            <Toolbar>
-              <Box
-                sx={{
-                  color: 'black',
-                  flexGrow: 1,
-                }}>
-                <Typography variant="h6" component="div">
-                  Tìm kiếm sản phẩm
-                </Typography>
-              </Box>
-              <IconButton
-                onClick={() => {
-                  setIsShowProduct(false)
-                }}
-                aria-label="close"
-                color="error"
-                style={{
-                  boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
-                }}>
-                <CloseIcon />
-              </IconButton>
-            </Toolbar>
-            <Container>
-              <Box>
-                <TextField
-                  sx={{
-                    width: '50%',
-                    '.MuiInputBase-input': { py: '7.5px' },
-                  }}
-                  size="small"
-                  variant="outlined"
-                  placeholder="Tên sản phẩm"
-                />
-                <Button sx={{ ml: 2 }} variant="contained">
-                  Tìm kiếm
-                </Button>
-              </Box>
-              <Box>
-                <b>Danh mục:</b>
-                <Select
-                  sx={{
-                    '.MuiSelect-select': {
-                      pl: 1,
-                      color: 'rgb(34, 143, 65)',
-                      fontWeight: 'bold',
-                    },
-                    '.MuiOutlinedInput-notchedOutline': {
-                      border: 'none!important',
-                    },
-                  }}
-                  value={0}>
-                  <MenuItem value={0}>Tất cả</MenuItem>
-                  <MenuItem value={1}>Danh mục 1</MenuItem>
-                </Select>
-                <b>Màu sắc:</b>
-                <Select
-                  sx={{
-                    '.MuiSelect-select': {
-                      pl: 1,
-                      color: 'rgb(34, 143, 65)',
-                      fontWeight: 'bold',
-                    },
-                    '.MuiOutlinedInput-notchedOutline': {
-                      border: 'none!important',
-                    },
-                  }}
-                  value={0}>
-                  <MenuItem value={0}>Tất cả</MenuItem>
-                  <MenuItem value={1}>Danh mục 1</MenuItem>
-                </Select>
-                <b>Sắp xếp:</b>
-                <Select
-                  sx={{
-                    '.MuiSelect-select': {
-                      pl: 1,
-                      color: 'rgb(34, 143, 65)',
-                      fontWeight: 'bold',
-                    },
-                    '.MuiOutlinedInput-notchedOutline': {
-                      border: 'none!important',
-                    },
-                  }}
-                  value={0}>
-                  <MenuItem value={0}>Tất cả</MenuItem>
-                  <MenuItem value={1}>Danh mục 1</MenuItem>
-                </Select>
-              </Box>
-              <Box
-                sx={{
-                  maxHeight: '440px',
-                  overflow: 'auto',
-                }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
-                        Ảnh
-                      </TableCell>
-                      <TableCell width={'60%'} align="center" sx={{ fontWeight: 'bold' }}>
-                        Tên
-                      </TableCell>
-                      <TableCell width={'15%'} align="center" sx={{ fontWeight: 'bold' }}>
-                        Giá
-                      </TableCell>
-                      <TableCell width={'15%'} align="center" sx={{ fontWeight: 'bold' }}>
-                        Thao tác
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {listProduct.map((cart, index) => (
-                      <TableRow key={cart.id}>
-                        <TableCell width={'15%'} align="center">
-                          <img width={'100%'} alt="error" src={cart.url} />
-                        </TableCell>
-                        <TableCell width={'65%'}>
-                          <p style={{ margin: 0 }}>
-                            <b>{cart.name}</b>
-                          </p>
-                        </TableCell>
-                        <TableCell
-                          width={'15%'}
-                          align="center"
-                          sx={{
-                            color: 'red',
-                            fontWeight: 'bold',
-                          }}>
-                          {cart.price}.000&#8363;
-                        </TableCell>
-                        <TableCell width={'15%'} align="center">
-                          <Button
-                            onClick={() => {
-                              setIsShowProductDetail(true)
-                            }}
-                            variant="outlined"
-                            color="info"
-                            size="small">
-                            Chọn
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Box>
-              <Modal
-                open={isShowProductDetail}
-                onClose={() => {
-                  setIsShowProductDetail(false)
-                }}>
-                <Box sx={styleModalProductDetail}>
-                  <Toolbar>
-                    <Box
-                      sx={{
-                        color: 'black',
-                        flexGrow: 1,
-                      }}>
-                      <Typography variant="h6" component="div">
-                        Air Jordan 1 Mid - Neutral Grey
-                      </Typography>
-                    </Box>
-                    <IconButton
-                      onClick={() => {
-                        setIsShowProductDetail(false)
-                      }}
-                      aria-label="close"
-                      color="error"
-                      style={{
-                        boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
-                      }}>
-                      <CloseIcon />
-                    </IconButton>
-                  </Toolbar>
-                  <Container>
-                    <Box py={1}>
-                      <Typography mr={2} fontWeight={'bold'} variant="button" gutterBottom>
-                        Size
-                      </Typography>
-                      <Select
-                        sx={{
-                          '.MuiSelect-select': {
-                            pl: 1,
-                            color: 'rgb(34, 143, 65)',
-                            fontWeight: 'bold',
-                          },
-                          '.MuiOutlinedInput-notchedOutline': {
-                            border: 'none!important',
-                          },
-                        }}
-                        value={0}>
-                        <MenuItem value={0}>33</MenuItem>
-                      </Select>
-                      <FormControl></FormControl>
-                    </Box>
-                    <Box py={1}>
-                      <Typography mr={2} fontWeight={'bold'} variant="button" gutterBottom>
-                        Color
-                      </Typography>
-                      <Select
-                        sx={{
-                          '.MuiSelect-select': {
-                            pl: 1,
-                            color: 'rgb(34, 143, 65)',
-                            fontWeight: 'bold',
-                          },
-                          '.MuiOutlinedInput-notchedOutline': {
-                            border: 'none!important',
-                          },
-                        }}
-                        value={0}>
-                        <MenuItem value={0}>Đỏ</MenuItem>
-                      </Select>
-                    </Box>
-                    <Box py={1}>
-                      <Typography
-                        sx={{ float: 'left' }}
-                        color={'red'}
-                        mr={2}
-                        mt={'5px'}
-                        fontWeight={'bold'}>
-                        Số lượng: 100
-                      </Typography>
 
-                      <Box
-                        width={'65px'}
-                        display="flex"
-                        alignItems="center"
-                        sx={{
-                          border: '1px solid gray',
-                          borderRadius: '20px',
-                        }}
-                        p={'3px'}>
-                        <IconButton sx={{ p: 0 }} size="small">
-                          <RemoveIcon fontSize="1px" />
-                        </IconButton>
-                        <TextField
-                          value="10"
-                          inputProps={{ min: 1 }}
-                          size="small"
-                          sx={{
-                            width: '30px ',
-                            '& input': { p: 0, textAlign: 'center' },
-                            '& fieldset': {
-                              border: 'none',
-                            },
-                          }}
-                        />
-                        <IconButton size="small" sx={{ p: 0 }}>
-                          <AddIcon fontSize="1px" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                    <Stack
-                      direction="row"
-                      justifyContent="flex-end"
-                      alignItems="flex-end"
-                      spacing={2}>
-                      <Box>
-                        <Button variant="contained" color="success">
-                          <b>Xác nhận</b>
-                        </Button>
-                      </Box>
-                    </Stack>
-                  </Container>
-                </Box>
-              </Modal>
-            </Container>
-          </Box>
-        </Modal>
+        <ModelSell open={showModal} setOPen={setShowModal} />
 
         <Box>
           <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>
-            {listProduct.map((cart) => (
+            {listProductCart.map((cart) => (
               <Table>
                 <TableRow sx={{ border: 0 }} key={cart.id}>
-                  <TableCell sx={{ px: 0 }}>
+                  <TableCell sx={{ px: 0 }} width={'5%'}>
                     <IconButton color="error">
                       <CloseIcon />
                     </IconButton>
                   </TableCell>
-                  <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
-                    <Box component="span" display={{ sm: 'inline', xs: 'none' }}>
+                  <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }} width={'70%'}>
+                    <Box
+                      component="span"
+                      display={{ sm: 'inline', xs: 'none' }}
+                      style={{ position: 'relative' }}>
                       <img
                         alt="error"
                         src={cart.url}
                         style={{
-                          maxWidth: '20%',
-                          maxHeight: '20%',
+                          minHeight: '200px',
+                          height: '200px',
+                          width: '200px',
                           verticalAlign: 'middle',
-                        }}></img>
+                        }}
+                      />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '-530%',
+                          right: '0',
+                          backgroundColor:
+                            cart.value >= 1 && cart.value <= 50
+                              ? '#66CC00'
+                              : cart.value >= 51 && cart.value <= 80
+                              ? '#FF9900'
+                              : '#FF0000',
+                          color: 'white',
+                          padding: '6px 5px',
+                          borderRadius: '0 0 0 10px',
+                        }}
+                        className="discount">
+                        {cart.value}% OFF
+                      </div>
                     </Box>
                     <span
                       style={{
@@ -420,12 +173,27 @@ export default function SellFrom({ maHD }) {
                         <b>{cart.name}</b>
                       </p>
                       <p style={{ color: 'red', margin: '5px 0' }}>
-                        <b>{cart.price}.000&#8363;</b>
+                        {/* <b>{cart.price}.000&#8363;</b> */}
+                        {cart.promotion ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
+                          <div>
+                            <div className="promotion-price">{`${formatPrice(cart.price)}`}</div>{' '}
+                            {/* Hiển thị giá gốc */}
+                            <div>
+                              <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                {`${formatPrice(calculateDiscountedPrice(cart.price, cart.value))}`}
+                              </span>{' '}
+                              {/* Hiển thị giá sau khuyến mãi */}
+                            </div>
+                          </div>
+                        ) : (
+                          // Nếu không có khuyến mãi, chỉ hiển thị giá gốc
+                          <span>{`${cart.price}.000₫`}</span>
+                        )}
                       </p>
                       <p style={{ margin: 0 }}>size:{cart.size}</p>
                     </span>
                   </TableCell>
-                  <TableCell sx={{ px: 0 }}>
+                  <TableCell sx={{ px: 0 }} width={'5%'}>
                     <Box
                       width={'65px'}
                       display="flex"
@@ -459,8 +227,10 @@ export default function SellFrom({ maHD }) {
                     sx={{
                       color: 'red',
                       fontWeight: 'bold',
-                    }}>
-                    {cart.price * cart.amount}.000&#8363;
+                    }}
+                    width={'20%'}
+                    align="right">
+                    {formatPrice(calculateDiscountedPrice(cart.price, cart.value) * cart.amount)}
                   </TableCell>
                 </TableRow>
               </Table>
@@ -606,67 +376,71 @@ export default function SellFrom({ maHD }) {
                   </Box>
                 </Modal>
               </Container>
+              <Container>
+                <Table className="tableCss mt-5">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center" width={'7%'}>
+                        STT
+                      </TableCell>
+                      <TableCell align="center" width={'25%'}>
+                        Email
+                      </TableCell>
+                      <TableCell align="center" width={'12%'}>
+                        Họ tên
+                      </TableCell>
+                      <TableCell align="center" width={'15%'}>
+                        Ngày sinh
+                      </TableCell>
+                      <TableCell align="center" width={'15%'}>
+                        Số điện thoại
+                      </TableCell>
+                      <TableCell align="center" width={'15%'}>
+                        Giới tính
+                      </TableCell>
+                      <TableCell align="center" width={'15%'}>
+                        Trạng thái
+                      </TableCell>
+                      <TableCell align="center" width={'10%'}>
+                        Thao tác
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {listKhachHang.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        <TableCell align="center">{row.stt}</TableCell>
+                        <TableCell align="center">{row.email}</TableCell>
+                        <TableCell align="center">{row.fullName}</TableCell>
+                        <TableCell align="center">
+                          {dayjs(row.dateBirth).format('MM/DD/YYYY')}
+                        </TableCell>
+                        <TableCell align="center">{row.phoneNumber}</TableCell>
+                        <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
+                        <TableCell align="center">
+                          {row.status === 0 ? (
+                            <Chip
+                              // onClick={() => deleteKhachHang(row.id)}
+                              className="chip-hoat-dong"
+                              size="small"
+                              label="Hoạt động"
+                            />
+                          ) : (
+                            <Chip
+                              className="chip-khong-hoat-dong"
+                              size="small"
+                              label="Không hoạt động"
+                            />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Container>
             </Box>
-            {/* <Table className="tableCss mt-5">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center" width={'7%'}>
-                    STT
-                  </TableCell>
-                  <TableCell align="center" width={'25%'}>
-                    Email
-                  </TableCell>
-                  <TableCell align="center" width={'12%'}>
-                    Họ tên
-                  </TableCell>
-                  <TableCell align="center" width={'15%'}>
-                    Ngày sinh
-                  </TableCell>
-                  <TableCell align="center" width={'15%'}>
-                    Số điện thoại
-                  </TableCell>
-                  <TableCell align="center" width={'15%'}>
-                    Giới tính
-                  </TableCell>
-                  <TableCell align="center" width={'15%'}>
-                    Trạng thái
-                  </TableCell>
-                  <TableCell align="center" width={'10%'}>
-                    Thao tác
-                  </TableCell>
-                </TableRow>
-              </TableHead> */}
-            {/* <TableBody>
-                {listKhachHang.map((row) => (
-                  <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell align="center">{row.stt}</TableCell>
-                    <TableCell align="center">{row.email}</TableCell>
-                    <TableCell align="center">{row.fullName}</TableCell>
-                    <TableCell align="center">
-                      {dayjs(row.dateBirth).format('MM/DD/YYYY')}
-                    </TableCell>
-                    <TableCell align="center">{row.phoneNumber}</TableCell>
-                    <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
-                    <TableCell align="center">
-                      {row.status === 0 ? (
-                        <Chip
-                          // onClick={() => deleteKhachHang(row.id)}
-                          className="chip-hoat-dong"
-                          size="small"
-                          label="Hoạt động"
-                        />
-                      ) : (
-                        <Chip
-                          className="chip-khong-hoat-dong"
-                          size="small"
-                          label="Không hoạt động"
-                        />
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody> */}
-            {/* </Table> */}
           </Modal>
         </Box>
         <Box p={2}>

@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.sell.service.impl;
 
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
+import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.model.response.GetALlCustomerResponse;
 import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
 import com.fshoes.core.admin.sell.repository.AdminSellGetCustomerRepository;
@@ -28,8 +29,13 @@ public class AdminSellServiceImpl implements AdminSellService {
         return new PageReponse<>(getCustomerRepository.FindKhachHang(pageable, request));
     }
     @Override
-    public List<GetAllProductResponse> getAllProduct() {
-        return getProductRepository.getAllProduct();
+    public List<GetAllProductResponse> getAllProduct(FilterProductDetailRequest request) {
+        return getProductRepository.getAllProduct(request);
+    }
+
+    @Override
+    public List<GetAllProductResponse> getAllProductCart() {
+        return getProductRepository.getAllProductCart();
     }
 
 }

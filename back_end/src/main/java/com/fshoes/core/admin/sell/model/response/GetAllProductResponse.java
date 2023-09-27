@@ -13,4 +13,20 @@ public interface GetAllProductResponse extends IsIdentified {
     String getUrl();
 
     Integer getAmount();
+
+    String getPromotion();
+
+    Integer getValue();
+
+    String getMaterial();
+
+    String getCategory();
+
+    String getSole();
+
+    String getColor();
+
+    String getBrand();
+
+    String getCode();
 }
