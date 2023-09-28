@@ -6,6 +6,13 @@ import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.khachhang.service.KhachHangService;
 import com.fshoes.entity.Account;
+import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
+import com.fshoes.infrastructure.constant.RoleAccount;
+import com.fshoes.infrastructure.constant.Status;
+import com.fshoes.infrastructure.email.Email;
+import com.fshoes.infrastructure.email.EmailSender;
+import com.fshoes.util.DateUtil;
+import com.fshoes.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Optional;
 
@@ -21,7 +29,11 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Autowired
     KhachHangRepository khachHangRepository;
 
+    @Autowired
+    private CloudinaryImage cloudinaryImage;
 
+    @Autowired
+    private EmailSender emailSender;
     @Override
     public Page<KhachHangRespone> findKhachHang(AdKhachHangSearch adKhachHangSearch) {
         Pageable pageable = PageRequest.of(adKhachHangSearch.getPage() - 1, adKhachHangSearch.getSize());
@@ -31,15 +43,34 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     @Transactional
-    public Account add(KhachHangRequest khachHangRequest) {
-        try {
-            Account customer = khachHangRequest.newCustomer(new Account());
-            customer.setRole(2);
-            return khachHangRepository.save(customer);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
+    public Account add(KhachHangRequest khachHangRequest) throws ParseException {
+        Long dateBirth = DateUtil.parseDateLong(khachHangRequest.getDateBirth());
+        Account customer = Account.builder()
+                .fullName(khachHangRequest.getFullName())
+                .dateBirth(dateBirth)
+                .phoneNumber(khachHangRequest.getPhoneNumber())
+                .email(khachHangRequest.getEmail())
+                .gender(khachHangRequest.getGender())
+                .role(RoleAccount.values()[khachHangRequest.getRole()])
+                .status(Status.values()[khachHangRequest.getStatus()])
+                .build();
+
+        // Kiểm tra xem avatar có giá trị hay không trước khi gán
+        if (khachHangRequest.getAvatar() != null && !khachHangRequest.getAvatar().isEmpty()) {
+            customer.setAvatar(cloudinaryImage.uploadAvatar(khachHangRequest.getAvatar()));
         }
+
+        String password = generatePassword();
+        String[] toMail = {khachHangRequest.getEmail()};
+        Email email = new Email();
+        email.setBody("<b style=\"text-align: center;\">"+password+"</b>");
+        email.setToEmail(toMail);
+        email.setSubject("Tạo tài khoản thành công");
+        email.setTitleEmail("Mật khẩu đăng nhập là:");
+        emailSender.sendEmail(email);
+        customer.setPassword(MD5Util.getMD5(password));
+
+        return khachHangRepository.save(customer);
     }
 
     @Override
@@ -48,8 +79,12 @@ public class KhachHangServiceImpl implements KhachHangService {
         Optional<Account> optionalCustomer = khachHangRepository.findById(id);
         if (optionalCustomer.isPresent()) {
             Account customer = khachHangRequest.newCustomer(optionalCustomer.get());
+            if(khachHangRequest.getAvatar() != null) {
+                customer.setAvatar(cloudinaryImage.uploadAvatar(khachHangRequest.getAvatar()));
+            }
             khachHangRepository.save(customer);
             return true;
+
         } else {
             return false;
         }
@@ -73,4 +108,19 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
 
+    private String generatePassword() {
+        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        StringBuilder password = new StringBuilder();
+
+        SecureRandom random = new SecureRandom();
+
+        for (int i = 0; i < 12; i++) {
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            password.append(randomChar);
+        }
+
+        return password.toString();
+    }
 }

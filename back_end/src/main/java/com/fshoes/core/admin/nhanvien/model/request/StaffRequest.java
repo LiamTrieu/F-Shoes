@@ -31,7 +31,7 @@ public class StaffRequest {
 
     private String CitizenId;
 
-    private Integer role=0;
+    private Integer role = 0;
 
     private Integer status = 0;
 

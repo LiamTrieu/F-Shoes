@@ -6,6 +6,7 @@ import com.fshoes.util.DateUtil;
 import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 
@@ -23,24 +24,22 @@ public class KhachHangRequest {
 
     private Boolean gender;
 
-    private String password;
-
-    private String avatar;
-
-    private Integer status = 1 ;
+    private MultipartFile avatar;
 
     private Integer role = 2;
 
-   public Account newCustomer(Account customer) throws ParseException {
-        customer.setAvatar(this.getAvatar());
-        customer.setEmail(this.getEmail());
+    private Integer status = 0;
+
+
+    public Account newCustomer(Account customer) throws ParseException {
         customer.setFullName(this.getFullName());
         customer.setDateBirth(DateUtil.parseDateLong(this.getDateBirth()));
         customer.setPhoneNumber(this.getPhoneNumber());
+        customer.setEmail(this.getEmail());
         customer.setGender(this.getGender());
-        customer.setPassword(this.getPassword());
-       customer.setStatus(this.getStatus());
-       customer.setRole(this.getRole());
+        customer.setRole(role);
+        customer.setStatus(status);
+
         return customer;
-   }
+    }
 }
