@@ -13,7 +13,7 @@ import java.util.List;
 public interface AdminSellGetProductRepository extends ProductRepository {
 
     @Query(value = """
-             		SELECT p.id, pr.id as promotion,pr.value, p.name, pd.price, s.size, i.url, pd.amount,
+             		SELECT p.id, pr.id as promotion,pr.value, p.name, pd.price,pd.weight, s.size, i.url, pd.amount,
                                                  m.name as material, sl.name as sole,b.name as brand,c.name as color ,
                                                  pd.code , cate.name as category
              									FROM product p inner join product_detail pd

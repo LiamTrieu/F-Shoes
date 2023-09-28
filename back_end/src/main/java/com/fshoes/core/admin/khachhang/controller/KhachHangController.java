@@ -20,7 +20,7 @@ public class KhachHangController {
         return new ObjectRespone(khachHangService.findKhachHang(adKhachHangSearch));
     }
     @PostMapping("/create")
-    public ObjectRespone create(@RequestBody KhachHangRequest khachHangRequest) {
+    public ObjectRespone create(@ModelAttribute KhachHangRequest khachHangRequest) throws ParseException {
         khachHangRequest.setStatus(0);
         return new ObjectRespone(khachHangService.add(khachHangRequest));
     }
@@ -31,7 +31,7 @@ public class KhachHangController {
     }
 
     @PutMapping("/update/{id}")
-    public ObjectRespone update(@PathVariable String id, @RequestBody KhachHangRequest khachHangRequest) throws ParseException {
+    public ObjectRespone update(@PathVariable String id, @ModelAttribute KhachHangRequest khachHangRequest) throws ParseException {
         return new ObjectRespone(khachHangService.update(id,khachHangRequest));
     }
 

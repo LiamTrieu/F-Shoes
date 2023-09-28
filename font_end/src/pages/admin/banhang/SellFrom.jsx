@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import {
+  Autocomplete,
   Box,
   Button,
   Chip,
   Container,
-  FormControl,
   IconButton,
-  InputLabel,
-  MenuItem,
   Modal,
   Paper,
-  Select,
   Stack,
   Switch,
   Table,
@@ -33,6 +30,8 @@ import sellApi from '../../../api/admin/sell/SellApi'
 import dayjs from 'dayjs'
 import './sell.css'
 import ModelSell from './ModelSell'
+import ghnAPI from '../../../api/admin/ghn/ghnApi'
+import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -64,6 +63,9 @@ export default function SellFrom({ maHD }) {
   const [listProductCart, setListProductCart] = useState([])
   const [listKhachHang, setlistKhachHang] = useState([])
 
+  const [shipTotal, setShipTotal] = useState('')
+  const [timeShip, setTimeShip] = useState('')
+
   const openAddProductModal = () => {
     setShowModal(true)
   }
@@ -71,6 +73,7 @@ export default function SellFrom({ maHD }) {
   useEffect(() => {
     fecthDataCustomer()
     fecthDataProductCart()
+    loadTinh()
   }, [])
   const fecthDataProductCart = () => {
     sellApi.getAllProductCart().then((response) => {
@@ -96,6 +99,153 @@ export default function SellFrom({ maHD }) {
       style: 'currency',
       currency: 'VND',
     })
+  }
+
+  const [tinh, setTinh] = useState([])
+  const [huyen, setHuyen] = useState([])
+  const [xa, setXa] = useState([])
+
+  const loadTinh = () => {
+    ghnAPI.getProvince().then((response) => {
+      setTinh(response.data)
+    })
+  }
+
+  const loadHuyen = (idProvince) => {
+    ghnAPI.getDistrict(idProvince).then((response) => {
+      setHuyen(response.data)
+    })
+  }
+
+  const loadXa = (idDistrict) => {
+    ghnAPI.getWard(idDistrict).then((response) => {
+      setXa(response.data)
+    })
+  }
+
+  const handleTinhChange = (_, newValue) => {
+    if (newValue) {
+      loadHuyen(newValue.id)
+      // Lưu tên tỉnh đã chọn vào state
+      setTinhName(newValue.label)
+      // Đặt giá trị tỉnh vào chi tiết địa chỉ
+      setDetailDiaChi({ ...detailDiaChi, provinceId: newValue.id })
+    } else {
+      setHuyen([])
+      setDetailDiaChi({ ...detailDiaChi, provinceId: '' })
+    }
+  }
+
+  const handleHuyenChange = (_, newValue) => {
+    if (newValue) {
+      loadXa(newValue.id)
+      // Lưu tên huyện đã chọn vào state
+      setHuyenName(newValue.label)
+      // Đặt giá trị huyện vào chi tiết địa chỉ
+      setDetailDiaChi({ ...detailDiaChi, districtId: newValue.id })
+    } else {
+      setXa([])
+      setDetailDiaChi({ ...detailDiaChi, districtId: '' })
+    }
+  }
+
+  const handleXaChange = (_, newValue) => {
+    if (newValue) {
+      setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
+    } else {
+      setDetailDiaChi({ ...detailDiaChi, wardId: '' })
+    }
+  }
+
+  const [detailDiaChi, setDetailDiaChi] = useState({
+    name: '',
+    phoneNumber: '',
+    email: '',
+    specificAddress: '',
+    type: 0,
+  })
+  const [xaName, setXaName] = useState('')
+  const [huyenName, setHuyenName] = useState('')
+  const [tinhName, setTinhName] = useState('')
+
+  const fillDetailDiaChi = (idCustomer) => {
+    DiaChiApi.getAddressDefault(idCustomer).then((response) => {
+      console.log(response)
+      const {
+        idDiaChi,
+        name,
+        email,
+        phoneNumber,
+        specificAddress,
+        provinceId,
+        districtId,
+        wardId,
+        type,
+      } = response.data.data
+
+      loadTinh()
+      loadHuyen(provinceId)
+      loadXa(districtId)
+      // Cắt chuỗi specificAddress thành các phần riêng biệt
+      const addressParts = specificAddress.split(', ')
+      if (addressParts.length === 4) {
+        const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
+        // Đặt giá trị cho các biến state tương ứng
+        setXaName(xaDetail)
+        setHuyenName(huyenDetail)
+        setTinhName(tinhDetail)
+
+        setDetailDiaChi({
+          id: idDiaChi,
+          name: name,
+          type: type,
+          phoneNumber: phoneNumber,
+          email: email,
+          specificAddress: address,
+          provinceId: provinceId,
+          districtId: districtId,
+          wardId: wardId,
+        })
+        const filtelService = {
+          shop_id: '3911708',
+          from_district: '3440',
+          to_district: districtId,
+        }
+
+        ghnAPI.getServiceId(filtelService).then((response) => {
+          const serviceId = response.data.body.serviceId
+          const filterTotal = {
+            from_district_id: '3440',
+            service_id: serviceId,
+            to_district_id: districtId,
+            to_ward_code: wardId,
+            weight: '200',
+            insurance_value: '10000',
+          }
+
+          ghnAPI.getTotal(filterTotal).then((response) => {
+            setShipTotal(response.data.body.total)
+
+            const filtelTime = {
+              from_district_id: '3440',
+              from_ward_code: '13010',
+              to_district_id: districtId,
+              to_ward_code: wardId,
+              service_id: serviceId,
+            }
+            ghnAPI.getime(filtelTime).then((response) => {
+              console.log(response.data.body.leadtime)
+              setTimeShip(response.data.body.leadtime * 1000)
+            })
+          })
+        })
+      }
+    })
+  }
+
+  const handleDiaChi = (idCustomer) => {
+    setIsShowCustomer(false)
+    fillDetailDiaChi(idCustomer)
   }
 
   return (
@@ -435,6 +585,14 @@ export default function SellFrom({ maHD }) {
                             />
                           )}
                         </TableCell>
+                        <TableCell align="center">
+                          <Button
+                            variant="contained"
+                            onClick={() => handleDiaChi(row.id)}
+                            color="success">
+                            <b>chọn</b>
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -472,48 +630,107 @@ export default function SellFrom({ maHD }) {
           <Grid2 md={7} xs={12} p={0}>
             <Box p={3} pt={0} pb={2}>
               <TextField
-                disabled={!giaoHang}
-                sx={{ mt: 1, width: '49%' }}
-                label="Họ & tên"
+                id="outlined-basic"
+                variant="outlined"
+                label="Tên người nhận"
+                type="text"
                 size="small"
-              />
-              <TextField
-                disabled={!giaoHang}
-                sx={{ mt: 1, width: '49%', ml: '2%' }}
-                label="Số điện thoại"
-                size="small"
-              />
-              <FormControl disabled={!giaoHang} sx={{ mt: 2, width: '32%' }} size="small">
-                <InputLabel id="lable-tinh">Tỉnh/Thành phố</InputLabel>
-                <Select
-                  labelId="lable-tinh"
-                  id="demo-simple-select"
-                  value=""
-                  label="Tỉnh/Thành phố">
-                  <MenuItem value={'hungyen'}>Hưng Yên</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl disabled={!giaoHang} sx={{ mt: 2, width: '32%', ml: '2%' }} size="small">
-                <InputLabel id="lable-huyen">Quận/Huyện</InputLabel>
-                <Select
-                  labelId="lable-huyen"
-                  id="demo-simple-select"
-                  value=""
-                  label="Tỉnh/Thành phố">
-                  <MenuItem value={'hungyen'}>Ân Thi</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl disabled={!giaoHang} sx={{ mt: 2, width: '32%', ml: '2%' }} size="small">
-                <InputLabel id="lable-xa">Phường/Xã</InputLabel>
-                <Select labelId="lable-xa" id="demo-simple-select" value="" label="Tỉnh/Thành phố">
-                  <MenuItem value={'hungyen'}>Đặng Lễ</MenuItem>
-                </Select>
-              </FormControl>
-              <TextField
-                disabled={!giaoHang}
                 sx={{ mt: 2, width: '100%' }}
-                label="Địa chỉ cụ thể"
+                name="name"
+                value={detailDiaChi.name}
+                // onChange={(e) => {
+                //   setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
+                // }}
+              />
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                label="Số điện thoại"
+                type="text"
                 size="small"
+                sx={{ mt: 2, width: '100%' }}
+                name="phoneNumber"
+                value={detailDiaChi.phoneNumber}
+                // onChange={(e) => {
+                //   setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
+                // }}
+              />
+              <Autocomplete
+                popupIcon={null}
+                sx={{ mt: 2, width: '100%' }}
+                size="small"
+                className="search-field"
+                id="combo-box-demo"
+                value={{ label: tinhName, id: detailDiaChi.provinceId }}
+                onChange={handleTinhChange}
+                options={
+                  tinh &&
+                  tinh.map((item) => ({
+                    label: item.provinceName,
+                    id: item.provinceID,
+                  }))
+                }
+                getOptionLabel={(options) => options.label}
+                renderInput={(params) => (
+                  <TextField
+                    placeholder="nhập tên tỉnh"
+                    label="Tỉnh/thành phố"
+                    color="cam"
+                    {...params}
+                  />
+                )}
+              />
+              <Autocomplete
+                popupIcon={null}
+                sx={{ mt: 2, width: '100%' }}
+                size="small"
+                className="search-field"
+                value={{ label: huyenName, id: detailDiaChi.districtId }}
+                onChange={handleHuyenChange}
+                options={
+                  huyen &&
+                  huyen.map((item) => ({
+                    label: item.districtName,
+                    id: item.districtID,
+                  }))
+                }
+                getOptionLabel={(option) => option.label}
+                renderInput={(params) => (
+                  <TextField placeholder="Chọn huyện" label="Quận/huyện" color="cam" {...params} />
+                )}
+              />
+              <Autocomplete
+                popupIcon={null}
+                sx={{ mt: 2, width: '100%' }}
+                size="small"
+                className="search-field"
+                value={{ label: xaName, id: detailDiaChi.wardId }}
+                onChange={handleXaChange}
+                options={xa && xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
+                getOptionLabel={(option) => option.label}
+                renderInput={(params) => (
+                  <TextField
+                    placeholder="Chọn xã"
+                    label="Xã/phường/thị trấn"
+                    color="cam"
+                    {...params}
+                  />
+                )}
+              />
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                label="Địa chỉ cụ thể"
+                type="text"
+                size="small"
+                sx={{ mt: 2, width: '100%' }}
+                name="specificAddress"
+                value={detailDiaChi.specificAddress}
+                onChange={(e) => {
+                  const updatedDetailDiaChi = { ...detailDiaChi }
+                  updatedDetailDiaChi.specificAddress = e.target.value
+                  setDetailDiaChi(updatedDetailDiaChi)
+                }}
               />
               <TextField
                 disabled={!giaoHang}
@@ -526,6 +743,14 @@ export default function SellFrom({ maHD }) {
               <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
               <b>Đơn vị vận chuyển: </b>
               <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>Giao hàng nhanh</b>
+            </Box>
+            <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
+              <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
+              <b>Thời gian dự kiến: </b>
+              <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>
+                {' '}
+                {dayjs(timeShip).format('DD/MM/YYYY')}
+              </b>
             </Box>
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
@@ -542,7 +767,7 @@ export default function SellFrom({ maHD }) {
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Phí vận chuyển</Typography>
-                <Typography>80,000₫</Typography>
+                <Typography>{shipTotal}đ</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Giảm giá</Typography>

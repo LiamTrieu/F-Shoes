@@ -32,5 +32,10 @@ const DiaChiApi = {
     const url = `/dia-chi/status?id=${id}&idCustomer=${idCustomer}`
     return axiosClient.put(url)
   },
+
+  getAddressDefault: (idCustomer) => {
+    const url = `/dia-chi/get-default?idCustomer=${idCustomer}`
+    return axiosClient.get(url)
+  },
 }
 export default DiaChiApi

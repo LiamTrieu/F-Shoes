@@ -8,6 +8,8 @@ public interface GetAllProductResponse extends IsIdentified {
 
     Double getPrice();
 
+    Integer getWeight();
+
     Integer getSize();
 
     String getUrl();

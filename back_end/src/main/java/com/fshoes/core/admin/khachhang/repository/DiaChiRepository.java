@@ -21,4 +21,9 @@ public interface DiaChiRepository extends AddressRepository {
 
     @Query(value = "Select * from address a where a.id_account = :idAccount", nativeQuery = true)
     List<Address> getStatusAddressByIdCustomer(@Param("idAccount") String idAccount);
+
+    @Query(value = "Select * from address a where a.id_account = :idAccount and type=1", nativeQuery = true)
+    Address getAddressDefault(@Param("idAccount") String idAccount);
+
+
 }

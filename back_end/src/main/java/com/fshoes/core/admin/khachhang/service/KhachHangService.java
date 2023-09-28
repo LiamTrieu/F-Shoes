@@ -13,7 +13,7 @@ public interface KhachHangService {
 
     Page<KhachHangRespone> findKhachHang(AdKhachHangSearch adKhachHangSearch);
 
-    Account add(KhachHangRequest khachHangRequest);
+    Account add(KhachHangRequest khachHangRequest) throws ParseException;
 
     Boolean update(String id, KhachHangRequest khachHangRequest) throws ParseException;
 

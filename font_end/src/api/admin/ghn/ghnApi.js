@@ -15,5 +15,20 @@ const ghnAPI = {
     const url = `/ghn/getWard?idDistrict=${idDistrict}`
     return axiosClient.get(url)
   },
+
+  getTotal: (filterTotal) => {
+    const url = `/ghn/getShipping-order`
+    return axiosClient.get(url, { params: filterTotal })
+  },
+
+  getServiceId: (filtelService) => {
+    const url = `/ghn/get-serviceId`
+    return axiosClient.get(url, { params: filtelService })
+  },
+
+  getime: (filtelTime) => {
+    const url = `/ghn/get-time`
+    return axiosClient.get(url, { params: filtelTime })
+  },
 }
 export default ghnAPI

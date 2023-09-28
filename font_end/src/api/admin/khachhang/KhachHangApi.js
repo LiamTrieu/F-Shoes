@@ -1,3 +1,4 @@
+import axios from 'axios'
 import axiosClient from '../../axios'
 const khachHangApi = {
   getOne: (id) => {
@@ -11,8 +12,20 @@ const khachHangApi = {
   },
 
   addKhachHang: (khachhang) => {
-    const url = `/khach-hang/create`
-    return axiosClient.post(url, khachhang)
+    const formData = new FormData()
+    formData.append('fullName', khachhang.fullName)
+    formData.append('dateBirth', khachhang.dateBirth)
+    formData.append('phoneNumber', khachhang.phoneNumber)
+    formData.append('email', khachhang.email)
+    formData.append('gender', khachhang.gender)
+    formData.append('avatar', khachhang.avatar)
+    formData.append('role', khachhang.role)
+
+    return axios.post(`http://localhost:8080/api/khach-hang/create`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   },
 
   delete: (id) => {
@@ -20,8 +33,21 @@ const khachHangApi = {
     return axiosClient.delete(url)
   },
   updateKhachHang: (id, khachhang) => {
-    const url = `/khach-hang/update/${id}`
-    return axiosClient.put(url, khachhang)
+    const formData = new FormData()
+    formData.append('fullName', khachhang.fullName)
+    formData.append('dateBirth', khachhang.dateBirth)
+    formData.append('phoneNumber', khachhang.phoneNumber)
+    formData.append('email', khachhang.email)
+    formData.append('gender', khachhang.gender)
+    formData.append('avatar', khachhang.avatar)
+    formData.append('role', khachhang.role)
+    formData.append('status', khachhang.status)
+
+    return axios.put(`http://localhost:8080/api/khach-hang/update/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   },
 }
 export default khachHangApi

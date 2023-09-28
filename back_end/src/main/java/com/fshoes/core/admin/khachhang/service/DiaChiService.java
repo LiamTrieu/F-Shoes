@@ -33,5 +33,13 @@ public interface DiaChiService {
 
     ResponseEntity<?> getAllWard(Integer idDistrict);
 
+    ResponseEntity<?> getShippingOrder(String from_district_id, String service_id, String to_district_id, String to_ward_code, String weight, String insurance_value);
+
+    ResponseEntity<?> getServiceGhn(String shop_id ,String from_district,String to_district);
+
+    ResponseEntity<?> getTimeGhn(String from_district_id,String from_ward_code,String to_district_id,String to_ward_code,String service_id);
+
     Boolean updateDefault(String idCustomer, String idAdrress);
+
+    Address getAddressDefault(String idCustomer);
 }

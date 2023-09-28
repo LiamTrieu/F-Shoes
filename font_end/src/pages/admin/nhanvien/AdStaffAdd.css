@@ -51,5 +51,6 @@
   object-fit: contain;
 }
 hr {
-  opacity: 0.3; /* Điều chỉnh độ trong suốt của hr */
+  opacity: 0.3;
+  margin-bottom: 30px; /* Điều chỉnh độ trong suốt của hr */
 }
