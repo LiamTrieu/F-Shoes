@@ -1,7 +1,7 @@
-.dateTime .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+.dateTimePro .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
   height: 0.6em !important;
 }
-.dateTime .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
+.dateTimePro .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
   line-height: 0.6em !important;
   padding-top: 2px;
   padding-bottom: 14px !important;
@@ -17,12 +17,12 @@
 .promotion .css-a643pv-MuiStack-root {
   padding-top: 20px !important;
 }
-.promotionAdd .css-a643pv-MuiStack-root {
-  padding-top: 30px !important;
-}
-.promotionUpdate .css-a643pv-MuiStack-root {
-  padding-top: 30px !important;
-}
+/* .promotionAdd .css-a643pv-MuiStack-root {
+  padding-bottom: 20px !important;
+} */
+/* .promotionUpdate .css-a643pv-MuiStack-root {
+  padding-bottom: 20px !important;
+} */
 .promotion .css-x6y40x-MuiFormLabel-root-MuiInputLabel-root.Mui-error {
   padding-top: 30px !important;
 }
@@ -45,6 +45,16 @@
   background: #f8edf6 !important;
   border-color: #eca9e2 !important;
 }
+.promotionAdd .error {
+  color: red;
+  font-size: 13px;
+  font-weight: 700;
+}
+.promotionUpdate .error {
+  color: red;
+  font-size: 13px;
+  font-weight: 700;
+}
 
 .chip-tat-ca {
   border: 1px solid #d9d9d9 !important;
@@ -58,10 +68,10 @@
   background: #f0f6fa !important;
   border-color: #28b3e1 !important;
 }
-.promotion .search-promotion .MuiInputBase-root {
+.promotion .text-field-css .MuiInputBase-root {
   border-radius: 8px !important;
 }
-.promotion .search-promotion .MuiInputBase-root:hover fieldset {
+.promotion .text-field-css .MuiInputBase-root:hover fieldset {
   border-color: #f2741f !important;
 }
 .promotion .menuItem {

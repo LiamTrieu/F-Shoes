@@ -38,6 +38,11 @@ public class PromotionController {
         return new ObjectRespone( productPromotionAddService.getAllProductDetail(red));
     }
 
+        @GetMapping("/get-all")
+    public ObjectRespone getAll(){
+        return new ObjectRespone(khuyenMaiService.getAllPromotion());
+    }
+
     @GetMapping("/get-product-detail-by-product/{id}")
     public ObjectRespone getAllProductDeatilByProduct(GetProductDetailByIdProduct red,@PathVariable  String id){
         return new ObjectRespone( productPromotionAddService.getProductDetailByProduct(red,id));

@@ -29,6 +29,8 @@ import colorApi from '../../../api/admin/sanpham/colorApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
+import { useLocation } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -56,6 +58,7 @@ const styleModalProductDetail = {
 export default function ModelSell({ open, setOPen }) {
   const [isShowProductDetail, setIsShowProductDetail] = useState(false)
   const [listProduct, setListProduct] = useState([])
+  const [modelSellCartId, setModelSellCartId] = useState('')
 
   const [filter, setFilter] = useState({
     brand: null,
@@ -74,6 +77,8 @@ export default function ModelSell({ open, setOPen }) {
   const [listSole, setListSole] = useState([])
   const [listCategory, setListCategory] = useState([])
   const [listSize, setListSize] = useState([])
+
+  const [addCartDetail, setAddCartDetail] = useState([])
 
   useEffect(() => {
     bradApi.findAll().then((response) => {
@@ -116,6 +121,20 @@ export default function ModelSell({ open, setOPen }) {
   useEffect(() => {
     fecthData(filter)
   }, [filter])
+  const onSubmitAddCartDetail = (id) => {
+    const cartDetail = {
+      cartId: 'cccc',
+      productDetailId: id,
+      quantity: 1, // You can set the quantity as needed.
+    }
+
+    sellApi.addCartDetail(cartDetail).then((response) => {
+      toast.success('Thêm sản phẩm thành công', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      console.log(response)
+    })
+  }
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     // originalPrice là giá gốc của sản phẩm, discountPercentage là phần trăm giảm giá
     const discountAmount = (discountPercentage / 100) * originalPrice
@@ -430,9 +449,11 @@ export default function ModelSell({ open, setOPen }) {
                     </TableCell>
                     <TableCell width={'15%'} align="center">
                       <Button
-                        onClick={() => {
-                          setIsShowProductDetail(true)
-                        }}
+                        onClick={
+                          () => onSubmitAddCartDetail(cart.productDetailId)
+
+                          // setIsShowProductDetail(true)
+                        }
                         variant="outlined"
                         color="info"
                         size="small">

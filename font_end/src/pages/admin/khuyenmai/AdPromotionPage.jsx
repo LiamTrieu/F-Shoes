@@ -130,7 +130,7 @@ export default function AdPromotionPage() {
               <TextField
                 sx={{ width: '50%' }}
                 placeholder="Tìm kiếm theo tên khuyến mại"
-                className="search-promotion"
+                className="text-field-css"
                 size="small"
                 onChange={(e) =>
                   setFilter({
@@ -168,7 +168,7 @@ export default function AdPromotionPage() {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
                   <DateTimePicker
-                    className="dateTime"
+                    className="dateTimePro"
                     format="DD/MM/YYYY HH:mm:ss"
                     // value={dayjs(filter?.timeStart, 'DD/MM/YYYY HH:mm:ss')}
                     onChange={(e) =>
@@ -190,7 +190,7 @@ export default function AdPromotionPage() {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
                   <DateTimePicker
-                    className="dateTime"
+                    className="dateTimePro"
                     format={'DD/MM/YYYY HH:mm:ss'}
                     // value={dayjs(filter?.timeEnd, 'DD/MM/YYYY HH:mm:ss')}
                     onChange={(e) =>
@@ -312,26 +312,41 @@ export default function AdPromotionPage() {
             </TableBody>
           </Table>
 
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: '10px',
-            }}>
+          <Stack
+            mt={2}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            spacing={0}>
+            <Typography component="span" variant={'body2'} mt={0.5}>
+              <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+              <Select
+                color="cam"
+                onChange={(e) => {
+                  setFilter({ ...filter, size: e.target.value })
+                }}
+                sx={{ height: '25px', mx: 0.5 }}
+                size="small"
+                value={filter.size}>
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={15}>15</MenuItem>
+                <MenuItem value={20}>20</MenuItem>
+              </Select>
+              <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>sản phẩm</Typography>
+            </Typography>
             <Pagination
-              page={filter.page}
+              variant="outlined"
               color="cam"
+              count={totalPages}
+              page={filter.page}
               onChange={(e, value) => {
                 e.preventDefault()
-                setFilter({
-                  ...filter,
-                  page: value,
-                })
+                setFilter({ ...filter, page: value })
               }}
-              count={totalPages}
-              variant="outlined"
             />
-          </div>
+          </Stack>
         </Paper>
       </div>
     </>

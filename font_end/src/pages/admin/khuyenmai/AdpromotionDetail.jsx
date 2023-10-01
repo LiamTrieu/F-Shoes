@@ -23,6 +23,8 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
 import { toast } from 'react-toastify'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+const listBreadcrumbs = [{ name: 'Khuyến mại', link: '/admin/promotion' }]
 
 export default function AdPromotionDetail() {
   const theme = useTheme()
@@ -38,6 +40,10 @@ export default function AdPromotionDetail() {
   const [totalPagesDetailByProduct, setTotalPagesDetailByProduct] = useState(0)
   const [filterDetailByProduct, setFilterDetailProduct] = useState({ page: 1, size: 5 })
   const [selectedProductIds, setSelectedProductIds] = useState([])
+  const [errorName, setErrorName] = useState('')
+  const [errorValue, setErrorValue] = useState('')
+  const [errorTimeStart, settimeStart] = useState('')
+  const [errorTimeEnd, setTimeend] = useState('')
 
   let navigate = useNavigate()
   const { id } = useParams()
@@ -127,7 +133,10 @@ export default function AdPromotionDetail() {
       Promise.all(promises)
         .then((responses) => {
           const allProductDetails = responses.flatMap((response) => response.data.data.data)
-          setGetProductDetailByProduct(allProductDetails)
+          const startIndex = (filterDetailByProduct.page - 1) * filterDetailByProduct.size
+          const endIndex = startIndex + filterDetailByProduct.size
+          const productDetailsToDisplay = allProductDetails.slice(startIndex, endIndex)
+          setGetProductDetailByProduct(productDetailsToDisplay)
           const itemsPerPage = filterDetailByProduct.size // Kích thước trang
           const totalPages = Math.ceil(allProductDetails.length / itemsPerPage)
           setTotalPagesDetailByProduct(totalPages)
@@ -141,40 +150,85 @@ export default function AdPromotionDetail() {
       setGetProductDetailByProduct([])
       setTotalPagesDetailByProduct(0)
     }
-  }, [selectedProductIds])
+  }, [selectedProductIds, filterDetailByProduct])
 
-  const onSubmit = (e, id) => {
-    if (
-      !updatePromotion.name ||
-      !updatePromotion.value ||
-      !updatePromotion.timeStart ||
-      !updatePromotion.timeEnd
-    ) {
-      // Hiển thị thông báo hoặc xử lý lỗi tại đây
-      toast.error('Vui lòng điền đầy đủ thông tin', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
-      return // Không gửi yêu cầu nếu có trường trống
-    }
-
+  const validate = () => {
     const timeStart = dayjs(updatePromotion.timeStart, 'DD/MM/YYYY')
     const timeEnd = dayjs(updatePromotion.timeEnd, 'DD/MM/YYYY')
+
+    const currentDate = dayjs()
+    let check = 0
+    const errors = {
+      name: '',
+      value: '',
+      timeStart: '',
+      timeEnd: '',
+    }
+
+    if (updatePromotion.name.trim() === '') {
+      errors.name = 'Vui lòng nhập tên khuyến mại'
+    } else if (!isNaN(updatePromotion.name)) {
+      errors.name = 'Tên khuyến mại phải là chữ'
+    } else if (updatePromotion.name.length > 50) {
+      errors.name = 'Tên không được dài hơn 50 ký tự'
+    }
+
+    if (updatePromotion.value === '') {
+      errors.value = 'Vui lòng nhập giá trị'
+    } else if (!Number.isInteger(Number(updatePromotion.value))) {
+      errors.value = 'Giá trị phải là số nguyên'
+    } else if (Number(updatePromotion.value) < 0 || Number(updatePromotion.value) > 100) {
+      errors.value = 'Giá trị phải lớn hơn 0% và nhở hơn 100%'
+    }
+
+    if (updatePromotion.timeStart === '') {
+      errors.timeStart = 'Vui lòng nhập thời gian bắt đầu'
+    }
+    // else if (timeStart.isBefore(currentDate)) {
+    //   errors.timeStart = 'Ngày bắt đầu phải lớn hơn ngày hiện tại'
+    // }
+
+    if (updatePromotion.timeEnd === '') {
+      errors.timeEnd = 'Vui lòng nhập thời gian kết thúc'
+    } else if (timeEnd.isBefore(currentDate)) {
+      errors.timeEnd = 'Ngày kết thúc phải lớn hơn ngày hiện tại'
+    }
+
     if (!timeStart.isValid() || !timeEnd.isValid() || timeStart.isAfter(timeEnd)) {
-      toast.error('Ngày bắt đầu phải bé hơn ngày kêt thúc', {
+      errors.timeStart = 'Ngày bắt đầu phải bé hơn ngày kêt thúc'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
+      }
+    }
+
+    setErrorName(errors.name)
+    setErrorValue(errors.value)
+    settimeStart(errors.timeStart)
+    setTimeend(errors.timeEnd)
+
+    return check
+  }
+  const onSubmit = (e, id) => {
+    const check = validate()
+    if (check < 1) {
+      const title = 'bạn có muốn update không?'
+      const text = ''
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          khuyenMaiApi.UpdayePromotion(e, id).then(() => {
+            toast.success('update thành công', { position: toast.POSITION.TOP_RIGHT })
+            navigate('/admin/promotion')
+          })
+        }
+      })
+    } else {
+      toast.error('Sửa khuyện mại không thành công', {
         position: toast.POSITION.TOP_RIGHT,
       })
-      return
     }
-    const title = 'bạn có muốn update không?'
-    const text = ''
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        khuyenMaiApi.UpdayePromotion(e, id).then(() => {
-          toast.success('update thành công', { position: toast.POSITION.TOP_RIGHT })
-          navigate('/admin/promotion')
-        })
-      }
-    })
   }
 
   const detail = (id) => {
@@ -238,69 +292,91 @@ export default function AdPromotionDetail() {
   return (
     <>
       <div className="promotionUpdate">
+        <BreadcrumbsCustom nameHere={'Chi tiết khuyến mại'} listLink={listBreadcrumbs} />
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%' }}>
           <Grid container spacing={2} sx={{ pl: 2 }}>
-            <Grid item xs={5.5} sx={{ mt: 0.7 }}>
-              <Typography sx={{ fontSize: '30px', fontWeight: 1000, mb: 2 }}>Khuyến Mại</Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                size="small"
-                sx={{ width: '100%' }}
-                name="name"
-                value={updatePromotion?.name}
-                onChange={(e) => setUpdatePromotion({ ...updatePromotion, name: e.target.value })}
-              />
-
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                size="small"
-                sx={{ width: '100%', marginTop: '30px' }}
-                name="value"
-                value={updatePromotion?.value}
-                onChange={(e) => setUpdatePromotion({ ...updatePromotion, value: e.target.value })}
-              />
-
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DateTimePicker']}>
-                  <DateTimePicker
-                    label="từ ngày"
-                    size="small"
-                    format={'DD-MM-YYYY HH:mm:ss'}
-                    sx={{ width: '100%' }}
-                    name="timeStart"
-                    className="dateTime "
-                    value={dayjs(updatePromotion?.timeStart, 'DD-MM-YYYY HH:mm:ss')}
-                    onChange={(e) => {
-                      setUpdatePromotion({
-                        ...updatePromotion,
-                        timeStart: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
-                      })
-                    }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DateTimePicker']}>
-                  <DateTimePicker
-                    label="Đến ngày"
-                    format={'DD-MM-YYYY HH:mm:ss'}
-                    size="small"
-                    sx={{ width: '100%' }}
-                    name="timeEnd"
-                    className="dateTime "
-                    value={dayjs(updatePromotion?.timeEnd, 'DD-MM-YYYY HH:mm:ss')}
-                    onChange={(e) => {
-                      setUpdatePromotion({
-                        ...updatePromotion,
-                        timeEnd: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
-                      })
-                    }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
+            <Grid item xs={5.5} sx={{ mt: 4 }}>
+              <div style={{ marginBottom: '20px' }}>
+                <Typography>
+                  <span style={{ color: 'red', fontWeight: 'bold' }}> *</span>Tên khuyến mại
+                </Typography>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  size="small"
+                  sx={{ width: '100%' }}
+                  name="name"
+                  value={updatePromotion?.name}
+                  onChange={(e) => setUpdatePromotion({ ...updatePromotion, name: e.target.value })}
+                />
+                <span className="error">{errorName}</span>
+              </div>
+              <div style={{ marginBottom: '20px' }}>
+                <Typography>
+                  <span style={{ color: 'red', fontWeight: 'bold' }}> *</span>Giá trị
+                </Typography>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  size="small"
+                  type="number"
+                  sx={{ width: '100%' }}
+                  name="value"
+                  value={updatePromotion?.value}
+                  onChange={(e) =>
+                    setUpdatePromotion({ ...updatePromotion, value: e.target.value })
+                  }
+                />
+                <span className="error">{errorValue}</span>
+              </div>
+              <div style={{ marginBottom: '20px' }}>
+                <Typography>
+                  <span style={{ color: 'red', fontWeight: 'bold' }}> *</span>Từ ngày
+                </Typography>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={['DateTimePicker']}>
+                    <DateTimePicker
+                      size="small"
+                      format={'DD-MM-YYYY HH:mm:ss'}
+                      sx={{ width: '100%' }}
+                      name="timeStart"
+                      className="dateTimePro "
+                      value={dayjs(updatePromotion?.timeStart, 'DD-MM-YYYY HH:mm:ss')}
+                      onChange={(e) => {
+                        setUpdatePromotion({
+                          ...updatePromotion,
+                          timeStart: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
+                        })
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+                <span className="error">{errorTimeStart}</span>
+              </div>
+              <div style={{ marginBottom: '20px' }}>
+                <Typography>
+                  <span style={{ color: 'red', fontWeight: 'bold' }}> *</span>Đến ngày
+                </Typography>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={['DateTimePicker']}>
+                    <DateTimePicker
+                      format={'DD-MM-YYYY HH:mm:ss'}
+                      size="small"
+                      sx={{ width: '100%' }}
+                      name="timeEnd"
+                      className="dateTimePro "
+                      value={dayjs(updatePromotion?.timeEnd, 'DD-MM-YYYY HH:mm:ss')}
+                      onChange={(e) => {
+                        setUpdatePromotion({
+                          ...updatePromotion,
+                          timeEnd: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
+                        })
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+                <span className="error">{errorTimeEnd}</span>
+              </div>
               <Button
                 variant="contained"
                 color="success"
@@ -311,7 +387,7 @@ export default function AdPromotionDetail() {
             </Grid>
 
             <Grid item xs={6.5}>
-              <div style={{ height: 400, width: '100%', marginTop: '62px' }}>
+              <div style={{ height: 400, width: '100%', marginTop: '42px' }}>
                 <Table sx={{ minWidth: '100%' }} aria-label="simple table" className="tableCss">
                   <TableHead>
                     <TableRow>
@@ -374,86 +450,89 @@ export default function AdPromotionDetail() {
               </div>
             </Grid>
           </Grid>
-
-          <Typography
-            sx={{
-              fontSize: '30px',
-              fontWeight: 600,
-              marginBottom: '20px',
-              marginLeft: '20px',
-              mt: 3,
-            }}>
-            Chi tiết sản phẩm
-          </Typography>
-          <Grid item xs={12}>
-            <div style={{ height: 400, width: '100%' }}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table" className="tableCss">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ width: '8%' }}>
-                      <Checkbox checked={selectAll} onChange={handleSelectAllChange} />
-                    </TableCell>
-                    <TableCell align="center" sx={{ width: '8%' }}>
-                      STT
-                    </TableCell>
-
-                    <TableCell align="center" sx={{ width: '30%' }}>
-                      Tên sản phẩm
-                    </TableCell>
-                    <TableCell align="center" sx={{ width: '30%' }}>
-                      Thể loại
-                    </TableCell>
-                    <TableCell align="center" sx={{ width: '30%' }}>
-                      Thương hiệu
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {getProductDetailByProduct.map((row, index) => (
-                    <TableRow
-                      key={row.productDetail}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell>
-                        <Checkbox
-                          key={row.productDetail}
-                          checked={selectedRows.indexOf(row.productDetail) !== -1}
-                          onChange={(event) => handleRowCheckboxChange(event, row.productDetail)}
-                        />
-                      </TableCell>
-                      <TableCell align="center" component="th" scope="row">
-                        {index + 1}
-                      </TableCell>
-
-                      <TableCell align="center">{row.name}</TableCell>
-                      <TableCell align="center">{row.category}</TableCell>
-                      <TableCell align="center">{row.brand}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  marginTop: '10px',
-                }}>
-                <Pagination
-                  page={filterDetailByProduct.page}
-                  color="cam"
-                  onChange={(e, value) => {
-                    e.preventDefault()
-                    setFilterDetailProduct({
-                      ...filterDetailByProduct,
-                      page: value,
-                    })
-                  }}
-                  count={totalPagesDetailByProduct}
-                  variant="outlined"
-                />
-              </div>
-            </div>
-          </Grid>
         </Paper>
+        {selectedRowsProduct.length > 0 && (
+          <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%' }}>
+            <Typography
+              sx={{
+                fontSize: '30px',
+                fontWeight: 600,
+                marginBottom: '20px',
+                marginLeft: '20px',
+                mt: 3,
+              }}>
+              Chi tiết sản phẩm
+            </Typography>
+            <Grid item xs={12}>
+              <div style={{ height: 400, width: '100%' }}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table" className="tableCss">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ width: '8%' }}>
+                        <Checkbox checked={selectAll} onChange={handleSelectAllChange} />
+                      </TableCell>
+                      <TableCell align="center" sx={{ width: '8%' }}>
+                        STT
+                      </TableCell>
+
+                      <TableCell align="center" sx={{ width: '30%' }}>
+                        Tên sản phẩm
+                      </TableCell>
+                      <TableCell align="center" sx={{ width: '30%' }}>
+                        Thể loại
+                      </TableCell>
+                      <TableCell align="center" sx={{ width: '30%' }}>
+                        Thương hiệu
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {getProductDetailByProduct.map((row, index) => (
+                      <TableRow
+                        key={row.productDetail}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        <TableCell>
+                          <Checkbox
+                            key={row.productDetail}
+                            checked={selectedRows.indexOf(row.productDetail) !== -1}
+                            onChange={(event) => handleRowCheckboxChange(event, row.productDetail)}
+                          />
+                        </TableCell>
+                        <TableCell align="center" component="th" scope="row">
+                          {index + 1}
+                        </TableCell>
+
+                        <TableCell align="center">{row.name}</TableCell>
+                        <TableCell align="center">{row.category}</TableCell>
+                        <TableCell align="center">{row.brand}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: '10px',
+                  }}>
+                  <Pagination
+                    page={filterDetailByProduct.page}
+                    color="cam"
+                    onChange={(e, value) => {
+                      e.preventDefault()
+                      setFilterDetailProduct({
+                        ...filterDetailByProduct,
+                        page: value,
+                      })
+                    }}
+                    count={totalPagesDetailByProduct}
+                    variant="outlined"
+                  />
+                </div>
+              </div>
+            </Grid>
+          </Paper>
+        )}
       </div>
     </>
   )

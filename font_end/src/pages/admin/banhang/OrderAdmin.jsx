@@ -3,8 +3,8 @@ import { Box, Button, Container, Stack, Tab, Tabs, Typography } from '@mui/mater
 
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import SellFrom from './SellFrom'
-
-export default function OrderAdmin() {
+import sellApi from '../../../api/admin/sell/SellApi'
+export default function OrderAdmin({}) {
   const [listSellOrder, setlistSellOrder] = useState([])
   const [statusOrder, setStatusOrder] = useState(() => {
     if (listSellOrder.length > 0) return listSellOrder[0].ma
@@ -36,7 +36,7 @@ export default function OrderAdmin() {
     }
   }
 
-  const handleAddSellClick = () => {
+  const handleAddSellClick = async () => {
     if (listSellOrder.length === 5) {
       alert('Tối đa 5 hóa đơn')
       return
@@ -55,6 +55,24 @@ export default function OrderAdmin() {
     updatedList.push(newSell)
     setStatusOrder(newSell.ma)
     setlistSellOrder(updatedList)
+
+    try {
+      const response = await fetch('http://localhost:8080/api/sell/create-cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newSell), // Send the order data to the backend
+      })
+
+      if (response.ok) {
+        alert('create order successfully')
+      } else {
+        alert('Failed to create order')
+      }
+    } catch (error) {
+      alert('An error occurred while creating the order')
+    }
   }
 
   return (

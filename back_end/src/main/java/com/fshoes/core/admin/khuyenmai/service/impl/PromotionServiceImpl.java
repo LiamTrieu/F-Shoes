@@ -41,7 +41,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
-//    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void cronJobCheckPromotion(){
         boolean flag = true;
@@ -67,6 +67,11 @@ public class PromotionServiceImpl implements PromotionService {
 
     public Promotion getOne(String id) {
         return khuyenMaiRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Promotion> getAllPromotion() {
+        return khuyenMaiRepository.findAll();
     }
 
     //    @Override
