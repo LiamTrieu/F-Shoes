@@ -33,6 +33,7 @@ import ModelSell from './ModelSell'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 import voucherApi from '../../../api/admin/voucher/VoucherApi'
+import { toast } from 'react-toastify'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -268,8 +269,31 @@ export default function SellFrom({ maHD }) {
     setIdFIllVoucher(idCustomer)
   }
 
+  const [voucher, setVoucher] = useState({
+    id: '',
+    code: '',
+    name: '',
+    value: '',
+    maximumValue: '',
+    minimumAmount: '',
+    type: '',
+    startDate: '',
+    endDate: '',
+  })
+
   const handleVoucher = (idVoucher) => {
     setIsShowVoucher(false)
+    voucherApi
+      .getOneVoucherById(idVoucher)
+      .then((response) => {
+        setVoucher(response.data.data)
+        setCodeVoucher(response.data.data.code)
+      })
+      .catch(() => {
+        toast.error(`Không tồn tại khuyến mãi với id : ${idVoucher}`, {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      })
   }
 
   return (
@@ -799,12 +823,12 @@ export default function SellFrom({ maHD }) {
                         flexGrow: 1,
                       }}>
                       <Typography variant="h6" component="div">
-                        Tìm kiếm khách hàng
+                        Danh sách mã khuyến mãi
                       </Typography>
                     </Box>
                     <IconButton
                       onClick={() => {
-                        setIsShowCustomer(false)
+                        setIsShowVoucher(false)
                       }}
                       aria-label="close"
                       color="error"
