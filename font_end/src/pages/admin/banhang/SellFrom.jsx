@@ -32,6 +32,7 @@ import './sell.css'
 import ModelSell from './ModelSell'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
+import voucherApi from '../../../api/admin/voucher/VoucherApi'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -55,14 +56,20 @@ const styleModalAddCustomer = {
   borderRadius: 1.5,
   boxShadow: 24,
 }
+
 export default function SellFrom({ maHD }) {
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
+  const [isShowVoucher, setIsShowVoucher] = useState(false)
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false)
   const [showModal, setShowModal] = useState(false)
+
   const [listProductCart, setListProductCart] = useState([])
   const [listKhachHang, setlistKhachHang] = useState([])
+  const [listVoucher, setListVoucher] = useState([])
 
+  const [codeVoucher, setCodeVoucher] = useState('')
+  const [idFillVoucher, setIdFIllVoucher] = useState('')
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
 
@@ -73,8 +80,9 @@ export default function SellFrom({ maHD }) {
   useEffect(() => {
     fecthDataCustomer()
     fecthDataProductCart()
+    fecthDataVoucher(idFillVoucher)
     loadTinh()
-  }, [])
+  }, [idFillVoucher])
   const fecthDataProductCart = () => {
     sellApi.getAllProductCart().then((response) => {
       setListProductCart(response.data.data)
@@ -84,6 +92,17 @@ export default function SellFrom({ maHD }) {
     sellApi.getAllCustomer().then((response) => {
       setlistKhachHang(response.data.data.data)
     })
+  }
+  const fecthDataVoucher = (idCustomer) => {
+    if (idCustomer !== '') {
+      voucherApi.getAllVoucherByIdCustomer(idCustomer).then((response) => {
+        setListVoucher(response.data.data)
+      })
+    } else {
+      voucherApi.getAllVoucherBystatus().then((response) => {
+        setListVoucher(response.data.data)
+      })
+    }
   }
 
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
@@ -246,6 +265,11 @@ export default function SellFrom({ maHD }) {
   const handleDiaChi = (idCustomer) => {
     setIsShowCustomer(false)
     fillDetailDiaChi(idCustomer)
+    setIdFIllVoucher(idCustomer)
+  }
+
+  const handleVoucher = (idVoucher) => {
+    setIsShowVoucher(false)
   }
 
   return (
@@ -755,10 +779,138 @@ export default function SellFrom({ maHD }) {
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
             <Box sx={{ m: 1, ml: 3 }}>
-              <TextField label="Mã giảm giá" size="small" />
-              <Button sx={{ py: '6.7px', ml: 1 }} variant="outlined">
-                <b>Áp dụng</b>
+              <TextField label="Mã giảm giá" value={codeVoucher} size="small" />
+              <Button
+                sx={{ py: '6.7px', ml: 1 }}
+                variant="outlined"
+                onClick={() => setIsShowVoucher(true)}>
+                <b>Chọn mã giảm giá</b>
               </Button>
+              <Modal
+                open={isShowVoucher}
+                onClose={() => {
+                  setIsShowVoucher(false)
+                }}>
+                <Box sx={styleModalProduct}>
+                  <Toolbar sx={{ mb: 1 }}>
+                    <Box
+                      sx={{
+                        color: 'black',
+                        flexGrow: 1,
+                      }}>
+                      <Typography variant="h6" component="div">
+                        Tìm kiếm khách hàng
+                      </Typography>
+                    </Box>
+                    <IconButton
+                      onClick={() => {
+                        setIsShowCustomer(false)
+                      }}
+                      aria-label="close"
+                      color="error"
+                      style={{
+                        boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
+                      }}>
+                      <CloseIcon />
+                    </IconButton>
+                  </Toolbar>
+                  <Container>
+                    <Box>
+                      <TextField
+                        sx={{
+                          width: '50%',
+                          '.MuiInputBase-input': { py: '7.5px' },
+                        }}
+                        size="small"
+                        variant="outlined"
+                        placeholder="Tìm khách hàng"
+                      />
+                      <Button sx={{ ml: 2 }} variant="contained">
+                        Tìm kiếm
+                      </Button>
+                    </Box>
+                    <Box
+                      sx={{
+                        mt: 3,
+                        maxHeight: '400px',
+                        overflow: 'auto',
+                      }}></Box>
+                  </Container>
+                  <Container>
+                    <Table className="tableCss mt-5">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell align="center" width={'7%'}>
+                            STT
+                          </TableCell>
+                          <TableCell align="center" width={'25%'}>
+                            Mã
+                          </TableCell>
+                          <TableCell align="center" width={'12%'}>
+                            Tên
+                          </TableCell>
+                          <TableCell align="center" width={'15%'}>
+                            Giá trị
+                          </TableCell>
+                          <TableCell align="center" width={'15%'}>
+                            Giá trị tối đa
+                          </TableCell>
+                          <TableCell align="center" width={'15%'}>
+                            Điều kiện
+                          </TableCell>
+                          <TableCell align="center" width={'10%'}>
+                            Kiểu
+                          </TableCell>
+                          <TableCell align="center" width={'15%'}>
+                            Ngày bắt đầu
+                          </TableCell>
+                          <TableCell align="center" width={'10%'}>
+                            Ngày kết thúc
+                          </TableCell>
+                          <TableCell align="center" width={'10%'}>
+                            Thao tác
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {listVoucher.map((row) => (
+                          <TableRow
+                            key={row.id}
+                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                            <TableCell align="center">{}</TableCell>
+                            <TableCell align="center">{row.code}</TableCell>
+                            <TableCell align="center">{row.name}</TableCell>
+                            <TableCell align="center">{row.value}</TableCell>
+                            <TableCell align="center">{row.maximumValue}</TableCell>
+                            <TableCell align="center">{row.minimumAmount}</TableCell>
+                            <TableCell align="center">
+                              {row.type === 0 ? (
+                                <Chip className="chip-tat-ca" size="small" label="Công khai" />
+                              ) : (
+                                <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
+                              )}
+                            </TableCell>
+                            <TableCell align="center">
+                              {dayjs(row.startDate).format('DD/MM/YYYY HH:mm')}
+                            </TableCell>
+                            <TableCell align="center">
+                              {dayjs(row.endDate).format('DD/MM/YYYY HH:mm')}
+                            </TableCell>
+                            <TableCell align="center">
+                              <Button
+                                variant="contained"
+                                onClick={() => handleVoucher(row.id)}
+                                color="success">
+                                <b>chọn</b>
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Container>
+                </Box>
+              </Modal>
             </Box>
             <Box sx={{ m: 1, ml: 3, mr: 3 }}>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>

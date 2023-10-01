@@ -39,7 +39,10 @@ export default function AdSizePage() {
   const [openAdd, setOpenAdd] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [size, setSize] = useState({ size: '' })
+  const [errorSize, setErrorSize] = useState('')
+  const [errorSizeUpdate, setErrorSizeUpdate] = useState('')
   const [sizeUpdate, setSizeUpdate] = useState({ id: 0, size: '' })
+  const [allNameSize, setAllNameSize] = useState([])
   const [listSize, setListSize] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ pageNumber: 1, pageSize: 5, size: '' })
@@ -47,6 +50,7 @@ export default function AdSizePage() {
 
   useEffect(() => {
     fetchData(filter)
+    haldleAllNameSize()
   }, [filter])
 
   const fetchData = (filter) => {
@@ -64,62 +68,140 @@ export default function AdSizePage() {
     setIsBackdrop(false)
   }
 
-  const addSize = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận Thêm mới kích cỡ?'
-    const text = ''
-    setOpenAdd(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        sizeApi.addSize(size).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setOpenAdd(false)
-            setSize({ size: '' })
-            toast.success('Thêm kích cỡ thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          } else {
-            setOpenAdd(true)
-            toast.error('Thêm kích cỡ thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
+  const haldleAllNameSize = () => {
+    sizeApi
+      .getAllNameSize()
+      .then((response) => {
+        setAllNameSize(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
         })
-      } else {
-        setOpenAdd(true)
+      })
+  }
+
+  const handleValidateAdd = () => {
+    let check = 0
+    const errors = {
+      name: '',
+    }
+
+    const sizeValue = size.size.toString()
+    console.log(Number(sizeValue))
+    if (sizeValue.trim() === '') {
+      errors.name = 'Không được để trống kích cỡ'
+    } else if (sizeValue < 0) {
+      errors.name = 'Kích cỡ không được nhỏ hơn 0'
+    } else if (allNameSize.includes(Number(sizeValue))) {
+      errors.name = 'Kích cỡ đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
       }
-    })
-    setIsBackdrop(false)
+    }
+
+    setErrorSize(errors.name)
+
+    return check
+  }
+
+  const handleValidateUpdate = () => {
+    let check = 0
+    const errors = {
+      nameUpdate: '',
+    }
+
+    const sizeUpdateValue = sizeUpdate.size.toString()
+    if (sizeUpdateValue.trim() === '') {
+      errors.nameUpdate = 'Không được để trống kích cỡ'
+    } else if (sizeUpdateValue < 0) {
+      errors.nameUpdate = 'Kích cỡ không được nhỏ hơn 0'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
+      }
+    }
+
+    setErrorSizeUpdate(errors.nameUpdate)
+
+    return check
+  }
+
+  const addSize = () => {
+    const check = handleValidateAdd()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận Thêm mới kích cỡ?'
+      const text = ''
+      setOpenAdd(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          sizeApi.addSize(size).then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              setOpenAdd(false)
+              setSize({ size: '' })
+              toast.success('Thêm kích cỡ thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              fetchData(filter)
+            } else {
+              setOpenAdd(true)
+              toast.error('Thêm kích cỡ thất bại', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            }
+          })
+        } else {
+          setOpenAdd(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Thêm kích cỡ thất bại, hãy nhập đủ dữ liệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
   const updateSize = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận cập nhập kích cỡ?'
-    const text = ''
-    setOpenUpdate(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        sizeApi.updateSize(sizeUpdate.id, { size: sizeUpdate.size }).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setSize({ size: '' })
-            toast.success('Cập nhập kích cỡ thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          } else {
-            setOpenUpdate(true)
-            toast.error('Cập nhập kích cỡ thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
-        })
-      } else {
-        setOpenUpdate(true)
-      }
-    })
-    setIsBackdrop(false)
+    const check = handleValidateUpdate()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận cập nhập kích cỡ?'
+      const text = ''
+      setOpenUpdate(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          sizeApi.updateSize(sizeUpdate.id, { size: sizeUpdate.size }).then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              setSize({ size: '' })
+              toast.success('Cập nhập kích cỡ thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              fetchData(filter)
+            } else {
+              setOpenUpdate(true)
+              toast.error('Cập nhập kích cỡ thất bại', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            }
+          })
+        } else {
+          setOpenUpdate(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Thêm kích cỡ thất bại, hãy nhập đủ dữ liệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
 
   const chageName = (e) => {
@@ -214,6 +296,7 @@ export default function AdSizePage() {
                 }>
                 <TextField
                   id={'nameInputAdd'}
+                  type="number"
                   onChange={(e) => {
                     chageName(e)
                   }}
@@ -243,6 +326,7 @@ export default function AdSizePage() {
                   size="small"
                   placeholder="Nhập kích cỡ"
                 />
+                <span style={{ color: 'red' }}>{errorSize}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -264,6 +348,7 @@ export default function AdSizePage() {
                 }>
                 <TextField
                   id={'nameInputUpdate'}
+                  type="number"
                   onChange={(e) => {
                     chageName(e)
                   }}
@@ -293,6 +378,7 @@ export default function AdSizePage() {
                   size="small"
                   placeholder="Nhập kích cỡ"
                 />
+                <span style={{ color: 'red' }}>{errorSizeUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>

@@ -44,4 +44,9 @@ public class MaterialController {
         return new ObjectRespone(materialService.swapMaterial(id));
     }
 
+    @GetMapping("/get-all-name")
+    public ObjectRespone getAllNameMaterial() {
+        return new ObjectRespone(materialService.getAllNameMaterial());
+    }
+
 }

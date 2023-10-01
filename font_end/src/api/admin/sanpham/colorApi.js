@@ -25,5 +25,9 @@ const colorApi = {
     const url = `/color/swap/${id}`
     return axiosClient.delete(url)
   },
+  getAllCodeColor: () => {
+    const url = `/color/get-all-name`
+    return axiosClient.get(url)
+  },
 }
 export default colorApi

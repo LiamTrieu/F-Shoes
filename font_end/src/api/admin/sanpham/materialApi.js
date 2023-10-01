@@ -25,5 +25,9 @@ const materialApi = {
     const url = `/material/swap/${id}`
     return axiosClient.delete(url)
   },
+  getAllNameMaterial: () => {
+    const url = `/material/get-all-name`
+    return axiosClient.get(url)
+  },
 }
 export default materialApi

@@ -20,4 +20,6 @@ public interface ColorService {
     Color updateColor(String id, ColorRequest colorRequest);
 
     Boolean swapColor(String id);
+
+    List<String> getAllCodeColor();
 }

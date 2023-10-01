@@ -1,6 +1,8 @@
 package com.fshoes.core.admin.voucher.repository;
 
+import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
+import com.fshoes.core.admin.voucher.model.respone.AdFindCustomerRespone;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.entity.Voucher;
 import com.fshoes.repository.VoucherRepository;
@@ -26,6 +28,7 @@ public interface AdVoucherRepository extends VoucherRepository {
             and (:#{#AVS.endDateSearch} is null or v.end_date <= :#{#AVS.endDateSearch})
             and (:#{#AVS.typeSearch} is null or v.type = :#{#AVS.typeSearch})
             and (:#{#AVS.statusSearch} is null or v.status = :#{#AVS.statusSearch})
+            order by v.created_at desc
             """, nativeQuery = true)
     Page<AdVoucherRespone> pageSearchVoucher(Pageable pageable, @Param("AVS") AdVoucherSearch AVS);
 
@@ -46,12 +49,46 @@ public interface AdVoucherRepository extends VoucherRepository {
             """, nativeQuery = true)
     Optional<AdVoucherRespone> getVoucherById(@Param("id") String id);
 
+    @Query(value = """
+            select id, full_name as fullName, phone_number as phoneNumber, email, date_birth as dateBirth
+            from account
+            where role = 2
+            order by created_at DESC 
+            """, nativeQuery = true)
+    Page<AdFindCustomerRespone> getFindAllCustomer(Pageable pageable);
+
+    @Query(value = """
+            SELECT DISTINCT code FROM Voucher
+            """, nativeQuery = true)
+    List<String> getAllCodeVoucher();
+
+    @Query(value = """
+            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            v.type, v.minimum_amount as minimumAmount, v.quantity,
+            v.start_date as startDate, v.end_date as endDate, v.status
+            from voucher v
+            join customer_voucher cv on cv.id_voucher = v.id
+            where v.status = 1
+            and (:#{#idCustomer} is null or cv.id_account = :#{#idCustomer}) 
+            order by v.type asc , v.created_at desc
+            """, nativeQuery = true)
+    List<AdVoucherRespone> getAllVoucherByIdCustomer(String idCustomer);
+
+    @Query(value = """
+            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            v.type, v.minimum_amount as minimumAmount, v.quantity,
+            v.start_date as startDate, v.end_date as endDate, v.status
+            from voucher v
+            where v.status = 1 and v.type = 0
+            order by v.created_at asc 
+            """, nativeQuery = true)
+    List<AdVoucherRespone> getAllVoucherHoatDong();
+
     @Query("""
-    select v from Voucher v
-    where (v.startDate > :dateNow and v.status != 0)
-    or (v.endDate <= :dateNow and v.status != 2)
-    or ((v.startDate <= :dateNow and v.endDate > :dateNow) and v.status != 1)
-    """)
+            select v from Voucher v
+            where (v.startDate > :dateNow and v.status != 0)
+            or (v.endDate <= :dateNow and v.status != 2)
+            or ((v.startDate <= :dateNow and v.endDate > :dateNow) and v.status != 1)
+            """)
     List<Voucher> getAllVoucherWrong(Long dateNow);
-    
 }

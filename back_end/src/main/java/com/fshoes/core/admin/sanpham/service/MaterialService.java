@@ -20,4 +20,6 @@ public interface MaterialService {
     Material updateMaterial(String id, MaterialRequest materialRequest);
 
     Boolean swapMaterial(String id);
+
+    List<String> getAllNameMaterial();
 }

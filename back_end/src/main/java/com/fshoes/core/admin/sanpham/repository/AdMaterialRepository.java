@@ -24,4 +24,10 @@ public interface AdMaterialRepository extends MaterialRepository {
             ORDER BY created_at DESC
             """, nativeQuery = true)
     Page<MaterialResponse> getMaterialByFilter(@Param("filter") MaterialFilterRequest materialFilterRequest, Pageable pageable);
+
+    @Query(value = """
+            SELECT name
+            FROM material
+            """, nativeQuery = true)
+    List<String> getAllNameMaterial();
 }

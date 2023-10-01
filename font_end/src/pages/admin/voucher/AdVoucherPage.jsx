@@ -30,12 +30,13 @@ import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import './voucher.css'
-import '../../../assets/styles/admin.css'
 import Empty from '../../../components/Empty'
 import { Stomp } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
 var stompClient = null
+
 export default function AdVoucherPage() {
   const [listVoucher, setListVoucher] = useState([])
   const [listVoucherUpdate, setListVoucherUpdate] = useState([])
@@ -48,6 +49,7 @@ export default function AdVoucherPage() {
     typeSearch: '',
     statusSearch: '',
     page: 1,
+    size: 5,
   })
 
   useEffect(() => {
@@ -101,41 +103,19 @@ export default function AdVoucherPage() {
   }
 
   const fetchData = (searchVoucher) => {
-    if (
-      searchVoucher.nameSearch !== '' ||
-      searchVoucher.startDateSearch !== '' ||
-      searchVoucher.endDateSearch !== '' ||
-      searchVoucher.typeSearch !== '' ||
-      searchVoucher.statusSearch !== ''
-    ) {
-      voucherApi
-        .searchVoucher(searchVoucher)
-        .then((response) => {
-          setListVoucher(response.data.data.content)
-          setTotalPages(response.data.data.totalPages)
-          setDataFetched(true)
+    voucherApi
+      .searchVoucher(searchVoucher)
+      .then((response) => {
+        setListVoucher(response.data.data.content)
+        setTotalPages(response.data.data.totalPages)
+        setDataFetched(true)
+      })
+      .catch(() => {
+        setDataFetched(false)
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
         })
-        .catch(() => {
-          setDataFetched(false)
-          toast.warning('Vui lòng f5 tải lại dữ liệu', {
-            position: toast.POSITION.TOP_CENTER,
-          })
-        })
-    } else {
-      voucherApi
-        .getPageVoucher(searchVoucher.page)
-        .then((response) => {
-          setListVoucher(response.data.data.content)
-          setTotalPages(response.data.data.totalPages)
-          setDataFetched(true)
-        })
-        .catch(() => {
-          setDataFetched(false)
-          toast.warning('Vui lòng f5 tải lại dữ liệu', {
-            position: toast.POSITION.TOP_CENTER,
-          })
-        })
-    }
+      })
   }
 
   const handelDeleteVoucher = (idDelete) => {
@@ -166,6 +146,7 @@ export default function AdVoucherPage() {
 
   return (
     <div className="voucher-css">
+      <BreadcrumbsCustom nameHere={'Khuyến mãi'} />
       <Paper elevation={3}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
@@ -205,13 +186,13 @@ export default function AdVoucherPage() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm'}
-                value={dayjs(searchVoucher?.startDateSearch)}
                 onChange={(e) => {
                   setSearchVoucher({
                     ...searchVoucher,
                     startDateSearch: dayjs(e).toDate().getTime(),
                   })
                 }}
+                ampm={false}
                 slotProps={{
                   actionBar: {
                     actions: ['clear'],
@@ -226,13 +207,13 @@ export default function AdVoucherPage() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 format={'DD-MM-YYYY HH:mm'}
-                value={dayjs(searchVoucher?.endDateSearch)}
                 onChange={(e) => {
                   setSearchVoucher({
                     ...searchVoucher,
                     endDateSearch: dayjs(e).toDate().getTime(),
                   })
                 }}
+                ampm={false}
                 slotProps={{
                   actionBar: {
                     actions: ['clear'],
@@ -256,7 +237,7 @@ export default function AdVoucherPage() {
                     setSearchVoucher({ ...searchVoucher, typeSearch: e.target.value })
                   }>
                   <MenuItem value={''}>Kiểu</MenuItem>
-                  <MenuItem value={0}>Tất cả</MenuItem>
+                  <MenuItem value={0}>Công khai</MenuItem>
                   <MenuItem value={1}>Cá nhân</MenuItem>
                 </Select>
                 <b>Trạng thái</b>
@@ -284,7 +265,7 @@ export default function AdVoucherPage() {
                   <TableCell align="center" width={'10%'}>
                     Mã
                   </TableCell>
-                  <TableCell align="center" width={'15%'}>
+                  <TableCell align="center" width={'20%'}>
                     Tên
                   </TableCell>
                   <TableCell align="center" width={'10%'}>
@@ -296,7 +277,7 @@ export default function AdVoucherPage() {
                   <TableCell align="center" width={'20%'}>
                     Ngày kết thúc
                   </TableCell>
-                  <TableCell align="center" width={'15%'}>
+                  <TableCell align="center" width={'10%'}>
                     Trạng thái
                   </TableCell>
                   <TableCell align="center" width={'10%'}>
@@ -311,7 +292,7 @@ export default function AdVoucherPage() {
                     <TableCell align="center">{row.name}</TableCell>
                     <TableCell align="center">
                       {row.type === 0 ? (
-                        <Chip className="chip-tat-ca" size="small" label="Tất cả" />
+                        <Chip className="chip-tat-ca" size="small" label="Công khai" />
                       ) : (
                         <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
                       )}
@@ -355,14 +336,38 @@ export default function AdVoucherPage() {
               <Empty />
             </p>
           )}
-          <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+          {/* <Grid container sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}> */}
+          <Stack
+            mt={2}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            spacing={0}>
+            <Typography component="span" variant={'body2'} mt={0.5}>
+              <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+              <Select
+                onChange={(e) => {
+                  setSearchVoucher({ ...searchVoucher, size: e.target.value })
+                }}
+                sx={{ height: '25px', mx: 0.5 }}
+                size="small"
+                value={searchVoucher.size}>
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={15}>15</MenuItem>
+                <MenuItem value={20}>20</MenuItem>
+              </Select>
+              <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>sản phẩm</Typography>
+            </Typography>
             <Pagination
               page={searchVoucher.page}
               onChange={(_, page) => handelOnchangePage(page)}
               count={totalPages}
               color="primary"
             />
-          </Grid>
+          </Stack>
+          {/* </Grid> */}
         </Grid>
       </Paper>
     </div>

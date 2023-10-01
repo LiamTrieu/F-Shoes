@@ -24,4 +24,10 @@ public interface AdBrandRepository extends BrandRepository {
             ORDER BY created_at DESC
             """, nativeQuery = true)
     Page<BrandResponse> getBrandByFilter(@Param("filter") BrandFilterRequest brandFilterRequest, Pageable pageable);
+
+    @Query(value = """
+            SELECT name
+            FROM brand
+            """, nativeQuery = true)
+    List<String> getAllNameBrand();
 }

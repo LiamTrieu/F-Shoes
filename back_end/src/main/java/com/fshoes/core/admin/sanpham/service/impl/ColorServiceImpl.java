@@ -71,4 +71,9 @@ public class ColorServiceImpl implements ColorService {
             return false;
         }
     }
+
+    @Override
+    public List<String> getAllCodeColor() {
+        return colorRepository.getAllCodeColor();
+    }
 }

@@ -21,4 +21,6 @@ public interface SizeService {
     Size updateSize(String id, SizeRequest sizeRequest);
 
     Boolean swapSize(String id);
+
+    List<Integer> getAllNameSize();
 }

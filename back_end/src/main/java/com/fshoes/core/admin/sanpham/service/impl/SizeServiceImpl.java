@@ -71,4 +71,9 @@ public class SizeServiceImpl implements SizeService {
             return false;
         }
     }
+
+    @Override
+    public List<Integer> getAllNameSize() {
+        return sizeRepository.getAllNameSize();
+    }
 }

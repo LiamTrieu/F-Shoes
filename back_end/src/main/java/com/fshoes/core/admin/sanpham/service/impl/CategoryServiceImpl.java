@@ -70,4 +70,9 @@ public class CategoryServiceImpl implements CategoryService {
             return false;
         }
     }
+
+    @Override
+    public List<String> getAllNameCategory() {
+        return categoryRepository.getAllNameCategory();
+    }
 }

@@ -39,7 +39,10 @@ export default function AdSolePage() {
   const [openAdd, setOpenAdd] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [sole, setSole] = useState({ name: '' })
+  const [errorSole, setErrorSole] = useState('')
+  const [errorSoleUpdate, setErrorSoleUpdate] = useState('')
   const [soleUpdate, setSoleUpdate] = useState({ id: 0, name: '' })
+  const [allNameSole, setAllNameSole] = useState([])
   const [listSole, setListSole] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
@@ -47,6 +50,7 @@ export default function AdSolePage() {
 
   useEffect(() => {
     fetchData(filter)
+    haldleAllNameSole()
   }, [filter])
 
   const fetchData = (filter) => {
@@ -64,62 +68,139 @@ export default function AdSolePage() {
     setIsBackdrop(false)
   }
 
-  const addSole = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận Thêm mới đế giày?'
-    const text = ''
-    setOpenAdd(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        soleApi.addSole(sole).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setOpenAdd(false)
-            setSole({ name: '' })
-            toast.success('Thêm đế giày thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          } else {
-            setOpenAdd(true)
-            toast.error('Thêm đế giày thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
+  const haldleAllNameSole = () => {
+    soleApi
+      .getAllNameSole()
+      .then((response) => {
+        setAllNameSole(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
         })
-      } else {
-        setOpenAdd(true)
+      })
+  }
+
+  const handleValidateAdd = () => {
+    let check = 0
+    const errors = {
+      name: '',
+    }
+
+    if (sole.name.trim() === '') {
+      errors.name = 'Không được để trống tên đế giày'
+    } else if (sole.name.length > 100) {
+      errors.name = 'Tên đế giày không được dài hơn 100 ký tự'
+    } else if (allNameSole.includes(sole.name)) {
+      errors.name = 'Tên đế giày đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
       }
-    })
-    setIsBackdrop(false)
+    }
+
+    setErrorSole(errors.name)
+
+    return check
+  }
+
+  const handleValidateUpdate = () => {
+    let check = 0
+    const errors = {
+      nameUpdate: '',
+    }
+
+    if (soleUpdate.name.trim() === '') {
+      errors.nameUpdate = 'Không được để trống tên đế giày'
+    } else if (soleUpdate.name.length > 100) {
+      errors.nameUpdate = 'Tên đế giày không được dài hơn 100 ký tự'
+    } else if (allNameSole.includes(soleUpdate.name)) {
+      errors.name = 'Tên đế giày đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
+      }
+    }
+
+    setErrorSoleUpdate(errors.nameUpdate)
+
+    return check
+  }
+
+  const addSole = () => {
+    const check = handleValidateAdd()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận Thêm mới đế giày?'
+      const text = ''
+      setOpenAdd(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          soleApi.addSole(sole).then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              setOpenAdd(false)
+              setSole({ name: '' })
+              toast.success('Thêm đế giày thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              fetchData(filter)
+            } else {
+              setOpenAdd(true)
+              toast.error('Thêm đế giày thất bại', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            }
+          })
+        } else {
+          setOpenAdd(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Thêm đế giày thất bại, hãy nhập đủ dữ liệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
   const updateSole = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận cập nhập đế giày?'
-    const text = ''
-    setOpenUpdate(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        soleApi.updateSole(soleUpdate.id, { name: soleUpdate.name }).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setSole({ name: '' })
-            toast.success('Cập nhập đế giày thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          } else {
-            setOpenUpdate(true)
-            toast.error('Cập nhập đế giày thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
-        })
-      } else {
-        setOpenUpdate(true)
-      }
-    })
-    setIsBackdrop(false)
+    const check = handleValidateUpdate()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận cập nhập đế giày?'
+      const text = ''
+      setOpenUpdate(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          soleApi.updateSole(soleUpdate.id, { name: soleUpdate.name }).then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              setSole({ name: '' })
+              toast.success('Cập nhập đế giày thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              fetchData(filter)
+            } else {
+              setOpenUpdate(true)
+              toast.error('Cập nhập đế giày thất bại', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            }
+          })
+        } else {
+          setOpenUpdate(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Thêm đế giày thất bại, hãy nhập đủ dữ liệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
 
   const chageName = (e) => {
@@ -243,6 +324,7 @@ export default function AdSolePage() {
                   size="small"
                   placeholder="Nhập tên đế giày"
                 />
+                <span style={{ color: 'red' }}>{errorSole}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -293,6 +375,7 @@ export default function AdSolePage() {
                   size="small"
                   placeholder="Nhập tên đế giày"
                 />
+                <span style={{ color: 'red' }}>{errorSoleUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>
