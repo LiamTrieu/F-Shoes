@@ -3,6 +3,7 @@ package com.fshoes.core.admin.sell.service;
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
 import com.fshoes.core.admin.sell.model.request.CreateCartRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
+import com.fshoes.core.admin.sell.model.response.CartDetailResponse;
 import com.fshoes.core.admin.sell.model.response.GetALlCustomerResponse;
 import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
 import com.fshoes.core.common.PageReponse;
@@ -18,9 +19,13 @@ public interface AdminSellService {
 
     PageReponse<GetALlCustomerResponse> getAllCustomer(AdCustomerRequest request);
 
-    Cart createCart(Cart cart);
+    Cart createCart();
+
+    Boolean deleteCart(String id);
 
     CartDetail addCartDetail(CreateCartRequest request);
 
     List<Cart> getAllCart();
+
+    List<CartDetailResponse> getCartDetail();
 }

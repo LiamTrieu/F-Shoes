@@ -3,6 +3,7 @@ package com.fshoes.core.admin.sell.service.impl;
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
 import com.fshoes.core.admin.sell.model.request.CreateCartRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
+import com.fshoes.core.admin.sell.model.response.CartDetailResponse;
 import com.fshoes.core.admin.sell.model.response.GetALlCustomerResponse;
 import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
 import com.fshoes.core.admin.sell.repository.AdminSellGetCustomerRepository;
@@ -45,8 +46,18 @@ public class AdminSellServiceImpl implements AdminSellService {
     }
 
     @Override
-    public Cart createCart(Cart cart) {
-        return cartRepository.save(cart);
+    public Cart createCart() {
+        return cartRepository.save(new Cart());
+    }
+    @Override
+    public Boolean deleteCart(String id) {
+        try {
+            Cart cart = cartRepository.findById(id).get();
+             cartRepository.delete(cart);
+             return true;
+        }catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -63,6 +74,11 @@ public class AdminSellServiceImpl implements AdminSellService {
     @Override
     public List<Cart> getAllCart() {
         return cartRepository.getAllCarrt();
+    }
+
+    @Override
+    public List<CartDetailResponse> getCartDetail() {
+        return null;
     }
 
     @Override

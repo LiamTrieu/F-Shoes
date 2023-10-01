@@ -55,10 +55,9 @@ const styleModalProductDetail = {
   boxShadow: 24,
 }
 
-export default function ModelSell({ open, setOPen }) {
+export default function ModelSell({ open, setOPen, idCart }) {
   const [isShowProductDetail, setIsShowProductDetail] = useState(false)
   const [listProduct, setListProduct] = useState([])
-  const [modelSellCartId, setModelSellCartId] = useState('')
 
   const [filter, setFilter] = useState({
     brand: null,
@@ -68,7 +67,6 @@ export default function ModelSell({ open, setOPen }) {
     category: null,
     size: null,
     nameProductDetail: '',
-    // codeProductDetail: '',
   })
 
   const [listBrand, setListBrand] = useState([])
@@ -78,35 +76,22 @@ export default function ModelSell({ open, setOPen }) {
   const [listCategory, setListCategory] = useState([])
   const [listSize, setListSize] = useState([])
 
-  const [addCartDetail, setAddCartDetail] = useState([])
-
   useEffect(() => {
     bradApi.findAll().then((response) => {
       setListBrand(response.data.data)
     })
-  }, [])
-
-  useEffect(() => {
     materialApi.findAll().then((response) => {
       setListMaterial(response.data.data)
     })
-  }, [])
-  useEffect(() => {
     colorApi.findAll().then((response) => {
       setListColor(response.data.data)
     })
-  }, [])
-  useEffect(() => {
     soleApi.findAll().then((response) => {
       setListSole(response.data.data)
     })
-  }, [])
-  useEffect(() => {
     categoryApi.findAll().then((response) => {
       setListCategory(response.data.data)
     })
-  }, [])
-  useEffect(() => {
     sizeApi.findAll().then((response) => {
       setListSize(response.data.data)
     })
@@ -114,18 +99,19 @@ export default function ModelSell({ open, setOPen }) {
 
   const fecthData = (filter) => {
     sellApi.getAllProduct(filter).then((response) => {
-      console.log(response)
       setListProduct(response.data.data)
     })
   }
+
   useEffect(() => {
     fecthData(filter)
   }, [filter])
+
   const onSubmitAddCartDetail = (id) => {
     const cartDetail = {
-      cartId: 'cccc',
+      cartId: idCart,
       productDetailId: id,
-      quantity: 1, // You can set the quantity as needed.
+      quantity: 1,
     }
 
     sellApi.addCartDetail(cartDetail).then((response) => {

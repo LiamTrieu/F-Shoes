@@ -4,11 +4,14 @@ import {
   Button,
   Chip,
   Container,
+  FormControlLabel,
   IconButton,
   InputAdornment,
   MenuItem,
   Pagination,
   Paper,
+  Radio,
+  RadioGroup,
   Select,
   Stack,
   Table,
@@ -22,36 +25,26 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import { TbEyeEdit } from 'react-icons/tb'
-import bradApi from '../../../api/admin/sanpham/bradApi'
-import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
 import { Link } from 'react-router-dom'
 import Empty from '../../../components/Empty'
+import dayjs from 'dayjs'
 
 export default function AdProductPage() {
-  const [listBrand, setListBrand] = useState([])
-  const [listCategory, setListCategory] = useState([])
   const [listProduct, setListProduct] = useState([])
-  const [total, setTotal] = useState([])
+  const [total, setTotal] = useState(0)
   const [filter, setFilter] = useState({
-    category: null,
-    brand: null,
-    status: null,
+    status: '',
     name: '',
     size: 5,
     page: 1,
   })
 
   useEffect(() => {
-    bradApi.findAll().then((response) => {
-      setListBrand(response.data.data)
-    })
-    categoryApi.findAll().then((response) => {
-      setListCategory(response.data.data)
-    })
-  }, [])
+    fetchData(filter)
+  }, [filter])
 
-  useEffect(() => {
+  function fetchData(filter) {
     sanPhamApi.get(filter).then((response) => {
       setListProduct(response.data.data.data)
       setTotal(response.data.data.totalPages)
@@ -60,7 +53,7 @@ export default function AdProductPage() {
           setFilter({ ...filter, page: response.data.data.totalPages })
         }
     })
-  }, [filter])
+  }
 
   return (
     <div className="san-pham">
@@ -96,71 +89,49 @@ export default function AdProductPage() {
         </Stack>
         <Stack my={2} direction="row" justifyContent="start" alignItems="center" spacing={1}>
           <div className="filter">
-            <b>Danh mục:</b>
-            <Select
-              displayEmpty
-              size="small"
-              value={filter.category}
-              onChange={(e) => {
-                setFilter({ ...filter, category: e.target.value })
-              }}>
-              <MenuItem value={null}>Tất cả</MenuItem>
-              {listCategory?.map((item) => (
-                <MenuItem key={item?.id} value={item?.id}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <b>Thương hiệu:</b>
-            <Select
-              displayEmpty
-              size="small"
-              value={filter.brand}
-              onChange={(e) => {
-                setFilter({ ...filter, brand: e.target.value })
-              }}>
-              <MenuItem value={null}>Tất cả</MenuItem>
-              {listBrand?.map((item) => (
-                <MenuItem key={item?.id} value={item?.id}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </Select>
             <b>Trạng thái:</b>
-            <Select
-              displayEmpty
-              size="small"
-              value={filter.status}
-              onChange={(e) => {
-                setFilter({ ...filter, status: e.target.value })
-              }}>
-              <MenuItem value={null}>Tất cả</MenuItem>
-              {[
-                { id: 0, name: 'Đang bán' },
-                { id: 1, name: 'Ngừng bán' },
-              ].map((item) => (
-                <MenuItem key={item?.id} value={item?.id}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </Select>
           </div>
+          <RadioGroup
+            row
+            aria-label="status"
+            name="status"
+            value={filter.status}
+            onChange={(e) => {
+              setFilter({ ...filter, status: e.target.value })
+            }}>
+            <FormControlLabel
+              value={''}
+              control={<Radio color="cam" size="small" />}
+              label="Tất cả"
+            />
+            <FormControlLabel
+              value={0}
+              control={<Radio color="cam" size="small" />}
+              label="Đang bán"
+            />
+            <FormControlLabel
+              value={1}
+              control={<Radio color="cam" size="small" />}
+              label="Ngừng bán"
+            />
+          </RadioGroup>
         </Stack>
         {listProduct.length > 0 ? (
           <Fragment>
             <Table className="tableCss">
               <TableHead>
                 <TableRow>
-                  <TableCell align="center" width={'5%'}>
+                  <TableCell align="center" width={'7%'}>
                     STT
                   </TableCell>
-                  <TableCell width={'35%'}>Tên sản phẩm</TableCell>
-                  <TableCell width={'15%'}>Danh mục</TableCell>
-                  <TableCell width={'15%'}>Thương hiệu</TableCell>
-                  <TableCell align="center" width={'10%'}>
+                  <TableCell width={'30%'}>Tên sản phẩm</TableCell>
+                  <TableCell width={'15%'}>Ngày thêm</TableCell>
+                  <TableCell align="center" width={'15%'}>
                     Số lượng
                   </TableCell>
-                  <TableCell width={'10%'}>Trạng thái</TableCell>
+                  <TableCell width={'10%'} align="center">
+                    Trạng thái
+                  </TableCell>
                   <TableCell width={'10%'} align="center">
                     Thao tác
                   </TableCell>
@@ -169,13 +140,12 @@ export default function AdProductPage() {
               <TableBody>
                 {listProduct.map((product) => {
                   return (
-                    <TableRow>
+                    <TableRow key={product.id}>
                       <TableCell align="center">{product.stt}</TableCell>
                       <TableCell sx={{ maxWidth: '0px' }}>{product.name}</TableCell>
-                      <TableCell>{product.category}</TableCell>
-                      <TableCell>{product.brand}</TableCell>
+                      <TableCell>{dayjs(product.createdAt).format('DD-MM-YYYY')}</TableCell>
                       <TableCell align="center">{product.amount}</TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <Chip
                           className={
                             product.status === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'
@@ -213,7 +183,6 @@ export default function AdProductPage() {
                   sx={{ height: '25px', mx: 0.5 }}
                   size="small"
                   value={filter.size}>
-                  <MenuItem value={1}>1</MenuItem>
                   <MenuItem value={5}>5</MenuItem>
                   <MenuItem value={10}>10</MenuItem>
                   <MenuItem value={15}>15</MenuItem>
