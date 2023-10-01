@@ -14,9 +14,9 @@ const khuyenMaiApi = {
     return axiosClient.get(GetAllDtail, { params: filterDetail })
   },
 
-  getAllProductDetailByProduct: (filterDetail, id) => {
+  getAllProductDetailByProduct: (filterDetailByProduct, id) => {
     const GetAllDtail = `/promotion/get-product-detail-by-product/${id}`
-    return axiosClient.get(GetAllDtail, { params: filterDetail })
+    return axiosClient.get(GetAllDtail, { params: filterDetailByProduct })
   },
 
   getPage: (totalPages) => {

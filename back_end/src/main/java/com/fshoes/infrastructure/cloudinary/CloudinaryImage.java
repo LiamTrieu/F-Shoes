@@ -62,7 +62,7 @@ public class CloudinaryImage {
     public String uploadAvatar(MultipartFile imageFile) {
         Map params = ObjectUtils.asMap(
                 "folder", "avatar",
-                "resource_type", "image"
+                "resource_type", "image"    
         );
         try {
             Map result = cloudinary.uploader().upload(imageFile.getBytes(), params);

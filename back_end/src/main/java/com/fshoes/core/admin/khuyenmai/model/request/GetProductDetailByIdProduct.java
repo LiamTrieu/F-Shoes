@@ -6,7 +6,8 @@ import lombok.Setter;
 
 import java.util.List;
 
-
+@Getter
+@Setter
 public class GetProductDetailByIdProduct extends PageableRequest {
 
 }

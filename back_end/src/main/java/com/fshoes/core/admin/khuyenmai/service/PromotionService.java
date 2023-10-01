@@ -16,6 +16,7 @@ import java.util.List;
 public interface PromotionService {
 
     Promotion getOne(String id);
+    List<Promotion> getAllPromotion();
 
     Promotion deleteKhuyenMai( String id);
 

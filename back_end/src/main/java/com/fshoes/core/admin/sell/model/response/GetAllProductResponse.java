@@ -4,6 +4,7 @@ import com.fshoes.entity.base.IsIdentified;
 
 public interface GetAllProductResponse extends IsIdentified {
 
+    String getProductDetailId();
     String getName();
 
     Double getPrice();
