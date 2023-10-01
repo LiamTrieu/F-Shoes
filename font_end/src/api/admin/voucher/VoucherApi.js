@@ -30,13 +30,24 @@ const voucherApi = {
     return axiosClient.get(urlSearchVoucher, { params: adVoucherSearch })
   },
   getPageCustomer: (p) => {
-    const url = `/khach-hang/search`
+    const url = `/voucher/view/all/customer?numberPage=${p}`
     return axiosClient.get(url)
   },
-
   getListIdCustomerByIdVoucher: (idVoucher) => {
     const urlListIdCustomerByIdVoucher = `/customerVoucher/view/list-id-customer/${idVoucher}`
     return axiosClient.get(urlListIdCustomerByIdVoucher)
+  },
+  getAllCodeVoucher: () => {
+    const url = `/voucher/view/code-voucher`
+    return axiosClient.get(url)
+  },
+  getAllVoucherByIdCustomer: (idCutsomer) => {
+    const url = `/voucher/view/voucher-by-customer/${idCutsomer}`
+    return axiosClient.get(url)
+  },
+  getAllVoucherBystatus: () => {
+    const url = `/voucher/view/voucher-by-status`
+    return axiosClient.get(url)
   },
 }
 

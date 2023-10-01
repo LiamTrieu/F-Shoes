@@ -1,8 +1,6 @@
 package com.fshoes.core.admin.sanpham.repository;
 
-import com.fshoes.core.admin.sanpham.model.request.BrandFilterRequest;
 import com.fshoes.core.admin.sanpham.model.request.CategoryFilterRequest;
-import com.fshoes.core.admin.sanpham.model.respone.BrandResponse;
 import com.fshoes.core.admin.sanpham.model.respone.CategoryResponse;
 import com.fshoes.entity.Category;
 import com.fshoes.infrastructure.constant.Status;
@@ -26,4 +24,10 @@ public interface AdCategoryRepository extends CategoryRepository {
             ORDER BY created_at DESC
             """, nativeQuery = true)
     Page<CategoryResponse> getCategoryByFilter(@Param("filter") CategoryFilterRequest categoryFilterRequest, Pageable pageable);
+
+    @Query(value = """
+            SELECT name
+            FROM category
+            """, nativeQuery = true)
+    List<String> getAllNameCategory();
 }

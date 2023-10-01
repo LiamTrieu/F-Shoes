@@ -25,5 +25,9 @@ const sizeApi = {
     const url = `/size/swap/${id}`
     return axiosClient.delete(url)
   },
+  getAllNameSize: () => {
+    const url = `/size/get-all-name`
+    return axiosClient.get(url)
+  },
 }
 export default sizeApi

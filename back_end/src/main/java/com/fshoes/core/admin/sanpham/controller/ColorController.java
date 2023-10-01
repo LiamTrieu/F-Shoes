@@ -44,4 +44,8 @@ public class ColorController {
         return new ObjectRespone(colorService.swapColor(id));
     }
 
+    @GetMapping("/get-all-name")
+    public ObjectRespone getAllCodeColor() {
+        return new ObjectRespone(colorService.getAllCodeColor());
+    }
 }

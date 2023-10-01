@@ -24,4 +24,10 @@ public interface AdSoleRepository extends SoleRepository {
             ORDER BY created_at DESC
             """, nativeQuery = true)
     Page<SoleResponse> getSoleByFilter(@Param("filter") SoleFilterRequest soleFilterRequest, Pageable pageable);
+
+    @Query(value = """
+            SELECT name
+            FROM sole
+            """, nativeQuery = true)
+    List<String> getAllNameSole();
 }

@@ -12,6 +12,7 @@ import {
   Paper,
   Radio,
   RadioGroup,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -31,7 +32,8 @@ import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
 import { toast } from 'react-toastify'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-// import PercentIcon from "@mui/icons-material/Percent";
+import '../../../assets/styles/admin.css'
+import './voucher.css'
 
 const listBreadcrumbs = [{ name: 'Khuyến mãi', link: '/admin/voucher' }]
 
@@ -46,6 +48,16 @@ export default function AdVoucherDetail() {
   const [dataFetched, setDataFetched] = useState(false)
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([])
   const [selectAll, setSelectAll] = useState(false)
+  const [errorCode, setErrorCode] = useState('')
+  const [errorName, setErrorName] = useState('')
+  const [errorValue, setErrorValue] = useState('')
+  const [errorMaximumValue, setErrorMaximumValue] = useState('')
+  const [errorMinimumAmount, setErrorMinimumAmount] = useState('')
+  const [errorQuantity, setErrorQuantity] = useState('')
+  const [errorStartDate, setErrorStartDate] = useState('')
+  const [errorEndDate, setErrorEndDate] = useState('')
+  const [allCodeVoucher, setAllCodeVoucher] = useState([])
+  const [prevCodeValue, setPrevCodeValue] = useState('')
   const initialVoucher = {
     code: '',
     name: '',
@@ -63,6 +75,7 @@ export default function AdVoucherDetail() {
   useEffect(() => {
     fetchData(id)
     handelCustomeFill(initPage)
+    haldleAllCodeVoucher()
   }, [id, initPage])
 
   useEffect(() => {
@@ -86,6 +99,7 @@ export default function AdVoucherDetail() {
           endDate: formattedEndDate,
         })
 
+        setPrevCodeValue(response.data.data.code)
         setIsSelectVisible(response.data.data.type === 1)
       })
       .catch(() => {
@@ -104,27 +118,131 @@ export default function AdVoucherDetail() {
       })
   }
 
-  const handleUpdateVoucher = (idUpdate, voucherDetail) => {
-    console.log(voucherDetail)
-    const title = 'Xác nhận cập nhật voucher?'
-    const text = ''
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        voucherApi
-          .updateVoucher(idUpdate, voucherDetail)
-          .then(() => {
-            toast.success('Cập nhật voucher thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            navigate('/admin/voucher')
-          })
-          .catch(() => {
-            toast.error('Cập nhật voucher thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          })
+  const haldleAllCodeVoucher = () => {
+    voucherApi
+      .getAllCodeVoucher()
+      .then((response) => {
+        setAllCodeVoucher(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const handleValidation = () => {
+    let check = 0
+    const errors = {
+      code: '',
+      name: '',
+      value: '',
+      maximumValue: '',
+      quantity: '',
+      minimumAmount: '',
+      startDate: '',
+      endDate: '',
+    }
+
+    if (voucherDetail.code.trim() === '') {
+      errors.code = 'Mã không được để trống'
+    } else if (voucherDetail.code.length > 30) {
+      errors.code = 'Mã không được dài hơn 30 ký tự'
+    } else if (
+      prevCodeValue !== voucherDetail.code &&
+      allCodeVoucher.includes(voucherDetail.code)
+    ) {
+      errors.code = 'Mã đã tồn tại'
+    } else {
+      errors.code = ''
+    }
+
+    if (voucherDetail.name.trim() === '') {
+      errors.name = 'Tên không được để trống'
+    } else if (voucherDetail.name.length > 100) {
+      errors.name = 'Tên không được dài hơn 100 ký tự'
+    }
+
+    if (voucherDetail.value === null) {
+      errors.value = 'Giá trị không được để trống'
+    } else if (voucherDetail.value < 0) {
+      errors.value = 'giá trị tối thiểu 0%'
+    } else if (voucherDetail.value > 100) {
+      errors.value = 'giá trị tối đa 100%'
+    }
+
+    if (voucherDetail.maximumValue === null) {
+      errors.maximumValue = 'Giá trị tối đa không được để trống'
+    } else if (voucherDetail.maximumValue < 0) {
+      errors.maximumValue = 'giá trị tối đa tối thiểu 0 (vnđ)'
+    }
+
+    if (voucherDetail.quantity === null) {
+      errors.quantity = 'Số lượng không được để trống'
+    } else if (voucherDetail.quantity < 0) {
+      errors.quantity = 'Số lượng tối thiểu 0 (vnđ)'
+    }
+
+    if (voucherDetail.minimumAmount === null) {
+      errors.minimumAmount = 'Điều kiện không được để trống'
+    } else if (voucherDetail.minimumAmount < 0) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
+    }
+
+    if (voucherDetail.startDate.trim() === '') {
+      errors.startDate = 'Ngày bắt đầu không được để trống'
+    }
+
+    if (voucherDetail.endDate.trim() === '') {
+      errors.endDate = 'Ngày kết thúc không được để trống'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
       }
-    })
+    }
+
+    setErrorCode(errors.code)
+    setErrorName(errors.name)
+    setErrorValue(errors.value)
+    setErrorMaximumValue(errors.maximumValue)
+    setErrorMinimumAmount(errors.minimumAmount)
+    setErrorQuantity(errors.quantity)
+    setErrorStartDate(errors.startDate)
+    setErrorEndDate(errors.endDate)
+
+    return check
+  }
+
+  const handleUpdateVoucher = (idUpdate, voucherDetail) => {
+    const check = handleValidation()
+
+    if (check < 1) {
+      const title = 'Xác nhận cập nhật voucher?'
+      const text = ''
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          voucherApi
+            .updateVoucher(idUpdate, voucherDetail)
+            .then(() => {
+              toast.success('Cập nhật voucher thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              navigate('/admin/voucher')
+            })
+            .catch(() => {
+              toast.error('Cập nhật voucher thất bại', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            })
+        }
+      })
+    } else {
+      toast.error('Không thể cập nhật khuyến mãi', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
 
   const handelCustomeFill = (initPage) => {
@@ -177,7 +295,7 @@ export default function AdVoucherDetail() {
       <Paper sx={{ p: 2 }}>
         <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
           <Grid item xs={4}>
-            <div>
+            <div style={{ marginBottom: '16px' }}>
               <TextField
                 label="Mã voucher"
                 type="text"
@@ -193,11 +311,11 @@ export default function AdVoucherDetail() {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                sx={{ mb: 2 }}
               />
+              <span className="error">{errorCode}</span>
             </div>
             {/* -------------------------------------------------------------------------------------------------------- */}
-            <div>
+            <div style={{ marginBottom: '16px' }}>
               <TextField
                 label="Tên voucher"
                 type="text"
@@ -213,125 +331,178 @@ export default function AdVoucherDetail() {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                sx={{ mb: 2 }}
               />
+              <span className="error">{errorName}</span>
             </div>
             {/* -------------------------------------------------------------------------------------------------------- */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-              <TextField
-                label="Giá trị"
-                type="number"
-                size="small"
-                value={voucherDetail?.value}
-                onChange={(e) => {
-                  setVoucherDetail({
-                    ...voucherDetail,
-                    value: Number(e.target.value),
-                  })
-                }}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                }}
-                sx={{ marginRight: '8px' }}
-              />
+            <Stack direction="row" spacing={2} style={{ marginBottom: '16px' }}>
+              <div>
+                <TextField
+                  label="Giá trị"
+                  type="number"
+                  size="small"
+                  value={voucherDetail?.value}
+                  onChange={(e) => {
+                    setVoucherDetail({
+                      ...voucherDetail,
+                      value: Number(e.target.value),
+                    })
+                  }}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                  }}
+                />
+                <span className="error">{errorValue}</span>
+              </div>
               {/* -------------------------------------------------------------------------------------------------------- */}
-              <TextField
-                label="Giá trị tối đa"
-                type="number"
-                size="small"
-                value={voucherDetail?.maximumValue}
-                onChange={(e) => {
-                  setVoucherDetail({
-                    ...voucherDetail,
-                    maximumValue: Number(e.target.value),
-                  })
-                }}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-                }}
-                sx={{ marginLeft: '8px' }}
-              />
-            </div>
+              <div>
+                <TextField
+                  label="Giá trị tối đa"
+                  type="number"
+                  size="small"
+                  value={voucherDetail?.maximumValue}
+                  onChange={(e) => {
+                    setVoucherDetail({
+                      ...voucherDetail,
+                      maximumValue: Number(e.target.value),
+                    })
+                  }}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                  }}
+                />
+                <span className="error">{errorMaximumValue}</span>
+              </div>
+            </Stack>
             {/* -------------------------------------------------------------------------------------------------------- */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-              <TextField
-                label="Số lượng"
-                type="number"
-                variant="outlined"
-                size="small"
-                value={voucherDetail?.quantity}
-                onChange={(e) => {
-                  setVoucherDetail({
-                    ...voucherDetail,
-                    quantity: Number(e.target.value),
-                  })
-                }}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                sx={{ marginRight: '8px' }}
-              />
+            <Stack direction="row" spacing={2} style={{ marginBottom: '16px' }}>
+              <div>
+                <TextField
+                  label="Số lượng"
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  value={voucherDetail?.quantity}
+                  onChange={(e) => {
+                    setVoucherDetail({
+                      ...voucherDetail,
+                      quantity: Number(e.target.value),
+                    })
+                  }}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                <span className="error">{errorQuantity}</span>
+              </div>
               {/* -------------------------------------------------------------------------------------------------------- */}
-              <TextField
-                label="Điều kiện"
-                type="number"
-                size="small"
-                value={voucherDetail?.minimumAmount}
-                onChange={(e) => {
-                  setVoucherDetail({
-                    ...voucherDetail,
-                    minimumAmount: Number(e.target.value),
-                  })
-                }}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-                }}
-                sx={{ marginLeft: '8px' }}
-              />
+              <div>
+                <TextField
+                  label="Điều kiện"
+                  type="number"
+                  size="small"
+                  value={voucherDetail?.minimumAmount}
+                  onChange={(e) => {
+                    setVoucherDetail({
+                      ...voucherDetail,
+                      minimumAmount: Number(e.target.value),
+                    })
+                  }}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                  }}
+                />
+                <span className="error">{errorMinimumAmount}</span>
+              </div>
+            </Stack>
+            {/* -------------------------------------------------------------------------------------------------------- */}
+            <div style={{ marginBottom: '16px' }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  format={'DD-MM-YYYY HH:mm:ss'}
+                  value={dayjs(voucherDetail?.startDate, 'DD-MM-YYYY HH:mm:ss')}
+                  onChange={(e) => {
+                    setVoucherDetail({
+                      ...voucherDetail,
+                      startDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
+                    })
+                  }}
+                  ampm={false}
+                  minDateTime={dayjs()}
+                  slotProps={{
+                    actionBar: {
+                      actions: ['clear'],
+                      onClick: () => setVoucherDetail({ ...voucherDetail, startDate: '' }),
+                    },
+                  }}
+                  label="Từ ngày"
+                  sx={{ width: '100%' }}
+                />
+              </LocalizationProvider>
+              <span className="error">{errorStartDate}</span>
             </div>
             {/* -------------------------------------------------------------------------------------------------------- */}
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                format={'DD-MM-YYYY HH:mm:ss'}
-                value={dayjs(voucherDetail?.startDate, 'DD-MM-YYYY HH:mm:ss')}
-                onChange={(e) => {
-                  setVoucherDetail({
-                    ...voucherDetail,
-                    startDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
-                  })
-                }}
-                label="Từ ngày"
-                sx={{ width: '100%', mb: 2 }}
-              />
-            </LocalizationProvider>
-            {/* -------------------------------------------------------------------------------------------------------- */}
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                format={'DD-MM-YYYY HH:mm:ss'}
-                value={dayjs(voucherDetail?.endDate, 'DD-MM-YYYY HH:mm:ss')}
-                onChange={(e) => {
-                  setVoucherDetail({
-                    ...voucherDetail,
-                    endDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
-                  })
-                }}
-                label="Đến ngày"
-                sx={{ width: '100%', mb: 2 }}
-              />
-            </LocalizationProvider>
+            <div style={{ marginBottom: '16px' }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  format={'DD-MM-YYYY HH:mm:ss'}
+                  value={dayjs(voucherDetail?.endDate, 'DD-MM-YYYY HH:mm:ss')}
+                  onChange={(e) => {
+                    setVoucherDetail({
+                      ...voucherDetail,
+                      endDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
+                    })
+                  }}
+                  ampm={false}
+                  minDateTime={dayjs()}
+                  slotProps={{
+                    actionBar: {
+                      actions: ['clear'],
+                      onClick: () => setVoucherDetail({ ...voucherDetail, endDate: '' }),
+                    },
+                  }}
+                  label="Đến ngày"
+                  sx={{ width: '100%' }}
+                />
+              </LocalizationProvider>
+              <span className="error">{errorEndDate}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
+              <FormLabel>Kiểu</FormLabel>
+              <FormControl size="small" sx={{ flex: 1, ml: 2 }}>
+                <RadioGroup row value={voucherDetail?.type}>
+                  <FormControlLabel
+                    name="typeUpdate"
+                    value={0}
+                    control={<Radio />}
+                    label="Công khai"
+                    onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
+                    onClick={() => setIsSelectVisible(false)}
+                  />
+                  <FormControlLabel
+                    name="typeUpdate"
+                    value={1}
+                    control={<Radio />}
+                    label="Cá nhân"
+                    onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
+                    onClick={() => setIsSelectVisible(true)}
+                  />
+                </RadioGroup>
+              </FormControl>
+            </div>
           </Grid>
           <Grid item xs={8}>
             {dataFetched && (
@@ -393,40 +564,18 @@ export default function AdVoucherDetail() {
                 color="primary"
               />
             </Grid>
+            <div style={{ float: 'right' }}>
+              <Button
+                sx={{ width: '150px', backgroundColor: '#FC7C27' }}
+                onClick={() => handleUpdateVoucher(id, voucherDetail)}
+                variant="contained"
+                fullWidth
+                color="warning">
+                Cập nhật
+              </Button>
+            </div>
           </Grid>
         </Grid>
-
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <FormLabel>Kiểu</FormLabel>
-          <FormControl size="small" sx={{ flex: 1, ml: 2 }}>
-            <RadioGroup row value={voucherDetail?.type}>
-              <FormControlLabel
-                name="typeUpdate"
-                value={0}
-                control={<Radio />}
-                label="Tất cả"
-                onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
-                onClick={() => setIsSelectVisible(false)}
-              />
-              <FormControlLabel
-                name="typeUpdate"
-                value={1}
-                control={<Radio />}
-                label="Cá nhân"
-                onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
-                onClick={() => setIsSelectVisible(true)}
-              />
-            </RadioGroup>
-          </FormControl>
-          <Button
-            sx={{ width: '150px', backgroundColor: '#FC7C27' }}
-            onClick={() => handleUpdateVoucher(id, voucherDetail)}
-            variant="contained"
-            fullWidth
-            color="warning">
-            Cập nhật
-          </Button>
-        </div>
       </Paper>
     </div>
   )

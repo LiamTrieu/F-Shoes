@@ -24,4 +24,10 @@ public interface AdSizeRepository extends SizeRepository {
             ORDER BY created_at DESC
             """, nativeQuery = true)
     Page<SizeResponse> getSizeByFilter(@Param("filter") SizeFilterRequest sizeFilterRequest, Pageable pageable);
+
+    @Query(value = """
+            SELECT size
+            FROM size
+            """, nativeQuery = true)
+    List<Integer> getAllNameSize();
 }

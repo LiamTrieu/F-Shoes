@@ -25,5 +25,9 @@ const bradApi = {
     const url = `/brand/swap/${id}`
     return axiosClient.delete(url)
   },
+  getAllNameBrand: () => {
+    const url = `/brand/get-all-name`
+    return axiosClient.get(url)
+  },
 }
 export default bradApi

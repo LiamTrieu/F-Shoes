@@ -39,7 +39,10 @@ export default function AdCategoryPage() {
   const [openAdd, setOpenAdd] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [category, setCategory] = useState({ name: '' })
+  const [errorCategory, setErrorCategory] = useState('')
+  const [errorCategoryUpdate, setErrorCategoryUpdate] = useState('')
   const [categoryUpdate, setCategoryUpdate] = useState({ id: 0, name: '' })
+  const [allNameCategory, setAllNameCategory] = useState([])
   const [listCategory, setListCategory] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
@@ -47,6 +50,7 @@ export default function AdCategoryPage() {
 
   useEffect(() => {
     fetchData(filter)
+    haldleAllNameCategory()
   }, [filter])
 
   const fetchData = (filter) => {
@@ -64,62 +68,141 @@ export default function AdCategoryPage() {
     setIsBackdrop(false)
   }
 
-  const addProduct = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận Thêm mới thể loại?'
-    const text = ''
-    setOpenAdd(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        categoryApi.addCategory(category).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setOpenAdd(false)
-            setCategory({ name: '' })
-            toast.success('Thêm thể loại thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          } else {
-            setOpenAdd(true)
-            toast.error('Thêm thể loại thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
+  const haldleAllNameCategory = () => {
+    categoryApi
+      .getAllNameCategory()
+      .then((response) => {
+        setAllNameCategory(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
         })
-      } else {
-        setOpenAdd(true)
+      })
+  }
+
+  const handleValidateAdd = () => {
+    let check = 0
+    const errors = {
+      name: '',
+    }
+
+    if (category.name.trim() === '') {
+      errors.name = 'Không được để trống tên thể loại'
+    } else if (category.name.length > 100) {
+      errors.name = 'Tên thể loại không được dài hơn 100 ký tự'
+    } else if (allNameCategory.includes(category.name)) {
+      errors.name = 'Tên thể loại đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
       }
-    })
-    setIsBackdrop(false)
+    }
+
+    setErrorCategory(errors.name)
+
+    return check
+  }
+
+  const handleValidateUpdate = () => {
+    let check = 0
+    const errors = {
+      nameUpdate: '',
+    }
+
+    if (categoryUpdate.name.trim() === '') {
+      errors.nameUpdate = 'Không được để trống tên thể loại'
+    } else if (categoryUpdate.name.length > 100) {
+      errors.nameUpdate = 'Tên thể loại không được dài hơn 100 ký tự'
+    } else if (allNameCategory.includes(categoryUpdate.name)) {
+      errors.name = 'Tên thể loại đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
+      }
+    }
+
+    setErrorCategoryUpdate(errors.nameUpdate)
+
+    return check
+  }
+
+  const addProduct = () => {
+    const check = handleValidateAdd()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận Thêm mới thể loại?'
+      const text = ''
+      setOpenAdd(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          categoryApi.addCategory(category).then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              setOpenAdd(false)
+              setCategory({ name: '' })
+              toast.success('Thêm thể loại thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              fetchData(filter)
+            } else {
+              setOpenAdd(true)
+              toast.error('Thêm thể loại thất bại', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            }
+          })
+        } else {
+          setOpenAdd(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Thêm thể loại thất bại, hãy nhập đủ dữ liệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
   const updateProduct = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận cập nhập thể loại?'
-    const text = ''
-    setOpenUpdate(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        categoryApi.updateCategory(categoryUpdate.id, { name: categoryUpdate.name }).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setCategory({ name: '' })
-            toast.success('Cập nhập thể loại thành công', {
-              position: toast.POSITION.TOP_RIGHT,
+    const check = handleValidateUpdate()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận cập nhập thể loại?'
+      const text = ''
+      setOpenUpdate(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          categoryApi
+            .updateCategory(categoryUpdate.id, { name: categoryUpdate.name })
+            .then((res) => {
+              if (res.data.success) {
+                setIsBackdrop(false)
+                setCategory({ name: '' })
+                toast.success('Cập nhập thể loại thành công', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+                fetchData(filter)
+              } else {
+                setOpenUpdate(true)
+                toast.error('Cập nhập thể loại thất bại', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+              }
             })
-            fetchData(filter)
-          } else {
-            setOpenUpdate(true)
-            toast.error('Cập nhập thể loại thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
-        })
-      } else {
-        setOpenUpdate(true)
-      }
-    })
-    setIsBackdrop(false)
+        } else {
+          setOpenUpdate(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Cập nhập thể loại thất bại, hãy nhập đủ dữ diệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
 
   const chageName = (e) => {
@@ -236,6 +319,7 @@ export default function AdCategoryPage() {
                   size="small"
                   placeholder="Nhập tên thể loại"
                 />
+                <span style={{ color: 'red' }}>{errorCategory}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -286,6 +370,7 @@ export default function AdCategoryPage() {
                   size="small"
                   placeholder="Nhập tên thể loại"
                 />
+                <span style={{ color: 'red' }}>{errorCategoryUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>

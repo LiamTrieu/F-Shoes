@@ -1,5 +1,5 @@
 .voucher-css .MuiPaper-root {
-  padding: 2%;
+  padding: 2% !important;
 }
 
 .voucher-css td {
@@ -12,29 +12,39 @@
 }
 
 .voucher-css .filter .MuiInputBase-root .MuiSelect-select {
-  color: #fc7c27;
+  color: #fc7c27 !important;
 }
 
-.voucher-css .MuiChip-root {
-  color: white;
-}
 .voucher-css .icon-css .css-1x6if3e-MuiButtonBase-root-MuiButton-root {
   font-size: 27px !important;
-  background-color: #fc7c27;
+  background-color: #fc7c27 !important;
+}
+
+.voucher-css .icon-css .css-1x6if3e-MuiButtonBase-root-MuiButton-root:active {
+  box-shadow: none !important;
 }
 
 .voucher-css .icon-css .css-1x6if3e-MuiButtonBase-root-MuiButton-root:hover {
-  font-size: 27px !important;
-  background-color: #c56729;
+  box-shadow: none !important;
 }
 
 .voucher-css .MuiButton-root {
-  border-radius: 15px;
   float: right !important;
+  border-radius: 8px !important;
+  text-transform: none !important;
+  box-shadow: none !important;
+}
+
+.voucher-css .MuiButton-root:active {
+  box-shadow: none !important;
+}
+
+.voucher-css .MuiButton-root:hover {
+  box-shadow: none !important;
 }
 
 .voucher-css p {
-  text-align: center;
+  text-align: center !important;
 }
 
 .dateTime .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
@@ -42,7 +52,7 @@
 }
 .dateTime .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
   line-height: 0.6em !important;
-  padding-top: 2px;
+  padding-top: 2px !important;
   padding-bottom: 14px !important;
 }
 
@@ -56,6 +66,7 @@
   color: #900d9e !important;
   background: #f8edf6 !important;
   border-color: #eca9e2 !important;
+  width: 100px !important;
 }
 
 .chip-tat-ca {
@@ -63,12 +74,30 @@
   color: #900d9e !important;
   background: #f8edf6 !important;
   border-color: #eca9e2 !important;
+  width: 100px !important;
 }
 .chip-gioi-han {
   border: 1px solid #d9d9d9 !important;
   color: #5a7edb !important;
   background: #f0f6fa !important;
   border-color: #28b3e1 !important;
+  width: 100px !important;
+}
+
+.chip-hoat-dong {
+  border: 1px solid #d9d9d9 !important;
+  color: #389e0d !important;
+  background: #f0ffe2 !important;
+  border-color: #b7eb8f !important;
+  width: 100px !important;
+}
+
+.chip-khong-hoat-dong {
+  border: 1px solid #d9d9d9 !important;
+  color: #e41627 !important;
+  background: #fff1f0 !important;
+  border-color: #fd9690 !important;
+  width: 100px !important;
 }
 
 /* .voucher-add p {
@@ -84,5 +113,19 @@
 } */
 
 .voucher-add .css-1qcnqou-MuiButtonBase-root-MuiButton-root:hover {
-  background-color: #c25e1c;
+  background-color: #c25e1c !important;
+}
+
+.voucher-add .error {
+  color: red !important;
+  font-size: 12px !important;
+}
+
+.voucher-detail .css-1qcnqou-MuiButtonBase-root-MuiButton-root:hover {
+  background-color: #c25e1c !important;
+}
+
+.voucher-detail .error {
+  color: red !important;
+  font-size: 12px !important;
 }

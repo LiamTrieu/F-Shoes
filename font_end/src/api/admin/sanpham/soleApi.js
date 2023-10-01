@@ -25,5 +25,9 @@ const soleApi = {
     const url = `/sole/swap/${id}`
     return axiosClient.delete(url)
   },
+  getAllNameSole: () => {
+    const url = `/sole/get-all-name`
+    return axiosClient.get(url)
+  },
 }
 export default soleApi

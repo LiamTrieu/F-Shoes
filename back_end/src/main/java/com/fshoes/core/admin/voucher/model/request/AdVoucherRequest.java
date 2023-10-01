@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.voucher.model.request;
 
-import com.fshoes.entity.CustomerVoucher;
 import com.fshoes.entity.Voucher;
 import com.fshoes.util.DateUtil;
 import lombok.Getter;
@@ -13,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class AdVoucherRequest {
+
     private String code;
 
     private String name;
@@ -31,7 +31,7 @@ public class AdVoucherRequest {
 
     private String endDate;
 
-    private Integer status = 0;
+    private Integer status;
 
     private List<String> listIdCustomer;
 

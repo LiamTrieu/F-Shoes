@@ -72,4 +72,9 @@ public class BrandServiceImpl implements BrandService {
             return false;
         }
     }
+
+    @Override
+    public List<String> getAllNameBrand() {
+        return brandRepository.getAllNameBrand();
+    }
 }

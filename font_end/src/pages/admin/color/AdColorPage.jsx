@@ -42,6 +42,9 @@ export default function AdColorPage() {
   const [openUpdate, setOpenUpdate] = useState(false)
   const [color, setColor] = useState({ code: '#000000', name: 'Black' })
   const [colorUpdate, setColorUpdate] = useState({ id: 0, code: '', name: '' })
+  const [errorColor, setErrorColor] = useState('')
+  const [errorColorUpdate, setErrorColorUpdate] = useState('')
+  const [allCodeColor, setAllCodeColor] = useState([])
   const [listColor, setListColor] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, textSearch: '' })
@@ -49,6 +52,7 @@ export default function AdColorPage() {
 
   useEffect(() => {
     fetchData(filter)
+    haldleAllCodeColor()
   }, [filter])
 
   const fetchData = (filter) => {
@@ -66,64 +70,133 @@ export default function AdColorPage() {
     setIsBackdrop(false)
   }
 
-  const addColor = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận Thêm mới màu sắc?'
-    const text = ''
-    setOpenAdd(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        colorApi.addColor(color).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setOpenAdd(false)
-            setColor({ code: '', name: '' })
-            toast.success('Thêm màu sắc thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          } else {
-            setOpenAdd(true)
-            toast.error('Thêm màu sắc thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
+  const haldleAllCodeColor = () => {
+    colorApi
+      .getAllCodeColor()
+      .then((response) => {
+        setAllCodeColor(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
         })
-      } else {
-        setOpenAdd(true)
-      }
-    })
-    setIsBackdrop(false)
+      })
   }
-  const updateColor = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận cập nhật màu sắc?'
-    const text = ''
-    setOpenUpdate(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        colorApi
-          .updateColor(colorUpdate.id, { code: colorUpdate.code, name: colorUpdate.name })
-          .then((res) => {
+
+  const handleValidateAdd = () => {
+    let check = 0
+    const errors = {
+      name: '',
+    }
+
+    if (allCodeColor.includes(color.code)) {
+      errors.name = 'Màu sắc đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
+      }
+    }
+
+    setErrorColor(errors.name)
+
+    return check
+  }
+
+  const handleValidateUpdate = () => {
+    let check = 0
+    const errors = {
+      nameUpdate: '',
+    }
+
+    if (allCodeColor.includes(colorUpdate.code)) {
+      errors.name = 'Màu sắc đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
+      }
+    }
+
+    setErrorColorUpdate(errors.nameUpdate)
+
+    return check
+  }
+
+  const addColor = () => {
+    const check = handleValidateAdd()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận Thêm mới màu sắc?'
+      const text = ''
+      setOpenAdd(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          colorApi.addColor(color).then((res) => {
             if (res.data.success) {
               setIsBackdrop(false)
+              setOpenAdd(false)
               setColor({ code: '', name: '' })
-              toast.success('Cập nhật màu sắc thành công', {
+              toast.success('Thêm màu sắc thành công', {
                 position: toast.POSITION.TOP_RIGHT,
               })
               fetchData(filter)
             } else {
-              setOpenUpdate(true)
-              toast.error('Cập nhật màu sắc thất bại', {
+              setOpenAdd(true)
+              toast.error('Thêm màu sắc thất bại', {
                 position: toast.POSITION.TOP_RIGHT,
               })
             }
           })
-      } else {
-        setOpenUpdate(true)
-      }
-    })
-    setIsBackdrop(false)
+        } else {
+          setOpenAdd(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Thêm màu sắc thất bại, hãy nhập đủ dữ liệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
+  }
+  const updateColor = () => {
+    const check = handleValidateUpdate()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận cập nhật màu sắc?'
+      const text = ''
+      setOpenUpdate(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          colorApi
+            .updateColor(colorUpdate.id, { code: colorUpdate.code, name: colorUpdate.name })
+            .then((res) => {
+              if (res.data.success) {
+                setIsBackdrop(false)
+                setColor({ code: '', name: '' })
+                toast.success('Cập nhật màu sắc thành công', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+                fetchData(filter)
+              } else {
+                setOpenUpdate(true)
+                toast.error('Cập nhật màu sắc thất bại', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+              }
+            })
+        } else {
+          setOpenUpdate(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Thêm màu sắc thất bại, hãy nhập đủ dữ liệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
 
   const chageName = (e) => {
@@ -225,7 +298,7 @@ export default function AdColorPage() {
                 <TextField
                   type="color"
                   id={'nameInputAdd'}
-                  onChange={(e) => {
+                  onBlur={(e) => {
                     chageName(e)
                   }}
                   defaultValue={color.code}
@@ -254,6 +327,7 @@ export default function AdColorPage() {
                   size="small"
                   // placeholder="Nhập mã màu sắc"
                 />
+                <span style={{ color: 'red' }}>{errorColor}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -276,7 +350,7 @@ export default function AdColorPage() {
                 <TextField
                   type="color"
                   id={'nameInputUpdate'}
-                  onChange={(e) => {
+                  onBlur={(e) => {
                     chageName(e)
                   }}
                   defaultValue={colorUpdate.code}
@@ -305,6 +379,7 @@ export default function AdColorPage() {
                   size="small"
                   // placeholder="Nhập mã màu sắc"
                 />
+                <span style={{ color: 'red' }}>{errorColorUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>
@@ -347,8 +422,8 @@ export default function AdColorPage() {
                         <Button
                           disabled
                           sx={{
-                            height: '50%',
-                            borderRadius: '90px',
+                            height: '50px',
+                            borderRadius: '50%',
                             textTransform: 'none',
                             backgroundColor: `${row.code}`,
                           }}></Button>

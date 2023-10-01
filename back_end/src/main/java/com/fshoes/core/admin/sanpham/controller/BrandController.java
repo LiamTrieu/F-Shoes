@@ -43,4 +43,9 @@ public class BrandController {
     public ObjectRespone deleteBrand(@PathVariable String id) {
         return new ObjectRespone(brandService.swapBrand(id));
     }
+
+    @GetMapping("/get-all-name")
+    public ObjectRespone getAllNameBrand() {
+        return new ObjectRespone(brandService.getAllNameBrand());
+    }
 }

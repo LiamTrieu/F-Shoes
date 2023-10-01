@@ -43,4 +43,9 @@ public class CategoryController {
     public ObjectRespone deleteCategory(@PathVariable String id) {
         return new ObjectRespone(categoryService.swapCategory(id));
     }
+
+    @GetMapping("/get-all-name")
+    public ObjectRespone getAllNameCategory() {
+        return new ObjectRespone(categoryService.getAllNameCategory());
+    }
 }

@@ -20,4 +20,6 @@ public interface BrandService {
     Brand updateBrand(String id, BrandRequest brandRequest);
 
     Boolean swapBrand(String id);
+
+    List<String> getAllNameBrand();
 }

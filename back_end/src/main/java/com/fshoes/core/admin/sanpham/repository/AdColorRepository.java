@@ -1,9 +1,7 @@
 package com.fshoes.core.admin.sanpham.repository;
 
 import com.fshoes.core.admin.sanpham.model.request.ColorFilterRequest;
-import com.fshoes.core.admin.sanpham.model.request.MaterialFilterRequest;
 import com.fshoes.core.admin.sanpham.model.respone.ColorResponse;
-import com.fshoes.core.admin.sanpham.model.respone.MaterialResponse;
 import com.fshoes.entity.Color;
 import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.repository.ColorRepository;
@@ -27,4 +25,10 @@ public interface AdColorRepository extends ColorRepository {
             ORDER BY created_at DESC
             """, nativeQuery = true)
     Page<ColorResponse> getColorByFilter(@Param("filter") ColorFilterRequest colorFilterRequest, Pageable pageable);
+
+    @Query(value = """
+            SELECT code
+            FROM color
+            """, nativeQuery = true)
+    List<String> getAllCodeColor();
 }

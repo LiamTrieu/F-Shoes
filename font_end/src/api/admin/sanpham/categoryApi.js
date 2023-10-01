@@ -25,5 +25,9 @@ const categoryApi = {
     const url = `/category/swap/${id}`
     return axiosClient.delete(url)
   },
+  getAllNameCategory: () => {
+    const url = `/category/get-all-name`
+    return axiosClient.get(url)
+  },
 }
 export default categoryApi

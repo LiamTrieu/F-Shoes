@@ -32,6 +32,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import { MdEditSquare } from 'react-icons/md'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import bradApi from '../../../api/admin/sanpham/bradApi'
+import { red } from '@mui/material/colors'
 
 const listBreadcrumb = [{ name: 'Quản lý thương hiệu' }]
 
@@ -40,7 +41,10 @@ export default function AdBrandPage() {
   const [openAdd, setOpenAdd] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [brand, setBrand] = useState({ name: '' })
+  const [errorBrand, setErrorBrand] = useState('')
+  const [errorBrandUpdate, setErrorBrandUpdate] = useState('')
   const [brandUpdate, setBrandUpdate] = useState({ id: 0, name: '' })
+  const [allNameBrand, setAllNameBrand] = useState([])
   const [listBrand, setListBrand] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
@@ -48,6 +52,7 @@ export default function AdBrandPage() {
 
   useEffect(() => {
     fetchData(filter)
+    haldleAllNameBrand()
   }, [filter])
 
   const fetchData = (filter) => {
@@ -65,62 +70,139 @@ export default function AdBrandPage() {
     setIsBackdrop(false)
   }
 
-  const addBrand = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận Thêm mới thương hiệu?'
-    const text = ''
-    setOpenAdd(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        bradApi.addBrand(brand).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setOpenAdd(false)
-            setBrand({ name: '' })
-            toast.success('Thêm thương hiệu thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          } else {
-            setOpenAdd(true)
-            toast.error('Thêm thương hiệu thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
+  const haldleAllNameBrand = () => {
+    bradApi
+      .getAllNameBrand()
+      .then((response) => {
+        setAllNameBrand(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
         })
-      } else {
-        setOpenAdd(true)
+      })
+  }
+
+  const handleValidateAdd = () => {
+    let check = 0
+    const errors = {
+      name: '',
+    }
+
+    if (brand.name.trim() === '') {
+      errors.name = 'Không được để trống tên thương hiệu'
+    } else if (brand.name.length > 100) {
+      errors.name = 'Tên thương hiệu không được dài hơn 100 ký tự'
+    } else if (allNameBrand.includes(brand.name)) {
+      errors.name = 'Tên thương hiệu đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
       }
-    })
-    setIsBackdrop(false)
+    }
+
+    setErrorBrand(errors.name)
+
+    return check
+  }
+
+  const handleValidateUpdate = () => {
+    let check = 0
+    const errors = {
+      nameUpdate: '',
+    }
+
+    if (brandUpdate.name.trim() === '') {
+      errors.nameUpdate = 'Không được để trống tên thương hiệu'
+    } else if (brandUpdate.name.length > 100) {
+      errors.nameUpdate = 'Tên thương hiệu không được dài hơn 100 ký tự'
+    } else if (allNameBrand.includes(brandUpdate.name)) {
+      errors.name = 'Tên thương hiệu đã tồn tại'
+    }
+
+    for (const key in errors) {
+      if (errors[key]) {
+        check++
+      }
+    }
+
+    setErrorBrandUpdate(errors.nameUpdate)
+
+    return check
+  }
+
+  const addBrand = () => {
+    const check = handleValidateAdd()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận Thêm mới thương hiệu?'
+      const text = ''
+      setOpenAdd(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          bradApi.addBrand(brand).then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              setOpenAdd(false)
+              setBrand({ name: '' })
+              toast.success('Thêm thương hiệu thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              fetchData(filter)
+            } else {
+              setOpenAdd(true)
+              toast.error('Thêm thương hiệu thất bại', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            }
+          })
+        } else {
+          setOpenAdd(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Thêm thương hiệu thất bại, hãy nhập đủ dữ liệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
   const updateBrand = () => {
-    setIsBackdrop(true)
-    const title = 'Xác nhận cập nhập thương hiệu?'
-    const text = ''
-    setOpenUpdate(false)
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        bradApi.updateBrand(brandUpdate.id, { name: brandUpdate.name }).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            setBrand({ name: '' })
-            toast.success('Cập nhập thương hiệu thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          } else {
-            setOpenUpdate(true)
-            toast.error('Cập nhập thương hiệu thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          }
-        })
-      } else {
-        setOpenUpdate(true)
-      }
-    })
-    setIsBackdrop(false)
+    const check = handleValidateUpdate()
+    if (check < 1) {
+      setIsBackdrop(true)
+      const title = 'Xác nhận cập nhập thương hiệu?'
+      const text = ''
+      setOpenUpdate(false)
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          bradApi.updateBrand(brandUpdate.id, { name: brandUpdate.name }).then((res) => {
+            if (res.data.success) {
+              setIsBackdrop(false)
+              setBrand({ name: '' })
+              toast.success('Cập nhập thương hiệu thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              fetchData(filter)
+            } else {
+              setOpenUpdate(true)
+              toast.error('Cập nhập thương hiệu thất bại', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            }
+          })
+        } else {
+          setOpenUpdate(true)
+        }
+      })
+      setIsBackdrop(false)
+    } else {
+      toast.error('Cập nhập thương hiệu thất bại, hãy nhập đủ dữ diệu', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
   }
 
   const chageName = (e) => {
@@ -246,6 +328,7 @@ export default function AdBrandPage() {
                   size="small"
                   placeholder="Nhập tên thương hiệu"
                 />
+                <span style={{ color: 'red' }}>{errorBrand}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -296,6 +379,7 @@ export default function AdBrandPage() {
                   size="small"
                   placeholder="Nhập tên thương hiệu"
                 />
+                <span style={{ color: 'red' }}>{errorBrandUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>

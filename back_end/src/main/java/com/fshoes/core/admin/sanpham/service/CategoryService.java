@@ -20,4 +20,6 @@ public interface CategoryService {
     Category updateCategory(String id, CategoryRequest categoryRequest);
 
     Boolean swapCategory(String id);
+
+    List<String> getAllNameCategory();
 }

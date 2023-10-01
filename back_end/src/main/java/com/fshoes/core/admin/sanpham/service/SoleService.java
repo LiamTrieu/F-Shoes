@@ -20,4 +20,6 @@ public interface SoleService {
     Sole updateSole(String id, SoleRequest soleRequest);
 
     Boolean swapSole(String id);
+
+    List<String> getAllNameSole();
 }

@@ -44,4 +44,8 @@ public class SoleController {
         return new ObjectRespone(soleService.swapSole(id));
     }
 
+    @GetMapping("/get-all-name")
+    public ObjectRespone getAllNameSole() {
+        return new ObjectRespone(soleService.getAllNameSole());
+    }
 }

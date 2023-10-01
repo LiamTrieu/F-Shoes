@@ -71,4 +71,9 @@ public class MaterialServiceImpl implements MaterialService {
             return false;
         }
     }
+
+    @Override
+    public List<String> getAllNameMaterial() {
+        return materialRepository.getAllNameMaterial();
+    }
 }

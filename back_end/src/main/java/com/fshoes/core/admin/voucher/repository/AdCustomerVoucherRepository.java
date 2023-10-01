@@ -15,7 +15,7 @@ public interface AdCustomerVoucherRepository extends CustomerVoucherRepository {
     @Query(value = """
             select cv.id, c.full_name as customer, v.name as voucher
             from customer_voucher cv
-            left join customer c on cv.id_customer = c.id
+            left join account c on cv.id_account = c.id
             left join voucher v on cv.id_voucher = v.id
             """, nativeQuery = true)
     List<AdCustomerVoucherRespone> getAll();
@@ -23,7 +23,7 @@ public interface AdCustomerVoucherRepository extends CustomerVoucherRepository {
     @Query(value = """
             select cv.id, c.full_name as customer, v.name as voucher
             from customer_voucher cv
-            left join customer c on cv.id_customer = c.id
+            left join account c on cv.id_account = c.id
             left join voucher v on cv.id_voucher = v.id
             where cv.id =:id
             """, nativeQuery = true)
@@ -40,13 +40,13 @@ public interface AdCustomerVoucherRepository extends CustomerVoucherRepository {
     @Query(value = """
             select cv.id, c.full_name as customer, v.name as voucher
             from customer_voucher cv
-            left join customer c on cv.id_customer = c.id
+            left join customer c on cv.id_account = c.id
             left join voucher v on cv.id_voucher = v.id
             """, nativeQuery = true)
     Page<AdCustomerVoucherRespone> getPage(Pageable pageable);
 
     @Query(value = """
-            select distinct id_customer
+            select distinct id_account
             from customer_voucher
             where id_voucher = :idVoucher
             """, nativeQuery = true)

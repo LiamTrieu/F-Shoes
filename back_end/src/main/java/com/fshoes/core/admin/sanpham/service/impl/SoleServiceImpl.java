@@ -71,4 +71,9 @@ public class SoleServiceImpl implements SoleService {
             return false;
         }
     }
+
+    @Override
+    public List<String> getAllNameSole() {
+        return soleRepository.getAllNameSole();
+    }
 }
