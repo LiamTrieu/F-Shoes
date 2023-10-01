@@ -20,5 +20,13 @@ const sellApi = {
     const urlGetAll = `/sell/add-product-sell`
     return axiosClient.post(urlGetAll, cartDetail)
   },
+  createCart: () => {
+    const url = `/sell/create-cart`
+    return axiosClient.post(url)
+  },
+  deleteCart: (id) => {
+    const url = `/sell/delete-cart/${id}`
+    return axiosClient.delete(url)
+  },
 }
 export default sellApi

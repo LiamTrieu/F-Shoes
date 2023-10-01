@@ -11,9 +11,5 @@ import lombok.ToString;
 public class ProductFilterRequest extends PageableRequest {
     private String name;
 
-    private String category;
-
-    private String brand;
-
-    private String status;
+    private Integer status;
 }

@@ -17,13 +17,14 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import { LuSplitSquareVertical } from 'react-icons/lu'
-import ModalAddProduct from './ModalAddProduct'
 
 import './index.css'
 import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
+import categoryApi from '../../../api/admin/sanpham/categoryApi'
+import bradApi from '../../../api/admin/sanpham/bradApi'
 import materialApi from '../../../api/admin/sanpham/materialApi'
 import colorApi from '../../../api/admin/sanpham/colorApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
@@ -40,8 +41,8 @@ import { useNavigate } from 'react-router-dom'
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 
 export default function AdProductAdd() {
-  const [open, setOpen] = useState(false)
-  const [products, setProducts] = useState([])
+  const [categorys, setCategorys] = useState([])
+  const [brands, setBrands] = useState([])
   const [soles, setSoles] = useState([])
   const [materials, setMaterials] = useState([])
   const [colors, setColors] = useState([])
@@ -49,8 +50,11 @@ export default function AdProductAdd() {
   const [modalOpen, setModalOpen] = useState(null)
 
   const [newProducts, setNewProducts] = useState({
-    product: null,
+    product: '',
+    description: '',
     sole: [],
+    category: [],
+    brand: [],
     material: [],
     color: [],
     size: [],
@@ -61,10 +65,18 @@ export default function AdProductAdd() {
   const [loadImage, setLoadImage] = useState(false)
 
   useEffect(() => {
-    sanPhamApi.getList().then(
+    categoryApi.getList().then(
       (result) => {
         if (result.data.success) {
-          setProducts(result.data.data)
+          setCategorys(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
+    bradApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setBrands(result.data.data)
         }
       },
       (err) => console.error(err),
@@ -105,8 +117,9 @@ export default function AdProductAdd() {
 
   const newProductIsUndefined = (newProducts) => {
     return (
-      newProducts.product !== null &&
       newProducts.sole.length !== 0 &&
+      newProducts.category.length !== 0 &&
+      newProducts.brand.length !== 0 &&
       newProducts.material.length !== 0 &&
       newProducts.color.length !== 0 &&
       newProducts.size.length !== 0
@@ -129,20 +142,27 @@ export default function AdProductAdd() {
     if (newProductIsUndefined(newProducts)) {
       const preNewProductDetails = []
       newProducts.sole.forEach((sole) => {
-        newProducts.material.forEach((material) => {
-          newProducts.color.forEach((color) => {
-            newProducts.size.forEach((size) => {
-              preNewProductDetails.push({
-                key: `${color.value}${size.value}${sole.value}${material.value}`,
-                product: newProducts.product,
-                color: color,
-                sole: sole,
-                material: material,
-                size: size,
-                price: 100000,
-                amount: 100,
-                weight: 500,
-                images: [],
+        newProducts.category.forEach((category) => {
+          newProducts.brand.forEach((brand) => {
+            newProducts.material.forEach((material) => {
+              newProducts.color.forEach((color) => {
+                newProducts.size.forEach((size) => {
+                  preNewProductDetails.push({
+                    key: `${sole.value}${category.value}${brand.value}${color.value}${size.value}${material.value}`,
+                    product: newProducts.product,
+                    description: newProducts.description,
+                    category: category,
+                    brand: brand,
+                    sole: sole,
+                    color: color,
+                    material: material,
+                    size: size,
+                    price: 100000,
+                    amount: 100,
+                    weight: 500,
+                    images: [],
+                  })
+                })
               })
             })
           })
@@ -162,14 +182,16 @@ export default function AdProductAdd() {
     setModalOpen(null)
   }
 
-  const ContentModal = ({ images, color, sole, material }) => {
+  const ContentModal = ({ images, color, sole, category, brand, material }) => {
     const [imageSelect, setImageSelect] = useState(
       newProductDetails.find(
         (productDetail) =>
+          productDetail.category.value === category &&
+          productDetail.brand.value === brand &&
           productDetail.sole.value === sole &&
           productDetail.color.value === color &&
           productDetail.material.value === material,
-      ).images,
+      )?.images,
     )
 
     const handleCheckboxChange = (event, index) => {
@@ -191,6 +213,8 @@ export default function AdProductAdd() {
         prevDetails.map((productDetail) => {
           if (
             productDetail.sole.value === sole &&
+            productDetail.category.value === category &&
+            productDetail.brand.value === brand &&
             productDetail.color.value === color &&
             productDetail.material.value === material
           ) {
@@ -223,7 +247,7 @@ export default function AdProductAdd() {
             {images.map((image, index) => (
               <Grid item xs={3} key={`selectImage${index}`} style={{ position: 'relative' }}>
                 <Checkbox
-                  checked={imageSelect.includes(image)}
+                  checked={imageSelect?.includes(image)}
                   onChange={(event) => handleCheckboxChange(event, index)}
                   style={{
                     position: 'absolute',
@@ -290,16 +314,16 @@ export default function AdProductAdd() {
           newProductDetails.forEach((product) => {
             sanPhamApi.addProuct({
               idSole: product.sole.value,
+              idBrand: product.brand.value,
+              idCategory: product.category.value,
               idMaterial: product.material.value,
-              idProduct: product.product.value,
-              idBrand: product.product.brandId,
-              idCategory: product.product.categoryId,
+              nameProduct: product.product,
               idSize: product.size.value,
               idColor: product.color.value,
               price: product.price,
               amount: product.amount,
               weight: product.weight,
-              description: product.product.description,
+              description: product.description,
               listImage: product.images,
             })
           })
@@ -315,7 +339,6 @@ export default function AdProductAdd() {
 
   return (
     <div className="san-pham">
-      <ModalAddProduct title={'Thêm mới sản phẩm'} setOpen={setOpen} open={open} />
       <BreadcrumbsCustom nameHere={'Thêm sản phẩm'} listLink={listBreadcrumbs} />
       <Paper sx={{ py: 2 }}>
         <Container className="container" sx={{ paddingBottom: '10px' }}>
@@ -327,46 +350,82 @@ export default function AdProductAdd() {
             color={'GrayText'}>
             Thông tin sản phẩm
           </Typography>
-          <b>Tên sản phẩm</b>
+          <b>
+            <span style={{ color: 'red' }}>*</span>Tên sản phẩm
+          </b>
           <Stack direction="row" spacing={1}>
-            <Autocomplete
-              popupIcon={null}
-              fullWidth
-              value={newProducts.product}
-              isOptionEqualToValue={(option, value) => option.value === value.value}
-              onChange={(_, e) => {
-                genNewProductDetail({ ...newProducts, product: e })
+            <TextField
+              onChange={(e) => {
+                setNewProducts({ ...newProducts, product: e.target.value })
               }}
-              size="small"
               className="search-field"
-              id="combo-box-demo"
-              options={products.map((product) => {
-                return {
-                  label: product.name,
-                  value: product.id,
-                  category: product.category,
-                  brand: product.brand,
-                  categoryId: product.categoryId,
-                  brandId: product.brandId,
-                  description: product.description,
-                }
-              })}
-              renderInput={(params) => (
-                <TextField color="cam" {...params} placeholder="Nhập tên sản phẩm" />
-              )}
-            />
-            <Button
-              onClick={() => setOpen(true)}
-              sx={{ minWidth: '30px' }}
-              variant="contained"
+              fullWidth
+              size="small"
               color="cam"
-              size="small">
-              <AddCircleIcon />
-            </Button>
+              placeholder="Nhập tên sản phẩm"
+            />
           </Stack>
-          <Stack className="mt-5" direction="row" spacing={1}>
+          <Stack className="mt-3" direction="row" spacing={1}>
             <div style={{ width: '100%' }}>
-              <b>Đế giày</b>
+              <b>
+                <span style={{ color: 'red' }}>*</span>Danh mục
+              </b>
+              <Autocomplete
+                multiple
+                size="small"
+                fullWidth
+                value={newProducts.category}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                onChange={(_, e) => {
+                  genNewProductDetail({ ...newProducts, category: e })
+                }}
+                className="search-field"
+                id="combo-box-category"
+                options={categorys.map((category) => {
+                  return { label: category.name, value: category.id }
+                })}
+                renderInput={(params) => (
+                  <TextField
+                    color="cam"
+                    {...params}
+                    placeholder={newProducts.category.length > 0 ? '' : 'Chọn danh mục'}
+                  />
+                )}
+              />
+            </div>
+            <div style={{ width: '100%' }}>
+              <b>
+                <span style={{ color: 'red' }}>*</span>Thương hiệu
+              </b>
+              <Autocomplete
+                multiple
+                size="small"
+                fullWidth
+                className="search-field"
+                id="combo-box-brand"
+                value={newProducts.brand}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                onChange={(_, e) => {
+                  genNewProductDetail({ ...newProducts, brand: e })
+                }}
+                options={brands.map((brand) => {
+                  return { label: brand.name, value: brand.id }
+                })}
+                renderInput={(params) => (
+                  <TextField
+                    color="cam"
+                    {...params}
+                    placeholder={newProducts.brand.length > 0 ? '' : 'Chọn thương hiệu'}
+                  />
+                )}
+              />
+            </div>
+          </Stack>
+          <Stack className="mt-3" direction="row" spacing={1}>
+            <div style={{ width: '100%' }}>
+              <b>
+                <span style={{ color: 'red' }}>*</span>Đế giày
+              </b>
               <Autocomplete
                 multiple
                 size="small"
@@ -391,7 +450,9 @@ export default function AdProductAdd() {
               />
             </div>
             <div style={{ width: '100%' }}>
-              <b>Chất liệu</b>
+              <b>
+                <span style={{ color: 'red' }}>*</span>Chất liệu
+              </b>
               <Autocomplete
                 multiple
                 size="small"
@@ -416,9 +477,11 @@ export default function AdProductAdd() {
               />
             </div>
           </Stack>
-          <Stack className="mt-5" direction="row" spacing={1}>
+          <Stack className="mt-3 mb-3" direction="row" spacing={1}>
             <div style={{ width: '100%' }}>
-              <b>Màu sắc</b>
+              <b>
+                <span style={{ color: 'red' }}>*</span>Màu sắc
+              </b>
               <Autocomplete
                 multiple
                 size="small"
@@ -457,15 +520,13 @@ export default function AdProductAdd() {
               />
             </div>
             <div style={{ width: '100%' }}>
-              <b>Kích cỡ</b>
+              <b>
+                <span style={{ color: 'red' }}>*</span>Kích cỡ
+              </b>
               <Autocomplete
                 noOptionsText={
-                  <Button
-                    size="small"
-                    fullWidth
-                    variant="outlined"
-                    color="den"
-                    onClick={() => console.log('Add new')}>
+                  <Button size="small" fullWidth color="cam" onClick={() => console.log()}>
+                    <PlaylistAddIcon />
                     Thêm mới
                   </Button>
                 }
@@ -484,6 +545,7 @@ export default function AdProductAdd() {
                 })}
                 renderInput={(params) => (
                   <TextField
+                    id="newSize"
                     color="cam"
                     {...params}
                     placeholder={newProducts.size.length > 0 ? '' : 'Chọn kích cỡ'}
@@ -492,233 +554,298 @@ export default function AdProductAdd() {
               />
             </div>
           </Stack>
+          <b>Mô tả sản phẩm</b>
+          <Stack spacing={1}>
+            <TextField
+              color="cam"
+              onChange={(e) => {
+                setNewProducts({ ...newProducts, description: e.target.value })
+              }}
+              className="search-field"
+              placeholder="Nhập mô tả sản phẩm"
+              multiline
+              rows={2}
+              variant="outlined"
+              fullWidth
+            />
+          </Stack>
         </Container>
       </Paper>
       {newProductIsUndefined(newProducts) &&
         newProducts.color.map((color, colorIndex) => {
-          return newProducts.material.map((material, materialIndex) => {
-            return newProducts.sole.map((sole, soleIndex) => {
-              return (
-                <Paper
-                  key={`papaerNewProduct${colorIndex}${materialIndex}${soleIndex}`}
-                  sx={{ py: 2, mt: 2 }}>
-                  <Container>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Typography
-                        textAlign={'center'}
-                        fontWeight={'600'}
-                        variant="h7"
-                        color={'GrayText'}>
-                        Danh sách sản phẩm [ {sole.label} - {material.label} - {color.label} ]
-                      </Typography>
-                      <Button size="small" variant="outlined" color="cam">
-                        <LuSplitSquareVertical />
-                        Khôi phục
-                      </Button>
-                    </Stack>
-                    <Table sx={{ mt: 1, mb: 1 }} className="tableCss">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell width={'30%'}>Sản phẩm</TableCell>
-                          <TableCell width={'15%'}>Thương hiệu</TableCell>
-                          <TableCell width={'15%'}>Danh mục</TableCell>
-                          <TableCell width={'10%'}>Kích cỡ</TableCell>
-                          <TableCell width={'10%'}>Cân nặng</TableCell>
-                          <TableCell width={'10%'}>Số lượng</TableCell>
-                          <TableCell width={'10%'}>Giá</TableCell>
-                          <TableCell width={'5%'}></TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {newProductDetails
-                          .filter(
-                            (productDetail) =>
-                              productDetail.color.value === color.value &&
-                              productDetail.sole.value === sole.value &&
-                              productDetail.material.value === material.value,
-                          )
-                          .map((productDetail) => {
-                            return (
-                              <TableRow key={productDetail.key}>
-                                <TableCell sx={{ maxWidth: '0px' }}>
-                                  {newProducts.product.label}
-                                </TableCell>
-                                <TableCell>{productDetail.product.brand}</TableCell>
-                                <TableCell>{productDetail.product.category}</TableCell>
-                                <TableCell>{productDetail.size.label}</TableCell>
-                                <TableCell align="center">
-                                  <TextField
-                                    value={productDetail.weight}
-                                    onChange={(e) => {
-                                      updateNewProductDetail({
-                                        ...productDetail,
-                                        weight: e.target.value,
-                                      })
-                                    }}
-                                    InputProps={{
-                                      style: { paddingRight: '4px' },
-                                      endAdornment: 'g',
-                                    }}
-                                    inputProps={{ min: 1 }}
-                                    size="small"
-                                    sx={{
-                                      '& input': { p: 0, textAlign: 'center', fontSize: '14px' },
-                                      '& fieldset': {
-                                        fontSize: '14px',
-                                      },
-                                    }}
-                                  />
-                                </TableCell>
-                                <TableCell align="center">
-                                  <TextField
-                                    value={productDetail.amount}
-                                    onChange={(e) => {
-                                      updateNewProductDetail({
-                                        ...productDetail,
-                                        amount: e.target.value,
-                                      })
-                                    }}
-                                    inputProps={{ min: 1 }}
-                                    size="small"
-                                    sx={{
-                                      '& input': { p: 0, textAlign: 'center', fontSize: '14px' },
-                                      '& fieldset': {
-                                        fontSize: '14px',
-                                      },
-                                    }}
-                                  />
-                                </TableCell>
-                                <TableCell align="center">
-                                  <TextField
-                                    value={productDetail.price}
-                                    inputProps={{ min: 1 }}
-                                    size="small"
-                                    InputProps={{
-                                      style: { paddingRight: '4px' },
-                                      endAdornment: '₫',
-                                    }}
-                                    onChange={(e) => {
-                                      updateNewProductDetail({
-                                        ...productDetail,
-                                        price: e.target.value,
-                                      })
-                                    }}
-                                    sx={{
-                                      '& input': { p: 0, textAlign: 'center', fontSize: '14px' },
-                                      '& fieldset': {
-                                        fontSize: '14px',
-                                      },
-                                    }}
-                                  />
-                                </TableCell>
-                                <TableCell align="center">
-                                  <RiDeleteBin2Line
-                                    style={{ cursor: 'pointer' }}
-                                    fontSize={'20px'}
-                                    color="#da0722"
-                                  />
-                                </TableCell>
-                              </TableRow>
-                            )
-                          })}
-                      </TableBody>
-                    </Table>
-                    <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
-                      {newProductDetails
-                        .filter(
-                          (productDetail) =>
-                            productDetail.color.value === color.value &&
-                            productDetail.sole.value === sole.value &&
-                            productDetail.material.value === material.value,
-                        )[0]
-                        .images.map((image, index) => {
-                          return (
-                            <img
-                              key={`showImage${colorIndex}${materialIndex}${soleIndex}${index}`}
-                              width={'25%'}
-                              height={'250px'}
-                              style={{
-                                border: '1px dashed #ccc',
-                              }}
-                              src={image}
-                              alt="anh-san-pham"
-                            />
-                          )
-                        })}
-                      <div
-                        onClick={() => {
-                          if (images.findIndex((image) => image.idColor === color.value) < 0) {
-                            setLoadImage(true)
-                            sanPhamApi
-                              .getListImage(color.value)
-                              .then(
-                                (response) => {
-                                  if (response.data.success) {
-                                    setImages([
-                                      ...images,
-                                      { idColor: color.value, data: response.data.data },
-                                    ])
-                                  }
-                                },
-                                (error) => {
-                                  console.error(error)
-                                },
+          return newProducts.category.map((category, categoryIndex) => {
+            return newProducts.brand.map((brand, brandIndex) => {
+              return newProducts.material.map((material, materialIndex) => {
+                return newProducts.sole.map((sole, soleIndex) => {
+                  return (
+                    <Paper
+                      key={`papaerNewProduct${colorIndex}${materialIndex}${soleIndex}${categoryIndex}${brandIndex}`}
+                      sx={{ py: 2, mt: 2 }}>
+                      <Container>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                          <Typography
+                            textAlign={'center'}
+                            fontWeight={'600'}
+                            variant="h7"
+                            color={'GrayText'}>
+                            Danh sách sản phẩm cùng loại [ {color.label} - {category.label} -{' '}
+                            {brand.label} - {material.label} - {sole.label} ]
+                          </Typography>
+                          <Button size="small" variant="outlined" color="cam">
+                            <LuSplitSquareVertical />
+                            Khôi phục
+                          </Button>
+                        </Stack>
+                        <Table sx={{ mt: 1, mb: 1 }} className="tableCss">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell align="center" width={'4%'}>
+                                #
+                              </TableCell>
+                              <TableCell width={'20%'}>Sản phẩm</TableCell>
+                              <TableCell width={'10%'}>Kích cỡ</TableCell>
+                              <TableCell width={'10%'}>Cân nặng</TableCell>
+                              <TableCell width={'10%'}>Số lượng</TableCell>
+                              <TableCell width={'10%'}>Giá</TableCell>
+                              <TableCell align="center" width={'30%'}>
+                                Ảnh
+                              </TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {newProductDetails
+                              .filter(
+                                (productDetail) =>
+                                  productDetail.color.value === color.value &&
+                                  productDetail.sole.value === sole.value &&
+                                  productDetail.category.value === category.value &&
+                                  productDetail.brand.value === brand.value &&
+                                  productDetail.material.value === material.value,
                               )
-                              .finally(() => {
-                                setLoadImage(false)
-                              })
-                          }
-                          setModalOpen(`papaerNewProduct${colorIndex}${materialIndex}${soleIndex}`)
-                        }}
-                        style={{
-                          cursor: 'pointer',
-                          border: '1px dashed #ccc',
-                          width: '25%',
-                          height: '250px',
-                          textAlign: 'center',
-                          lineHeight: '250px',
-                        }}>
-                        <MdImageSearch
-                          fontSize={'20px'}
-                          style={{ marginBottom: '-3px', marginRight: '5px' }}
+                              .map((productDetail, index) => {
+                                return (
+                                  <TableRow key={productDetail.key}>
+                                    <TableCell align="center">
+                                      <RiDeleteBin2Line
+                                        style={{ cursor: 'pointer' }}
+                                        fontSize={'20px'}
+                                        color="#da0722"
+                                      />
+                                    </TableCell>
+                                    <TableCell sx={{ maxWidth: '0px' }}>
+                                      {newProducts.product}
+                                    </TableCell>
+                                    <TableCell>{productDetail.size.label}</TableCell>
+                                    <TableCell>
+                                      <TextField
+                                        value={productDetail.weight}
+                                        onChange={(e) => {
+                                          updateNewProductDetail({
+                                            ...productDetail,
+                                            weight: e.target.value,
+                                          })
+                                        }}
+                                        InputProps={{
+                                          style: { paddingRight: '4px' },
+                                          endAdornment: 'g',
+                                        }}
+                                        inputProps={{ min: 1 }}
+                                        size="small"
+                                        sx={{
+                                          '& input': {
+                                            p: 0,
+                                            textAlign: 'center',
+                                            fontSize: '14px',
+                                          },
+                                          '& fieldset': {
+                                            fontSize: '14px',
+                                          },
+                                        }}
+                                      />
+                                    </TableCell>
+                                    <TableCell>
+                                      <TextField
+                                        value={productDetail.amount}
+                                        onChange={(e) => {
+                                          updateNewProductDetail({
+                                            ...productDetail,
+                                            amount: e.target.value,
+                                          })
+                                        }}
+                                        inputProps={{ min: 1 }}
+                                        size="small"
+                                        sx={{
+                                          '& input': {
+                                            p: 0,
+                                            textAlign: 'center',
+                                            fontSize: '14px',
+                                          },
+                                          '& fieldset': {
+                                            fontSize: '14px',
+                                          },
+                                        }}
+                                      />
+                                    </TableCell>
+                                    <TableCell>
+                                      <TextField
+                                        value={productDetail.price}
+                                        inputProps={{ min: 1 }}
+                                        size="small"
+                                        InputProps={{
+                                          style: { paddingRight: '4px' },
+                                          endAdornment: '₫',
+                                        }}
+                                        onChange={(e) => {
+                                          updateNewProductDetail({
+                                            ...productDetail,
+                                            price: e.target.value,
+                                          })
+                                        }}
+                                        sx={{
+                                          '& input': {
+                                            p: 0,
+                                            textAlign: 'center',
+                                            fontSize: '14px',
+                                          },
+                                          '& fieldset': {
+                                            fontSize: '14px',
+                                          },
+                                        }}
+                                      />
+                                    </TableCell>
+                                    {index === 0 && (
+                                      <TableCell align="center" rowSpan={newProductDetails.length}>
+                                        <Stack
+                                          direction="row"
+                                          justifyContent="center"
+                                          alignItems="center"
+                                          spacing={1}>
+                                          {newProductDetails
+                                            .filter(
+                                              (productDetail) =>
+                                                productDetail.color.value === color.value &&
+                                                productDetail.sole.value === sole.value &&
+                                                productDetail.category.value === category.value &&
+                                                productDetail.brand.value === brand.value &&
+                                                productDetail.material.value === material.value,
+                                            )[0]
+                                            .images.map((image, index) => {
+                                              return (
+                                                <img
+                                                  key={`showImage${colorIndex}${materialIndex}${soleIndex}${index}`}
+                                                  width={'25%'}
+                                                  height={'85px'}
+                                                  style={{
+                                                    border: '1px dashed #ccc',
+                                                  }}
+                                                  src={image}
+                                                  alt="anh-san-pham"
+                                                />
+                                              )
+                                            })}
+                                          {newProductDetails.filter(
+                                            (productDetail) =>
+                                              productDetail.color.value === color.value &&
+                                              productDetail.sole.value === sole.value &&
+                                              productDetail.category.value === category.value &&
+                                              productDetail.brand.value === brand.value &&
+                                              productDetail.material.value === material.value,
+                                          )[0].images.length <= 3 && (
+                                            <div
+                                              onClick={() => {
+                                                if (
+                                                  images.findIndex(
+                                                    (image) => image.idColor === color.value,
+                                                  ) < 0
+                                                ) {
+                                                  setLoadImage(true)
+                                                  sanPhamApi
+                                                    .getListImage(color.value)
+                                                    .then(
+                                                      (response) => {
+                                                        if (response.data.success) {
+                                                          setImages([
+                                                            ...images,
+                                                            {
+                                                              idColor: color.value,
+                                                              data: response.data.data,
+                                                            },
+                                                          ])
+                                                        }
+                                                      },
+                                                      (error) => {
+                                                        console.error(error)
+                                                      },
+                                                    )
+                                                    .finally(() => {
+                                                      setLoadImage(false)
+                                                    })
+                                                }
+                                                setModalOpen(
+                                                  `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}`,
+                                                )
+                                              }}
+                                              style={{
+                                                cursor: 'pointer',
+                                                border: '1px dashed #ccc',
+                                                width: '25%',
+                                                height: '85px',
+                                                textAlign: 'center',
+                                                lineHeight: '85px',
+                                              }}>
+                                              <MdImageSearch
+                                                fontSize={'20px'}
+                                                style={{ marginBottom: '-3px', marginRight: '5px' }}
+                                              />
+                                              Ảnh
+                                            </div>
+                                          )}
+                                        </Stack>
+                                      </TableCell>
+                                    )}
+                                  </TableRow>
+                                )
+                              })}
+                          </TableBody>
+                        </Table>
+                      </Container>
+                      <DialogAddUpdate
+                        open={
+                          modalOpen === `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}`
+                        }
+                        setOpen={closeModal}>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                          <b>Danh sách ảnh màu {color.label}</b>
+                          <Button
+                            onClick={() => {
+                              document.getElementById('them-anh').click()
+                            }}
+                            color="cam"
+                            variant="outlined"
+                            size="small">
+                            <RiImageAddFill fontSize={'16px'} />
+                            Thêm ảnh
+                          </Button>
+                          <input
+                            onChange={(event) => uploadImage(event, color.value)}
+                            accept="image/*"
+                            hidden
+                            multiple
+                            type="file"
+                            id="them-anh"
+                          />
+                        </Stack>
+                        <ContentModal
+                          color={color.value}
+                          material={material.value}
+                          sole={sole.value}
+                          images={images.find((image) => image.idColor === color.value)?.data}
                         />
-                        Chỉnh ảnh
-                      </div>
-                    </Stack>
-                  </Container>
-                  <DialogAddUpdate
-                    open={modalOpen === `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}`}
-                    setOpen={closeModal}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <b>Danh sách ảnh màu {color.label}</b>
-                      <Button
-                        onClick={() => {
-                          document.getElementById('them-anh').click()
-                        }}
-                        color="cam"
-                        variant="outlined"
-                        size="small">
-                        <RiImageAddFill fontSize={'16px'} />
-                        Thêm ảnh
-                      </Button>
-                      <input
-                        onChange={(event) => uploadImage(event, color.value)}
-                        accept="image/*"
-                        hidden
-                        multiple
-                        type="file"
-                        id="them-anh"
-                      />
-                    </Stack>
-                    <ContentModal
-                      color={color.value}
-                      material={material.value}
-                      sole={sole.value}
-                      images={images.find((image) => image.idColor === color.value)?.data}
-                    />
-                  </DialogAddUpdate>
-                </Paper>
-              )
+                      </DialogAddUpdate>
+                    </Paper>
+                  )
+                })
+              })
             })
           })
         })}

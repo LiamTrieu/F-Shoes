@@ -58,7 +58,7 @@ const styleModalAddCustomer = {
   boxShadow: 24,
 }
 
-export default function SellFrom({ maHD }) {
+export default function SellFrom({ idCart }) {
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
   const [isShowVoucher, setIsShowVoucher] = useState(false)
@@ -84,11 +84,13 @@ export default function SellFrom({ maHD }) {
     fecthDataVoucher(idFillVoucher)
     loadTinh()
   }, [idFillVoucher])
+
   const fecthDataProductCart = () => {
     sellApi.getAllProductCart().then((response) => {
       setListProductCart(response.data.data)
     })
   }
+
   const fecthDataCustomer = () => {
     sellApi.getAllCustomer().then((response) => {
       setlistKhachHang(response.data.data.data)
@@ -314,7 +316,7 @@ export default function SellFrom({ maHD }) {
           </Button>
         </Box>
 
-        <ModelSell open={showModal} setOPen={setShowModal} />
+        <ModelSell idCart={idCart} open={showModal} setOPen={setShowModal} />
 
         <Box>
           <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>
