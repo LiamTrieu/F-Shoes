@@ -7,6 +7,7 @@ import com.fshoes.entity.Account;
 import org.springframework.data.domain.Page;
 
 import java.text.ParseException;
+import java.util.List;
 
 public interface KhachHangService {
 
@@ -20,6 +21,8 @@ public interface KhachHangService {
     void delete(String id);
 
     Account getOne(String id);
+
+    List<KhachHangRespone> getAllAccount();
 
 
 }

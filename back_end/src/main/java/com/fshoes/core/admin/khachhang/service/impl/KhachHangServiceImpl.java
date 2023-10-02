@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,21 +46,18 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Transactional
     public Account add(KhachHangRequest khachHangRequest) throws ParseException {
         Long dateBirth = DateUtil.parseDateLong(khachHangRequest.getDateBirth());
-        Account customer = Account.builder()
-                .fullName(khachHangRequest.getFullName())
-                .dateBirth(dateBirth)
-                .phoneNumber(khachHangRequest.getPhoneNumber())
-                .email(khachHangRequest.getEmail())
-                .gender(khachHangRequest.getGender())
-                .role(RoleAccount.values()[khachHangRequest.getRole()])
-                .status(Status.values()[khachHangRequest.getStatus()])
-                .build();
+        Account customer = new Account();
+        customer.setFullName(khachHangRequest.getFullName());
+        customer.setDateBirth(dateBirth);
+        customer.setPhoneNumber(khachHangRequest.getPhoneNumber());
+        customer.setEmail(khachHangRequest.getEmail());
+        customer.setGender(khachHangRequest.getGender());
+        customer.setRole(RoleAccount.values()[khachHangRequest.getRole()].ordinal());
+        customer.setStatus(Status.values()[khachHangRequest.getStatus()].ordinal());
 
-        // Kiểm tra xem avatar có giá trị hay không trước khi gán
-        if (khachHangRequest.getAvatar() != null && !khachHangRequest.getAvatar().isEmpty()) {
+        if (khachHangRequest.getAvatar() != null ) {
             customer.setAvatar(cloudinaryImage.uploadAvatar(khachHangRequest.getAvatar()));
         }
-
         String password = generatePassword();
         String[] toMail = {khachHangRequest.getEmail()};
         Email email = new Email();
@@ -105,6 +103,11 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Override
     public Account getOne(String id) {
         return khachHangRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<KhachHangRespone> getAllAccount() {
+        return khachHangRepository.getAllAccount();
     }
 
 

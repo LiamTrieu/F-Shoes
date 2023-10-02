@@ -26,10 +26,6 @@
   background-color: #f2721e;
 }
 
-.head-table {
-  color: white;
-}
-
 .accordion-content {
   display: flex;
   flex-direction: column-reverse; /* Đảm bảo mũi tên nằm bên trái và các dòng text xuống dòng */

@@ -29,6 +29,7 @@ import { useTheme } from '@emotion/react'
 import './AdCustomerPage.css'
 import { TbEyeEdit } from 'react-icons/tb'
 import SearchIcon from '@mui/icons-material/Search'
+import { AiOutlinePlusSquare } from 'react-icons/ai'
 
 export default function AdCustomerPage() {
   const theme = useTheme()
@@ -127,12 +128,13 @@ export default function AdCustomerPage() {
               </Select>
             </div>
             <Button
-              variant="contained"
+              variant="outlined"
               style={{ float: 'right' }}
               color="cam"
               className="them-moi"
               component={Link}
               to="/admin/customer/add">
+              <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
               <Typography sx={{ ml: 1 }}>Tạo khách hàng</Typography>
             </Button>
           </Stack>
@@ -210,12 +212,33 @@ export default function AdCustomerPage() {
               })}
             </TableBody>
           </Table>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: '10px',
-            }}>
+
+          <Stack
+            mt={2}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            spacing={0}>
+            <Typography component="span" variant={'body2'} mt={0.5}>
+              <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+              <Select
+                color="cam"
+                onChange={(e) => {
+                  setSearchKhachHang({ ...searchKhachHang, size: e.target.value })
+                }}
+                sx={{ height: '25px', mx: 0.5 }}
+                size="small"
+                value={searchKhachHang.size}>
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={15}>15</MenuItem>
+                <MenuItem value={20}>20</MenuItem>
+              </Select>
+              <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                Khách hàng
+              </Typography>
+            </Typography>
             <Pagination
               page={searchKhachHang.page}
               onChange={(e, value) => {
@@ -224,8 +247,9 @@ export default function AdCustomerPage() {
               }}
               count={totalPages}
               color="cam"
+              variant="outlined"
             />
-          </div>
+          </Stack>
         </Paper>
       </Box>
     </div>

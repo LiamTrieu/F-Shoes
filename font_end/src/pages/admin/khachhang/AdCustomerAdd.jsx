@@ -34,6 +34,7 @@ export default function AdCustomerAdd() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [confirmClicked, setConfirmClicked] = useState(false)
+  const [list, setList] = useState([])
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
@@ -51,16 +52,35 @@ export default function AdCustomerAdd() {
     name: '',
     phoneNumber: '',
     specificAddress: '',
-    type: null,
+    type: true,
     provinceId: null,
     districtId: null,
     wardId: null,
     idCustomer: '',
   })
 
+  const [errors, setErrors] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    dateBirth: '',
+    gender: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    specificAddress: '',
+  })
+
   useEffect(() => {
     loadTinh()
+    loadList()
   }, [])
+
+  const loadList = () => {
+    khachHangApi.getAll().then((response) => {
+      setList(response.data)
+    })
+  }
 
   const loadTinh = () => {
     ghnAPI.getProvince().then((response) => {
@@ -82,15 +102,16 @@ export default function AdCustomerAdd() {
 
   const [selectedTinh, setSelectedTinh] = useState(null)
   const handleTinhChange = (_, newValue) => {
-    console.log(newValue)
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
     if (newValue) {
       loadHuyen(newValue.id)
       setDiaChi({ ...diaChi, provinceId: newValue.id })
+      setErrors({ ...errors, provinceId: '' })
     } else {
       setHuyen([])
       setDiaChi({ ...diaChi, provinceId: null })
+      setErrors({ ...errors, provinceId: 'Vui lòng chọn Tỉnh/Thành phố.' })
     }
   }
 
@@ -102,14 +123,17 @@ export default function AdCustomerAdd() {
     if (newValue) {
       loadXa(newValue.id)
       setDiaChi({ ...diaChi, districtId: newValue.id })
+      setErrors({ ...errors, districtId: '' })
     } else {
       setXa([])
       setDiaChi({ ...diaChi, districtId: null })
+      setErrors({ ...errors, districtId: 'Vui lòng chọn Quận/Huyện.' })
     }
   }
   const handleXaChange = (_, newValue) => {
     setSelectedXa(newValue)
     setDiaChi({ ...diaChi, wardId: newValue?.id })
+    setErrors({ ...errors, wardId: '' })
   }
 
   const updateDiaChi = () => {
@@ -130,12 +154,114 @@ export default function AdCustomerAdd() {
         setImage(reader.result)
       }
       reader.readAsDataURL(file)
+    } else {
+      setKhachHang({ ...khachHang, avatar: null })
+      setImage(null)
     }
   }
 
+  const handleGenderChange = (event) => {
+    setKhachHang({ ...khachHang, gender: event.target.value })
+  }
+
+  const isPhoneNumberDuplicate = (phoneNumber) => {
+    return list.some((customer) => customer.phoneNumber === phoneNumber)
+  }
+
+  const isEmailDuplicate = (email) => {
+    return list.some((customer) => customer.email === email)
+  }
+
   const onSubmit = (khachHang) => {
+    const newErrors = {}
+    let check = 0
+
+    if (!khachHang.fullName) {
+      newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
+      check++
+    } else if (khachHang.fullName.length > 100) {
+      newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
+      check++
+    } else {
+      newErrors.fullName = ''
+    }
+
+    if (!khachHang.email) {
+      newErrors.email = 'Vui lòng nhập Email.'
+      check++
+    } else {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+      if (!emailRegex.test(khachHang.email)) {
+        newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
+        check++
+      } else if (khachHang.email.length > 50) {
+        newErrors.email = 'Email không được quá 50 kí tự.'
+        check++
+      } else if (isEmailDuplicate(khachHang.email)) {
+        newErrors.email = 'Email đã tồn tại trong danh sách.'
+        check++
+      } else {
+        newErrors.email = ''
+      }
+    }
+
+    if (!khachHang.phoneNumber) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      check++
+    } else {
+      // Kiểm tra định dạng email bằng regex
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(khachHang.phoneNumber)) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        check++
+      } else if (isPhoneNumberDuplicate(khachHang.phoneNumber)) {
+        newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
+        check++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+
+    if (!khachHang.dateBirth) {
+      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      check++
+    } else {
+      newErrors.dateBirth = ''
+    }
+
+    if (!khachHang.gender) {
+      newErrors.gender = 'Vui lòng chọn Giới tính.'
+      check++
+    } else {
+      newErrors.gender = ''
+    }
+
+    if (!selectedTinh) {
+      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
+      check++
+    } else {
+      newErrors.provinceId = ''
+    }
+
+    if (!selectedHuyen) {
+      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
+      check++
+    } else {
+      newErrors.districtId = ''
+    }
+
+    if (!selectedXa) {
+      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+      check++
+    } else {
+      newErrors.wardId = ''
+    }
+
+    if (check > 0) {
+      setErrors(newErrors)
+      return
+    }
     setConfirmClicked(true)
-    console.log(khachHang)
     const title = 'Xác nhận Thêm mới khách hàng?'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
@@ -150,13 +276,12 @@ export default function AdCustomerAdd() {
               name: diaChi.name,
               phoneNumber: diaChi.phoneNumber,
               specificAddress: diaChi.specificAddress,
-              type: 0,
+              type: true,
               idCustomer: khachHangId,
               provinceId: diaChi.provinceId,
               districtId: diaChi.districtId,
               wardId: diaChi.wardId,
             }
-            // Thêm mới địa chỉ
             DiaChiApi.add(obj).then(() => {
               toast.success('Thêm khách hàng thành công', {
                 position: toast.POSITION.TOP_RIGHT,
@@ -173,12 +298,12 @@ export default function AdCustomerAdd() {
 
   return (
     <div className="khachhangadd">
-      <BreadcrumbsCustom nameHere={'Thêm nhân viên'} listLink={listBreadcrumbs} />
+      <BreadcrumbsCustom nameHere={'Thêm khách hàng'} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Box sx={{ pt: 4 }}>
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={4}>
-              <h3>Thông tin nhân viên</h3>
+              <h3>Thông tin khách hàng</h3>
               <hr />
               <div
                 onClick={() => {
@@ -204,20 +329,20 @@ export default function AdCustomerAdd() {
                 size="small"
                 fullWidth
                 onChange={(e) => {
-                  setKhachHang({ ...khachHang, fullName: e.target.value })
+                  setKhachHang({ ...khachHang, fullName: e.target.value.trim() })
                   updateDiaChi()
+                  setErrors({ ...errors, fullName: '' })
                 }}
               />
+              <Typography variant="body2" color="error">
+                {errors.fullName}
+              </Typography>
 
               <FormControl sx={{ mt: 3 }} size="small">
                 <Typography>
                   <span className="required"> *</span>Giới tính
                 </Typography>
-                <RadioGroup
-                  row
-                  onChange={(e) => {
-                    setKhachHang({ ...khachHang, gender: e.target.value })
-                  }}>
+                <RadioGroup row value={khachHang.gender} onChange={handleGenderChange}>
                   <FormControlLabel
                     name="genderUpdate"
                     value="true"
@@ -232,6 +357,9 @@ export default function AdCustomerAdd() {
                   />
                 </RadioGroup>
               </FormControl>
+              <Typography variant="body2" color="error">
+                {errors.gender}
+              </Typography>
             </Grid>
             <Grid item xs={8}>
               <h3>Thông tin chi tiết</h3>
@@ -248,10 +376,14 @@ export default function AdCustomerAdd() {
                     size="small"
                     fullWidth
                     onChange={(e) => {
-                      setKhachHang({ ...khachHang, email: e.target.value })
+                      setKhachHang({ ...khachHang, email: e.target.value.trim() })
                       updateDiaChi()
+                      setErrors({ ...errors, email: '' })
                     }}
                   />
+                  <Typography variant="body2" color="error">
+                    {errors.email}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography>
@@ -264,10 +396,14 @@ export default function AdCustomerAdd() {
                     size="small"
                     fullWidth
                     onChange={(e) => {
-                      setKhachHang({ ...khachHang, phoneNumber: e.target.value })
+                      setKhachHang({ ...khachHang, phoneNumber: e.target.value.trim() })
                       updateDiaChi()
+                      setErrors({ ...errors, phoneNumber: '' })
                     }}
                   />
+                  <Typography variant="body2" color="error">
+                    {errors.phoneNumber}
+                  </Typography>
                 </Grid>
               </Grid>
               <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -294,6 +430,9 @@ export default function AdCustomerAdd() {
                       )}
                     />
                   </Box>
+                  <Typography variant="body2" color="error">
+                    {errors.provinceId}
+                  </Typography>
                 </Grid>
                 <Grid item xs={4}>
                   <Typography>
@@ -318,6 +457,9 @@ export default function AdCustomerAdd() {
                       )}
                     />
                   </Box>
+                  <Typography variant="body2" color="error">
+                    {errors.districtId}
+                  </Typography>
                 </Grid>
                 <Grid item xs={4}>
                   <Typography>
@@ -339,6 +481,9 @@ export default function AdCustomerAdd() {
                       )}
                     />
                   </Box>
+                  <Typography variant="body2" color="error">
+                    {errors.wardId}
+                  </Typography>
                 </Grid>
               </Grid>
               <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -357,6 +502,9 @@ export default function AdCustomerAdd() {
                       />
                     </DemoContainer>
                   </LocalizationProvider>
+                  <Typography variant="body2" color="error">
+                    {errors.dateBirth}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography>
@@ -372,7 +520,7 @@ export default function AdCustomerAdd() {
                       setDiaChi({
                         ...diaChi,
                         specificAddress:
-                          e.target.value +
+                          e.target.value.trim() +
                           ', ' +
                           selectedXa.label +
                           ', ' +
@@ -381,6 +529,7 @@ export default function AdCustomerAdd() {
                           selectedTinh.label,
                       })
                     }
+                    disabled={!selectedXa}
                   />
                 </Grid>
               </Grid>
@@ -402,7 +551,7 @@ export default function AdCustomerAdd() {
               )}
               <Button
                 onClick={() => onSubmit(khachHang)}
-                variant="contained"
+                variant="outlined"
                 color="cam"
                 sx={{ float: 'right' }}
                 disabled={loading}>

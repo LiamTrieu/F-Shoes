@@ -62,7 +62,6 @@ export default function AdStaffDetail() {
       .getOne(id)
       .then((response) => {
         const formatDateBirth = dayjs(response.data.dateBirth).format('DD-MM-YYYY')
-        console.log(response.data)
         setStaffDetail({
           ...response.data,
           dateBirth: formatDateBirth,
@@ -101,8 +100,86 @@ export default function AdStaffDetail() {
       reader.readAsDataURL(file)
     }
   }
+  const [errors, setErrors] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    dateBirth: '',
+    gender: '',
+    citizenId: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    specificAddress: '',
+  })
 
   const handleButtonUpdateStaff = () => {
+    const newErrors = {}
+    let check = 0
+
+    if (!staffDetail.fullName.trim()) {
+      newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
+      check++
+    } else if (staffDetail.fullName.trim().length > 100) {
+      newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
+      check++
+    } else {
+      newErrors.fullName = ''
+    }
+
+    if (!staffDetail.email.trim()) {
+      newErrors.email = 'Vui lòng nhập Email.'
+      check++
+    } else {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+      if (!emailRegex.test(staffDetail.email.trim())) {
+        newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
+        check++
+      } else if (staffDetail.email.trim().length > 50) {
+        newErrors.email = 'Email không được quá 50 kí tự.'
+        check++
+      } else {
+        newErrors.email = ''
+      }
+    }
+
+    if (!staffDetail.citizenId.trim()) {
+      newErrors.citizenId = 'Vui lòng nhập Số CCCD.'
+      check++
+    } else {
+      const citizenIdRegex = /^(?:\d{9}|\d{12})$/
+      if (!citizenIdRegex.test(staffDetail.citizenId.trim())) {
+        newErrors.citizenId = 'Số CCCD không hợp lệ.'
+        check++
+      } else {
+        newErrors.citizenId = ''
+      }
+    }
+
+    if (!staffDetail.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      check++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(staffDetail.phoneNumber.trim())) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        check++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+
+    if (!staffDetail.dateBirth) {
+      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      check++
+    } else {
+      newErrors.dateBirth = ''
+    }
+
+    if (check > 0) {
+      setErrors(newErrors)
+      return
+    }
     const title = 'Xác nhận cập nhật nhân viên?'
     const text = ''
     confirmSatus(title, text).then((result) => {
@@ -156,13 +233,20 @@ export default function AdStaffDetail() {
       setXa(response.data)
     })
   }
+  const [errorsAA, setErrorsAA] = useState({
+    name: '',
+    email: '',
+    phoneNumber: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    specificAddress: '',
+  })
 
   const handleTinhChange = (_, newValue) => {
     if (newValue) {
       loadHuyen(newValue.id)
-      // Lưu tên tỉnh đã chọn vào state
       setTinhName(newValue.label)
-      // Đặt giá trị tỉnh vào chi tiết địa chỉ
       setDetailDiaChi({ ...detailDiaChi, provinceId: newValue.id })
     } else {
       setHuyen([])
@@ -173,9 +257,7 @@ export default function AdStaffDetail() {
   const handleHuyenChange = (_, newValue) => {
     if (newValue) {
       loadXa(newValue.id)
-      // Lưu tên huyện đã chọn vào state
       setHuyenName(newValue.label)
-      // Đặt giá trị huyện vào chi tiết địa chỉ
       setDetailDiaChi({ ...detailDiaChi, districtId: newValue.id })
     } else {
       setXa([])
@@ -208,16 +290,12 @@ export default function AdStaffDetail() {
       const { name, email, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
         response.data.data
 
-      console.log(response.data.data)
       loadTinh()
       loadHuyen(provinceId)
       loadXa(districtId)
-      console.log(response.data.data)
-      // Cắt chuỗi specificAddress thành các phần riêng biệt
       const addressParts = specificAddress.split(', ')
       if (addressParts.length === 4) {
         const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
-        // Đặt giá trị cho các biến state tương ứng
         setXaName(xaDetail)
         setHuyenName(huyenDetail)
         setTinhName(tinhDetail)
@@ -238,6 +316,36 @@ export default function AdStaffDetail() {
   }
 
   const onUpdateDiaChi = (detailDiaChi) => {
+    const newErrors = {}
+    let checkAA = 0
+
+    if (!detailDiaChi.name.trim()) {
+      newErrors.name = 'Tên người nhận không được để trống'
+      checkAA++
+    } else if (detailDiaChi.fullName.length > 100) {
+      newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
+      checkAA++
+    } else {
+      newErrors.name = ''
+    }
+
+    if (!detailDiaChi.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      checkAA++
+    } else {
+      // Kiểm tra định dạng email bằng regex
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        checkAA++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+    if (checkAA > 0) {
+      setErrorsAA(newErrors)
+      return
+    }
     const title = 'Xác nhận Cập nhật địa chỉ?'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
@@ -309,6 +417,9 @@ export default function AdStaffDetail() {
                   shrink: true,
                 }}
               />
+              <Typography variant="body2" color="error">
+                {errors.fullName}
+              </Typography>
             </Grid>
             <Grid sx={{ mb: 3 }}>
               <Typography>
@@ -329,6 +440,9 @@ export default function AdStaffDetail() {
                   shrink: true,
                 }}
               />
+              <Typography variant="body2" color="error">
+                {errors.citizenId}
+              </Typography>
             </Grid>
             <Grid sx={{ mb: 3 }}>
               <Typography>
@@ -349,6 +463,9 @@ export default function AdStaffDetail() {
                   shrink: true,
                 }}
               />
+              <Typography variant="body2" color="error">
+                {errors.email}
+              </Typography>
             </Grid>
             <Grid sx={{ mb: 3 }}>
               <Typography>
@@ -369,6 +486,9 @@ export default function AdStaffDetail() {
                   shrink: true,
                 }}
               />
+              <Typography variant="body2" color="error">
+                {errors.phoneNumber}
+              </Typography>
             </Grid>
             <Typography>
               <span className="required"> *</span>Ngày sinh
@@ -387,6 +507,9 @@ export default function AdStaffDetail() {
                 }}
               />
             </LocalizationProvider>
+            <Typography variant="body2" color="error">
+              {errors.dateBirth}
+            </Typography>
             <Grid container spacing={2} sx={{ mt: 3 }}>
               <Grid item xs={5}>
                 <Typography>
@@ -426,7 +549,6 @@ export default function AdStaffDetail() {
             {diaChi.map((item, index) => (
               <div key={index} className="custom-accordion">
                 <Accordion expanded={true}>
-                  {console.log(item)}
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls={`panel${index}-content`}
@@ -451,6 +573,9 @@ export default function AdStaffDetail() {
                             setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
                           }}
                         />
+                        <Typography variant="body2" color="error">
+                          {errorsAA.name}
+                        </Typography>
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <Typography>
@@ -468,6 +593,9 @@ export default function AdStaffDetail() {
                             setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
                           }}
                         />
+                        <Typography variant="body2" color="error">
+                          {errorsAA.phoneNumber}
+                        </Typography>
                       </Grid>
                     </Grid>
                     <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -601,7 +729,7 @@ export default function AdStaffDetail() {
                   <CircularProgress size={50} />
                 </div>
               )}
-              <Button onClick={handleButtonUpdateStaff} variant="contained" fullWidth color="cam">
+              <Button onClick={handleButtonUpdateStaff} variant="outlined" fullWidth color="cam">
                 {loading ? 'Đang cập nhật...' : 'Cập Nhật Nhân Viên'}
               </Button>
             </div>

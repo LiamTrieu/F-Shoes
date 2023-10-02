@@ -62,15 +62,18 @@ public class StaffServiceImpl implements StaffService {
                 .phoneNumber(staffRequest.getPhoneNumber())
                 .email(staffRequest.getEmail())
                 .gender(staffRequest.getGender())
-                .avatar(cloudinaryImage.uploadAvatar(staffRequest.getAvatar()))
                 .CitizenId(staffRequest.getCitizenId())
                 .role(RoleAccount.values()[staffRequest.getRole()])
                 .status(Status.values()[staffRequest.getStatus()])
                 .build();
+
+        if (staffRequest.getAvatar() != null) {
+            staff.setAvatar(cloudinaryImage.uploadAvatar(staffRequest.getAvatar()));
+        }
         String password = generatePassword();
         String[] toMail = {staffRequest.getEmail()};
         Email email = new Email();
-        email.setBody("<b style=\"text-align: center;\">"+password+"</b>");
+        email.setBody("<b style=\"text-align: center;\">" + password + "</b>");
         email.setToEmail(toMail);
         email.setSubject("Tạo tài khoản thành công");
         email.setTitleEmail("Mật khẩu đăng nhập là:");
@@ -85,7 +88,7 @@ public class StaffServiceImpl implements StaffService {
         Optional<Account> optional = repo.findById(id);
         if (optional.isPresent()) {
             Account staff = staffRequest.tranStaff(optional.get());
-            if(staffRequest.getAvatar() != null) {
+            if (staffRequest.getAvatar() != null) {
                 staff.setAvatar(cloudinaryImage.uploadAvatar(staffRequest.getAvatar()));
             }
             repo.save(staff);
@@ -100,9 +103,9 @@ public class StaffServiceImpl implements StaffService {
     public Account delete(String id) {
         Account staff = repo.findById(id).orElse(null);
         assert staff != null;
-        if(staff.getStatus()==0){
+        if (staff.getStatus() == 0) {
             staff.setStatus(1);
-        }else {
+        } else {
             staff.setStatus(0);
         }
         return repo.save(staff);

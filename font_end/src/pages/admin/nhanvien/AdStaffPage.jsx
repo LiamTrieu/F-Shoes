@@ -16,6 +16,7 @@ import {
   MenuItem,
   InputAdornment,
   Stack,
+  Avatar,
 } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -27,6 +28,7 @@ import './AdStaffPage.css'
 import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
 import SearchIcon from '@mui/icons-material/Search'
+import { AiOutlinePlusSquare } from 'react-icons/ai'
 
 export default function AdCustomerPage() {
   const theme = useTheme()
@@ -47,7 +49,6 @@ export default function AdCustomerPage() {
 
   const fetchData = (searchStaff) => {
     staffApi.get(searchStaff).then((response) => {
-      console.log(response.data.data.content)
       setListStaff(response.data.data.content)
       setToTalPages(response.data.data.totalPages)
       if (searchStaff.page > response.data.data.totalPages)
@@ -80,11 +81,11 @@ export default function AdCustomerPage() {
             onChange={(e) => {
               setSearchStaff({ ...searchStaff, searchTen: e.target.value })
             }}
-            sx={{ width: '30%' }}
+            sx={{ width: '28%' }}
             className="search-field"
             size="small"
             color="cam"
-            placeholder="Tìm kiếm tên hoặc sđt hoặc email"
+            placeholder="tên hoặc sđt hoặc email"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -131,11 +132,12 @@ export default function AdCustomerPage() {
             </Select>
           </div>
           <Button
-            variant="contained"
+            variant="outlined"
             style={{ float: 'right' }}
             color="cam"
             component={Link}
             to="/admin/staff/add">
+            <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
             <Typography sx={{ ml: 1 }}>Tạo Nhân Viên</Typography>
           </Button>
         </Stack>
@@ -180,7 +182,11 @@ export default function AdCustomerPage() {
                 <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell align="center">{row.stt}</TableCell>
                   <TableCell align="center">
-                    <img width={'100%'} src={row.avatar} alt="anh" />
+                    {row.avatar != null ? (
+                      <img width={'100%'} src={row.avatar} alt="anh" />
+                    ) : (
+                      <Avatar />
+                    )}
                   </TableCell>
                   <TableCell align="center">{row.fullName}</TableCell>
                   <TableCell align="center">{row.email}</TableCell>
@@ -225,14 +231,34 @@ export default function AdCustomerPage() {
             )}
           </TableBody>
         </Table>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '10px',
-          }}>
+
+        <Stack
+          mt={2}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+          spacing={0}>
+          <Typography component="span" variant={'body2'} mt={0.5}>
+            <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+            <Select
+              color="cam"
+              onChange={(e) => {
+                setSearchStaff({ ...searchStaff, size: e.target.value })
+              }}
+              sx={{ height: '25px', mx: 0.5 }}
+              size="small"
+              value={searchStaff.size}>
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={15}>15</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+            </Select>
+            <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Nhân viên</Typography>
+          </Typography>
           <Pagination
             color="cam"
+            variant="outlined"
             defaultPage={1}
             page={searchStaff.page}
             onChange={(e, value) => {
@@ -241,7 +267,7 @@ export default function AdCustomerPage() {
             }}
             count={totalPages}
           />
-        </div>
+        </Stack>
       </Paper>
     </div>
   )

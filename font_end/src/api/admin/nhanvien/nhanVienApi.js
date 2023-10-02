@@ -17,7 +17,7 @@ const staffApi = {
     formData.append('phoneNumber', staff.phoneNumber)
     formData.append('email', staff.email)
     formData.append('gender', staff.gender)
-    formData.append('avatar', staff.avatar)
+    if (staff.avatar !== null) formData.append('avatar', staff.avatar)
     formData.append('CitizenId', staff.citizenId)
     formData.append('role', staff.role)
 
@@ -34,7 +34,7 @@ const staffApi = {
     formData.append('phoneNumber', staff.phoneNumber)
     formData.append('email', staff.email)
     formData.append('gender', staff.gender)
-    formData.append('avatar', staff.avatar)
+    if (staff.avatar !== null) formData.append('avatar', staff.avatar)
     formData.append('CitizenId', staff.citizenId)
     formData.append('role', staff.role)
     formData.append('status', staff.status)

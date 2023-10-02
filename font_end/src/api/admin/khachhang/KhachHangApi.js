@@ -11,6 +11,11 @@ const khachHangApi = {
     return axiosClient.get(url, { params: searchKhachHang })
   },
 
+  getAll: () => {
+    const url = `/khach-hang/get-all`
+    return axiosClient.get(url)
+  },
+
   addKhachHang: (khachhang) => {
     const formData = new FormData()
     formData.append('fullName', khachhang.fullName)
@@ -18,7 +23,7 @@ const khachHangApi = {
     formData.append('phoneNumber', khachhang.phoneNumber)
     formData.append('email', khachhang.email)
     formData.append('gender', khachhang.gender)
-    formData.append('avatar', khachhang.avatar)
+    if (khachhang.avatar !== null) formData.append('avatar', khachhang.avatar)
     formData.append('role', khachhang.role)
 
     return axios.post(`http://localhost:8080/api/khach-hang/create`, formData, {
@@ -39,7 +44,7 @@ const khachHangApi = {
     formData.append('phoneNumber', khachhang.phoneNumber)
     formData.append('email', khachhang.email)
     formData.append('gender', khachhang.gender)
-    formData.append('avatar', khachhang.avatar)
+    if (khachhang.avatar !== null) formData.append('avatar', khachhang.avatar)
     formData.append('role', khachhang.role)
     formData.append('status', khachhang.status)
 

@@ -60,7 +60,7 @@ public class DiaChiServiceImpl implements DiaChiService {
 
     @Override
     public Page<Address> getPage(int p) {
-        Pageable pageable = PageRequest.of(p, 5);
+        Pageable pageable = PageRequest.of(p, 3);
         return diaChiRepository.findAll(pageable);
     }
 
@@ -68,7 +68,6 @@ public class DiaChiServiceImpl implements DiaChiService {
     public Address add(DiaChiRequest diaChiRequest) {
         try {
             Address address = diaChiRequest.newAddress(new Address());
-            address.setType(false);
             address.setAccount(khachHangRepository.findById(diaChiRequest.getIdCustomer()).orElse(null));
             return diaChiRepository.save(address);
         } catch (Exception e) {
