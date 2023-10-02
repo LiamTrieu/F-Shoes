@@ -13,7 +13,7 @@ public class DiaChiRequest {
 
     private String specificAddress;
 
-    private Boolean type = false;
+    private Boolean type;
 
     private String idCustomer;
 

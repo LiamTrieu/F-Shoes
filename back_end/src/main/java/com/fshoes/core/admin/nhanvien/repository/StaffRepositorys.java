@@ -24,7 +24,7 @@ public interface StaffRepositorys extends JpaRepository<Account, String> {
     List<StaffRespone> getAll(StaffRequest request);
 
     @Query(value = "SELECT ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, full_name, date_birth, phone_number, citizen_id, email, gender, password, avatar, role, created_at, status FROM account " +
-            "where role=0 or role=1 and" +
+            "where (role=0 or role=1) and" +
             "(:#{#x.searchTen} is null or full_name like %:#{#x.searchTen}% or email like %:#{#x.searchTen}% or phone_number like %:#{#x.searchTen}%) " +
             "and (:#{#x.genderSearch} is null or gender=:#{#x.genderSearch}) " +
             "and (:#{#x.statusSearch} is null or status=:#{#x.statusSearch}) " +

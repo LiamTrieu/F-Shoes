@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface KhachHangRepository extends JpaRepository<Account, String> {
 
@@ -20,4 +22,12 @@ public interface KhachHangRepository extends JpaRepository<Account, String> {
             "and (:#{#AKS.statusSearch} is null or status=:#{#AKS.statusSearch}) " +
             "order by created_at desc", nativeQuery = true)
     Page<KhachHangRespone> FindKhachHang(Pageable pageable, AdKhachHangSearch AKS);
+
+
+    @Query(value = """
+                select  ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, avatar, email,
+                 full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber,
+                 gender, created_at as createdAt, status from account 
+            """, nativeQuery = true)
+    List<KhachHangRespone> getAllAccount();
 }

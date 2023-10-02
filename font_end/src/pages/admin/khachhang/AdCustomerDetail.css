@@ -11,3 +11,6 @@
 .khachhangdetail .MuiButton-root:hover {
   box-shadow: none;
 }
+.khachhangdetail .custom-accordion .accordion-content .accordion-text {
+  font-size: 15px !important;
+}

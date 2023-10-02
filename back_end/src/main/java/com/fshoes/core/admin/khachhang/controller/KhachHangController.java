@@ -2,12 +2,15 @@ package com.fshoes.core.admin.khachhang.controller;
 
 import com.fshoes.core.admin.khachhang.model.request.AdKhachHangSearch;
 import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
+import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.service.impl.KhachHangServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
+import com.fshoes.entity.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/khach-hang")
@@ -38,6 +41,12 @@ public class KhachHangController {
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable String id) {
         khachHangService.delete(id);
+    }
+
+
+    @GetMapping("/get-all")
+    public List<KhachHangRespone> getAllAccount(){
+        return khachHangService.getAllAccount();
     }
 
 

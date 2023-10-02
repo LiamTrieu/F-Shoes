@@ -15,7 +15,7 @@ import java.util.List;
 public interface DiaChiRepository extends AddressRepository {
     @Query(value = "Select a.id, a.name, a.phone_number as phoneNumber, a.specific_address as specificAddress," +
             " a.type , province_id as provinceId, district_id as districtId," +
-            " ward_id as wardId from address a where a.id_account = :idAccount order by created_at desc"
+            " ward_id as wardId from address a where a.id_account = :idAccount order by created_at asc"
             , nativeQuery = true)
     Page<DiaChiRespone> getPageAddressByIdCustomer(Pageable pageable, @Param("idAccount") String idAccount);
 

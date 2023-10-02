@@ -26,6 +26,7 @@ import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 import confirmSatus from '../../../components/comfirmSwal'
+import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 
 const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
 
@@ -62,6 +63,7 @@ const AddStaff = () => {
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
   const [image, setImage] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [list, setList] = useState([])
   const [confirmClicked, setConfirmClicked] = useState(false)
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
@@ -77,11 +79,29 @@ const AddStaff = () => {
     wardId: null,
     idCustomer: '',
   })
+  const [errors, setErrors] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    dateBirth: '',
+    gender: '',
+    citizenId: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    specificAddress: '',
+  })
 
   useEffect(() => {
     loadTinh()
+    loadList()
   }, [])
 
+  const loadList = () => {
+    khachHangApi.getAll().then((response) => {
+      setList(response.data)
+    })
+  }
   const loadTinh = () => {
     ghnAPI.getProvince().then((response) => {
       setTinh(response.data)
@@ -187,7 +207,121 @@ const AddStaff = () => {
   const [staffAdd, setStaffAdd] = useState(initStaff)
   const navigate = useNavigate()
 
+  const isPhoneNumberDuplicate = (phoneNumber) => {
+    return list.some((customer) => customer.phoneNumber === phoneNumber)
+  }
+
+  const isEmailDuplicate = (email) => {
+    return list.some((customer) => customer.email === email)
+  }
+  const isCitizenIdDuplicate = (citizenId) => {
+    return list.some((customer) => customer.citizenId === citizenId)
+  }
+
   const handleStaffAdd = () => {
+    const newErrors = {}
+    let check = 0
+
+    if (!staffAdd.fullName) {
+      newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
+      check++
+    } else if (staffAdd.fullName.length > 100) {
+      newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
+      check++
+    } else {
+      newErrors.fullName = ''
+    }
+
+    if (!staffAdd.email) {
+      newErrors.email = 'Vui lòng nhập Email.'
+      check++
+    } else {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+      if (!emailRegex.test(staffAdd.email)) {
+        newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
+        check++
+      } else if (staffAdd.email.length > 50) {
+        newErrors.email = 'Email không được quá 50 kí tự.'
+        check++
+      } else if (isEmailDuplicate(staffAdd.email)) {
+        newErrors.email = 'Email đã tồn tại trong danh sách.'
+        check++
+      } else {
+        newErrors.email = ''
+      }
+    }
+
+    if (!staffAdd.citizenId) {
+      newErrors.citizenId = 'Vui lòng nhập Số CCCD.'
+      check++
+    } else {
+      const citizenIdRegex = /^(?:\d{9}|\d{12})$/
+      if (!citizenIdRegex.test(staffAdd.citizenId)) {
+        newErrors.citizenId = 'Số CCCD không hợp lệ.'
+        check++
+      } else if (isCitizenIdDuplicate(staffAdd.citizenId)) {
+        newErrors.citizenId = 'CCCD đã tồn tại trong danh sách.'
+        check++
+      } else {
+        newErrors.citizenId = ''
+      }
+    }
+
+    if (!staffAdd.phoneNumber) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      check++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(staffAdd.phoneNumber)) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        check++
+      } else if (isPhoneNumberDuplicate(staffAdd.phoneNumber)) {
+        newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
+        check++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+
+    if (!staffAdd.dateBirth) {
+      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      check++
+    } else {
+      newErrors.dateBirth = ''
+    }
+
+    if (!staffAdd.gender) {
+      newErrors.gender = 'Vui lòng chọn Giới tính.'
+      check++
+    } else {
+      newErrors.gender = ''
+    }
+
+    if (!selectedTinh) {
+      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
+      check++
+    } else {
+      newErrors.provinceId = ''
+    }
+
+    if (!selectedHuyen) {
+      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
+      check++
+    } else {
+      newErrors.districtId = ''
+    }
+
+    if (!selectedXa) {
+      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+      check++
+    } else {
+      newErrors.wardId = ''
+    }
+
+    if (check > 0) {
+      setErrors(newErrors)
+      return
+    }
     setConfirmClicked(true)
 
     const title = 'Xác nhận thêm mới nhân viên?'
@@ -198,7 +332,6 @@ const AddStaff = () => {
         staffApi
           .add(staffAdd)
           .then((response) => {
-            console.log(response.data)
             let khachHangId = response.data.id
             const obj = {
               name: diaChi.name,
@@ -248,7 +381,7 @@ const AddStaff = () => {
         <Button
           color="cam"
           className="btnqr"
-          variant="contained"
+          variant="outlined"
           fullWidth
           onClick={handleOpenQRScanner}>
           Quét QR
@@ -286,10 +419,13 @@ const AddStaff = () => {
               value={staffAdd?.fullName}
               fullWidth
               onChange={(e) => {
-                setStaffAdd({ ...staffAdd, fullName: e.target.value })
+                setStaffAdd({ ...staffAdd, fullName: e.target.value.trim() })
                 updateDiaChi()
               }}
             />
+            <Typography variant="body2" color="error">
+              {errors.fullName}
+            </Typography>
           </Grid>
           <Grid item xs={8}>
             <h3>Thông tin chi tiết</h3>
@@ -305,8 +441,11 @@ const AddStaff = () => {
                   size="small"
                   value={staffAdd?.citizenId}
                   fullWidth
-                  onChange={(e) => setStaffAdd({ ...staffAdd, citizenId: e.target.value })}
+                  onChange={(e) => setStaffAdd({ ...staffAdd, citizenId: e.target.value.trim() })}
                 />
+                <Typography variant="body2" color="error">
+                  {errors.citizenId}
+                </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography>
@@ -331,6 +470,9 @@ const AddStaff = () => {
                     />
                   </RadioGroup>
                 </FormControl>
+                <Typography variant="body2" color="error">
+                  {errors.gender}
+                </Typography>
               </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -347,6 +489,9 @@ const AddStaff = () => {
                     }
                   />
                 </LocalizationProvider>
+                <Typography variant="body2" color="error">
+                  {errors.dateBirth}
+                </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography>
@@ -357,8 +502,11 @@ const AddStaff = () => {
                   size="small"
                   variant="outlined"
                   fullWidth
-                  onChange={(e) => setStaffAdd({ ...staffAdd, email: e.target.value })}
+                  onChange={(e) => setStaffAdd({ ...staffAdd, email: e.target.value.trim() })}
                 />
+                <Typography variant="body2" color="error">
+                  {errors.email}
+                </Typography>
               </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -385,6 +533,9 @@ const AddStaff = () => {
                     )}
                   />
                 </Box>
+                <Typography variant="body2" color="error">
+                  {errors.provinceId}
+                </Typography>
               </Grid>
               <Grid item xs={4}>
                 <Typography>
@@ -409,6 +560,9 @@ const AddStaff = () => {
                     )}
                   />
                 </Box>
+                <Typography variant="body2" color="error">
+                  {errors.districtId}
+                </Typography>
               </Grid>
               <Grid item xs={4}>
                 <Typography>
@@ -430,6 +584,9 @@ const AddStaff = () => {
                     )}
                   />
                 </Box>
+                <Typography variant="body2" color="error">
+                  {errors.wardId}
+                </Typography>
               </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -443,10 +600,13 @@ const AddStaff = () => {
                   size="small"
                   fullWidth
                   onChange={(e) => {
-                    setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })
+                    setStaffAdd({ ...staffAdd, phoneNumber: e.target.value.trim() })
                     updateDiaChi()
                   }}
                 />
+                <Typography variant="body2" color="error">
+                  {errors.phoneNumber}
+                </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography>
@@ -462,7 +622,7 @@ const AddStaff = () => {
                     setDiaChi({
                       ...diaChi,
                       specificAddress:
-                        e.target.value +
+                        e.target.value.trim() +
                         ', ' +
                         selectedXa.label +
                         ', ' +
@@ -471,6 +631,7 @@ const AddStaff = () => {
                         selectedTinh.label,
                     })
                   }
+                  disabled={!selectedXa}
                 />
               </Grid>
             </Grid>
@@ -497,7 +658,7 @@ const AddStaff = () => {
               )}
               <Button
                 onClick={handleStaffAdd}
-                variant="contained"
+                variant="outlined"
                 fullWidth
                 color="cam"
                 disabled={loading}>
