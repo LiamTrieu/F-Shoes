@@ -174,9 +174,11 @@ export default function AdVoucherPage() {
           <Grid item xs={3.5}></Grid>
           <Grid item xs={2.5} className="icon-css">
             <Link to={'/admin/voucher/add'}>
-              <Button color="success" variant="contained">
+              <Button
+                variant="outlined"
+                style={{ borderRadius: '8px ', borderColor: '#fc7c27', color: '#fc7c27' }}>
                 <AiOutlinePlusCircle className="icon-css" />
-                <Typography>Tạo voucher</Typography>
+                <Typography>Tạo khuyễn mãi</Typography>
               </Button>
             </Link>
           </Grid>
@@ -361,10 +363,11 @@ export default function AdVoucherPage() {
               <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>sản phẩm</Typography>
             </Typography>
             <Pagination
+              variant="outlined"
+              color="cam"
               page={searchVoucher.page}
               onChange={(_, page) => handelOnchangePage(page)}
               count={totalPages}
-              color="primary"
             />
           </Stack>
           {/* </Grid> */}

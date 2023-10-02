@@ -6,7 +6,9 @@ import com.fshoes.core.admin.sanpham.model.respone.ColorResponse;
 import com.fshoes.core.admin.sanpham.repository.AdColorRepository;
 import com.fshoes.core.admin.sanpham.service.ColorService;
 import com.fshoes.entity.Color;
+import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
 import com.fshoes.infrastructure.constant.Status;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,9 @@ public class ColorServiceImpl implements ColorService {
 
     @Autowired
     private AdColorRepository colorRepository;
+
+    @Autowired
+    private CloudinaryImage cloudinaryImage;
 
     public List<Color> findAll() {
         return colorRepository.findAll();
@@ -38,10 +43,12 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
+    @Transactional
     public Color addColor(ColorRequest colorRequest) {
         Color color = colorRequest.tranColor(new Color());
         color.setDeleted(0);
-        return colorRepository.save(color);
+        cloudinaryImage.createFolder(colorRepository.save(color).getId());
+        return color;
     }
 
     @Override

@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -18,15 +16,17 @@ public class CloudinaryImage {
     @Autowired
     private Cloudinary cloudinary;
 
-    public String uploadImage(MultipartFile imageFile){
+    public String uploadImage(MultipartFile imageFile) {
         try {
             Map map = cloudinary.uploader().upload(imageFile.getBytes(), ObjectUtils.emptyMap());
             return (String) map.get("url");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-    }public String uploadImage(MultipartFile imageFile, String nameFolder){
+    }
+
+    public String uploadImage(MultipartFile imageFile, String nameFolder) {
         Map params = ObjectUtils.asMap(
                 "folder", nameFolder,
                 "resource_type", "image"
@@ -45,12 +45,12 @@ public class CloudinaryImage {
             List<String> listUrl = new ArrayList<>();
             ApiResponse result = cloudinary.api().resources(ObjectUtils.asMap(
                     "type", "upload",
-                    "prefix", folderName+"/"
+                    "prefix", folderName + "/"
             ));
 
             List<?> list = (List<?>) result.get("resources");
             for (Object o : list) {
-               listUrl.add((String) ((Map<?, ?>) o).get("url"));
+                listUrl.add((String) ((Map<?, ?>) o).get("url"));
             }
             return listUrl;
         } catch (Exception e) {
@@ -58,7 +58,7 @@ public class CloudinaryImage {
         }
         return null;
     }
-    
+
     public String uploadAvatar(MultipartFile imageFile) {
         Map params = ObjectUtils.asMap(
                 "folder", "avatar",
@@ -72,4 +72,13 @@ public class CloudinaryImage {
             return null;
         }
     }
+
+    public void createFolder(String folder) {
+        try {
+            ApiResponse apiResponse = cloudinary.api().createFolder(folder, ObjectUtils.emptyMap());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
