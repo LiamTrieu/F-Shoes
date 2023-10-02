@@ -31,6 +31,7 @@ import '../../../assets/styles/admin.css'
 import './voucher.css'
 import Empty from '../../../components/Empty'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
 
 const listBreadcrumbs = [{ name: 'Khuyến mãi', link: '/admin/voucher' }]
 
@@ -116,6 +117,8 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.value === null) {
       errors.value = 'Giá trị không được để trống'
+    } else if (!Number.isInteger(voucherAdd.value)) {
+      errors.value = 'giá trị chỉ được nhập số nguyên'
     } else if (voucherAdd.value < 0) {
       errors.value = 'giá trị tối thiểu 0%'
     } else if (voucherAdd.value > 100) {
@@ -124,18 +127,24 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.maximumValue === null) {
       errors.maximumValue = 'Giá trị tối đa không được để trống'
+    } else if (!Number.isInteger(voucherAdd.maximumValue)) {
+      errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
     } else if (voucherAdd.maximumValue < 0) {
       errors.maximumValue = 'giá trị tối đa tối thiểu 0 (vnđ)'
     }
 
     if (voucherAdd.quantity === null) {
       errors.quantity = 'Số lượng không được để trống'
+    } else if (!Number.isInteger(voucherAdd.quantity)) {
+      errors.quantity = 'Số lượng chỉ được nhập số nguyên'
     } else if (voucherAdd.quantity < 0) {
       errors.quantity = 'Số lượng tối thiểu 0 (vnđ)'
     }
 
     if (voucherAdd.minimumAmount === null) {
       errors.minimumAmount = 'Điều kiện không được để trống'
+    } else if (!Number.isInteger(voucherAdd.minimumAmount)) {
+      errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
     } else if (voucherAdd.minimumAmount < 0) {
       errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
     }
@@ -250,6 +259,7 @@ export default function AdVoucherAdd() {
           <Grid item xs={5}>
             <div style={{ marginBottom: '16px' }}>
               <TextField
+                className="input-css"
                 label="Mã khuyến mãi"
                 type="text"
                 size="small"
@@ -261,6 +271,7 @@ export default function AdVoucherAdd() {
             {/* -------------------------------------------------------------------------------------------------------- */}
             <div style={{ marginBottom: '16px' }}>
               <TextField
+                className="input-css"
                 label="Tên khuyến mãi"
                 type="text"
                 size="small"
@@ -270,16 +281,24 @@ export default function AdVoucherAdd() {
               <span className="error">{errorName}</span>
             </div>
             {/* -------------------------------------------------------------------------------------------------------- */}
-            <Stack direction="row" spacing={2} style={{ marginBottom: '16px' }}>
+            <Stack
+              direction="row"
+              spacing={2}
+              style={{ marginBottom: '16px', justifyContent: 'space-between', display: 'flex' }}>
               <div>
                 <TextField
+                  className="input-css"
                   label="Giá trị"
                   type="number"
                   size="small"
                   fullWidth
                   onChange={(e) => setVoucherAdd({ ...voucherAdd, value: Number(e.target.value) })}
                   InputProps={{
-                    endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <AiOutlinePercentage className="icons-css" />
+                      </InputAdornment>
+                    ),
                   }}
                 />
                 <span className="error">{errorValue}</span>
@@ -287,6 +306,7 @@ export default function AdVoucherAdd() {
               {/* -------------------------------------------------------------------------------------------------------- */}
               <div>
                 <TextField
+                  className="input-css"
                   label="Giá trị tối đa"
                   type="number"
                   size="small"
@@ -298,16 +318,24 @@ export default function AdVoucherAdd() {
                     })
                   }
                   InputProps={{
-                    endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <AiOutlineDollar className="icons-css" />
+                      </InputAdornment>
+                    ),
                   }}
                 />
                 <span className="error">{errorMaximumValue}</span>
               </div>
             </Stack>
             {/* -------------------------------------------------------------------------------------------------------- */}
-            <Stack direction="row" spacing={2} style={{ marginBottom: '16px' }}>
+            <Stack
+              direction="row"
+              spacing={2}
+              style={{ marginBottom: '16px', justifyContent: 'space-between', display: 'flex' }}>
               <div>
                 <TextField
+                  className="input-css"
                   label="Số lượng"
                   type="number"
                   variant="outlined"
@@ -319,12 +347,20 @@ export default function AdVoucherAdd() {
                       quantity: Number(e.target.value),
                     })
                   }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <AiOutlineNumber className="icons-css" />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 <span className="error">{errorQuantity}</span>
               </div>
               {/* -------------------------------------------------------------------------------------------------------- */}
               <div>
                 <TextField
+                  className="input-css"
                   label="Điều kiện"
                   type="number"
                   size="small"
@@ -336,7 +372,11 @@ export default function AdVoucherAdd() {
                     })
                   }
                   InputProps={{
-                    endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <AiOutlineDollar className="icons-css" />
+                      </InputAdornment>
+                    ),
                   }}
                 />
                 <span className="error">{errorMinimumAmount}</span>
@@ -475,7 +515,8 @@ export default function AdVoucherAdd() {
                 page={initPage}
                 onChange={(_, page) => handelOnchangePage(page)}
                 count={totalPages}
-                color="primary"
+                variant="outlined"
+                color="cam"
               />
             </Grid>
           </Grid>
@@ -483,10 +524,14 @@ export default function AdVoucherAdd() {
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
           <Button
-            sx={{ width: '150px', backgroundColor: '#FC7C27' }}
+            style={{
+              width: '150px',
+              borderRadius: '8px ',
+              borderColor: '#fc7c27',
+              color: '#fc7c27',
+            }}
             onClick={() => handleVoucherAdd(voucherAdd, selectedCustomerIds)}
-            variant="contained"
-            color="success">
+            variant="outlined">
             Thêm mới
           </Button>
         </div>
