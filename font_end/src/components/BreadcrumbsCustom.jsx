@@ -15,8 +15,8 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
             sx={{
               color: 'black',
               textDecoration: 'none',
-              fontWeight: '500',
-              fontSize: 'calc(0.9rem + 0.15vw)',
+              fontWeight: '500 !important',
+              fontSize: 'calc(0.9rem + 0.15vw) !important',
             }}
             component={e.link != null ? Link : ''}
             key={`listLink${index + 1}`}
@@ -31,8 +31,8 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
     <Typography
       sx={{
         textDecoration: 'none',
-        fontWeight: '500',
-        fontSize: 'calc(0.9rem + 0.15vw)',
+        fontWeight: '500 !important',
+        fontSize: 'calc(0.9rem + 0.15vw) !important',
       }}
       key={'listLink0'}>
       {nameHere}
@@ -43,7 +43,7 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
       separator={
         <Typography
           sx={{
-            fontSize: 'calc(0.9rem + 0.15vw)',
+            fontSize: 'calc(0.9rem + 0.15vw) !important',
           }}>
           /
         </Typography>

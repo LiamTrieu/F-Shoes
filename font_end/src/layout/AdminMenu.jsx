@@ -46,7 +46,7 @@ export default function AdminMenu() {
           </ListItemIcon>
           <ListItemText
             sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
             primary="Thống kê"
           />
         </ListItemButton>
@@ -56,7 +56,7 @@ export default function AdminMenu() {
           </ListItemIcon>
           <ListItemText
             sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
             primary="Quản lý đơn hàng"
           />
         </ListItemButton>
@@ -66,7 +66,7 @@ export default function AdminMenu() {
           </ListItemIcon>
           <ListItemText
             sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
             primary="Bán hàng tại quầy"
           />
         </ListItemButton>
@@ -76,7 +76,7 @@ export default function AdminMenu() {
           </ListItemIcon>
           <ListItemText
             sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
             primary="Quản lý sản phẩm"
           />
           <Box
@@ -92,14 +92,14 @@ export default function AdminMenu() {
             <ListItemButton component={Link} to="/admin/product">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Sản phẩm"
               />
             </ListItemButton>
             <ListItemButton component={Link} to="/admin/size">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Size"
               />
             </ListItemButton>
@@ -107,14 +107,14 @@ export default function AdminMenu() {
             <ListItemButton component={Link} to="/admin/sole">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Đế giày"
               />
             </ListItemButton>
             <ListItemButton component={Link} to="/admin/color">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Màu sắc"
               />
             </ListItemButton>
@@ -122,14 +122,14 @@ export default function AdminMenu() {
             <ListItemButton component={Link} to="/admin/category">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Loại giày"
               />
             </ListItemButton>
             <ListItemButton component={Link} to="/admin/material">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Chất liệu"
               />
             </ListItemButton>
@@ -137,7 +137,7 @@ export default function AdminMenu() {
             <ListItemButton component={Link} to="/admin/brand">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Thương hiệu"
               />
             </ListItemButton>
@@ -149,7 +149,7 @@ export default function AdminMenu() {
           </ListItemIcon>
           <ListItemText
             sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
             primary="Voucher"
           />
         </ListItemButton>
@@ -159,7 +159,7 @@ export default function AdminMenu() {
           </ListItemIcon>
           <ListItemText
             sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
             primary="Khuyến mại"
           />
         </ListItemButton>
@@ -169,7 +169,7 @@ export default function AdminMenu() {
           </ListItemIcon>
           <ListItemText
             sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
             primary="Tài khoản"
           />
           <Box
@@ -185,14 +185,14 @@ export default function AdminMenu() {
             <ListItemButton component={Link} to="/admin/staff">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Nhân viên"
               />
             </ListItemButton>
             <ListItemButton sx={{ pb: 0 }} component={Link} to="/admin/customer">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500' }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Khách hàng"
               />
             </ListItemButton>

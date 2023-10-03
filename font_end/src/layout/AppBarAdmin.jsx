@@ -10,11 +10,12 @@ import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
 import '../assets/styles/admin.css'
 
-const drawerWidth = 250
+const drawerWidth = '17vw'
 
 export default function AppBarAdmin({ children }) {
   return (
-    <Box sx={{ display: 'flex', backgroundColor: '#F0F2F5', minHeight: '100vh' }}>
+    <Box
+      sx={{ display: 'flex', backgroundColor: '#F0F2F5', minHeight: '100vh', maxWidth: '100vw' }}>
       <ThemeAdmin>
         <AppBar
           position="fixed"
@@ -83,7 +84,7 @@ export default function AppBarAdmin({ children }) {
             <AdminMenu />
           </Box>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3, maxWidth: '83vw' }}>
           <Toolbar />
           {children}
         </Box>
