@@ -18,13 +18,16 @@ export default function ModalAddProduct({ open, setOpen, title, dataProduct }) {
         </Button>
       }>
       <div className="san-pham">
+        <b>
+          <span style={{ color: 'red' }}>*</span>Tên sản phẩm
+        </b>
         <TextField
-          defaultValue={dataProduct.nameProduct}
+          defaultValue={dataProduct.name}
           color="cam"
           className="search-field"
           size="small"
           fullWidth
-          label="Tên sản phẩm"
+          placeholder="Tên sản phẩm"
         />
       </div>
     </DialogAddUpdate>

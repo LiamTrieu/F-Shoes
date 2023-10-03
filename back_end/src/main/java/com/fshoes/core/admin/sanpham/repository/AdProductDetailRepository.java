@@ -38,17 +38,12 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
     Page<ProductDetailResponse> getAllProductDetail(PrdDetailFilterRequest request, Pageable pageable);
 
     @Query(value = """
-    SELECT p.id as id, max(pd.price) as price, CONCAT(p.name, ' [', c.name, ' - ', b.name, ']') as name,
-    p.name as nameProduct, c.id as idCategory, b.id as idBrand, pd.description as description,
-    b.name as nameBrand, c.name as nameCategory
-    FROM product_detail pd
-    JOIN product p ON p.id = pd.id_product
-    JOIN category c ON c.id = pd.id_category
-    JOIN brand b ON b.id = pd.id_brand
-    WHERE p.id = :id
-    GROUP BY p.name, c.name, b.name, c.id, b.id, pd.description, p.id, b.name, c.name
-    
-    """, nativeQuery = true)
+            SELECT p.id, max(pd.price) as price, p.name as name
+            FROM product p
+            JOIN product_detail pd ON p.id = pd.id_product
+            WHERE p.id = :id
+            GROUP BY p.name, p.id
+            """, nativeQuery = true)
     ProductMaxPriceResponse getProductMaxPrice(@Param("id") String id);
 
 }

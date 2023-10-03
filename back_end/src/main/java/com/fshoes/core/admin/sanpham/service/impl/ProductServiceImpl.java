@@ -12,8 +12,10 @@ import com.fshoes.core.admin.sanpham.repository.AdProductRepository;
 import com.fshoes.core.admin.sanpham.service.ProductService;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.Image;
+import com.fshoes.entity.Product;
 import com.fshoes.entity.ProductDetail;
 import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
+import com.fshoes.infrastructure.constant.Status;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -37,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
     private AdImageRepository imageRepository;
     @Autowired
     private CloudinaryImage cloudinaryImage;
+
     @Override
     public Page<ProductResponse> getProduct(ProductFilterRequest filter) {
         Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());
@@ -66,17 +70,27 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     @Async
-    public void addProductDetail(ProductDetailRequest request) {
-        String code = "PD" + (productDetailRepository.count() + 1);
-        ProductDetail newProductDetail = new ProductDetail();
-        newProductDetail.setCode(code);
-        ProductDetail productDetail = productDetailRepository.save(request.tranDetail(newProductDetail));
-        request.getListImage().forEach(i -> {
-            Image image = new Image();
-            image.setProductDetail(productDetail);
-            image.setUrl(i);
-            imageRepository.save(image);
-        });
+    public void addProductDetail(List<ProductDetailRequest> request) {
+        Product product = new Product(request.get(0).getNameProduct(), Status.HOAT_DONG);
+        productRepository.save(product);
+
+        AtomicLong maxLength = new AtomicLong(productDetailRepository.count() + 1);
+        List<ProductDetail> newProductDetail = request.stream().map(productDetailRequest -> {
+            ProductDetail productDetail = new ProductDetail();
+            productDetail.setProduct(product);
+            productDetail.setCode("PD" + maxLength.getAndIncrement());
+            return productDetailRequest.tranDetail(productDetail);
+        }).toList();
+        List<Image> newImages = new ArrayList<>();
+        for (ProductDetail productDetail : productDetailRepository.saveAll(newProductDetail)) {
+            newImages.addAll(request.get(0).getListImage().stream().map(img -> {
+                Image image = new Image();
+                image.setUrl(img);
+                image.setProductDetail(productDetail);
+                return image;
+            }).toList());
+        }
+        imageRepository.saveAll(newImages);
     }
 
     @Override
