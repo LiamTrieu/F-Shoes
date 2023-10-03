@@ -4,9 +4,13 @@ import {
   Button,
   Container,
   FormControl,
+  FormControlLabel,
+  FormLabel,
   IconButton,
   MenuItem,
   Modal,
+  Radio,
+  RadioGroup,
   Select,
   Stack,
   Table,
@@ -29,7 +33,7 @@ import colorApi from '../../../api/admin/sanpham/colorApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
-import { useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 const styleModalProduct = {
@@ -55,7 +59,7 @@ const styleModalProductDetail = {
   boxShadow: 24,
 }
 
-export default function ModelSell({ open, setOPen, idCart }) {
+export default function ModelSell({ open, setOPen, idCart, load }) {
   const [isShowProductDetail, setIsShowProductDetail] = useState(false)
   const [listProduct, setListProduct] = useState([])
 
@@ -68,13 +72,24 @@ export default function ModelSell({ open, setOPen, idCart }) {
     size: null,
     nameProductDetail: '',
   })
-
+  const { id } = useParams()
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
   const [listColor, setListColor] = useState([])
   const [listSole, setListSole] = useState([])
   const [listCategory, setListCategory] = useState([])
   const [listSize, setListSize] = useState([])
+  const [getListSizeByProduct, setGetListSizeByProduct] = useState([])
+  const [getListColorByProduct, setGetListColorByProduct] = useState([])
+  const [getAmountProduct, setGetAmountProduct] = useState([])
+
+  const [addAmount, setAddAmount] = useState([])
+
+  const hanldeAmountProduct = (id) => {
+    sellApi.getAount(id).then((response) => {
+      setGetAmountProduct(response.data.data)
+    })
+  }
 
   useEffect(() => {
     bradApi.findAll().then((response) => {
@@ -95,6 +110,12 @@ export default function ModelSell({ open, setOPen, idCart }) {
     sizeApi.findAll().then((response) => {
       setListSize(response.data.data)
     })
+    sellApi.getSize().then((response) => {
+      setGetListSizeByProduct(response.data.data)
+    })
+    sellApi.getColor().then((response) => {
+      setGetListColorByProduct(response.data.data)
+    })
   }, [])
 
   const fecthData = (filter) => {
@@ -111,14 +132,16 @@ export default function ModelSell({ open, setOPen, idCart }) {
     const cartDetail = {
       cartId: idCart,
       productDetailId: id,
-      quantity: 1,
+      quantity: addAmount,
     }
 
     sellApi.addCartDetail(cartDetail).then((response) => {
       toast.success('Thêm sản phẩm thành công', {
-        position: toast.POSITION.TOP_RIGHT,
+        position: toast.POSITION.TOP_CENTER,
       })
       console.log(response)
+      setIsShowProductDetail(false)
+      load(idCart)
     })
   }
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
@@ -177,7 +200,7 @@ export default function ModelSell({ open, setOPen, idCart }) {
                 setFilter({ ...filter, nameProductDetail: e.target.value })
               }}
             />
-            <Button sx={{ ml: 2 }} variant="contained">
+            <Button sx={{ ml: 2 }} color="cam" variant="outlined">
               Tìm kiếm
             </Button>
           </Box>
@@ -188,7 +211,7 @@ export default function ModelSell({ open, setOPen, idCart }) {
               sx={{
                 '.MuiSelect-select': {
                   pl: 1,
-                  color: 'rgb(34, 143, 65)',
+                  color: 'orange',
                   fontWeight: 'bold',
                 },
                 '.MuiOutlinedInput-notchedOutline': {
@@ -212,7 +235,7 @@ export default function ModelSell({ open, setOPen, idCart }) {
               sx={{
                 '.MuiSelect-select': {
                   pl: 1,
-                  color: 'rgb(34, 143, 65)',
+                  color: 'orange',
                   fontWeight: 'bold',
                 },
                 '.MuiOutlinedInput-notchedOutline': {
@@ -236,7 +259,7 @@ export default function ModelSell({ open, setOPen, idCart }) {
               sx={{
                 '.MuiSelect-select': {
                   pl: 1,
-                  color: 'rgb(34, 143, 65)',
+                  color: 'orange',
                   fontWeight: 'bold',
                 },
                 '.MuiOutlinedInput-notchedOutline': {
@@ -261,7 +284,7 @@ export default function ModelSell({ open, setOPen, idCart }) {
               sx={{
                 '.MuiSelect-select': {
                   pl: 1,
-                  color: 'rgb(34, 143, 65)',
+                  color: 'orange',
                   fontWeight: 'bold',
                 },
                 '.MuiOutlinedInput-notchedOutline': {
@@ -286,7 +309,7 @@ export default function ModelSell({ open, setOPen, idCart }) {
               sx={{
                 '.MuiSelect-select': {
                   pl: 1,
-                  color: 'rgb(34, 143, 65)',
+                  color: 'orange',
                   fontWeight: 'bold',
                 },
                 '.MuiOutlinedInput-notchedOutline': {
@@ -311,7 +334,7 @@ export default function ModelSell({ open, setOPen, idCart }) {
               sx={{
                 '.MuiSelect-select': {
                   pl: 1,
-                  color: 'rgb(34, 143, 65)',
+                  color: 'orange',
                   fontWeight: 'bold',
                 },
                 '.MuiOutlinedInput-notchedOutline': {
@@ -347,9 +370,9 @@ export default function ModelSell({ open, setOPen, idCart }) {
                   <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
                     Mã
                   </TableCell>
-                  <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
+                  {/* <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
                     Số lượng
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
                     Danh mục
                   </TableCell>
@@ -362,9 +385,9 @@ export default function ModelSell({ open, setOPen, idCart }) {
                   <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
                     Chất liệu
                   </TableCell>
-                  <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
+                  {/* <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
                     size
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell width={'15%'} align="center" sx={{ fontWeight: 'bold' }}>
                     Giá
                   </TableCell>
@@ -401,12 +424,12 @@ export default function ModelSell({ open, setOPen, idCart }) {
                     </TableCell>
                     <TableCell align="center">{cart.name}</TableCell>
                     <TableCell align="center">{cart.code}</TableCell>
-                    <TableCell align="center">{cart.amount}</TableCell>
+                    {/* <TableCell align="center">{cart.amount}</TableCell> */}
                     <TableCell align="center">{cart.category}</TableCell>
                     <TableCell align="center">{cart.brand}</TableCell>
                     <TableCell align="center">{cart.color}</TableCell>
                     <TableCell align="center">{cart.material}</TableCell>
-                    <TableCell align="center">{cart.size}</TableCell>
+                    {/* <TableCell align="center">{cart.size}</TableCell> */}
 
                     <TableCell
                       align="center"
@@ -436,9 +459,11 @@ export default function ModelSell({ open, setOPen, idCart }) {
                     <TableCell width={'15%'} align="center">
                       <Button
                         onClick={
-                          () => onSubmitAddCartDetail(cart.productDetailId)
-
-                          // setIsShowProductDetail(true)
+                          // () => onSubmitAddCartDetail(cart.productDetailId)
+                          () => {
+                            setIsShowProductDetail(true)
+                            hanldeAmountProduct(cart.productDetailId)
+                          }
                         }
                         variant="outlined"
                         color="info"
@@ -482,42 +507,43 @@ export default function ModelSell({ open, setOPen, idCart }) {
               <Container>
                 <Box py={1}>
                   <Typography mr={2} fontWeight={'bold'} variant="button" gutterBottom>
-                    Size
+                    Size :
                   </Typography>
-                  <Select
-                    sx={{
-                      '.MuiSelect-select': {
-                        pl: 1,
-                        color: 'rgb(34, 143, 65)',
-                        fontWeight: 'bold',
-                      },
-                      '.MuiOutlinedInput-notchedOutline': {
-                        border: 'none!important',
-                      },
-                    }}
-                    value={0}>
-                    <MenuItem value={0}>33</MenuItem>
-                  </Select>
-                  <FormControl></FormControl>
+                  {getListSizeByProduct.map((size) => (
+                    <FormControl>
+                      <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="row-radio-buttons-group">
+                        <FormControlLabel
+                          value={size.id}
+                          className="size"
+                          control={<Radio />}
+                          label={size.size}
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  ))}
                 </Box>
                 <Box py={1}>
                   <Typography mr={2} fontWeight={'bold'} variant="button" gutterBottom>
-                    Color
+                    Color :
                   </Typography>
-                  <Select
-                    sx={{
-                      '.MuiSelect-select': {
-                        pl: 1,
-                        color: 'rgb(34, 143, 65)',
-                        fontWeight: 'bold',
-                      },
-                      '.MuiOutlinedInput-notchedOutline': {
-                        border: 'none!important',
-                      },
-                    }}
-                    value={0}>
-                    <MenuItem value={0}>Đỏ</MenuItem>
-                  </Select>
+                  {getListColorByProduct.map((color) => (
+                    <FormControl>
+                      <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="row-radio-buttons-group">
+                        <FormControlLabel
+                          value={color.id}
+                          control={<Radio />}
+                          label={color.nameColor}
+                          className="color"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  ))}
                 </Box>
                 <Box py={1}>
                   <Typography
@@ -526,7 +552,7 @@ export default function ModelSell({ open, setOPen, idCart }) {
                     mr={2}
                     mt={'5px'}
                     fontWeight={'bold'}>
-                    Số lượng: 100
+                    Số lượng: {getAmountProduct.amount}
                   </Typography>
 
                   <Box
@@ -542,8 +568,9 @@ export default function ModelSell({ open, setOPen, idCart }) {
                       <RemoveIcon fontSize="1px" />
                     </IconButton>
                     <TextField
-                      value="10"
+                      defaultValue="1"
                       inputProps={{ min: 1 }}
+                      onChange={(e) => setAddAmount(e.target.value)}
                       size="small"
                       sx={{
                         width: '30px ',
@@ -560,7 +587,10 @@ export default function ModelSell({ open, setOPen, idCart }) {
                 </Box>
                 <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2}>
                   <Box>
-                    <Button variant="contained" color="success">
+                    <Button
+                      onClick={() => onSubmitAddCartDetail(getAmountProduct.id)}
+                      variant="outlined"
+                      color="cam">
                       <b>Xác nhận</b>
                     </Button>
                   </Box>

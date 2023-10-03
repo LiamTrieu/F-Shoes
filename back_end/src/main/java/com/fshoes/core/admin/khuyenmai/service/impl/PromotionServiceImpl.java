@@ -41,7 +41,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
-    @Scheduled(cron = "0 * * * * ?")
+//    @Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void cronJobCheckPromotion(){
         boolean flag = true;
