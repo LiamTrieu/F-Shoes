@@ -31,4 +31,12 @@ public class HDBillRequest {
 
     private String idStaff;
 
+    private String receiveDate;
+
+    private String completeDate;
+
+    private String confirmationDate;
+
+    private String shipDate;
+
 }

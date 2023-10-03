@@ -20,5 +20,7 @@ public interface HDBillDetailResponse extends IsIdentified {
 
     String getProductDetailId();
 
+    Integer getStatus();
+
 
 }
