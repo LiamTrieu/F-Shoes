@@ -2,9 +2,8 @@ package com.fshoes.core.admin.hoadon.service.impl;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
-import com.fshoes.core.admin.hoadon.model.respone.HDBillHistoryResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
-import com.fshoes.core.admin.hoadon.repository.HDBillRepositpory;
+import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
@@ -27,18 +26,18 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     private ProductDetailRepository productDetailRepository;
 
     @Autowired
-    private HDBillRepositpory hdBillRepositpory;
+    private HDBillRepository hdBillRepositpory;
 
     @Transactional
     @Override
     public BillDetail save(HDBillDetailRequest hdBillDetailRequest) {
         Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
-        ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getIdProductDetail()).get();
+        ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getProductDetailId()).get();
         BillDetail billDetail = BillDetail.builder()
                 .bill(bill)
                 .productDetail(productDetail)
                 .price(hdBillDetailRequest.getPrice())
-                .quantity(hdBillDetailRequest.getQuanity())
+                .quantity(hdBillDetailRequest.getQuantity())
                 .status(StatusBillDetail.values()[hdBillDetailRequest.getStatus()])
                 .build();
         return hdBillDetailRepository.save(billDetail);
@@ -55,12 +54,12 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).orElseThrow(() -> new RuntimeException("Khong tim thay bill detail"));
 
         Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
-        ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getIdProductDetail()).get();
+        ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getProductDetailId()).get();
 
         billDetail.setBill(bill);
         billDetail.setProductDetail(productDetail);
         billDetail.setPrice(hdBillDetailRequest.getPrice());
-        billDetail.setQuantity(hdBillDetailRequest.getQuanity());
+        billDetail.setQuantity(hdBillDetailRequest.getQuantity());
         billDetail.setStatus(hdBillDetailRequest.getStatus());
 
         return hdBillDetailRepository.save(billDetail);

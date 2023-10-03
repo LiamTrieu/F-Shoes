@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 
 public interface HDBillResponse extends IsIdentified {
 
+    Integer getStt();
+
     String getCode();
 
     String getFullName();

@@ -7,6 +7,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
+    "@mailtop/horizontal-timeline": "^2.1.4",
     "@mui/icons-material": "^5.14.7",
     "@mui/material": "^5.14.7",
     "@mui/x-data-grid": "^6.12.1",
@@ -63,6 +64,10 @@
   },
   "overrides": {
     "@cielblog/react-horizontal-timeline": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@mailtop/horizontal-timeline": {
       "react": "$react",
       "react-dom": "$react-dom"
     }

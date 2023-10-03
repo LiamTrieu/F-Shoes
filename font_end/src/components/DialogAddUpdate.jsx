@@ -6,7 +6,7 @@ export default function DialogAddUpdate({ children, open, setOpen, title, button
   return (
     <Dialog
       fullWidth
-      maxWidth="sm"
+      maxWidth="xs"
       open={open}
       onClose={() => {
         setOpen(false)

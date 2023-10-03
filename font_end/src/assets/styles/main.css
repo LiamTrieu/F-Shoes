@@ -169,3 +169,7 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-button {
   display: none !important;
 }
+
+.MuiMultiSectionDigitalClock-root::-webkit-scrollbar {
+  width: 0px;
+}

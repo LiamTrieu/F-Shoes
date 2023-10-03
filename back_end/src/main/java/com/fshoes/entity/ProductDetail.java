@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "product_detail")
 public class ProductDetail extends PrimaryEntity {
+
     @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
 
