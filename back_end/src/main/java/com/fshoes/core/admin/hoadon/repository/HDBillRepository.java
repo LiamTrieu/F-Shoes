@@ -9,11 +9,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HDBillRepositpory extends BillRepository {
+public interface HDBillRepository extends BillRepository {
     Boolean existsByCode(String code);
 
     @Query(value = """
-            SELECT b.id, b.code, c.full_name as fullName,
+            SELECT ROW_NUMBER() over (ORDER BY b.created_at desc ) as stt,
+            b.id, b.code, c.full_name as fullName,
             c.phone_number as phoneNumber, b.address,
             b.total_money as totalMoney, b.money_reduced as moneyReduced,
             b.money_after as moneyAfter, b.money_ship as moneyShip,

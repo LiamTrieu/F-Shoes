@@ -2,17 +2,22 @@ package com.fshoes.core.admin.hoadon.service.impl;
 
 import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
 import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillHistoryRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDBillUpdateSttRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
-import com.fshoes.core.admin.hoadon.repository.HDBillRepositpory;
+import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
-import com.fshoes.entity.*;
+import com.fshoes.entity.Account;
+import com.fshoes.entity.Bill;
+import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.BillHistory;
+import com.fshoes.entity.Transaction;
+import com.fshoes.entity.Voucher;
 import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.infrastructure.constant.TypeBill;
 import com.fshoes.repository.AccountRepository;
@@ -36,7 +41,7 @@ import java.util.stream.Collectors;
 @Service
 public class HDBillServiceImpl implements HDBillService {
     @Autowired
-    private HDBillRepositpory hdBillRepositpory;
+    private HDBillRepository hdBillRepository;
 
     @Autowired
     private VoucherRepository voucherRepository;
@@ -89,7 +94,7 @@ public class HDBillServiceImpl implements HDBillService {
         }
         Pageable pageable = PageRequest.of(billFilterRequest.getPage() > 0 ? billFilterRequest.getPage() - 1 : billFilterRequest.getPage(), billFilterRequest.getSize());
 
-        return hdBillRepositpory.filterBill(pageable, status, startDate, endDate, type, billFilterRequest.getInputSearch());
+        return hdBillRepository.filterBill(pageable, status, startDate, endDate, type, billFilterRequest.getInputSearch());
     }
 
     //staff create bill - type = 0: tại quầy, 1: qua web
@@ -100,7 +105,7 @@ public class HDBillServiceImpl implements HDBillService {
                 .status(StatusBill.CHO_XAC_NHAN)
                 .type(TypeBill.TAI_QUAY)
                 .build();
-        Bill bill = hdBillRepositpory.save(billCreat);
+        Bill bill = hdBillRepository.save(billCreat);
 
         //thêm bill history khi tạo hoá đơn - trạng thái: chờ xác nhận
         BillHistory billHistory = new BillHistory();
@@ -116,7 +121,7 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public Bill updateBill(String idBill, HDBillRequest hdBillRequest) {
         try {
-            Bill bill = hdBillRepositpory.findById(idBill).orElseThrow(() -> new RuntimeException("khong tim thay bill co id: " + idBill));
+            Bill bill = hdBillRepository.findById(idBill).orElseThrow(() -> new RuntimeException("khong tim thay bill co id: " + idBill));
             if (hdBillRequest.getIdVoucher() == null || !voucherRepository.existsById(hdBillRequest.getIdVoucher())) {
                 bill.setVoucher(null);
             } else {
@@ -145,7 +150,7 @@ public class HDBillServiceImpl implements HDBillService {
             billHistory.setNote(hdBillHistoryRequest.getNote());
             billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
             hdBillHistoryRepository.save(billHistory);
-            return hdBillRepositpory.save(bill);
+            return hdBillRepository.save(bill);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -155,8 +160,8 @@ public class HDBillServiceImpl implements HDBillService {
     @Transactional
     @Override
     public Bill cancelOrder(String idBill, HDBillRequest hdBillRequest) {
-        Bill bill = hdBillRepositpory.findById(idBill).orElse(null);
-        if (hdBillRepositpory.existsById(idBill)) {
+        Bill bill = hdBillRepository.findById(idBill).orElse(null);
+        if (hdBillRepository.existsById(idBill)) {
             try {
                 if (hdBillRequest.getNoteBillHistory().trim().isEmpty()) {
                     if (bill != null) {
@@ -171,7 +176,7 @@ public class HDBillServiceImpl implements HDBillService {
                         billHistory.setNote(hdBillHistoryRequest.getNote());
                         billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
                         hdBillHistoryRepository.save(billHistory);
-                        hdBillRepositpory.save(bill);
+                        hdBillRepository.save(bill);
                     }
                 }
             } catch (Exception exception) {
@@ -187,7 +192,7 @@ public class HDBillServiceImpl implements HDBillService {
     @Transactional
     @Override
     public Bill confirmOrder(String idBill, BillConfirmRequest billConfirmRequest) {
-        Bill bill = hdBillRepositpory.findById(idBill).orElse(null);
+        Bill bill = hdBillRepository.findById(idBill).orElse(null);
 
         if (bill != null && bill.getStatus() == 1) {
 
@@ -197,11 +202,11 @@ public class HDBillServiceImpl implements HDBillService {
             List<BillDetail> newBillDetails = billConfirmRequest.getListHdctReq().stream()
                     .map((hdBillDetailRequest) -> {
                         BigDecimal price = hdBillDetailRequest.getPrice();
-                        int quantity = hdBillDetailRequest.getQuanity();
+                        int quantity = hdBillDetailRequest.getQuantity();
                         BillDetail billDetail = new BillDetail();
                         billDetail.setBill(bill);
                         billDetail.setProductDetail(productDetailRepository.findById(hdBillDetailRequest
-                                .getIdProductDetail()).orElse(null));
+                                .getProductDetailId()).orElse(null));
                         billDetail.setPrice(price);
                         billDetail.setQuantity(quantity);
                         billDetail.setStatus(hdBillDetailRequest.getStatus());
@@ -225,8 +230,8 @@ public class HDBillServiceImpl implements HDBillService {
             bill.setPhoneNumber(billConfirmRequest.getPhoneNumber());
             bill.setConfirmationDate(Calendar.getInstance().getTimeInMillis());
             bill.setTotalMoney(totalMoney);
-            System.out.println(bill);
-            hdBillRepositpory.save(bill);
+            bill.setConfirmationDate(DateUtil.getCurrentTimeNow());
+            hdBillRepository.save(bill);
 
             // Lưu lịch sử hóa đơn
             HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
@@ -244,45 +249,98 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Override
     public HDBillResponse getOne(String id) {
-        return hdBillRepositpory.getBillResponse(id);
+        return hdBillRepository.getBillResponse(id);
     }
 
+    @Transactional
     @Override
-    public Bill updateStatusBill(String idBill, HDBillUpdateSttRequest hdBillUpdateSttRequest) {
-        Bill bill = hdBillRepositpory.findById(idBill).get();
-        bill.setStatus(hdBillUpdateSttRequest.getStatusBill());
+    public Bill updateStatusBill(String idBill, HDBillRequest hdBillRequest) {
+        Bill bill = hdBillRepository.findById(idBill).get();
+        bill.setStatus(hdBillRequest.getStatus());
+        if (hdBillRequest.getStatus() == 3) {
+            bill.setShipDate(DateUtil.getCurrentTimeNow());
+        } else if (hdBillRequest.getStatus() == 7) {
+            bill.setCompleteDate(DateUtil.getCurrentTimeNow());
+        } else {
+            hdBillRepository.save(bill);
+        }
         HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
-                .note(hdBillUpdateSttRequest.getNoteBillHistory())
-                .idStaff(hdBillUpdateSttRequest.getIdStaff())
+                .note(hdBillRequest.getNoteBillHistory())
+                .idStaff(hdBillRequest.getIdStaff())
                 .bill(bill)
                 .build();
         hdBillHistoryService.save(hdBillHistoryRequest);
-        return hdBillRepositpory.save(bill);
+        return hdBillRepository.save(bill);
     }
 
     @Transactional
     @Override
     public Bill confirmPayment(String idBill, HDConfirmPaymentRequest hdConfirmPaymentRequest) {
-        Bill bill = hdBillRepositpory.findById(idBill).get();
-        Account staff = accountRepository.findById(hdConfirmPaymentRequest.getIdStaff()).get();
+        Bill bill = hdBillRepository.findById(idBill).get();
+        Account staff = accountRepository.findById("00e073c2-a11f-41ed-8161-76c0d8bb349c").orElseThrow(null);
         Transaction transaction = new Transaction();
         transaction.setPaymentMethod(hdConfirmPaymentRequest.getPaymentMethod());
         transaction.setType(hdConfirmPaymentRequest.getType());
         transaction.setBill(bill);
         transaction.setStatus(hdConfirmPaymentRequest.getStatus());
-        transaction.setNote(hdConfirmPaymentRequest.getNote());
-        transaction.setTotalMoney(bill.getTotalMoney());
+        transaction.setNote(hdConfirmPaymentRequest.getNoteBillHistory());
+        transaction.setTotalMoney(hdConfirmPaymentRequest.getPaymentAmount());
         transaction.setAccount(staff);
         transactionRepository.save(transaction);
-        BillHistory billHistory = new BillHistory();
-        billHistory.setStatusBill(5);
-        billHistory.setBill(bill);
-        billHistory.setNote(hdConfirmPaymentRequest.getNote());
-        billHistory.setAccount(staff);
-        hdBillHistoryRepository.save(billHistory);
         bill.setStatus(5);
-        return hdBillRepositpory.save(bill);
+        hdBillRepository.save(bill);
+        HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
+                .note(hdConfirmPaymentRequest.getNoteBillHistory())
+                .idStaff(hdConfirmPaymentRequest.getIdStaff())
+                .bill(bill)
+                .build();
+        hdBillHistoryService.save(hdBillHistoryRequest);
+        bill.setStatus(5);
+        return bill;
     }
+
+    @Transactional
+    @Override
+    public Bill updateBillDetailByBill(String idBill, List<HDBillDetailRequest> listHDBillRequest) {
+        Bill bill = hdBillRepository.findById(idBill).orElse(null);
+
+        if (bill != null && (bill.getStatus() < 3 || bill.getStatus() == 6)) {
+
+            // Xóa tất cả chi tiết hóa đơn đã có:
+            hdBillDetailRepository.deleteByBillId(idBill);
+            // Xử lý danh sách chi tiết hóa đơn mới
+            List<BillDetail> newBillDetails = listHDBillRequest.stream()
+                    .map((hdBillDetailRequest) -> {
+                        BigDecimal price = hdBillDetailRequest.getPrice();
+                        int quantity = hdBillDetailRequest.getQuantity();
+                        BillDetail billDetail = new BillDetail();
+                        billDetail.setBill(bill);
+                        billDetail.setProductDetail(productDetailRepository.findById(hdBillDetailRequest
+                                .getProductDetailId()).orElse(null));
+                        billDetail.setPrice(price);
+                        billDetail.setQuantity(quantity);
+                        billDetail.setStatus(hdBillDetailRequest.getStatus());
+                        return billDetail;
+                    }).collect(Collectors.toList());
+
+            BigDecimal totalMoney = BigDecimal.ZERO;
+            for (BillDetail detail : newBillDetails) {
+                totalMoney = totalMoney.add(detail.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
+            }
+            // Lưu danh sách chi tiết hóa đơn mới vào cơ sở dữ liệu
+            hdBillDetailRepository.saveAll(newBillDetails);
+
+            // Cập nhật thông tổng tiền cảu hoá đơn
+            bill.setTotalMoney(totalMoney);
+            BigDecimal moneyAfter = totalMoney.subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
+            bill.setMoneyAfter(moneyAfter);
+
+            return hdBillRepository.save(bill);
+        } else {
+            return null;
+        }
+    }
+
 
     // Phương thức để tạo mã hóa đơn duy nhất
     private String generateUniqueBillCode() {
@@ -291,7 +349,7 @@ public class HDBillServiceImpl implements HDBillService {
         String uniqueCode = baseCode + counter;
 
         // Kiểm tra sự trùng lặp và tăng biến đếm cho đến khi tạo được mã duy nhất
-        while (hdBillRepositpory.existsByCode(uniqueCode)) {
+        while (hdBillRepository.existsByCode(uniqueCode)) {
             counter++;
             uniqueCode = baseCode + counter;
         }

@@ -36,7 +36,7 @@ const AdBillTransaction = (props) => {
           </TableHead>
           <TableBody>
             {listTransaction.map((row, index) => (
-              <TableRow key={'transaction' + row.code} sx={tableRowStyle}>
+              <TableRow key={'transaction' + row.id} sx={tableRowStyle}>
                 <TableCell align="center">
                   {row.totalMoney !== null ? formatCurrency(row.totalMoney) : 0}
                 </TableCell>

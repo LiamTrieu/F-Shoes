@@ -128,6 +128,7 @@ export default function AdBillPage() {
   return (
     <div className="hoa-don">
       <h3>Hoá đơn</h3>
+      {/* chỗ này sửa Stack */}
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={5} style={{ margin: '25px', padding: '8px' }}>
@@ -264,7 +265,7 @@ export default function AdBillPage() {
             {listHoaDon.map((row, index) => (
               <TableRow key={row.code} sx={tableRowStyle}>
                 <TableCell align="center" style={{ width: '5%' }}>
-                  {index + 1}
+                  {row.stt}
                 </TableCell>
                 <TableCell align="center" style={{ width: '8%' }}>
                   {row.code}
