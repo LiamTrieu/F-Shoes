@@ -305,7 +305,7 @@ export default function AdPromotionAdd() {
                   variant="outlined"
                   className="text-field-css"
                   size="small"
-                  sx={{ width: '100%' }}
+                  sx={{ width: '100%', borderRadius: '20px' }}
                   name="name"
                   onChange={(e) => handleInputChange(e)}
                 />
@@ -362,7 +362,7 @@ export default function AdPromotionAdd() {
                       size="large"
                       sx={{ width: '100%' }}
                       name="timeEnd"
-                      className="timeStartAdd "
+                      className="dateTimePro"
                       onChange={(e) => {
                         setAddPromotionRe({
                           ...addPromotionRe,
@@ -375,8 +375,8 @@ export default function AdPromotionAdd() {
                 <span className="error">{errorTimeEnd}</span>
               </div>
               <Button
-                variant="contained"
-                color="success"
+                variant="outlined"
+                color="cam"
                 sx={{ marginBottom: '0px', marginTop: '30px' }}
                 onClick={() => onSubmit(addPromotionRe, selectedRows)}>
                 Tạo Mới

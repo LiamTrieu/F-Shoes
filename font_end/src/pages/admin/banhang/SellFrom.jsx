@@ -34,6 +34,7 @@ import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 import voucherApi from '../../../api/admin/voucher/VoucherApi'
 import { toast } from 'react-toastify'
+import Empty from '../../../components/Empty'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -68,6 +69,7 @@ export default function SellFrom({ idCart }) {
   const [listProductCart, setListProductCart] = useState([])
   const [listKhachHang, setlistKhachHang] = useState([])
   const [listVoucher, setListVoucher] = useState([])
+  const [listProductDetailCart, setListProductDetailCart] = useState([])
 
   const [codeVoucher, setCodeVoucher] = useState('')
   const [idFillVoucher, setIdFIllVoucher] = useState('')
@@ -76,6 +78,15 @@ export default function SellFrom({ idCart }) {
 
   const openAddProductModal = () => {
     setShowModal(true)
+  }
+  useEffect(() => {
+    fectchProductCartSell(idCart)
+  }, [idCart])
+
+  const fectchProductCartSell = (id) => {
+    sellApi.getProductDetailCart(id).then((response) => {
+      setListProductDetailCart(response.data.data)
+    })
   }
 
   useEffect(() => {
@@ -298,6 +309,23 @@ export default function SellFrom({ idCart }) {
       })
   }
 
+  const totalSum = listProductDetailCart.reduce((sum, cart) => {
+    const productTotalPrice = calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
+    return sum + productTotalPrice
+  }, 0)
+
+  function handleAddToCart(newCartItem) {
+    const existingCartItemIndex = listProductDetailCart.findIndex(
+      (cartItem) => cartItem.id === newCartItem.id,
+    )
+
+    if (existingCartItemIndex !== -1) {
+      listProductDetailCart[existingCartItemIndex].quantity += 1
+    } else {
+      listProductDetailCart.push(newCartItem)
+    }
+  }
+
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -316,125 +344,138 @@ export default function SellFrom({ idCart }) {
           </Button>
         </Box>
 
-        <ModelSell idCart={idCart} open={showModal} setOPen={setShowModal} />
+        <ModelSell
+          load={fectchProductCartSell}
+          idCart={idCart}
+          open={showModal}
+          setOPen={setShowModal}
+        />
 
         <Box>
           <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>
-            {listProductCart.map((cart) => (
-              <Table>
-                <TableRow sx={{ border: 0 }} key={cart.id}>
-                  <TableCell sx={{ px: 0 }} width={'5%'}>
-                    <IconButton color="error">
-                      <CloseIcon />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }} width={'70%'}>
-                    <Box
-                      component="span"
-                      display={{ sm: 'inline', xs: 'none' }}
-                      style={{ position: 'relative' }}>
-                      <img
-                        alt="error"
-                        src={cart.url}
+            {listProductDetailCart.length > 0 ? (
+              listProductDetailCart.map((cart) => (
+                <Table>
+                  <TableRow sx={{ border: 0 }} key={cart.id}>
+                    <TableCell sx={{ px: 0 }} width={'5%'}>
+                      <IconButton color="error">
+                        <CloseIcon />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }} width={'70%'}>
+                      <Box
+                        component="span"
+                        display={{ sm: 'inline', xs: 'none' }}
+                        style={{ position: 'relative' }}>
+                        <img
+                          alt="error"
+                          src={cart.image}
+                          style={{
+                            minHeight: '200px',
+                            height: '200px',
+                            width: '200px',
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '-530%',
+                            right: '0',
+                            backgroundColor:
+                              cart.value >= 1 && cart.value <= 50
+                                ? '#66CC00'
+                                : cart.value >= 51 && cart.value <= 80
+                                ? '#FF9900'
+                                : '#FF0000',
+                            color: 'white',
+                            padding: '6px 5px',
+                            borderRadius: '0 0 0 10px',
+                          }}
+                          className="discount">
+                          {cart.value}% OFF
+                        </div>
+                      </Box>
+                      <span
                         style={{
-                          minHeight: '200px',
-                          height: '200px',
-                          width: '200px',
+                          display: 'inline-block',
                           verticalAlign: 'middle',
-                        }}
-                      />
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '-530%',
-                          right: '0',
-                          backgroundColor:
-                            cart.value >= 1 && cart.value <= 50
-                              ? '#66CC00'
-                              : cart.value >= 51 && cart.value <= 80
-                              ? '#FF9900'
-                              : '#FF0000',
-                          color: 'white',
-                          padding: '6px 5px',
-                          borderRadius: '0 0 0 10px',
-                        }}
-                        className="discount">
-                        {cart.value}% OFF
-                      </div>
-                    </Box>
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        verticalAlign: 'middle',
-                        marginLeft: '10px',
-                        maxWidth: '70%',
-                      }}>
-                      <p style={{ margin: 0 }}>
-                        <b>{cart.name}</b>
-                      </p>
-                      <p style={{ color: 'red', margin: '5px 0' }}>
-                        {/* <b>{cart.price}.000&#8363;</b> */}
-                        {cart.promotion ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
-                          <div>
-                            <div className="promotion-price">{`${formatPrice(cart.price)}`}</div>{' '}
-                            {/* Hiển thị giá gốc */}
+                          marginLeft: '10px',
+                          maxWidth: '70%',
+                        }}>
+                        <p style={{ margin: 0 }}>
+                          <b>{cart.nameProduct}</b>
+                        </p>
+                        <p style={{ color: 'red', margin: '5px 0' }}>
+                          {/* <b>{cart.price}.000&#8363;</b> */}
+                          {cart.promotion ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
                             <div>
-                              <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                {`${formatPrice(calculateDiscountedPrice(cart.price, cart.value))}`}
-                              </span>{' '}
-                              {/* Hiển thị giá sau khuyến mãi */}
+                              <div className="promotion-price">{`${formatPrice(cart.price)}đ`}</div>{' '}
+                              {/* Hiển thị giá gốc */}
+                              <div>
+                                <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                  {`${formatPrice(
+                                    calculateDiscountedPrice(cart.price, cart.value),
+                                  )}`}
+                                </span>{' '}
+                                {/* Hiển thị giá sau khuyến mãi */}
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          // Nếu không có khuyến mãi, chỉ hiển thị giá gốc
-                          <span>{`${cart.price}.000₫`}</span>
-                        )}
-                      </p>
-                      <p style={{ margin: 0 }}>size:{cart.size}</p>
-                    </span>
-                  </TableCell>
-                  <TableCell sx={{ px: 0 }} width={'5%'}>
-                    <Box
-                      width={'65px'}
-                      display="flex"
-                      alignItems="center"
-                      sx={{
-                        border: '1px solid gray',
-                        borderRadius: '20px',
-                      }}
-                      p={'3px'}>
-                      <IconButton sx={{ p: 0 }} size="small">
-                        <RemoveIcon fontSize="1px" />
-                      </IconButton>
-                      <TextField
-                        value="10"
-                        inputProps={{ min: 1 }}
-                        size="small"
+                          ) : (
+                            // Nếu không có khuyến mãi, chỉ hiển thị giá gốc
+                            <span>{`${cart.price}₫`}</span>
+                          )}
+                        </p>
+                        <p style={{ margin: 0 }}>size:{cart.size}</p>
+                      </span>
+                    </TableCell>
+                    <TableCell sx={{ px: 0 }} width={'5%'}>
+                      <Box
+                        width={'65px'}
+                        display="flex"
+                        alignItems="center"
                         sx={{
-                          width: '30px ',
-                          '& input': { p: 0, textAlign: 'center' },
-                          '& fieldset': {
-                            border: 'none',
-                          },
+                          border: '1px solid gray',
+                          borderRadius: '20px',
                         }}
-                      />
-                      <IconButton size="small" sx={{ p: 0 }}>
-                        <AddIcon fontSize="1px" />
-                      </IconButton>
-                    </Box>
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      color: 'red',
-                      fontWeight: 'bold',
-                    }}
-                    width={'20%'}
-                    align="right">
-                    {formatPrice(calculateDiscountedPrice(cart.price, cart.value) * cart.amount)}
-                  </TableCell>
-                </TableRow>
-              </Table>
-            ))}
+                        p={'3px'}>
+                        <IconButton sx={{ p: 0 }} size="small">
+                          <RemoveIcon fontSize="1px" />
+                        </IconButton>
+                        <TextField
+                          value={cart.quantity}
+                          inputProps={{ min: 1 }}
+                          size="small"
+                          sx={{
+                            width: '30px ',
+                            '& input': { p: 0, textAlign: 'center' },
+                            '& fieldset': {
+                              border: 'none',
+                            },
+                          }}
+                        />
+                        <IconButton size="small" sx={{ p: 0 }}>
+                          <AddIcon fontSize="1px" />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        color: 'red',
+                        fontWeight: 'bold',
+                      }}
+                      width={'20%'}
+                      align="right">
+                      {formatPrice(
+                        calculateDiscountedPrice(cart.price, cart.value) * cart.quantity,
+                      )}
+                    </TableCell>
+                  </TableRow>
+                </Table>
+              ))
+            ) : (
+              <Empty />
+            )}
           </Box>
           <Stack
             m={2}
@@ -445,7 +486,7 @@ export default function SellFrom({ idCart }) {
             <Typography fontWeight={'bold'}>Tổng tiền</Typography>
             <Box>
               <Typography fontWeight={'bold'} style={{ color: 'red' }}>
-                100.000.000₫
+                {formatPrice(totalSum)}
               </Typography>
             </Box>
           </Stack>
@@ -941,7 +982,7 @@ export default function SellFrom({ idCart }) {
             <Box sx={{ m: 1, ml: 3, mr: 3 }}>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Tiền hàng</Typography>
-                <Typography>3,600,000₫</Typography>
+                <Typography>{formatPrice(totalSum)}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Phí vận chuyển</Typography>

@@ -6,6 +6,12 @@ import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.model.response.CartDetailResponse;
 import com.fshoes.core.admin.sell.model.response.GetALlCustomerResponse;
 import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
+import com.fshoes.core.admin.sell.model.response.GetAmountProductResponse;
+import com.fshoes.core.admin.sell.model.response.GetColorResponse;
+import com.fshoes.core.admin.sell.model.response.GetProductDetailCartSellResponse;
+import com.fshoes.core.admin.sell.model.response.GetSizeResponse;
+import com.fshoes.core.admin.sell.repository.AdminCartDetailRepositoty;
+import com.fshoes.core.admin.sell.repository.AdminProductDetailRepository;
 import com.fshoes.core.admin.sell.repository.AdminSellGetCustomerRepository;
 import com.fshoes.core.admin.sell.repository.AdminSellGetProductRepository;
 import com.fshoes.core.admin.sell.repository.AdminCreateCartRepository;
@@ -38,11 +44,19 @@ public class AdminSellServiceImpl implements AdminSellService {
     private AdminCreateCartRepository cartRepository;
 
     @Autowired
-    private CartDetailRepository cartDetailRepository;
+    private AdminCartDetailRepositoty cartDetailRepository;
+
+    @Autowired
+    private AdminProductDetailRepository getProduct;
     @Override
     public PageReponse<GetALlCustomerResponse> getAllCustomer(AdCustomerRequest request) {
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
         return new PageReponse<>(getCustomerRepository.FindKhachHang(pageable, request));
+    }
+
+    @Override
+    public List<GetProductDetailCartSellResponse> getProductDetailCartSell(String id) {
+        return getProduct.getlistProductCarlSell(id);
     }
 
     @Override
@@ -62,13 +76,28 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Override
     public CartDetail addCartDetail(CreateCartRequest request) {
-        ProductDetail productDetail = productDetailRepository.findById(request.getProductDetailId()).orElse(null);
-        Cart cart = cartRepository.findById(request.getCartId()).orElse(null);
-        CartDetail cartDetail = new CartDetail();
-        cartDetail.setQuantity(request.getQuantity());
-        cartDetail.setProductDetail(productDetail);
-        cartDetail.setCart(cart);
-        return cartDetailRepository.save(cartDetail);
+        CartDetail existingCartDetail = cartDetailRepository.findByProductIdAndCartId(
+                request.getProductDetailId(),
+                request.getCartId()
+        );
+
+        if(existingCartDetail != null){
+            int newQuantity = existingCartDetail.getQuantity() + request.getQuantity();
+            existingCartDetail.setQuantity(newQuantity);
+            return cartDetailRepository.save(existingCartDetail);
+        }else {
+            ProductDetail productDetail = productDetailRepository.findById(request.getProductDetailId()).orElse(null);
+            Cart cart = cartRepository.findById(request.getCartId()).orElse(null);
+            CartDetail cartDetail = new CartDetail();
+            cartDetail.setQuantity(request.getQuantity());
+            cartDetail.setProductDetail(productDetail);
+            cartDetail.setCart(cart);
+            return cartDetailRepository.save(cartDetail);
+        }
+
+
+
+
     }
 
     @Override
@@ -79,6 +108,21 @@ public class AdminSellServiceImpl implements AdminSellService {
     @Override
     public List<CartDetailResponse> getCartDetail() {
         return null;
+    }
+
+    @Override
+    public List<GetSizeResponse> getListSize() {
+        return getProduct.getlistSize();
+    }
+
+    @Override
+    public List<GetColorResponse> getListColor() {
+        return getProduct.getlistColor();
+    }
+
+    @Override
+    public GetAmountProductResponse getAmount(String id) {
+        return getProduct.getAmount(id);
     }
 
     @Override

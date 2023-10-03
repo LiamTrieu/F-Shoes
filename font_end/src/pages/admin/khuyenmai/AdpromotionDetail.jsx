@@ -303,6 +303,7 @@ export default function AdPromotionDetail() {
                 <TextField
                   id="outlined-basic"
                   variant="outlined"
+                  className="text-field-css"
                   size="small"
                   sx={{ width: '100%' }}
                   name="name"
@@ -318,6 +319,7 @@ export default function AdPromotionDetail() {
                 <TextField
                   id="outlined-basic"
                   variant="outlined"
+                  className="text-field-css"
                   size="small"
                   type="number"
                   sx={{ width: '100%' }}
@@ -378,11 +380,11 @@ export default function AdPromotionDetail() {
                 <span className="error">{errorTimeEnd}</span>
               </div>
               <Button
-                variant="contained"
-                color="success"
+                variant="outlined"
+                color="cam"
                 sx={{ marginTop: '30px' }}
                 onClick={() => onSubmit(updatePromotion, id)}>
-                Update
+                Chỉnh sửa
               </Button>
             </Grid>
 

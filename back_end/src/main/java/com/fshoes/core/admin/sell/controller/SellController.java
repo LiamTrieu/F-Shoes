@@ -20,6 +20,26 @@ public class SellController {
         return new ObjectRespone(getSell.getAllProduct(request));
     }
 
+    @GetMapping("/get-size")
+    public ObjectRespone getAllSize() {
+        return new ObjectRespone(getSell.getListSize());
+    }
+    @GetMapping("/get-color")
+    public ObjectRespone getAllColor() {
+        return new ObjectRespone(getSell.getListColor());
+    }
+
+    @GetMapping("/get-amount/{id}")
+    public ObjectRespone getAmount(@PathVariable String id) {
+        return new ObjectRespone(getSell.getAmount(id));
+    }
+
+    @GetMapping("/get-product-detail-cart/{id}")
+    public ObjectRespone getAllProductDetailCart(@PathVariable String id) {
+        return new ObjectRespone(getSell.getProductDetailCartSell(id));
+    }
+
+
     @PostMapping("/create-cart")
     public ObjectRespone createBill() {
         return new ObjectRespone(getSell.createCart());

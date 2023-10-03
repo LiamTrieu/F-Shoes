@@ -3,3 +3,58 @@
   opacity: 0.6;
   color: black;
 }
+
+.size .MuiRadio-root {
+  display: none !important; /* Ẩn hình tròn mặc định */
+}
+
+.size .MuiRadio-root + span {
+  display: inline-flex; /* Để ô radio không bị trôi xuống dưới dòng chữ nhãn */
+  margin-right: 10px; /* Khoảng cách giữa các ô radio */
+  border: 1px solid #ccc; /* Đường viền */
+  border-radius: 4px; /* Góc bo tròn để làm cho ô radio có hình dạng chữ nhật */
+  width: 55px; /* Điều chỉnh chiều rộng của ô radio */
+  height: 30px; /* Điều chỉnh chiều cao của ô radio */
+  align-items: center; /* Căn chỉnh ô radio theo trục dọc */
+  justify-content: center; /* Căn chỉnh ô radio theo trục ngang */
+}
+
+/* CSS để làm cho ô radio trông đẹp hơn khi được chọn */
+.size .MuiRadio-root:checked + span {
+  background-color: #2196f3; /* Màu nền khi ô radio được chọn */
+  color: #fff; /* Màu chữ khi ô radio được chọn */
+  border: 1px solid #2196f3; /* Đường viền khi ô radio được chọn */
+}
+
+/* CSS để làm cho ô radio trông đẹp hơn khi bị vô hiệu hóa */
+.size .MuiRadio-root:disabled + span {
+  opacity: 0.5; /* Độ mờ khi ô radio bị vô hiệu hóa */
+}
+
+.color .MuiRadio-root {
+  display: none !important; /* Ẩn hình tròn mặc định */
+}
+
+.color .MuiRadio-root + span {
+  display: inline-flex; /* Để ô radio không bị trôi xuống dưới dòng chữ nhãn */
+  margin-right: 10px; /* Khoảng cách giữa các ô radio */
+  border: 1px solid #ccc; /* Đường viền */
+  border-radius: 4px; /* Góc bo tròn để làm cho ô radio có hình dạng chữ nhật */
+  width: 90px; /* Điều chỉnh chiều rộng của ô radio */
+  height: 30px; /* Điều chỉnh chiều cao của ô radio */
+  align-items: center; /* Căn chỉnh ô radio theo trục dọc */
+  justify-content: center;
+  margin-bottom: 15px; /* Căn chỉnh ô radio theo trục ngang */
+}
+
+/* CSS để làm cho ô radio trông đẹp hơn khi được chọn */
+.color .MuiRadio-root:checked + span {
+  background-color: #2196f3; /* Màu nền khi ô radio được chọn */
+  color: #fff; /* Màu chữ khi ô radio được chọn */
+  border: 1px solid #2196f3; /* Đường viền khi ô radio được chọn */
+}
+
+/* CSS để làm cho ô radio trông đẹp hơn khi bị vô hiệu hóa */
+.color .MuiRadio-root:disabled + span {
+  opacity: 0.5; /* Độ mờ khi ô radio bị vô hiệu hóa */
+}
