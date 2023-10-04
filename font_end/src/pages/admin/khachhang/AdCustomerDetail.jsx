@@ -537,7 +537,6 @@ export default function AdCustomerDetail() {
     })
   }
 
-  //Cập nhật địa chỉ mặc định
   const handleUpdateType = (idDC) => {
     DiaChiApi.updateStatus(idDC, id).then(() => {
       loadDiaChi(initPage - 1, id)
