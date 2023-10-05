@@ -1,7 +1,6 @@
 package com.fshoes.core.admin.voucher.service.impl;
 
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
-import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
 import com.fshoes.core.admin.voucher.model.request.AdCustomerVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
@@ -24,7 +23,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -76,16 +74,17 @@ public class AdVoucherServiceImpl implements AdVoucherService {
         try {
             Voucher voucher = voucherRequest.newVoucher(new Voucher());
             adVoucherRepository.save(voucher);
-            List<Account> accountList = khachHangRepository.findAll();
+//            List<Account> accountList = khachHangRepository.findAll();
             List<CustomerVoucher> customerVoucherList = new ArrayList<>();
             if (voucherRequest.getType() == 0) {
-                for (Account account : accountList) {
-                    AdCustomerVoucherRequest adCustomerVoucherRequest = new AdCustomerVoucherRequest();
-                    adCustomerVoucherRequest.setVoucher(voucher);
-                    adCustomerVoucherRequest.setAccount(account);
-                    CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
-                    customerVoucherList.add(customerVoucher);
-                }
+//                for (Account account : accountList) {
+//                    AdCustomerVoucherRequest adCustomerVoucherRequest = new AdCustomerVoucherRequest();
+//                    adCustomerVoucherRequest.setVoucher(voucher);
+//                    adCustomerVoucherRequest.setAccount(account);
+//                    CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
+//                    customerVoucherList.add(customerVoucher);
+//                }
+                return voucher;
             } else {
                 for (String idCustomer : voucherRequest.getListIdCustomer()) {
                     Account customer = khachHangRepository.findById(idCustomer).get();
@@ -94,20 +93,28 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                     adCustomerVoucherRequest.setAccount(customer);
                     CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
                     customerVoucherList.add(customerVoucher);
+
+                    String[] toMail = {customer.getEmail()};
+                    Email email = new Email();
+                    email.setBody("<b style=\"text-align: center;\">Hạn sử dụng: </b>" + DateUtil.converDateTimeString(voucher.getStartDate()) + " ---> " + DateUtil.converDateTimeString(voucher.getEndDate()) + "<br/>");
+                    email.setToEmail(toMail);
+                    email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
+                    email.setTitleEmail("<b style=\"text-align: center;\">Bạn đã nhận được khuyễn mãi (voucher): </b><span>" + voucher.getName() + "</span>");
+                    emailSender.sendEmail(email);
                 }
             }
             adCustomerVoucherRepository.saveAll(customerVoucherList);
-            for (String idCustomer : voucherRequest.getListIdCustomer()) {
-                Account customer = khachHangRepository.findById(idCustomer).get();
-                String[] toMail = {customer.getEmail()};
-                Email email = new Email();
-                email.setBody("<b style=\"text-align: center;\">Bạn đã nhận được khuyễn mãi (voucher): </b><span>" + voucher.getName() + "</span><br/>" +
-                        "<b style=\"text-align: center;\">Hạn sử dụng: </b><span>" + DateUtil.converDateTimeString(voucher.getStartDate()) + " ---> " + DateUtil.converDateTimeString(voucher.getEndDate()) + "</span><br/>");
-                email.setToEmail(toMail);
-                email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
-                email.setTitleEmail("");
-                emailSender.sendEmail(email);
-            }
+//            for (String idCustomer : voucherRequest.getListIdCustomer()) {
+//                Account customer = khachHangRepository.findById(idCustomer).get();
+//                String[] toMail = {customer.getEmail()};
+//                Email email = new Email();
+//                email.setBody("<b style=\"text-align: center;\">Bạn đã nhận được khuyễn mãi (voucher): </b><span>" + voucher.getName() + "</span><br/>" +
+//                        "<b style=\"text-align: center;\">Hạn sử dụng: </b><span>" + DateUtil.converDateTimeString(voucher.getStartDate()) + " ---> " + DateUtil.converDateTimeString(voucher.getEndDate()) + "</span><br/>");
+//                email.setToEmail(toMail);
+//                email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
+//                email.setTitleEmail("");
+//                emailSender.sendEmail(email);
+//            }
             return voucher;
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,7 +124,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
 
     @Override
     @Transactional
-    public Boolean updateVoucher(String id, AdVoucherRequest voucherRequest) throws ParseException {
+    public Voucher updateVoucher(String id, AdVoucherRequest voucherRequest) throws ParseException {
         Optional<Voucher> optionalVoucher = adVoucherRepository.findById(id);
         List<Account> accountList = khachHangRepository.findAll();
         List<CustomerVoucher> customerVouchers = adCustomerVoucherRepository.getListCustomerVoucherByIdVoucher(id);
@@ -129,13 +136,14 @@ public class AdVoucherServiceImpl implements AdVoucherService {
             Voucher voucherUpdate = adVoucherRepository.save(voucherRequest.newVoucher(voucher));
             List<CustomerVoucher> customerVoucherList = new ArrayList<>();
             if (voucherRequest.getType() == 0) {
-                for (Account account : accountList) {
-                    AdCustomerVoucherRequest adCustomerVoucherRequest = new AdCustomerVoucherRequest();
-                    adCustomerVoucherRequest.setVoucher(voucherUpdate);
-                    adCustomerVoucherRequest.setAccount(account);
-                    CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
-                    customerVoucherList.add(customerVoucher);
-                }
+//                for (Account account : accountList) {
+//                    AdCustomerVoucherRequest adCustomerVoucherRequest = new AdCustomerVoucherRequest();
+//                    adCustomerVoucherRequest.setVoucher(voucherUpdate);
+//                    adCustomerVoucherRequest.setAccount(account);
+//                    CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
+//                    customerVoucherList.add(customerVoucher);
+//                }
+                return voucherUpdate;
             } else {
                 for (String idCustomer : voucherRequest.getListIdCustomer()) {
                     Account customer = khachHangRepository.findById(idCustomer).get();
@@ -144,26 +152,23 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                     adCustomerVoucherRequest.setAccount(customer);
                     CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
                     customerVoucherList.add(customerVoucher);
+
+                    String[] toMail = {customer.getEmail()};
+                    Email email = new Email();
+                    email.setBody("<b style=\"text-align: center;\">Hạn sử dụng: </b>" + DateUtil.converDateTimeString(voucher.getStartDate()) + " ---> " + DateUtil.converDateTimeString(voucher.getEndDate()) + "<br/>");
+                    email.setToEmail(toMail);
+                    email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
+                    email.setTitleEmail("<b style=\"text-align: center;\">Bạn đã nhận được khuyễn mãi (voucher): </b><span>" + voucher.getName() + "</span>");
+                    emailSender.sendEmail(email);
                 }
             }
             adCustomerVoucherRepository.saveAll(customerVoucherList);
-            for (String idCustomer : voucherRequest.getListIdCustomer()) {
-                Account customer = khachHangRepository.findById(idCustomer).get();
-                String[] toMail = {customer.getEmail()};
-                Email email = new Email();
-                email.setBody("<b style=\"text-align: center;\">Bạn đã nhận được khuyễn mãi (voucher): </b><span>" + voucher.getName() + "</span><br/>" +
-                        "<b style=\"text-align: center;\">Hạn sử dụng: </b><span>" + DateUtil.converDateTimeString(voucher.getStartDate()) + " ---> " + DateUtil.converDateTimeString(voucher.getEndDate()) + "</span><br/>");
-                email.setToEmail(toMail);
-                email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
-                email.setTitleEmail("");
-                emailSender.sendEmail(email);
-            }
             List<Voucher> listVoucher = new ArrayList<>();
             listVoucher.add(voucherUpdate);
             messagingTemplate.convertAndSend("/topic/voucherUpdates", listVoucher);
-            return true;
+            return voucherUpdate;
         } else {
-            return false;
+            return null;
         }
     }
 
@@ -207,7 +212,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
         return adVoucherRepository.pageSearchVoucher(pageable, voucherSearch);
     }
 
-//    @Scheduled(cron = "0 * * * * ?")
+    //    @Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void cornJobCheckVoucher() {
         boolean flag = true;

@@ -69,7 +69,6 @@ export default function SellFrom({ idCart }) {
   const [listKhachHang, setlistKhachHang] = useState([])
   const [listVoucher, setListVoucher] = useState([])
 
-  const [codeVoucher, setCodeVoucher] = useState('')
   const [idFillVoucher, setIdFIllVoucher] = useState('')
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
@@ -77,13 +76,6 @@ export default function SellFrom({ idCart }) {
   const openAddProductModal = () => {
     setShowModal(true)
   }
-
-  useEffect(() => {
-    fecthDataCustomer()
-    fecthDataProductCart()
-    fecthDataVoucher(idFillVoucher)
-    loadTinh()
-  }, [idFillVoucher])
 
   const fecthDataProductCart = () => {
     sellApi.getAllProductCart().then((response) => {
@@ -96,17 +88,30 @@ export default function SellFrom({ idCart }) {
       setlistKhachHang(response.data.data.data)
     })
   }
-  const fecthDataVoucher = (idCustomer) => {
-    if (idCustomer !== '') {
-      voucherApi.getAllVoucherByIdCustomer(idCustomer).then((response) => {
-        setListVoucher(response.data.data)
-      })
-    } else {
-      voucherApi.getAllVoucherBystatus().then((response) => {
-        setListVoucher(response.data.data)
-      })
-    }
+  const fecthDataVoucher = () => {
+    voucherApi.getAllVoucherBystatus().then((response) => {
+      setListVoucher(response.data.data)
+    })
   }
+
+  useEffect(() => {
+    fecthDataCustomer()
+    fecthDataProductCart()
+    fecthDataVoucher()
+    loadTinh()
+
+    const fecthDataVoucherByIdCustomer = () => {
+      if (idFillVoucher !== '') {
+        voucherApi.getAllVoucherByIdCustomer(idFillVoucher).then((response) => {
+          const newVouchers = response.data.data
+          setListVoucher((prevVouchers) => [...prevVouchers, ...newVouchers])
+        })
+      }
+    }
+    if (idFillVoucher !== '') {
+      fecthDataVoucherByIdCustomer()
+    }
+  }, [idFillVoucher])
 
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     // originalPrice là giá gốc của sản phẩm, discountPercentage là phần trăm giảm giá
@@ -289,7 +294,6 @@ export default function SellFrom({ idCart }) {
       .getOneVoucherById(idVoucher)
       .then((response) => {
         setVoucher(response.data.data)
-        setCodeVoucher(response.data.data.code)
       })
       .catch(() => {
         toast.error(`Không tồn tại khuyến mãi với id : ${idVoucher}`, {
@@ -805,7 +809,7 @@ export default function SellFrom({ idCart }) {
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
             <Box sx={{ m: 1, ml: 3 }}>
-              <TextField label="Mã giảm giá" value={codeVoucher} size="small" />
+              <TextField label="Mã giảm giá" value={voucher?.code} size="small" disabled />
               <Button
                 sx={{ py: '6.7px', ml: 1 }}
                 variant="outlined"
@@ -849,7 +853,7 @@ export default function SellFrom({ idCart }) {
                         }}
                         size="small"
                         variant="outlined"
-                        placeholder="Tìm khách hàng"
+                        placeholder="Tìm khuyến mãi"
                       />
                       <Button sx={{ ml: 2 }} variant="contained">
                         Tìm kiếm
@@ -866,7 +870,7 @@ export default function SellFrom({ idCart }) {
                     <Table className="tableCss mt-5">
                       <TableHead>
                         <TableRow>
-                          <TableCell align="center" width={'7%'}>
+                          <TableCell align="center" width={'5%'}>
                             STT
                           </TableCell>
                           <TableCell align="center" width={'25%'}>
@@ -903,7 +907,7 @@ export default function SellFrom({ idCart }) {
                           <TableRow
                             key={row.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                            <TableCell align="center">{}</TableCell>
+                            <TableCell align="center">{row.stt}</TableCell>
                             <TableCell align="center">{row.code}</TableCell>
                             <TableCell align="center">{row.name}</TableCell>
                             <TableCell align="center">{row.value}</TableCell>
