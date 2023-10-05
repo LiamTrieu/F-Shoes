@@ -2,7 +2,7 @@ package com.fshoes.core.admin.sell.model.response;
 
 import com.fshoes.entity.base.IsIdentified;
 
-public interface GetProductDetailCartSellResponse extends IsIdentified {
+public interface GetProductDetailBillSellResponse extends IsIdentified {
 
     String getNameProduct();
 
