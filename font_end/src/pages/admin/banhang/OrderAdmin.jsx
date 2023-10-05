@@ -7,27 +7,30 @@ import sellApi from '../../../api/admin/sell/SellApi'
 import Empty from '../../../components/Empty'
 import { toast } from 'react-toastify'
 export default function OrderAdmin() {
-  const [listCart, setlistCart] = useState([])
-  const [selectCart, setSelectCart] = useState('')
+  const [listBill, setlistBill] = useState([])
+  const [selectBill, setSelectBill] = useState('')
 
   const handleAddSellClick = async () => {
-    if (listCart.length === 5) {
+    if (listBill.length === 5) {
       toast.warning('Tối đa 5 hóa đơn', { position: toast.POSITION.TOP_CENTER })
       return
     }
-    sellApi.createCart().then((res) => {
+    sellApi.createBill().then((res) => {
       if (res.data.success) {
-        setlistCart([...listCart, res.data.data])
-        setSelectCart(res.data.data.id)
+        setlistBill([...listBill, res.data.data])
+        setSelectBill(res.data.data.id)
       }
     })
   }
 
   function deleteSellClick(id) {
-    sellApi.deleteCart(id).then((res) => {
+    sellApi.deleteBill(id).then((res) => {
       if (res.data.success) {
-        setSelectCart('')
-        setlistCart(listCart.filter((item) => item.id !== id))
+        const updatedListBill = listBill.filter((item) => item.id !== id)
+        setlistBill(updatedListBill)
+        if (selectBill === id) {
+          setSelectBill('')
+        }
       }
     })
   }
@@ -58,16 +61,16 @@ export default function OrderAdmin() {
         </Box>
       </Stack>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }} mb={2}>
-        <Tabs value={selectCart}>
-          {listCart.length <= 0 ? (
+        <Tabs value={selectBill}>
+          {listBill.length <= 0 ? (
             <Empty />
           ) : (
-            listCart.map((cart, index) => (
+            listBill.map((Bill, index) => (
               <Tab
-                key={cart.id}
-                value={cart.id}
+                key={Bill.id}
+                value={Bill.id}
                 onClick={() => {
-                  setSelectCart(cart.id)
+                  setSelectBill(Bill.id)
                 }}
                 style={{
                   padding: 0,
@@ -80,7 +83,7 @@ export default function OrderAdmin() {
                     Đơn hàng {index + 1}
                     <span
                       onClick={() => {
-                        deleteSellClick(cart.id)
+                        deleteSellClick(Bill.id)
                       }}>
                       <HighlightOffIcon style={{ paddingLeft: 3 }} color="error" fontSize="small" />
                     </span>
@@ -91,7 +94,7 @@ export default function OrderAdmin() {
           )}
         </Tabs>
       </Box>
-      {selectCart !== '' && <SellFrom idCart={selectCart} />}
+      {selectBill !== '' && <SellFrom idBill={selectBill} />}
     </>
   )
 }

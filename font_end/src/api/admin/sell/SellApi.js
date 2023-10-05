@@ -16,17 +16,35 @@ const sellApi = {
     return axiosClient.get(urlGetAll)
   },
 
-  addCartDetail: (cartDetail) => {
+  addBillDetail: (billDetail) => {
     const urlGetAll = `/sell/add-product-sell`
-    return axiosClient.post(urlGetAll, cartDetail)
+    return axiosClient.post(urlGetAll, billDetail)
   },
-  createCart: () => {
-    const url = `/sell/create-cart`
+  createBill: () => {
+    const url = `/sell/create-bill`
     return axiosClient.post(url)
   },
-  deleteCart: (id) => {
-    const url = `/sell/delete-cart/${id}`
+  deleteBill: (id) => {
+    const url = `/sell/delete-bill/${id}`
     return axiosClient.delete(url)
+  },
+
+  getProductDetailBill: (id) => {
+    const url = `/sell/get-product-detail-bill/${id}`
+    return axiosClient.get(url)
+  },
+
+  getSize: () => {
+    const url = `/sell/get-size`
+    return axiosClient.get(url)
+  },
+  getColor: () => {
+    const url = `/sell/get-color`
+    return axiosClient.get(url)
+  },
+  getAount: (id) => {
+    const url = `/sell/get-amount/${id}`
+    return axiosClient.get(url)
   },
 }
 export default sellApi

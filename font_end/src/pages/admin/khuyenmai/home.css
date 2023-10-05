@@ -8,21 +8,19 @@
 }
 
 .promotion .css-1wexrzr-MuiInputBase-root-MuiOutlinedInput-root {
-  margin-top: 20px !important;
+  border-radius: 8px !important;
 }
-/* .MuiStack-root {
-  padding-top: 30px !important;
-} */
+
+.promotionAdd .css-1wexrzr-MuiInputBase-root-MuiOutlinedInput-root {
+  border-radius: 8px !important;
+}
+.promotionUpdate .css-1wexrzr-MuiInputBase-root-MuiOutlinedInput-root {
+  border-radius: 8px !important;
+}
 
 .promotion .css-a643pv-MuiStack-root {
   padding-top: 20px !important;
 }
-/* .promotionAdd .css-a643pv-MuiStack-root {
-  padding-bottom: 20px !important;
-} */
-/* .promotionUpdate .css-a643pv-MuiStack-root {
-  padding-bottom: 20px !important;
-} */
 .promotion .css-x6y40x-MuiFormLabel-root-MuiInputLabel-root.Mui-error {
   padding-top: 30px !important;
 }
@@ -74,7 +72,33 @@
 .promotion .text-field-css .MuiInputBase-root:hover fieldset {
   border-color: #f2741f !important;
 }
-.promotion .menuItem {
+
+.promotionAdd .text-field-css .MuiInputBase-root {
+  border-radius: 8px !important;
+}
+.promotionAdd .text-field-css .MuiInputBase-root:hover fieldset {
+  border-color: #f2741f !important;
+}
+
+.promotionUpdate .text-field-css .MuiInputBase-root {
+  border-radius: 8px !important;
+}
+.promotionUpdate .text-field-css .MuiInputBase-root:hover fieldset {
+  border-color: #f2741f !important;
+}
+
+.promotionAdd .dateTimePro .MuiInputBase-root:hover fieldset {
+  border-color: #f2741f !important;
+}
+
+.promotionUpdate .dateTimePro .MuiInputBase-root:hover fieldset {
+  border-color: #f2741f !important;
+}
+
+.promotion .dateTimePro .MuiInputBase-root:hover fieldset {
+  border-color: #f2741f !important;
+}
+.pro .promotion .menuItem {
   border: none;
 }
 .promotion .filter .MuiSelect-select {

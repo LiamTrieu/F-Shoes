@@ -15,11 +15,11 @@ import java.math.BigDecimal;
 @Builder
 public class HDBillDetailRequest {
 
-    private String idProductDetail;
+    private String productDetailId;
 
     private String idBill;
 
-    private Integer quanity;
+    private Integer quantity;
 
     private BigDecimal price;
 

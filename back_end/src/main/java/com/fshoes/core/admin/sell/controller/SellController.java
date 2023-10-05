@@ -1,7 +1,7 @@
 package com.fshoes.core.admin.sell.controller;
 
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
-import com.fshoes.core.admin.sell.model.request.CreateCartRequest;
+import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.service.AdminSellService;
 import com.fshoes.core.common.ObjectRespone;
@@ -20,14 +20,33 @@ public class SellController {
         return new ObjectRespone(getSell.getAllProduct(request));
     }
 
-    @PostMapping("/create-cart")
-    public ObjectRespone createBill() {
-        return new ObjectRespone(getSell.createCart());
+    @GetMapping("/get-size")
+    public ObjectRespone getAllSize() {
+        return new ObjectRespone(getSell.getListSize());
+    }
+    @GetMapping("/get-color")
+    public ObjectRespone getAllColor() {
+        return new ObjectRespone(getSell.getListColor());
     }
 
-    @DeleteMapping("/delete-cart/{id}")
-    public ObjectRespone deleteBill(@PathVariable String id) {
-        return new ObjectRespone(getSell.deleteCart(id));
+    @GetMapping("/get-amount/{id}")
+    public ObjectRespone getAmount(@PathVariable String id) {
+        return new ObjectRespone(getSell.getAmount(id));
+    }
+
+    @GetMapping("/get-product-detail-bill/{id}")
+    public ObjectRespone getAllProductDetailBill(@PathVariable String id) {
+        return new ObjectRespone(getSell.getProductDetailBillSell(id));
+    }
+
+    @PostMapping("/create-bill")
+    public ObjectRespone createBillSell() {
+        return new ObjectRespone(getSell.createBill());
+    }
+
+    @DeleteMapping("/delete-bill/{id}")
+    public ObjectRespone deleteBillSell(@PathVariable String id) {
+        return new ObjectRespone(getSell.deleteBill(id));
     }
 
     @GetMapping("/get-product-cart")
@@ -52,8 +71,8 @@ public class SellController {
     }
 
     @PostMapping("/add-product-sell")
-    public ObjectRespone addProductSell(@RequestBody CreateCartRequest request) {
-        return new ObjectRespone(getSell.addCartDetail(request));
+    public ObjectRespone addProductSell(@RequestBody CreateBillRequest request) {
+        return new ObjectRespone(getSell.addBillDetail(request));
     }
 
 

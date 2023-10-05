@@ -8,10 +8,4 @@ public interface ProductMaxPriceResponse extends IsIdentified {
     String getName();
 
     BigDecimal getPrice();
-    String getNameProduct();
-    String getNameBrand();
-    String getNameCategory();
-    String getIdCategory();
-    String getIdBrand();
-    String getDescription();
 }

@@ -17,7 +17,8 @@ public interface HDBillDetailRepository extends BillDetailRepository {
     @Query(value = """
             SELECT bd.id, i.url as productImg,
                    CONCAT(p.name, ' ', c.name) as productName,
-                   bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId
+                   bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId,
+                   bd.status as status
             FROM bill_detail bd
             	LEFT JOIN product_detail pd ON bd.id_product_detail = pd.id
                 LEFT JOIN image i ON pd.id = i.id_product_detail

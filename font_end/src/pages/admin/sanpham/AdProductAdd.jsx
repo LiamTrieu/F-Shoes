@@ -117,6 +117,7 @@ export default function AdProductAdd() {
 
   const newProductIsUndefined = (newProducts) => {
     return (
+      newProducts.product.trim() !== '' &&
       newProducts.sole.length !== 0 &&
       newProducts.category.length !== 0 &&
       newProducts.brand.length !== 0 &&
@@ -191,7 +192,7 @@ export default function AdProductAdd() {
           productDetail.sole.value === sole &&
           productDetail.color.value === color &&
           productDetail.material.value === material,
-      )?.images,
+      ).images,
     )
 
     const handleCheckboxChange = (event, index) => {
@@ -199,8 +200,12 @@ export default function AdProductAdd() {
       const preImageSelect = [...imageSelect]
 
       if (event.target.checked) {
-        preImageSelect.push(selectedImage)
-        setImageSelect((prevImages) => [...prevImages, selectedImage])
+        if (preImageSelect.length === 3) {
+          toast.warning('Chỉ chọn tối đa 3 ảnh')
+        } else {
+          preImageSelect.push(selectedImage)
+          setImageSelect((prevImages) => [...prevImages, selectedImage])
+        }
       } else {
         preImageSelect.splice(
           preImageSelect.indexOf((img) => img === selectedImage),
@@ -225,6 +230,7 @@ export default function AdProductAdd() {
         }),
       )
     }
+
     return (
       <div style={{ marginTop: '10px', textAlign: 'center' }}>
         {loadImage ? (
@@ -243,7 +249,11 @@ export default function AdProductAdd() {
             </Grid>
           </Grid>
         ) : images?.length > 0 ? (
-          <Grid container spacing={1}>
+          <Grid
+            className="hidden-scroll-bar mt-1"
+            container
+            spacing={1}
+            style={{ maxHeight: '290px', overflow: 'auto' }}>
             {images.map((image, index) => (
               <Grid item xs={3} key={`selectImage${index}`} style={{ position: 'relative' }}>
                 <Checkbox
@@ -296,6 +306,7 @@ export default function AdProductAdd() {
             }),
           ])
           toast.success('Tải ảnh lên thành công')
+          document.getElementById('them-anh').value = ''
         }
       })
       .catch((error) => {
@@ -311,22 +322,25 @@ export default function AdProductAdd() {
       const text = ''
       confirmSatus(title, text).then((result) => {
         if (result.isConfirmed) {
-          newProductDetails.forEach((product) => {
-            sanPhamApi.addProuct({
-              idSole: product.sole.value,
-              idBrand: product.brand.value,
-              idCategory: product.category.value,
-              idMaterial: product.material.value,
-              nameProduct: product.product,
-              idSize: product.size.value,
-              idColor: product.color.value,
-              price: product.price,
-              amount: product.amount,
-              weight: product.weight,
-              description: product.description,
-              listImage: product.images,
-            })
-          })
+          sanPhamApi.addProuct(
+            newProductDetails.map((product) => {
+              return {
+                idSole: product.sole.value,
+                idBrand: product.brand.value,
+                idCategory: product.category.value,
+                idMaterial: product.material.value,
+                idSize: product.size.value,
+                idColor: product.color.value,
+                nameProduct: product.product,
+                price: product.price,
+                amount: product.amount,
+                weight: product.weight,
+                description: product.description,
+                listImage: product.images,
+              }
+            }),
+          )
+
           toast.success('Thêm sản phẩm thành công')
           navigator('/admin/product')
         }
@@ -334,6 +348,33 @@ export default function AdProductAdd() {
     } catch (error) {
       console.error(error)
       toast.error('Thêm sản phẩm thất bại')
+    }
+  }
+
+  function openSelectImage(color) {
+    if (images.findIndex((image) => image.idColor === color) < 0) {
+      setLoadImage(true)
+      sanPhamApi
+        .getListImage(color)
+        .then(
+          (response) => {
+            if (response.data.success) {
+              setImages([
+                ...images,
+                {
+                  idColor: color,
+                  data: response.data.data,
+                },
+              ])
+            }
+          },
+          (error) => {
+            console.error(error)
+          },
+        )
+        .finally(() => {
+          setLoadImage(false)
+        })
     }
   }
 
@@ -356,7 +397,7 @@ export default function AdProductAdd() {
           <Stack direction="row" spacing={1}>
             <TextField
               onChange={(e) => {
-                setNewProducts({ ...newProducts, product: e.target.value })
+                genNewProductDetail({ ...newProducts, product: e.target.value })
               }}
               className="search-field"
               fullWidth
@@ -559,7 +600,7 @@ export default function AdProductAdd() {
             <TextField
               color="cam"
               onChange={(e) => {
-                setNewProducts({ ...newProducts, description: e.target.value })
+                genNewProductDetail({ ...newProducts, description: e.target.value })
               }}
               className="search-field"
               placeholder="Nhập mô tả sản phẩm"
@@ -588,8 +629,8 @@ export default function AdProductAdd() {
                             fontWeight={'600'}
                             variant="h7"
                             color={'GrayText'}>
-                            Danh sách sản phẩm cùng loại [ {color.label} - {category.label} -{' '}
-                            {brand.label} - {material.label} - {sole.label} ]
+                            Danh sách sản phẩm cùng loại [ {category.label} - {brand.label} -{' '}
+                            {sole.label} - {material.label} - {color.label} ]
                           </Typography>
                           <Button size="small" variant="outlined" color="cam">
                             <LuSplitSquareVertical />
@@ -607,7 +648,7 @@ export default function AdProductAdd() {
                               <TableCell width={'10%'}>Cân nặng</TableCell>
                               <TableCell width={'10%'}>Số lượng</TableCell>
                               <TableCell width={'10%'}>Giá</TableCell>
-                              <TableCell align="center" width={'30%'}>
+                              <TableCell align="center" width={'40%'}>
                                 Ảnh
                               </TableCell>
                             </TableRow>
@@ -721,20 +762,20 @@ export default function AdProductAdd() {
                                           alignItems="center"
                                           spacing={1}>
                                           {newProductDetails
-                                            .filter(
+                                            .find(
                                               (productDetail) =>
                                                 productDetail.color.value === color.value &&
                                                 productDetail.sole.value === sole.value &&
                                                 productDetail.category.value === category.value &&
                                                 productDetail.brand.value === brand.value &&
                                                 productDetail.material.value === material.value,
-                                            )[0]
+                                            )
                                             .images.map((image, index) => {
                                               return (
                                                 <img
                                                   key={`showImage${colorIndex}${materialIndex}${soleIndex}${index}`}
-                                                  width={'25%'}
-                                                  height={'85px'}
+                                                  width={'100px'}
+                                                  height={'100px'}
                                                   style={{
                                                     border: '1px dashed #ccc',
                                                   }}
@@ -743,63 +784,27 @@ export default function AdProductAdd() {
                                                 />
                                               )
                                             })}
-                                          {newProductDetails.filter(
-                                            (productDetail) =>
-                                              productDetail.color.value === color.value &&
-                                              productDetail.sole.value === sole.value &&
-                                              productDetail.category.value === category.value &&
-                                              productDetail.brand.value === brand.value &&
-                                              productDetail.material.value === material.value,
-                                          )[0].images.length <= 3 && (
-                                            <div
-                                              onClick={() => {
-                                                if (
-                                                  images.findIndex(
-                                                    (image) => image.idColor === color.value,
-                                                  ) < 0
-                                                ) {
-                                                  setLoadImage(true)
-                                                  sanPhamApi
-                                                    .getListImage(color.value)
-                                                    .then(
-                                                      (response) => {
-                                                        if (response.data.success) {
-                                                          setImages([
-                                                            ...images,
-                                                            {
-                                                              idColor: color.value,
-                                                              data: response.data.data,
-                                                            },
-                                                          ])
-                                                        }
-                                                      },
-                                                      (error) => {
-                                                        console.error(error)
-                                                      },
-                                                    )
-                                                    .finally(() => {
-                                                      setLoadImage(false)
-                                                    })
-                                                }
-                                                setModalOpen(
-                                                  `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}`,
-                                                )
-                                              }}
-                                              style={{
-                                                cursor: 'pointer',
-                                                border: '1px dashed #ccc',
-                                                width: '25%',
-                                                height: '85px',
-                                                textAlign: 'center',
-                                                lineHeight: '85px',
-                                              }}>
-                                              <MdImageSearch
-                                                fontSize={'20px'}
-                                                style={{ marginBottom: '-3px', marginRight: '5px' }}
-                                              />
-                                              Ảnh
-                                            </div>
-                                          )}
+                                          <div
+                                            onClick={() => {
+                                              openSelectImage(color.value)
+                                              setModalOpen(
+                                                `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}${categoryIndex}${brandIndex}`,
+                                              )
+                                            }}
+                                            style={{
+                                              cursor: 'pointer',
+                                              border: '1px dashed #ccc',
+                                              width: '100px',
+                                              height: '100px',
+                                              textAlign: 'center',
+                                              lineHeight: '100px',
+                                            }}>
+                                            <MdImageSearch
+                                              fontSize={'20px'}
+                                              style={{ marginBottom: '-3px', marginRight: '5px' }}
+                                            />
+                                            Ảnh
+                                          </div>
                                         </Stack>
                                       </TableCell>
                                     )}
@@ -811,7 +816,8 @@ export default function AdProductAdd() {
                       </Container>
                       <DialogAddUpdate
                         open={
-                          modalOpen === `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}`
+                          modalOpen ===
+                          `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}${categoryIndex}${brandIndex}`
                         }
                         setOpen={closeModal}>
                         <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -839,6 +845,8 @@ export default function AdProductAdd() {
                           color={color.value}
                           material={material.value}
                           sole={sole.value}
+                          category={category.value}
+                          brand={brand.value}
                           images={images.find((image) => image.idColor === color.value)?.data}
                         />
                       </DialogAddUpdate>

@@ -42,29 +42,22 @@ import ModalAddProduct from './ModalAddProduct'
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
-  return (
-    <SliderThumb {...other}>
-      {children}
-      <span className="airbnb-bar" />
-      <span className="airbnb-bar" />
-      <span className="airbnb-bar" />
-    </SliderThumb>
-  )
+  return <SliderThumb {...other}>{children}</SliderThumb>
 }
-const AirbnbSlider = styled(Slider)(({ theme }) => ({
+const AirbnbSlider = styled(Slider)(() => ({
   color: '#fc7c27',
-  height: 3,
+  height: 1,
   padding: '13px 0',
   '& .MuiSlider-thumb': {
-    height: 27,
-    width: 27,
+    height: 20,
+    width: 20,
     backgroundColor: '#fff',
     border: '1px solid currentColor',
     '&:hover': {
       boxShadow: '0 0 0 8px rgba(58, 133, 137, 0.16)',
     },
     '& .airbnb-bar': {
-      height: 9,
+      height: 1,
       width: 1,
       backgroundColor: '#fc7c27',
       marginLeft: 1,

@@ -23,21 +23,19 @@ import java.util.List;
 @ToString
 public class ProductDetailRequest {
 
-    private String idBrand;
-
     private String idSole;
 
-    private String description;
-
-    private String idMaterial;
+    private String idBrand;
 
     private String idCategory;
 
-    private String idProduct;
+    private String idMaterial;
 
     private String idSize;
 
     private String idColor;
+
+    private String nameProduct;
 
     private String price;
 
@@ -45,30 +43,29 @@ public class ProductDetailRequest {
 
     private String weight;
 
+    private String description;
+
     private List<String> listImage;
 
 
 
     public ProductDetail tranDetail(ProductDetail productDetail){
-        Brand brand = new Brand();
-        brand.setId(this.getIdBrand());
-        productDetail.setBrand(brand);
 
         Sole sole = new Sole();
         sole.setId(this.getIdSole());
         productDetail.setSole(sole);
 
-        Material material = new Material();
-        material.setId(this.getIdMaterial());
-        productDetail.setMaterial(material);
+        Brand brand = new Brand();
+        brand.setId(this.getIdBrand());
+        productDetail.setBrand(brand);
 
         Category category = new Category();
         category.setId(this.getIdCategory());
         productDetail.setCategory(category);
 
-        Product product = new Product();
-        product.setId(this.getIdProduct());
-        productDetail.setProduct(product);
+        Material material = new Material();
+        material.setId(this.getIdMaterial());
+        productDetail.setMaterial(material);
 
         Size size = new Size();
         size.setId(this.getIdSize());
@@ -78,13 +75,14 @@ public class ProductDetailRequest {
         color.setId(this.idColor);
         productDetail.setColor(color);
 
-        productDetail.setDescription(description);
-
         productDetail.setPrice(BigDecimal.valueOf(Long.parseLong(this.price)));
+
+        productDetail.setAmount(Integer.valueOf(this.amount));
 
         productDetail.setWeight(Integer.parseInt(this.weight));
 
-        productDetail.setAmount(Integer.valueOf(this.amount));
+        productDetail.setDescription(description);
+
         return productDetail;
     }
 

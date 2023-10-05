@@ -34,6 +34,7 @@ import { useTheme } from '@emotion/react'
 import { toast } from 'react-toastify'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
 var stompClient = null
 export default function AdPromotionPage() {
@@ -49,6 +50,7 @@ export default function AdPromotionPage() {
     timeEnd: '',
     status: null,
     type: null,
+    sortOrder: null,
   })
 
   useEffect(() => {
@@ -114,6 +116,14 @@ export default function AdPromotionPage() {
 
   const fecthData = (filter) => {
     khuyenMaiApi.getAllPromotion(filter).then((response) => {
+      let sortedListKhuyenMai = response.data.data
+
+      if (filter.sortOrder === 'ascending') {
+        sortedListKhuyenMai.sort((a, b) => a.value - b.value)
+      } else if (filter.sortOrder === 'descending') {
+        sortedListKhuyenMai.sort((a, b) => b.value - a.value)
+      }
+
       setListKhuyenMai(response.data.data)
       setTotalPages(response.data.totalPages)
 
@@ -124,6 +134,7 @@ export default function AdPromotionPage() {
   return (
     <>
       <div className="promotion">
+        <BreadcrumbsCustom nameHere={'Khuyến mại'} />
         <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
           <Box sx={{ width: '100%' }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
@@ -152,7 +163,7 @@ export default function AdPromotionPage() {
               <Button
                 sx={{ borderRadius: '8px' }}
                 color="cam"
-                variant="contained"
+                variant="outlined"
                 component={Link}
                 to="/admin/promotion/add">
                 <AddIcon />
@@ -183,7 +194,7 @@ export default function AdPromotionPage() {
                         onClick: () => setFilter({ ...filter, timeStart: '' }),
                       },
                     }}
-                    // label="Ngày bắt đầu"
+                    label="Ngày bắt đầu"
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -205,7 +216,7 @@ export default function AdPromotionPage() {
                         onClick: () => setFilter({ ...filter, timeEnd: '' }),
                       },
                     }}
-                    // label="Ngày kết thúc"
+                    label="Ngày kết thúc"
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -226,15 +237,21 @@ export default function AdPromotionPage() {
                 </Select>
               </div>
 
-              {/* <div className="filter">
+              <div className="filter">
                 <b>Giá trị: </b>
-                <Select displayEmpty size="small" value={''}>
-                  <MenuItem value={''}>Giá trị</MenuItem>
-                  <MenuItem value={8}>Tăng dần</MenuItem>
-                  <MenuItem value={9}>Giảm dần</MenuItem>
+                <Select
+                  displayEmpty
+                  size="small"
+                  value={filter.sortOrder}
+                  onChange={(e) => {
+                    setFilter({ ...filter, sortOrder: e.target.value })
+                  }}>
+                  <MenuItem value={null}>Giá trị</MenuItem>
+                  <MenuItem value="ascending">Tăng dần</MenuItem>
+                  <MenuItem value="descending">Giảm dần</MenuItem>
                   <MenuItem></MenuItem>
                 </Select>
-              </div> */}
+              </div>
             </Stack>
           </Box>
         </Paper>
@@ -269,7 +286,7 @@ export default function AdPromotionPage() {
                 <TableRow
                   key={promotion.id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell align="center">{index + 1}</TableCell>
+                  <TableCell align="center">{promotion.stt}</TableCell>
 
                   <TableCell align="center">{promotion.name}</TableCell>
                   <TableCell align="center">{promotion.value}%</TableCell>
