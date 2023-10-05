@@ -70,7 +70,7 @@ const styleModalAddCustomer = {
   boxShadow: 24,
 }
 
-export default function SellFrom({ idCart }) {
+export default function SellFrom({ idBill }) {
   const theme = useTheme()
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
@@ -85,7 +85,7 @@ export default function SellFrom({ idCart }) {
   const [listProductCart, setListProductCart] = useState([])
   const [listKhachHang, setlistKhachHang] = useState([])
   const [listVoucher, setListVoucher] = useState([])
-  const [listProductDetailCart, setListProductDetailCart] = useState([])
+  const [listProductDetailBill, setListProductDetailBill] = useState([])
   const [listDiaChiDetail, setListDiaChiDetail] = useState([])
 
   const [codeVoucher, setCodeVoucher] = useState('')
@@ -127,12 +127,12 @@ export default function SellFrom({ idCart }) {
     setShowModal(true)
   }
   useEffect(() => {
-    fectchProductCartSell(idCart)
-  }, [idCart])
+    fectchProductBillSell(idBill)
+  }, [idBill])
 
-  const fectchProductCartSell = (id) => {
-    sellApi.getProductDetailCart(id).then((response) => {
-      setListProductDetailCart(response.data.data)
+  const fectchProductBillSell = (id) => {
+    sellApi.getProductDetailBill(id).then((response) => {
+      setListProductDetailBill(response.data.data)
     })
   }
 
@@ -689,22 +689,10 @@ export default function SellFrom({ idCart }) {
       })
   }
 
-  const totalSum = listProductDetailCart.reduce((sum, cart) => {
+  const totalSum = listProductDetailBill.reduce((sum, cart) => {
     const productTotalPrice = calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
     return sum + productTotalPrice
   }, 0)
-
-  function handleAddToCart(newCartItem) {
-    const existingCartItemIndex = listProductDetailCart.findIndex(
-      (cartItem) => cartItem.id === newCartItem.id,
-    )
-
-    if (existingCartItemIndex !== -1) {
-      listProductDetailCart[existingCartItemIndex].quantity += 1
-    } else {
-      listProductDetailCart.push(newCartItem)
-    }
-  }
 
   return (
     <>
@@ -725,16 +713,16 @@ export default function SellFrom({ idCart }) {
         </Box>
 
         <ModelSell
-          load={fectchProductCartSell}
-          idCart={idCart}
+          load={fectchProductBillSell}
+          idBill={idBill}
           open={showModal}
           setOPen={setShowModal}
         />
 
         <Box>
           <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>
-            {listProductDetailCart.length > 0 ? (
-              listProductDetailCart.map((cart) => (
+            {listProductDetailBill.length > 0 ? (
+              listProductDetailBill.map((cart) => (
                 <Table>
                   <TableRow sx={{ border: 0 }} key={cart.id}>
                     <TableCell sx={{ px: 0 }} width={'5%'}>
@@ -1589,7 +1577,7 @@ export default function SellFrom({ idCart }) {
                 label="Tên người nhận"
                 type="text"
                 size="small"
-                sx={{ mt: 2, width: '100%' }}
+                sx={{ mt: 1, width: '48%' }}
                 name="name"
                 value={detailDiaChi.name}
                 // onChange={(e) => {
@@ -1602,7 +1590,7 @@ export default function SellFrom({ idCart }) {
                 label="Số điện thoại"
                 type="text"
                 size="small"
-                sx={{ mt: 2, width: '100%' }}
+                sx={{ mt: 1, width: '48%', float: 'right' }}
                 name="phoneNumber"
                 value={detailDiaChi.phoneNumber}
                 // onChange={(e) => {
@@ -1613,7 +1601,7 @@ export default function SellFrom({ idCart }) {
                 <Grid item xs={4}>
                   <Autocomplete
                     popupIcon={null}
-                    sx={{ mt: 2, width: '100%' }}
+                    sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
                     id="combo-box-demo"
@@ -1640,7 +1628,7 @@ export default function SellFrom({ idCart }) {
                 <Grid item xs={4}>
                   <Autocomplete
                     popupIcon={null}
-                    sx={{ mt: 2, width: '100%' }}
+                    sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
                     value={{ label: huyenName, id: detailDiaChi.districtId }}
@@ -1666,7 +1654,7 @@ export default function SellFrom({ idCart }) {
                 <Grid item xs={4}>
                   <Autocomplete
                     popupIcon={null}
-                    sx={{ mt: 2, width: '100%' }}
+                    sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
                     value={{ label: xaName, id: detailDiaChi.wardId }}
@@ -1690,7 +1678,7 @@ export default function SellFrom({ idCart }) {
                 label="Địa chỉ cụ thể"
                 type="text"
                 size="small"
-                sx={{ mt: 2, width: '100%' }}
+                sx={{ mt: 1, width: '48%' }}
                 name="specificAddress"
                 value={detailDiaChi.specificAddress}
                 onChange={(e) => {
@@ -1701,7 +1689,7 @@ export default function SellFrom({ idCart }) {
               />
               <TextField
                 disabled={!giaoHang}
-                sx={{ mt: 2, width: '100%' }}
+                sx={{ mt: 1, width: '48%', float: 'right' }}
                 label="Ghi chú"
                 size="small"
               />

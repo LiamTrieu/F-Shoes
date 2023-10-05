@@ -112,14 +112,16 @@ export default function AdPromotionAdd() {
       .filter((row) => newSelected.includes(row.id))
       .map((selectedProduct) => selectedProduct.id)
     setSelectedProductIds(selectedProductIds)
+  }
+
+  const getProductDetailById = (filterDetailByProduct, selectedProductIds) => {
     if (selectedProductIds.length > 0) {
-      // khuyenMaiApi
-      //   .getAllProductDetailByProduct(filterDetailByProduct, selectedProductIds)
-      //   .then((response) => {
-      //     setGetProductDetailByProduct(response.data.data.data)
-      //     setTotalPagesDetailByProduct(response.data.data.totalPages)
-      //   })
-      // fecthAllProductDetail(filterDetailByProduct, selectedProductIds)
+      khuyenMaiApi
+        .getAllProductDetailByProduct(filterDetailByProduct, selectedProductIds)
+        .then((response) => {
+          setGetProductDetailByProduct(response.data.data.data)
+          setTotalPagesDetailByProduct(response.data.data.totalPages)
+        })
     } else {
       setGetProductDetailByProduct([])
       setTotalPagesDetailByProduct(0)
@@ -127,54 +129,8 @@ export default function AdPromotionAdd() {
 
     console.log('ID của sản phẩm đã chọn:', selectedProductIds)
   }
-
   useEffect(() => {
-    fecthAllProductDetail(filterDetailByProduct, id)
-  }, [filterDetailByProduct, id])
-
-  const fecthAllProductDetail = (filterDetailByProduct, selectedRows) => {
-    khuyenMaiApi
-      .getAllProductDetailByProduct(filterDetailByProduct, selectedRows)
-      .then((response) => {
-        setGetProductDetailByProduct(response.data.data.data)
-        setTotalPagesDetailByProduct(response.data.data.totalPages)
-      })
-  }
-
-  useEffect(() => {
-    // Lấy danh sách chi tiết sản phẩm của các sản phẩm đã chọn
-
-    if (selectedProductIds.length > 0) {
-      const promises = selectedProductIds.map((productId) => {
-        return khuyenMaiApi.getAllProductDetailByProduct(filterDetailByProduct, productId)
-      })
-
-      Promise.all(promises)
-        .then((responses) => {
-          const allProductDetails = responses.flatMap((response) => response.data.data.data)
-
-          const startIndex = (filterDetailByProduct.page - 1) * filterDetailByProduct.size
-          const endIndex = startIndex + filterDetailByProduct.size
-
-          // Lấy danh sách sản phẩm chi tiết chỉ từ startIndex đến endIndex
-          const productDetailsToDisplay = allProductDetails.slice(startIndex, endIndex)
-
-          // Cập nhật danh sách sản phẩm chi tiết để hiển thị trên trang hiện tại
-          setGetProductDetailByProduct(productDetailsToDisplay)
-          // setGetProductDetailByProduct(allProductDetails)
-          const itemsPerPage = filterDetailByProduct.size // Kích thước trang
-          const totalPages = Math.ceil(allProductDetails.length / itemsPerPage)
-          setTotalPagesDetailByProduct(totalPages)
-          // setTotalPagesDetailByProduct(allProductDetails.length - 1)
-        })
-        .catch((error) => {
-          console.error('Error fetching product details:', error)
-        })
-    } else {
-      // Nếu không có sản phẩm nào được chọn, bạn có thể xử lý ở đây (ví dụ: xóa danh sách chi tiết sản phẩm)
-      setGetProductDetailByProduct([])
-      setTotalPagesDetailByProduct(0)
-    }
+    getProductDetailById(filterDetailByProduct, selectedProductIds)
   }, [filterDetailByProduct, selectedProductIds])
 
   useEffect(() => {
@@ -531,8 +487,7 @@ export default function AdPromotionAdd() {
                     <Pagination
                       page={filterDetailByProduct.page}
                       color="cam"
-                      onChange={(e, value) => {
-                        e.preventDefault()
+                      onChange={(_, value) => {
                         setFilterDetailByProduct({
                           ...filterDetailByProduct,
                           page: value,
