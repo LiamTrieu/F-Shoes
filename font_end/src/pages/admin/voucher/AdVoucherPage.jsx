@@ -264,6 +264,9 @@ export default function AdVoucherPage() {
             <Table className="tableCss" sx={{ mt: 4 }}>
               <TableHead>
                 <TableRow>
+                  <TableCell align="center" width={'5%'}>
+                    STT
+                  </TableCell>
                   <TableCell align="center" width={'10%'}>
                     Mã
                   </TableCell>
@@ -290,6 +293,7 @@ export default function AdVoucherPage() {
               <TableBody>
                 {listVoucher.map((row) => (
                   <TableRow>
+                    <TableCell align="center">{row.stt}</TableCell>
                     <TableCell align="center">{row.code}</TableCell>
                     <TableCell align="center">{row.name}</TableCell>
                     <TableCell align="center">

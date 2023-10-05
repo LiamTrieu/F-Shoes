@@ -18,7 +18,8 @@ import java.util.Optional;
 @Repository
 public interface AdVoucherRepository extends VoucherRepository {
     @Query(value = """
-            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
             v.type, v.minimum_amount as minimumAmount, v.quantity,
             v.start_date as startDate, v.end_date as endDate, v.status
             from voucher v
@@ -33,7 +34,8 @@ public interface AdVoucherRepository extends VoucherRepository {
     Page<AdVoucherRespone> pageSearchVoucher(Pageable pageable, @Param("AVS") AdVoucherSearch AVS);
 
     @Query(value = """
-            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
             v.type, v.minimum_amount as minimumAmount, v.quantity,
             v.start_date as startDate, v.end_date as endDate, v.status
             from voucher v
@@ -41,7 +43,8 @@ public interface AdVoucherRepository extends VoucherRepository {
     Page<AdVoucherRespone> getPageVoucher(Pageable pageable);
 
     @Query(value = """
-            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
             v.type, v.minimum_amount as minimumAmount, v.quantity,
             v.start_date as startDate, v.end_date as endDate, v.status
             from voucher v
@@ -50,7 +53,8 @@ public interface AdVoucherRepository extends VoucherRepository {
     Optional<AdVoucherRespone> getVoucherById(@Param("id") String id);
 
     @Query(value = """
-            select id, full_name as fullName, phone_number as phoneNumber, email, date_birth as dateBirth
+            select row_number()  OVER(ORDER BY created_at DESC) as stt,
+            id, full_name as fullName, phone_number as phoneNumber, email, date_birth as dateBirth
             from account
             where role = 2
             order by created_at DESC 
@@ -63,23 +67,25 @@ public interface AdVoucherRepository extends VoucherRepository {
     List<String> getAllCodeVoucher();
 
     @Query(value = """
-            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
             v.type, v.minimum_amount as minimumAmount, v.quantity,
             v.start_date as startDate, v.end_date as endDate, v.status
             from voucher v
             join customer_voucher cv on cv.id_voucher = v.id
-            where v.status = 1
+            where v.status = 1 and v.quantity > 0
             and (:#{#idCustomer} is null or cv.id_account = :#{#idCustomer}) 
             order by v.type asc , v.created_at desc
             """, nativeQuery = true)
     List<AdVoucherRespone> getAllVoucherByIdCustomer(String idCustomer);
 
     @Query(value = """
-            select v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
             v.type, v.minimum_amount as minimumAmount, v.quantity,
             v.start_date as startDate, v.end_date as endDate, v.status
             from voucher v
-            where v.status = 1 and v.type = 0
+            where v.status = 1 and v.type = 0 and v.quantity > 0
             order by v.created_at asc 
             """, nativeQuery = true)
     List<AdVoucherRespone> getAllVoucherHoatDong();

@@ -156,111 +156,111 @@ public class DBGenerator implements CommandLineRunner {
         CustomerVoucher customerVoucher1 = CustomerVoucher.builder().account(customer1).voucher(voucher1).build();
         customerVoucher1.setId(customerVoucherRepository.save(customerVoucher1).getId());
 
-        CustomerVoucher customerVoucher2 = CustomerVoucher.builder().account(customer2).voucher(voucher2).build();
+        CustomerVoucher customerVoucher2 = CustomerVoucher.builder().account(customer1).voucher(voucher2).build();
         customerVoucher2.setId(customerVoucherRepository.save(customerVoucher2).getId());
 
-        CustomerVoucher customerVoucher3 = CustomerVoucher.builder().account(customer3).voucher(voucher3).build();
+        CustomerVoucher customerVoucher3 = CustomerVoucher.builder().account(customer1).voucher(voucher3).build();
         customerVoucher3.setId(customerVoucherRepository.save(customerVoucher3).getId());
 
-        CustomerVoucher customerVoucher4 = CustomerVoucher.builder().account(customer4).voucher(voucher4).build();
+        CustomerVoucher customerVoucher4 = CustomerVoucher.builder().account(customer1).voucher(voucher4).build();
         customerVoucher4.setId(customerVoucherRepository.save(customerVoucher4).getId());
 
-        CustomerVoucher customerVoucher5 = CustomerVoucher.builder().account(customer5).voucher(voucher5).build();
+        CustomerVoucher customerVoucher5 = CustomerVoucher.builder().account(customer1).voucher(voucher5).build();
         customerVoucher5.setId(customerVoucherRepository.save(customerVoucher5).getId());
         //cá nhân
 
         //tất cả
-        CustomerVoucher customerVoucher6 = CustomerVoucher.builder().account(customer1).voucher(voucher6).build();
-        customerVoucher6.setId(customerVoucherRepository.save(customerVoucher6).getId());
+//        CustomerVoucher customerVoucher6 = CustomerVoucher.builder().account(customer1).voucher(voucher6).build();
+//        customerVoucher6.setId(customerVoucherRepository.save(customerVoucher6).getId());
 
-        CustomerVoucher customerVoucher7 = CustomerVoucher.builder().account(customer1).voucher(voucher7).build();
-        customerVoucher7.setId(customerVoucherRepository.save(customerVoucher7).getId());
-
-        CustomerVoucher customerVoucher8 = CustomerVoucher.builder().account(customer1).voucher(voucher8).build();
-        customerVoucher8.setId(customerVoucherRepository.save(customerVoucher8).getId());
-
-        CustomerVoucher customerVoucher9 = CustomerVoucher.builder().account(customer1).voucher(voucher9).build();
-        customerVoucher9.setId(customerVoucherRepository.save(customerVoucher9).getId());
-
-        CustomerVoucher customerVoucher10 = CustomerVoucher.builder().account(customer1).voucher(voucher10).build();
-        customerVoucher10.setId(customerVoucherRepository.save(customerVoucher10).getId());
-
-        CustomerVoucher customerVoucher11 = CustomerVoucher.builder().account(customer2).voucher(voucher6).build();
-        customerVoucher11.setId(customerVoucherRepository.save(customerVoucher11).getId());
-
-        CustomerVoucher customerVoucher12 = CustomerVoucher.builder().account(customer2).voucher(voucher7).build();
-        customerVoucher12.setId(customerVoucherRepository.save(customerVoucher12).getId());
-
-        CustomerVoucher customerVoucher13 = CustomerVoucher.builder().account(customer2).voucher(voucher8).build();
-        customerVoucher13.setId(customerVoucherRepository.save(customerVoucher13).getId());
-
-        CustomerVoucher customerVoucher14 = CustomerVoucher.builder().account(customer2).voucher(voucher9).build();
-        customerVoucher14.setId(customerVoucherRepository.save(customerVoucher14).getId());
-
-        CustomerVoucher customerVoucher15 = CustomerVoucher.builder().account(customer2).voucher(voucher10).build();
-        customerVoucher15.setId(customerVoucherRepository.save(customerVoucher15).getId());
-
-        CustomerVoucher customerVoucher16 = CustomerVoucher.builder().account(customer3).voucher(voucher6).build();
-        customerVoucher16.setId(customerVoucherRepository.save(customerVoucher16).getId());
-
-        CustomerVoucher customerVoucher17 = CustomerVoucher.builder().account(customer3).voucher(voucher7).build();
-        customerVoucher17.setId(customerVoucherRepository.save(customerVoucher17).getId());
-
-        CustomerVoucher customerVoucher18 = CustomerVoucher.builder().account(customer3).voucher(voucher8).build();
-        customerVoucher18.setId(customerVoucherRepository.save(customerVoucher18).getId());
-
-        CustomerVoucher customerVoucher19 = CustomerVoucher.builder().account(customer3).voucher(voucher9).build();
-        customerVoucher19.setId(customerVoucherRepository.save(customerVoucher19).getId());
-
-        CustomerVoucher customerVoucher20 = CustomerVoucher.builder().account(customer3).voucher(voucher10).build();
-        customerVoucher20.setId(customerVoucherRepository.save(customerVoucher20).getId());
-
-        CustomerVoucher customerVoucher21 = CustomerVoucher.builder().account(customer4).voucher(voucher6).build();
-        customerVoucher21.setId(customerVoucherRepository.save(customerVoucher21).getId());
-
-        CustomerVoucher customerVoucher22 = CustomerVoucher.builder().account(customer4).voucher(voucher7).build();
-        customerVoucher22.setId(customerVoucherRepository.save(customerVoucher22).getId());
-
-        CustomerVoucher customerVoucher23 = CustomerVoucher.builder().account(customer4).voucher(voucher8).build();
-        customerVoucher23.setId(customerVoucherRepository.save(customerVoucher23).getId());
-
-        CustomerVoucher customerVoucher24 = CustomerVoucher.builder().account(customer4).voucher(voucher9).build();
-        customerVoucher24.setId(customerVoucherRepository.save(customerVoucher24).getId());
-
-        CustomerVoucher customerVoucher25 = CustomerVoucher.builder().account(customer4).voucher(voucher10).build();
-        customerVoucher25.setId(customerVoucherRepository.save(customerVoucher25).getId());
-
-        CustomerVoucher customerVoucher26 = CustomerVoucher.builder().account(customer5).voucher(voucher6).build();
-        customerVoucher26.setId(customerVoucherRepository.save(customerVoucher26).getId());
-
-        CustomerVoucher customerVoucher27 = CustomerVoucher.builder().account(customer5).voucher(voucher7).build();
-        customerVoucher27.setId(customerVoucherRepository.save(customerVoucher27).getId());
-
-        CustomerVoucher customerVoucher28 = CustomerVoucher.builder().account(customer5).voucher(voucher8).build();
-        customerVoucher28.setId(customerVoucherRepository.save(customerVoucher28).getId());
-
-        CustomerVoucher customerVoucher29 = CustomerVoucher.builder().account(customer5).voucher(voucher9).build();
-        customerVoucher29.setId(customerVoucherRepository.save(customerVoucher29).getId());
-
-        CustomerVoucher customerVoucher30 = CustomerVoucher.builder().account(customer5).voucher(voucher10).build();
-        customerVoucher30.setId(customerVoucherRepository.save(customerVoucher30).getId());
+//        CustomerVoucher customerVoucher7 = CustomerVoucher.builder().account(customer1).voucher(voucher7).build();
+//        customerVoucher7.setId(customerVoucherRepository.save(customerVoucher7).getId());
+//
+//        CustomerVoucher customerVoucher8 = CustomerVoucher.builder().account(customer1).voucher(voucher8).build();
+//        customerVoucher8.setId(customerVoucherRepository.save(customerVoucher8).getId());
+//
+//        CustomerVoucher customerVoucher9 = CustomerVoucher.builder().account(customer1).voucher(voucher9).build();
+//        customerVoucher9.setId(customerVoucherRepository.save(customerVoucher9).getId());
+//
+//        CustomerVoucher customerVoucher10 = CustomerVoucher.builder().account(customer1).voucher(voucher10).build();
+//        customerVoucher10.setId(customerVoucherRepository.save(customerVoucher10).getId());
+//
+//        CustomerVoucher customerVoucher11 = CustomerVoucher.builder().account(customer2).voucher(voucher6).build();
+//        customerVoucher11.setId(customerVoucherRepository.save(customerVoucher11).getId());
+//
+//        CustomerVoucher customerVoucher12 = CustomerVoucher.builder().account(customer2).voucher(voucher7).build();
+//        customerVoucher12.setId(customerVoucherRepository.save(customerVoucher12).getId());
+//
+//        CustomerVoucher customerVoucher13 = CustomerVoucher.builder().account(customer2).voucher(voucher8).build();
+//        customerVoucher13.setId(customerVoucherRepository.save(customerVoucher13).getId());
+//
+//        CustomerVoucher customerVoucher14 = CustomerVoucher.builder().account(customer2).voucher(voucher9).build();
+//        customerVoucher14.setId(customerVoucherRepository.save(customerVoucher14).getId());
+//
+//        CustomerVoucher customerVoucher15 = CustomerVoucher.builder().account(customer2).voucher(voucher10).build();
+//        customerVoucher15.setId(customerVoucherRepository.save(customerVoucher15).getId());
+//
+//        CustomerVoucher customerVoucher16 = CustomerVoucher.builder().account(customer3).voucher(voucher6).build();
+//        customerVoucher16.setId(customerVoucherRepository.save(customerVoucher16).getId());
+//
+//        CustomerVoucher customerVoucher17 = CustomerVoucher.builder().account(customer3).voucher(voucher7).build();
+//        customerVoucher17.setId(customerVoucherRepository.save(customerVoucher17).getId());
+//
+//        CustomerVoucher customerVoucher18 = CustomerVoucher.builder().account(customer3).voucher(voucher8).build();
+//        customerVoucher18.setId(customerVoucherRepository.save(customerVoucher18).getId());
+//
+//        CustomerVoucher customerVoucher19 = CustomerVoucher.builder().account(customer3).voucher(voucher9).build();
+//        customerVoucher19.setId(customerVoucherRepository.save(customerVoucher19).getId());
+//
+//        CustomerVoucher customerVoucher20 = CustomerVoucher.builder().account(customer3).voucher(voucher10).build();
+//        customerVoucher20.setId(customerVoucherRepository.save(customerVoucher20).getId());
+//
+//        CustomerVoucher customerVoucher21 = CustomerVoucher.builder().account(customer4).voucher(voucher6).build();
+//        customerVoucher21.setId(customerVoucherRepository.save(customerVoucher21).getId());
+//
+//        CustomerVoucher customerVoucher22 = CustomerVoucher.builder().account(customer4).voucher(voucher7).build();
+//        customerVoucher22.setId(customerVoucherRepository.save(customerVoucher22).getId());
+//
+//        CustomerVoucher customerVoucher23 = CustomerVoucher.builder().account(customer4).voucher(voucher8).build();
+//        customerVoucher23.setId(customerVoucherRepository.save(customerVoucher23).getId());
+//
+//        CustomerVoucher customerVoucher24 = CustomerVoucher.builder().account(customer4).voucher(voucher9).build();
+//        customerVoucher24.setId(customerVoucherRepository.save(customerVoucher24).getId());
+//
+//        CustomerVoucher customerVoucher25 = CustomerVoucher.builder().account(customer4).voucher(voucher10).build();
+//        customerVoucher25.setId(customerVoucherRepository.save(customerVoucher25).getId());
+//
+//        CustomerVoucher customerVoucher26 = CustomerVoucher.builder().account(customer5).voucher(voucher6).build();
+//        customerVoucher26.setId(customerVoucherRepository.save(customerVoucher26).getId());
+//
+//        CustomerVoucher customerVoucher27 = CustomerVoucher.builder().account(customer5).voucher(voucher7).build();
+//        customerVoucher27.setId(customerVoucherRepository.save(customerVoucher27).getId());
+//
+//        CustomerVoucher customerVoucher28 = CustomerVoucher.builder().account(customer5).voucher(voucher8).build();
+//        customerVoucher28.setId(customerVoucherRepository.save(customerVoucher28).getId());
+//
+//        CustomerVoucher customerVoucher29 = CustomerVoucher.builder().account(customer5).voucher(voucher9).build();
+//        customerVoucher29.setId(customerVoucherRepository.save(customerVoucher29).getId());
+//
+//        CustomerVoucher customerVoucher30 = CustomerVoucher.builder().account(customer5).voucher(voucher10).build();
+//        customerVoucher30.setId(customerVoucherRepository.save(customerVoucher30).getId());
         //tất cả
         //CustomerVoucher
 
         //Address
-        Address address1 = Address.builder().name("Địa chỉ 1").phoneNumber("0123456789").specificAddress("123 Đường A, Quận 1, TP.HCM").type(true).account(customer1).build();
+        Address address1 = Address.builder().name("Địa chỉ 1").phoneNumber("0123456789").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(customer1).build();
         address1.setId(addressRepository.save(address1).getId());
 
-        Address address2 = Address.builder().name("Địa chỉ 2").phoneNumber("0234567890").specificAddress("456 Đường B, Quận 2, TP.HCM").type(true).account(customer2).build();
+        Address address2 = Address.builder().name("Địa chỉ 2").phoneNumber("0234567890").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(customer2).build();
         address2.setId(addressRepository.save(address2).getId());
 
-        Address address3 = Address.builder().name("Địa chỉ 3").phoneNumber("0345678901").specificAddress("789 Đường C, Quận 3, TP.HCM").type(true).account(customer3).build();
+        Address address3 = Address.builder().name("Địa chỉ 3").phoneNumber("0345678901").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(customer3).build();
         address3.setId(addressRepository.save(address3).getId());
 
-        Address address4 = Address.builder().name("Địa chỉ 4").phoneNumber("0456789012").specificAddress("101 Đường D, Quận 4, TP.HCM").type(true).account(customer4).build();
+        Address address4 = Address.builder().name("Địa chỉ 4").phoneNumber("0456789012").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(customer4).build();
         address4.setId(addressRepository.save(address4).getId());
 
-        Address address5 = Address.builder().name("Địa chỉ 5").phoneNumber("0567890123").specificAddress("111 Đường E, Quận 5, TP.HCM").type(true).account(customer5).build();
+        Address address5 = Address.builder().name("Địa chỉ 5").phoneNumber("0567890123").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(customer5).build();
         address5.setId(addressRepository.save(address5).getId());
         //Addesss
 

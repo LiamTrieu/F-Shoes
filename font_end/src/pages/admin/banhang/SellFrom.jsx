@@ -136,14 +136,6 @@ export default function SellFrom({ idBill }) {
     })
   }
 
-  useEffect(() => {
-    fecthDataCustomer()
-    fecthDataProductCart()
-    fecthDataVoucher(idFillVoucher)
-    loadTinh()
-    loadList()
-  }, [idFillVoucher])
-
   const fecthDataProductCart = () => {
     sellApi.getAllProductCart().then((response) => {
       setListProductCart(response.data.data)
@@ -155,16 +147,31 @@ export default function SellFrom({ idBill }) {
       setlistKhachHang(response.data.data.data)
     })
   }
-  const fecthDataVoucher = (idCustomer) => {
-    if (idCustomer !== '') {
-      voucherApi.getAllVoucherByIdCustomer(idCustomer).then((response) => {
-        setListVoucher(response.data.data)
-      })
-    } else {
-      voucherApi.getAllVoucherBystatus().then((response) => {
-        setListVoucher(response.data.data)
-      })
+  const fecthDataVoucher = () => {
+    voucherApi.getAllVoucherBystatus().then((response) => {
+      setListVoucher(response.data.data)
+    })
+  }
+
+  useEffect(() => {
+    fecthDataCustomer()
+    fecthDataProductCart()
+    fecthDataVoucher()
+    loadTinh()
+    loadList()
+
+    const fecthDataVoucherByIdCustomer = () => {
+      if (idFillVoucher !== '') {
+        voucherApi.getAllVoucherByIdCustomer(idFillVoucher).then((response) => {
+          const newVouchers = response.data.data
+          setListVoucher((prevVouchers) => [...prevVouchers, ...newVouchers])
+        })
+      }
     }
+    if (idFillVoucher !== '') {
+      fecthDataVoucherByIdCustomer()
+    }
+  }, [idFillVoucher])
   }
   const loadDiaChi = (initPage, idCustomer) => {
     DiaChiApi.getAll(initPage - 1, idCustomer).then((response) => {
@@ -538,6 +545,7 @@ export default function SellFrom({ idBill }) {
               service_id: serviceId,
             }
             ghnAPI.getime(filtelTime).then((response) => {
+              console.log(response.data.body.leadtime)
               setTimeShip(response.data.body.leadtime * 1000)
             })
           })
@@ -851,7 +859,7 @@ export default function SellFrom({ idBill }) {
             <Typography fontWeight={'bold'}>Tổng tiền</Typography>
             <Box>
               <Typography fontWeight={'bold'} style={{ color: 'red' }}>
-                {formatPrice(totalSum)}
+                100.000.000₫
               </Typography>
             </Box>
           </Stack>
@@ -1710,7 +1718,7 @@ export default function SellFrom({ idBill }) {
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
             <Box sx={{ m: 1, ml: 3 }}>
-              <TextField label="Mã giảm giá" value={codeVoucher} size="small" />
+              <TextField label="Mã giảm giá" value={voucher?.code} size="small" disabled />
               <Button
                 sx={{ py: '6.7px', ml: 1 }}
                 variant="outlined"
@@ -1754,7 +1762,7 @@ export default function SellFrom({ idBill }) {
                         }}
                         size="small"
                         variant="outlined"
-                        placeholder="Tìm khách hàng"
+                        placeholder="Tìm khuyến mãi"
                       />
                       <Button sx={{ ml: 2 }} variant="contained">
                         Tìm kiếm
@@ -1771,7 +1779,7 @@ export default function SellFrom({ idBill }) {
                     <Table className="tableCss mt-5">
                       <TableHead>
                         <TableRow>
-                          <TableCell align="center" width={'7%'}>
+                          <TableCell align="center" width={'5%'}>
                             STT
                           </TableCell>
                           <TableCell align="center" width={'25%'}>
@@ -1808,7 +1816,7 @@ export default function SellFrom({ idBill }) {
                           <TableRow
                             key={row.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                            <TableCell align="center">{}</TableCell>
+                            <TableCell align="center">{row.stt}</TableCell>
                             <TableCell align="center">{row.code}</TableCell>
                             <TableCell align="center">{row.name}</TableCell>
                             <TableCell align="center">{row.value}</TableCell>
