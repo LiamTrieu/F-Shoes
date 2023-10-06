@@ -92,7 +92,9 @@ export default function SellFrom({ idBill }) {
   const [idFillVoucher, setIdFIllVoucher] = useState('')
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
+  const [moneyReduced, setMoneyReduced] = useState([])
   const [list, setList] = useState([])
+
   const [khachHang, setKhachHang] = useState({
     fullName: '',
     email: '',
@@ -101,6 +103,7 @@ export default function SellFrom({ idBill }) {
     role: 2,
     gender: '',
     avatar: null,
+    note: '',
   })
   const [diaChi, setDiaChi] = useState({
     name: '',
@@ -172,7 +175,7 @@ export default function SellFrom({ idBill }) {
       fecthDataVoucherByIdCustomer()
     }
   }, [idFillVoucher])
-  }
+
   const loadDiaChi = (initPage, idCustomer) => {
     DiaChiApi.getAll(initPage - 1, idCustomer).then((response) => {
       setListDiaChiDetail(response.data.data.content)
@@ -696,12 +699,39 @@ export default function SellFrom({ idBill }) {
         })
       })
   }
+  const addBill = (id) => {
+    const data = {
+      fullName: detailDiaChi.name ? detailDiaChi.name : '',
+      phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
+      idVourcher: voucher.id ? voucher.id : '',
+      idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : '',
+      address: detailDiaChi.specificAddress ? detailDiaChi.specificAddress : '',
+      note: khachHang.note ? khachHang.note : '',
+      moneyShip: giaoHang ? shipTotal : 0,
+      moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',
+      totalMoney: totalPrice ? totalPrice : '',
+      type: giaoHang === true ? 1 : 0,
+    }
+
+    console.log(data)
+    sellApi.addBill(data, id).then((response) => {
+      toast.success(' xác nhận thành công', {
+        position: toast.POSITION.TOP_CENTER,
+      })
+    })
+  }
 
   const totalSum = listProductDetailBill.reduce((sum, cart) => {
     const productTotalPrice = calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
     return sum + productTotalPrice
   }, 0)
 
+  const totalPriceCart = totalSum
+  const ShipingFree = giaoHang ? shipTotal : 0
+  const moneyReducedVoucher = 0
+
+  const totalPrice = totalPriceCart + ShipingFree - moneyReducedVoucher
+  const totalMoneyReduce = (voucher.value * totalPriceCart) / 100
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -859,7 +889,7 @@ export default function SellFrom({ idBill }) {
             <Typography fontWeight={'bold'}>Tổng tiền</Typography>
             <Box>
               <Typography fontWeight={'bold'} style={{ color: 'red' }}>
-                100.000.000₫
+                {formatPrice(totalSum)}
               </Typography>
             </Box>
           </Stack>
@@ -1700,6 +1730,7 @@ export default function SellFrom({ idBill }) {
                 sx={{ mt: 1, width: '48%', float: 'right' }}
                 label="Ghi chú"
                 size="small"
+                onChange={(e) => setKhachHang({ ...khachHang, note: e.target.value })}
               />
             </Box>
             <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
@@ -1819,7 +1850,7 @@ export default function SellFrom({ idBill }) {
                             <TableCell align="center">{row.stt}</TableCell>
                             <TableCell align="center">{row.code}</TableCell>
                             <TableCell align="center">{row.name}</TableCell>
-                            <TableCell align="center">{row.value}</TableCell>
+                            <TableCell align="center">{row.value}%</TableCell>
                             <TableCell align="center">{row.maximumValue}</TableCell>
                             <TableCell align="center">{row.minimumAmount}</TableCell>
                             <TableCell align="center">
@@ -1862,14 +1893,14 @@ export default function SellFrom({ idBill }) {
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Giảm giá</Typography>
-                <Typography>0 ₫</Typography>
+                <Typography>{formatPrice(totalMoneyReduce)}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>
                   <b>Tổng số tiền</b>
                 </Typography>
                 <Typography color={'red'}>
-                  <b>3,600,000₫</b>
+                  <b>{formatPrice(totalPrice)}</b>
                 </Typography>
               </Stack>
             </Box>
@@ -1877,7 +1908,7 @@ export default function SellFrom({ idBill }) {
         </Grid2>
         <Box p={2}>
           <Stack direction={'row'} justifyContent={'right'}>
-            <Button variant="contained" color="success">
+            <Button variant="contained" color="success" onClick={() => addBill(idBill)}>
               Xác nhận đặt hàng
             </Button>
           </Stack>

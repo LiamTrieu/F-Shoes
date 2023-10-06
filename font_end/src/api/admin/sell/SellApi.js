@@ -46,5 +46,10 @@ const sellApi = {
     const url = `/sell/get-amount/${id}`
     return axiosClient.get(url)
   },
+
+  addBill: (data, id) => {
+    const url = `/sell/add-bill/${id}`
+    return axiosClient.put(url, data)
+  },
 }
 export default sellApi

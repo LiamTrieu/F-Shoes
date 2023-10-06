@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.sell.service;
 
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
+import com.fshoes.core.admin.sell.model.request.AddBillRequest;
 import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.model.response.CartDetailResponse;
@@ -30,6 +31,8 @@ public interface AdminSellService {
 
 
     Boolean deleteBill(String id);
+
+    Bill addBill(AddBillRequest request, String id);
 
     BillDetail addBillDetail(CreateBillRequest request);
 

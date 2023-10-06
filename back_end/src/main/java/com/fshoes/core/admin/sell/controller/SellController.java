@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.sell.controller;
 
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
+import com.fshoes.core.admin.sell.model.request.AddBillRequest;
 import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.service.AdminSellService;
@@ -74,6 +75,12 @@ public class SellController {
     public ObjectRespone addProductSell(@RequestBody CreateBillRequest request) {
         return new ObjectRespone(getSell.addBillDetail(request));
     }
+
+    @PutMapping("/add-bill/{id}")
+    public ObjectRespone addBill(@RequestBody AddBillRequest request , @PathVariable String id) {
+        return new ObjectRespone(getSell.addBill(request,id));
+    }
+
 
 
 }
