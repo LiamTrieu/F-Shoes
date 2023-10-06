@@ -59,9 +59,12 @@ const styleModalProductDetail = {
   boxShadow: 24,
 }
 
-export default function ModelSell({ open, setOPen, idCart, load }) {
+export default function ModelSell({ open, setOPen, idBill, load }) {
   const [isShowProductDetail, setIsShowProductDetail] = useState(false)
   const [listProduct, setListProduct] = useState([])
+  const [selectedProduct, setSelectedProduct] = useState(null)
+
+  console.log(listProduct)
 
   const [filter, setFilter] = useState({
     brand: null,
@@ -128,20 +131,20 @@ export default function ModelSell({ open, setOPen, idCart, load }) {
     fecthData(filter)
   }, [filter])
 
-  const onSubmitAddCartDetail = (id) => {
-    const cartDetail = {
-      cartId: idCart,
+  const onSubmitAddBillDetail = (id) => {
+    const BillDetail = {
+      billId: idBill,
       productDetailId: id,
       quantity: addAmount,
+      // price: selectedProduct.price,
     }
 
-    sellApi.addCartDetail(cartDetail).then((response) => {
+    sellApi.addBillDetail(BillDetail).then((response) => {
       toast.success('Thêm sản phẩm thành công', {
         position: toast.POSITION.TOP_CENTER,
       })
-      console.log(response)
       setIsShowProductDetail(false)
-      load(idCart)
+      load(idBill)
     })
   }
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
@@ -463,6 +466,7 @@ export default function ModelSell({ open, setOPen, idCart, load }) {
                           () => {
                             setIsShowProductDetail(true)
                             hanldeAmountProduct(cart.productDetailId)
+                            setSelectedProduct(cart)
                           }
                         }
                         variant="outlined"
@@ -588,7 +592,7 @@ export default function ModelSell({ open, setOPen, idCart, load }) {
                 <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2}>
                   <Box>
                     <Button
-                      onClick={() => onSubmitAddCartDetail(getAmountProduct.id)}
+                      onClick={() => onSubmitAddBillDetail(selectedProduct.productDetailId)}
                       variant="outlined"
                       color="cam">
                       <b>Xác nhận</b>

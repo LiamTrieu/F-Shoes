@@ -209,7 +209,6 @@ export default function AdCustomerAdd() {
       newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
       check++
     } else {
-      // Kiểm tra định dạng email bằng regex
       const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
       if (!phoneNumberRegex.test(khachHang.phoneNumber)) {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
@@ -267,7 +266,6 @@ export default function AdCustomerAdd() {
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         setLoading(true)
-        // Thêm mới khách hàng
         khachHangApi
           .addKhachHang(khachHang)
           .then((response) => {

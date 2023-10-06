@@ -5,9 +5,14 @@ import {
   Button,
   Chip,
   Container,
+  FormControl,
+  FormControlLabel,
+  Grid,
   IconButton,
   Modal,
   Paper,
+  Radio,
+  RadioGroup,
   Stack,
   Switch,
   Table,
@@ -35,6 +40,12 @@ import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 import voucherApi from '../../../api/admin/voucher/VoucherApi'
 import { toast } from 'react-toastify'
 import Empty from '../../../components/Empty'
+import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
+import { useTheme } from '@emotion/react'
+import confirmSatus from '../../../components/comfirmSwal'
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -52,49 +63,81 @@ const styleModalAddCustomer = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: { xs: '70vw', sm: '50vw', md: '40vw', lg: '30vw' },
-  height: '350px',
+  width: { xs: '85vw', sm: '65vw', md: '55vw', lg: '45vw' },
+  height: '500px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
 }
 
-export default function SellFrom({ idCart }) {
+export default function SellFrom({ idBill }) {
+  const theme = useTheme()
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
   const [isShowVoucher, setIsShowVoucher] = useState(false)
+  const [isShowDiaChi, setIsShowDiaChi] = useState(false)
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false)
+  const [isShowAddDiaChi, setIsShowAddDiaChi] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [initPage, setInitPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
 
   const [listProductCart, setListProductCart] = useState([])
   const [listKhachHang, setlistKhachHang] = useState([])
   const [listVoucher, setListVoucher] = useState([])
-  const [listProductDetailCart, setListProductDetailCart] = useState([])
+  const [listProductDetailBill, setListProductDetailBill] = useState([])
+  const [listDiaChiDetail, setListDiaChiDetail] = useState([])
 
   const [codeVoucher, setCodeVoucher] = useState('')
   const [idFillVoucher, setIdFIllVoucher] = useState('')
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
+  const [moneyReduced, setMoneyReduced] = useState([])
+  const [list, setList] = useState([])
+
+  const [khachHang, setKhachHang] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    dateBirth: '',
+    role: 2,
+    gender: '',
+    avatar: null,
+    note: '',
+  })
+  const [diaChi, setDiaChi] = useState({
+    name: '',
+    phoneNumber: '',
+    specificAddress: '',
+    type: true,
+    provinceId: null,
+    districtId: null,
+    wardId: null,
+    idCustomer: '',
+  })
+  const [errors, setErrors] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    dateBirth: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    specificAddress: '',
+  })
 
   const openAddProductModal = () => {
     setShowModal(true)
   }
   useEffect(() => {
-    fectchProductCartSell(idCart)
-  }, [idCart])
+    fectchProductBillSell(idBill)
+  }, [idBill])
 
-  const fectchProductCartSell = (id) => {
-    sellApi.getProductDetailCart(id).then((response) => {
-      setListProductDetailCart(response.data.data)
+  const fectchProductBillSell = (id) => {
+    sellApi.getProductDetailBill(id).then((response) => {
+      setListProductDetailBill(response.data.data)
     })
   }
-
-  useEffect(() => {
-    fecthDataCustomer()
-    fecthDataProductCart()
-    fecthDataVoucher(idFillVoucher)
-    loadTinh()
-  }, [idFillVoucher])
 
   const fecthDataProductCart = () => {
     sellApi.getAllProductCart().then((response) => {
@@ -107,27 +150,46 @@ export default function SellFrom({ idCart }) {
       setlistKhachHang(response.data.data.data)
     })
   }
-  const fecthDataVoucher = (idCustomer) => {
-    if (idCustomer !== '') {
-      voucherApi.getAllVoucherByIdCustomer(idCustomer).then((response) => {
-        setListVoucher(response.data.data)
-      })
-    } else {
-      voucherApi.getAllVoucherBystatus().then((response) => {
-        setListVoucher(response.data.data)
-      })
+  const fecthDataVoucher = () => {
+    voucherApi.getAllVoucherBystatus().then((response) => {
+      setListVoucher(response.data.data)
+    })
+  }
+
+  useEffect(() => {
+    fecthDataCustomer()
+    fecthDataProductCart()
+    fecthDataVoucher()
+    loadTinh()
+    loadList()
+
+    const fecthDataVoucherByIdCustomer = () => {
+      if (idFillVoucher !== '') {
+        voucherApi.getAllVoucherByIdCustomer(idFillVoucher).then((response) => {
+          const newVouchers = response.data.data
+          setListVoucher((prevVouchers) => [...prevVouchers, ...newVouchers])
+        })
+      }
     }
+    if (idFillVoucher !== '') {
+      fecthDataVoucherByIdCustomer()
+    }
+  }, [idFillVoucher])
+
+  const loadDiaChi = (initPage, idCustomer) => {
+    DiaChiApi.getAll(initPage - 1, idCustomer).then((response) => {
+      setListDiaChiDetail(response.data.data.content)
+      setTotalPages(response.data.data.totalPages)
+    })
   }
 
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
-    // originalPrice là giá gốc của sản phẩm, discountPercentage là phần trăm giảm giá
     const discountAmount = (discountPercentage / 100) * originalPrice
     const discountedPrice = originalPrice - discountAmount
     return discountedPrice
   }
 
   const formatPrice = (price) => {
-    // Sử dụng hàm toLocaleString để định dạng tiền tệ
     return price.toLocaleString('vi-VN', {
       style: 'currency',
       currency: 'VND',
@@ -137,6 +199,12 @@ export default function SellFrom({ idCart }) {
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
+
+  const loadList = () => {
+    khachHangApi.getAll().then((response) => {
+      setList(response.data)
+    })
+  }
 
   const loadTinh = () => {
     ghnAPI.getProvince().then((response) => {
@@ -156,40 +224,72 @@ export default function SellFrom({ idCart }) {
     })
   }
 
+  const [selectedTinh, setSelectedTinh] = useState(null)
+  const [selectedHuyen, setSelectedHuyen] = useState(null)
+  const [selectedXa, setSelectedXa] = useState(null)
   const handleTinhChange = (_, newValue) => {
+    setSelectedTinh(newValue)
+    setSelectedHuyen(null)
     if (newValue) {
       loadHuyen(newValue.id)
-      // Lưu tên tỉnh đã chọn vào state
       setTinhName(newValue.label)
-      // Đặt giá trị tỉnh vào chi tiết địa chỉ
+      setDiaChi({ ...diaChi, provinceId: newValue.id })
       setDetailDiaChi({ ...detailDiaChi, provinceId: newValue.id })
+      setNewDiaChi({ ...newDiaChi, provinceId: { id: newValue.id, label: newValue.label } })
     } else {
       setHuyen([])
+      setDiaChi({ ...diaChi, provinceId: null })
+      setNewDiaChi({ ...newDiaChi, provinceId: { id: '', label: '' } })
       setDetailDiaChi({ ...detailDiaChi, provinceId: '' })
     }
   }
 
   const handleHuyenChange = (_, newValue) => {
+    setSelectedHuyen(newValue)
+    setSelectedXa(null)
     if (newValue) {
       loadXa(newValue.id)
-      // Lưu tên huyện đã chọn vào state
+      setDiaChi({ ...diaChi, districtId: newValue.id })
+      setNewDiaChi({ ...newDiaChi, districtId: { id: newValue.id, label: newValue.label } })
       setHuyenName(newValue.label)
-      // Đặt giá trị huyện vào chi tiết địa chỉ
       setDetailDiaChi({ ...detailDiaChi, districtId: newValue.id })
     } else {
       setXa([])
+      setNewDiaChi({ ...newDiaChi, districtId: { id: '', label: '' } })
       setDetailDiaChi({ ...detailDiaChi, districtId: '' })
     }
   }
 
   const handleXaChange = (_, newValue) => {
     if (newValue) {
+      setSelectedXa(newValue)
+      setDiaChi({ ...diaChi, wardId: newValue?.id })
       setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
+      setNewDiaChi({ ...newDiaChi, wardId: { id: newValue.id, label: newValue.label } })
     } else {
       setDetailDiaChi({ ...detailDiaChi, wardId: '' })
+      setNewDiaChi({ ...newDiaChi, wardId: { id: '', label: '' } })
     }
   }
+  const updateDiaChi = () => {
+    setDiaChi({
+      ...diaChi,
+      name: khachHang.fullName,
+      phoneNumber: khachHang.phoneNumber,
+      type: true,
+    })
+  }
+  const handleGenderChange = (event) => {
+    setKhachHang({ ...khachHang, gender: event.target.value })
+  }
 
+  const isPhoneNumberDuplicate = (phoneNumber) => {
+    return list.some((customer) => customer.phoneNumber === phoneNumber)
+  }
+
+  const isEmailDuplicate = (email) => {
+    return list.some((customer) => customer.email === email)
+  }
   const [detailDiaChi, setDetailDiaChi] = useState({
     name: '',
     phoneNumber: '',
@@ -201,9 +301,120 @@ export default function SellFrom({ idCart }) {
   const [huyenName, setHuyenName] = useState('')
   const [tinhName, setTinhName] = useState('')
 
+  const onSubmit = (khachHang) => {
+    const newErrors = {}
+    let check = 0
+
+    if (!khachHang.fullName) {
+      newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
+      check++
+    } else if (khachHang.fullName.length > 100) {
+      newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
+      check++
+    } else {
+      newErrors.fullName = ''
+    }
+
+    if (!khachHang.email) {
+      newErrors.email = 'Vui lòng nhập Email.'
+      check++
+    } else {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+      if (!emailRegex.test(khachHang.email)) {
+        newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
+        check++
+      } else if (khachHang.email.length > 50) {
+        newErrors.email = 'Email không được quá 50 kí tự.'
+        check++
+      } else if (isEmailDuplicate(khachHang.email)) {
+        newErrors.email = 'Email đã tồn tại trong danh sách.'
+        check++
+      } else {
+        newErrors.email = ''
+      }
+    }
+
+    if (!khachHang.phoneNumber) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      check++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(khachHang.phoneNumber)) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        check++
+      } else if (isPhoneNumberDuplicate(khachHang.phoneNumber)) {
+        newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
+        check++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+
+    if (!khachHang.dateBirth) {
+      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      check++
+    } else {
+      newErrors.dateBirth = ''
+    }
+
+    if (!selectedTinh) {
+      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
+      check++
+    } else {
+      newErrors.provinceId = ''
+    }
+
+    if (!selectedHuyen) {
+      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
+      check++
+    } else {
+      newErrors.districtId = ''
+    }
+
+    if (!selectedXa) {
+      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+      check++
+    } else {
+      newErrors.wardId = ''
+    }
+
+    if (check > 0) {
+      setErrors(newErrors)
+      return
+    }
+    const title = 'Xác nhận Thêm mới khách hàng?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        khachHangApi.addKhachHang(khachHang).then((response) => {
+          let khachHangId = response.data.data.id
+          const obj = {
+            name: diaChi.name,
+            phoneNumber: diaChi.phoneNumber,
+            specificAddress: diaChi.specificAddress,
+            type: true,
+            idCustomer: khachHangId,
+            provinceId: diaChi.provinceId,
+            districtId: diaChi.districtId,
+            wardId: diaChi.wardId,
+          }
+          DiaChiApi.add(obj).then(() => {
+            toast.success('Thêm khách hàng thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            setIsShowAddCustomer(false)
+            fecthDataCustomer()
+            setSelectedTinh(null)
+            setSelectedHuyen(null)
+            setSelectedXa(null)
+          })
+        })
+      }
+    })
+  }
+
   const fillDetailDiaChi = (idCustomer) => {
     DiaChiApi.getAddressDefault(idCustomer).then((response) => {
-      console.log(response)
       const {
         idDiaChi,
         name,
@@ -219,11 +430,81 @@ export default function SellFrom({ idCart }) {
       loadTinh()
       loadHuyen(provinceId)
       loadXa(districtId)
-      // Cắt chuỗi specificAddress thành các phần riêng biệt
       const addressParts = specificAddress.split(', ')
       if (addressParts.length === 4) {
         const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
-        // Đặt giá trị cho các biến state tương ứng
+        setXaName(xaDetail)
+        setHuyenName(huyenDetail)
+        setTinhName(tinhDetail)
+
+        setDetailDiaChi({
+          id: idDiaChi,
+          name: name,
+          type: type,
+          phoneNumber: phoneNumber,
+          email: email,
+          specificAddress: address,
+          provinceId: provinceId,
+          districtId: districtId,
+          wardId: wardId,
+        })
+        const filtelService = {
+          shop_id: '3911708',
+          from_district: '3440',
+          to_district: districtId,
+        }
+
+        ghnAPI.getServiceId(filtelService).then((response) => {
+          const serviceId = response.data.body.serviceId
+          const filterTotal = {
+            from_district_id: '3440',
+            service_id: serviceId,
+            to_district_id: districtId,
+            to_ward_code: wardId,
+            weight: '200',
+            insurance_value: '10000',
+          }
+
+          ghnAPI.getTotal(filterTotal).then((response) => {
+            setShipTotal(response.data.body.total)
+
+            const filtelTime = {
+              from_district_id: '3440',
+              from_ward_code: '13010',
+              to_district_id: districtId,
+              to_ward_code: wardId,
+              service_id: serviceId,
+            }
+            ghnAPI.getime(filtelTime).then((response) => {
+              setTimeShip(response.data.body.leadtime * 1000)
+            })
+          })
+        })
+      }
+    })
+  }
+
+  const handleDetailDiaChi = (idDiaChi) => {
+    setIsShowDiaChi(false)
+    DiaChiApi.getById(idDiaChi).then((response) => {
+      const {
+        idDiaChi,
+        name,
+        email,
+        phoneNumber,
+        specificAddress,
+        provinceId,
+        districtId,
+        wardId,
+        type,
+      } = response.data.data
+
+      loadTinh()
+      loadHuyen(provinceId)
+      loadXa(districtId)
+      const addressParts = specificAddress.split(', ')
+      if (addressParts.length === 4) {
+        const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
         setXaName(xaDetail)
         setHuyenName(huyenDetail)
         setTinhName(tinhDetail)
@@ -276,10 +557,120 @@ export default function SellFrom({ idCart }) {
     })
   }
 
+  const [newDiaChi, setNewDiaChi] = useState({
+    name: '',
+    phoneNumber: '',
+    specificAddress: '',
+    provinceId: { id: '', label: '' },
+    districtId: { id: '', label: '' },
+    wardId: { id: '', label: '' },
+    type: null,
+    idCustomer: '',
+  })
+  const [errorsAA, setErrorsAA] = useState({
+    name: '',
+    email: '',
+    phoneNumber: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    specificAddress: '',
+  })
+
   const handleDiaChi = (idCustomer) => {
     setIsShowCustomer(false)
+    loadDiaChi(initPage, idCustomer)
     fillDetailDiaChi(idCustomer)
     setIdFIllVoucher(idCustomer)
+    setNewDiaChi({
+      ...newDiaChi,
+      idCustomer: idCustomer,
+    })
+  }
+
+  const onCreateDiaChi = (newDiaChi) => {
+    const newErrors = {}
+    let checkAA = 0
+
+    if (!newDiaChi.name.trim()) {
+      newErrors.name = 'Tên người nhận không được để trống'
+      checkAA++
+    } else if (newDiaChi.name.trim().length > 100) {
+      newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
+      checkAA++
+    } else {
+      newErrors.name = ''
+    }
+
+    if (!newDiaChi.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      checkAA++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(newDiaChi.phoneNumber.trim())) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        checkAA++
+        // } else if (isPhoneNumberDuplicate(khachHang.phoneNumber)) {
+        //   newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
+        //   check++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+
+    if (!selectedTinh) {
+      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
+      checkAA++
+    } else {
+      newErrors.provinceId = ''
+    }
+
+    if (!selectedHuyen) {
+      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
+      checkAA++
+    } else {
+      newErrors.districtId = ''
+    }
+
+    if (!selectedXa) {
+      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+      checkAA++
+    } else {
+      newErrors.wardId = ''
+    }
+    if (checkAA > 0) {
+      setErrorsAA(newErrors)
+      return
+    }
+
+    const title = 'Xác nhận Thêm mới địa chỉ?'
+    const text = ''
+    const obj = {
+      name: newDiaChi.name,
+      phoneNumber: newDiaChi.phoneNumber,
+      email: newDiaChi.email,
+      provinceId: selectedTinh ? selectedTinh.id : null,
+      districtId: selectedHuyen ? selectedHuyen.id : null,
+      wardId: selectedXa ? selectedXa.id : null,
+      specificAddress:
+        newDiaChi.specificAddress +
+        (selectedXa ? `, ${selectedXa.label}` : '') +
+        (selectedHuyen ? `, ${selectedHuyen.label}` : '') +
+        (selectedTinh ? `, ${selectedTinh.label}` : ''),
+      type: 0,
+      idCustomer: newDiaChi.idCustomer,
+    }
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        DiaChiApi.add(obj).then(() => {
+          loadDiaChi(initPage, obj.idCustomer)
+          toast.success('Thêm địa chỉ thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          setIsShowAddDiaChi(false)
+        })
+      }
+    })
   }
 
   const [voucher, setVoucher] = useState({
@@ -308,24 +699,39 @@ export default function SellFrom({ idCart }) {
         })
       })
   }
+  const addBill = (id) => {
+    const data = {
+      fullName: detailDiaChi.name ? detailDiaChi.name : '',
+      phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
+      idVourcher: voucher.id ? voucher.id : '',
+      idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : '',
+      address: detailDiaChi.specificAddress ? detailDiaChi.specificAddress : '',
+      note: khachHang.note ? khachHang.note : '',
+      moneyShip: giaoHang ? shipTotal : 0,
+      moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',
+      totalMoney: totalPrice ? totalPrice : '',
+      type: giaoHang === true ? 1 : 0,
+    }
 
-  const totalSum = listProductDetailCart.reduce((sum, cart) => {
+    console.log(data)
+    sellApi.addBill(data, id).then((response) => {
+      toast.success(' xác nhận thành công', {
+        position: toast.POSITION.TOP_CENTER,
+      })
+    })
+  }
+
+  const totalSum = listProductDetailBill.reduce((sum, cart) => {
     const productTotalPrice = calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
     return sum + productTotalPrice
   }, 0)
 
-  function handleAddToCart(newCartItem) {
-    const existingCartItemIndex = listProductDetailCart.findIndex(
-      (cartItem) => cartItem.id === newCartItem.id,
-    )
+  const totalPriceCart = totalSum
+  const ShipingFree = giaoHang ? shipTotal : 0
+  const moneyReducedVoucher = 0
 
-    if (existingCartItemIndex !== -1) {
-      listProductDetailCart[existingCartItemIndex].quantity += 1
-    } else {
-      listProductDetailCart.push(newCartItem)
-    }
-  }
-
+  const totalPrice = totalPriceCart + ShipingFree - moneyReducedVoucher
+  const totalMoneyReduce = (voucher.value * totalPriceCart) / 100
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -345,16 +751,16 @@ export default function SellFrom({ idCart }) {
         </Box>
 
         <ModelSell
-          load={fectchProductCartSell}
-          idCart={idCart}
+          load={fectchProductBillSell}
+          idBill={idBill}
           open={showModal}
           setOPen={setShowModal}
         />
 
         <Box>
           <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>
-            {listProductDetailCart.length > 0 ? (
-              listProductDetailCart.map((cart) => (
+            {listProductDetailBill.length > 0 ? (
+              listProductDetailBill.map((cart) => (
                 <Table>
                   <TableRow sx={{ border: 0 }} key={cart.id}>
                     <TableCell sx={{ px: 0 }} width={'5%'}>
@@ -408,21 +814,18 @@ export default function SellFrom({ idCart }) {
                         </p>
                         <p style={{ color: 'red', margin: '5px 0' }}>
                           {/* <b>{cart.price}.000&#8363;</b> */}
-                          {cart.promotion ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
+                          {cart.promotion ? (
                             <div>
                               <div className="promotion-price">{`${formatPrice(cart.price)}đ`}</div>{' '}
-                              {/* Hiển thị giá gốc */}
                               <div>
                                 <span style={{ color: 'red', fontWeight: 'bold' }}>
                                   {`${formatPrice(
                                     calculateDiscountedPrice(cart.price, cart.value),
                                   )}`}
                                 </span>{' '}
-                                {/* Hiển thị giá sau khuyến mãi */}
                               </div>
                             </div>
                           ) : (
-                            // Nếu không có khuyến mãi, chỉ hiển thị giá gốc
                             <span>{`${cart.price}₫`}</span>
                           )}
                         </p>
@@ -597,21 +1000,218 @@ export default function SellFrom({ idCart }) {
                       </IconButton>
                     </Toolbar>
                     <Container>
-                      <TextField sx={{ mt: 2 }} label="Tên khách hàng" fullWidth size="small" />
-                      <TextField sx={{ mt: 2 }} label="Email" fullWidth size="small" />
-                      <TextField sx={{ mt: 2 }} label="Số điện thoại" fullWidth size="small" />
-                      <TextField sx={{ mt: 2 }} label="Địa chỉ" fullWidth size="small" />
+                      <TextField
+                        sx={{ mt: 2 }}
+                        label="Tên khách hàng"
+                        id="outlined-basic"
+                        variant="outlined"
+                        type="text"
+                        size="small"
+                        fullWidth
+                        onChange={(e) => {
+                          setKhachHang({ ...khachHang, fullName: e.target.value.trim() })
+                          updateDiaChi()
+                          setErrors({ ...errors, fullName: '' })
+                        }}
+                      />
+                      <Typography variant="body2" color="error">
+                        {errors.fullName}
+                      </Typography>
+                      <TextField
+                        sx={{ mt: 2 }}
+                        label="Email"
+                        id="outlined-basic"
+                        variant="outlined"
+                        type="text"
+                        size="small"
+                        fullWidth
+                        onChange={(e) => {
+                          setKhachHang({ ...khachHang, email: e.target.value.trim() })
+                          updateDiaChi()
+                          setErrors({ ...errors, email: '' })
+                        }}
+                      />
+                      <Typography variant="body2" color="error">
+                        {errors.email}
+                      </Typography>
+                      <TextField
+                        sx={{ mt: 2 }}
+                        label="Số điện thoại"
+                        id="outlined-basic"
+                        variant="outlined"
+                        type="text"
+                        size="small"
+                        fullWidth
+                        onChange={(e) => {
+                          setKhachHang({ ...khachHang, phoneNumber: e.target.value.trim() })
+                          updateDiaChi()
+                          setErrors({ ...errors, phoneNumber: '' })
+                        }}
+                      />
+                      <Typography variant="body2" color="error">
+                        {errors.phoneNumber}
+                      </Typography>
+
+                      <Grid container spacing={2} sx={{ mt: 2 }}>
+                        <Grid item xs={8}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={['DatePicker']}>
+                              <DatePicker
+                                label="Ngày sinh"
+                                sx={{ width: '100%' }}
+                                className="small-datepicker"
+                                onChange={(e) =>
+                                  setKhachHang({
+                                    ...khachHang,
+                                    dateBirth: dayjs(e).format('DD-MM-YYYY'),
+                                  })
+                                }
+                              />
+                            </DemoContainer>
+                          </LocalizationProvider>
+                          <Typography variant="body2" color="error">
+                            {errors.dateBirth}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControl size="small">
+                            <RadioGroup
+                              label
+                              row
+                              value={khachHang.gender}
+                              onChange={handleGenderChange}>
+                              <FormControlLabel
+                                name="genderUpdate"
+                                value="true"
+                                control={<Radio />}
+                                label="Nam"
+                              />
+                              <FormControlLabel
+                                name="genderUpdate"
+                                value="false"
+                                control={<Radio />}
+                                label="Nữ"
+                              />
+                            </RadioGroup>
+                          </FormControl>
+                          <Typography variant="body2" color="error">
+                            {errors.gender}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={2} sx={{ mt: 2 }}>
+                        <Grid item xs={4}>
+                          <Box sx={{ minWidth: 120 }}>
+                            <Autocomplete
+                              popupIcon={null}
+                              fullWidth
+                              size="small"
+                              className="search-field"
+                              id="combo-box-demo"
+                              value={selectedTinh}
+                              onChange={handleTinhChange}
+                              options={tinh.map((item) => ({
+                                label: item.provinceName,
+                                id: item.provinceID,
+                              }))}
+                              getOptionLabel={(options) => options.label}
+                              renderInput={(params) => (
+                                <TextField placeholder="Tỉnh/thành phố" color="cam" {...params} />
+                              )}
+                            />
+                          </Box>
+                          <Typography variant="body2" color="error">
+                            {errors.provinceId}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Box sx={{ minWidth: 120 }}>
+                            <Autocomplete
+                              popupIcon={null}
+                              fullWidth
+                              size="small"
+                              className="search-field"
+                              id="huyen-autocomplete"
+                              value={selectedHuyen}
+                              onChange={handleHuyenChange}
+                              options={huyen.map((item) => ({
+                                label: item.districtName,
+                                id: item.districtID,
+                              }))}
+                              getOptionLabel={(options) => options.label}
+                              renderInput={(params) => (
+                                <TextField placeholder="Quận/huyện" color="cam" {...params} />
+                              )}
+                            />
+                          </Box>
+                          <Typography variant="body2" color="error">
+                            {errors.districtId}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Box sx={{ minWidth: 120 }}>
+                            <Autocomplete
+                              popupIcon={null}
+                              fullWidth
+                              size="small"
+                              className="search-field"
+                              id="xa-autocomplete"
+                              value={selectedXa}
+                              onChange={handleXaChange}
+                              options={xa.map((item) => ({
+                                label: item.wardName,
+                                id: item.wardCode,
+                              }))}
+                              getOptionLabel={(options) => options.label}
+                              renderInput={(params) => (
+                                <TextField
+                                  placeholder="Xã/phường/thị trấn"
+                                  color="cam"
+                                  {...params}
+                                />
+                              )}
+                            />
+                          </Box>
+                          <Typography variant="body2" color="error">
+                            {errors.wardId}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                      <TextField
+                        sx={{ mt: 2 }}
+                        label="Địa chỉ"
+                        id="outlined-basic"
+                        variant="outlined"
+                        type="text"
+                        size="small"
+                        fullWidth
+                        onChange={(e) =>
+                          setDiaChi({
+                            ...diaChi,
+                            specificAddress:
+                              e.target.value.trim() +
+                              ', ' +
+                              selectedXa.label +
+                              ', ' +
+                              selectedHuyen.label +
+                              ', ' +
+                              selectedTinh.label,
+                          })
+                        }
+                        disabled={!selectedXa}
+                      />
                       <Stack
                         mt={2}
                         direction="row"
                         justifyContent="flex-end"
                         alignItems="flex-end"
                         spacing={2}>
-                        <Box>
-                          <Button variant="contained" color="success">
-                            <b>Thêm</b>
-                          </Button>
-                        </Box>
+                        <Button
+                          onClick={() => onSubmit(khachHang)}
+                          variant="contained"
+                          color="success">
+                          <b>Thêm</b>
+                        </Button>
                       </Stack>
                     </Container>
                   </Box>
@@ -704,6 +1304,295 @@ export default function SellFrom({ idCart }) {
               }}>
               Khách lẻ
             </span>
+            <Button
+              sx={{ py: '6.7px', ml: 1 }}
+              variant="outlined"
+              onClick={() => setIsShowDiaChi(true)}>
+              <b>Chọn Địa chỉ</b>
+            </Button>
+            <Modal
+              open={isShowDiaChi}
+              onClose={() => {
+                setIsShowDiaChi(false)
+              }}>
+              <Box sx={styleModalProduct}>
+                <Toolbar sx={{ mb: 1 }}>
+                  <Box
+                    sx={{
+                      color: 'black',
+                      flexGrow: 1,
+                    }}>
+                    <Typography variant="h6" component="div">
+                      Danh sách Địa chỉ
+                    </Typography>
+                  </Box>
+                  <IconButton
+                    onClick={() => {
+                      setIsShowDiaChi(false)
+                    }}
+                    aria-label="close"
+                    color="error"
+                    style={{
+                      boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
+                    }}>
+                    <CloseIcon />
+                  </IconButton>
+                </Toolbar>
+                <Container>
+                  <Table className="tableCss mt-5">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center" width={'7%'}>
+                          STT
+                        </TableCell>
+                        <TableCell align="center" width={'25%'}>
+                          Tên người nhận
+                        </TableCell>
+                        <TableCell align="center" width={'12%'}>
+                          Số điện thoại
+                        </TableCell>
+                        <TableCell align="center" width={'15%'}>
+                          Địa chỉ
+                        </TableCell>
+                        <TableCell align="center" width={'10%'}>
+                          Thao tác
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {listDiaChiDetail.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                          <TableCell align="center">{}</TableCell>
+                          <TableCell align="center">{row.name}</TableCell>
+                          <TableCell align="center">{row.phoneNumber}</TableCell>
+                          <TableCell align="center">{row.specificAddress}</TableCell>
+                          <TableCell align="center">
+                            <Button
+                              variant="contained"
+                              onClick={() => handleDetailDiaChi(row.id)}
+                              color="success">
+                              <b>chọn</b>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <Button
+                    variant="outlined"
+                    color="cam"
+                    sx={{ mt: 3 }}
+                    onClick={() => {
+                      setIsShowAddDiaChi(true)
+                    }}>
+                    Thêm địa chỉ
+                  </Button>
+                  <Box
+                    sx={{
+                      mt: 3,
+                      maxHeight: '400px',
+                      overflow: 'auto',
+                    }}></Box>
+                  <Modal
+                    open={isShowAddDiaChi}
+                    onClose={() => {
+                      setIsShowAddDiaChi(false)
+                    }}>
+                    <Box sx={styleModalAddCustomer}>
+                      <Toolbar>
+                        <Box
+                          sx={{
+                            color: 'black',
+                            flexGrow: 1,
+                          }}>
+                          <Typography variant="h6" component="div">
+                            Thêm địa chỉ
+                          </Typography>
+                        </Box>
+                        <IconButton
+                          onClick={() => {
+                            setIsShowAddDiaChi(false)
+                          }}
+                          aria-label="close"
+                          color="error"
+                          style={{
+                            boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
+                          }}>
+                          <CloseIcon />
+                        </IconButton>
+                      </Toolbar>
+                      <Container>
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                          <Grid item xs={12} md={6}>
+                            <Typography>
+                              <span className="required"> *</span>Tên người nhận
+                            </Typography>
+                            <TextField
+                              id="outlined-basic"
+                              variant="outlined"
+                              type="text"
+                              size="small"
+                              name="name"
+                              fullWidth
+                              onChange={(e) => {
+                                setNewDiaChi({ ...newDiaChi, name: e.target.value })
+                              }}
+                            />
+                            <Typography variant="body2" color="error">
+                              {errorsAA.name}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} md={6}>
+                            <Typography>
+                              <span className="required"> *</span>Số điện thoại
+                            </Typography>
+                            <TextField
+                              id="outlined-basic"
+                              variant="outlined"
+                              type="text"
+                              size="small"
+                              name="phoneNumber"
+                              fullWidth
+                              onChange={(e) => {
+                                setNewDiaChi({ ...newDiaChi, phoneNumber: e.target.value })
+                              }}
+                            />
+                            <Typography variant="body2" color="error">
+                              {errorsAA.phoneNumber}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                          <Grid item xs={12} md={4}>
+                            <Typography>
+                              <span className="required"> *</span>Tỉnh/thành phố
+                            </Typography>
+                            <Box sx={{ minWidth: 120 }}>
+                              <Autocomplete
+                                popupIcon={null}
+                                fullWidth
+                                size="small"
+                                className="search-field"
+                                id="combo-box-demo"
+                                value={selectedTinh}
+                                onChange={handleTinhChange}
+                                options={
+                                  tinh &&
+                                  tinh.map((item) => ({
+                                    label: item.provinceName,
+                                    id: item.provinceID,
+                                  }))
+                                }
+                                getOptionLabel={(options) => options.label}
+                                renderInput={(params) => (
+                                  <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
+                                )}
+                              />
+                            </Box>
+                            <Typography variant="body2" color="error">
+                              {errorsAA.provinceId}
+                            </Typography>
+                          </Grid>
+
+                          <Grid item xs={12} md={4}>
+                            <Typography>
+                              <span className="required"> *</span>Quận/huyện
+                            </Typography>
+                            <Box sx={{ minWidth: 120 }}>
+                              <Autocomplete
+                                popupIcon={null}
+                                fullWidth
+                                size="small"
+                                className="search-field"
+                                id="huyen-autocomplete"
+                                value={selectedHuyen}
+                                onChange={handleHuyenChange}
+                                options={
+                                  huyen &&
+                                  huyen.map((item) => ({
+                                    label: item.districtName,
+                                    id: item.districtID,
+                                  }))
+                                }
+                                getOptionLabel={(options) => options.label}
+                                renderInput={(params) => (
+                                  <TextField placeholder="nhập tên huyện" color="cam" {...params} />
+                                )}
+                              />
+                            </Box>
+                            <Typography variant="body2" color="error">
+                              {errorsAA.districtId}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} md={4}>
+                            <Typography>
+                              <span className="required"> *</span>Xã/phường/thị trấn
+                            </Typography>
+                            <Box sx={{ minWidth: 120 }}>
+                              <Autocomplete
+                                popupIcon={null}
+                                fullWidth
+                                size="small"
+                                className="search-field"
+                                id="xa-autocomplete"
+                                value={selectedXa}
+                                onChange={handleXaChange}
+                                options={
+                                  xa &&
+                                  xa.map((item) => ({ label: item.wardName, id: item.wardCode }))
+                                }
+                                getOptionLabel={(options) => options.label}
+                                renderInput={(params) => (
+                                  <TextField placeholder="nhập tên Xã" color="cam" {...params} />
+                                )}
+                              />
+                            </Box>
+                            <Typography variant="body2" color="error">
+                              {errorsAA.wardId}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                          <Typography>
+                            <span className="required"> *</span>Địa chỉ cụ thể
+                          </Typography>
+                          <Grid item xs={12} md={12}>
+                            <TextField
+                              id="outlined-basic"
+                              variant="outlined"
+                              type="text"
+                              size="small"
+                              fullWidth
+                              onChange={(e) =>
+                                setNewDiaChi({
+                                  ...newDiaChi,
+                                  specificAddress: e.target.value,
+                                })
+                              }
+                              disabled={!selectedXa}
+                            />
+                          </Grid>
+                        </Grid>
+
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                          <Grid item xs={12}>
+                            <Button
+                              onClick={() => onCreateDiaChi(newDiaChi)}
+                              variant="outlined"
+                              color="cam"
+                              sx={{ float: 'right' }}>
+                              Tạo Mới
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      </Container>
+                    </Box>
+                  </Modal>
+                </Container>
+              </Box>
+            </Modal>
           </Box>
           <Box display={'inline'} sx={{ float: 'right' }}>
             <b>Giao hàng</b>
@@ -726,7 +1615,7 @@ export default function SellFrom({ idCart }) {
                 label="Tên người nhận"
                 type="text"
                 size="small"
-                sx={{ mt: 2, width: '100%' }}
+                sx={{ mt: 1, width: '48%' }}
                 name="name"
                 value={detailDiaChi.name}
                 // onChange={(e) => {
@@ -739,82 +1628,95 @@ export default function SellFrom({ idCart }) {
                 label="Số điện thoại"
                 type="text"
                 size="small"
-                sx={{ mt: 2, width: '100%' }}
+                sx={{ mt: 1, width: '48%', float: 'right' }}
                 name="phoneNumber"
                 value={detailDiaChi.phoneNumber}
                 // onChange={(e) => {
                 //   setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
                 // }}
               />
-              <Autocomplete
-                popupIcon={null}
-                sx={{ mt: 2, width: '100%' }}
-                size="small"
-                className="search-field"
-                id="combo-box-demo"
-                value={{ label: tinhName, id: detailDiaChi.provinceId }}
-                onChange={handleTinhChange}
-                options={
-                  tinh &&
-                  tinh.map((item) => ({
-                    label: item.provinceName,
-                    id: item.provinceID,
-                  }))
-                }
-                getOptionLabel={(options) => options.label}
-                renderInput={(params) => (
-                  <TextField
-                    placeholder="nhập tên tỉnh"
-                    label="Tỉnh/thành phố"
-                    color="cam"
-                    {...params}
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={4}>
+                  <Autocomplete
+                    popupIcon={null}
+                    sx={{ mt: 1, width: '100%' }}
+                    size="small"
+                    className="search-field"
+                    id="combo-box-demo"
+                    value={{ label: tinhName, id: detailDiaChi.provinceId }}
+                    onChange={handleTinhChange}
+                    options={
+                      tinh &&
+                      tinh.map((item) => ({
+                        label: item.provinceName,
+                        id: item.provinceID,
+                      }))
+                    }
+                    getOptionLabel={(options) => options.label}
+                    renderInput={(params) => (
+                      <TextField
+                        placeholder="nhập tên tỉnh"
+                        label="Tỉnh/thành phố"
+                        color="cam"
+                        {...params}
+                      />
+                    )}
                   />
-                )}
-              />
-              <Autocomplete
-                popupIcon={null}
-                sx={{ mt: 2, width: '100%' }}
-                size="small"
-                className="search-field"
-                value={{ label: huyenName, id: detailDiaChi.districtId }}
-                onChange={handleHuyenChange}
-                options={
-                  huyen &&
-                  huyen.map((item) => ({
-                    label: item.districtName,
-                    id: item.districtID,
-                  }))
-                }
-                getOptionLabel={(option) => option.label}
-                renderInput={(params) => (
-                  <TextField placeholder="Chọn huyện" label="Quận/huyện" color="cam" {...params} />
-                )}
-              />
-              <Autocomplete
-                popupIcon={null}
-                sx={{ mt: 2, width: '100%' }}
-                size="small"
-                className="search-field"
-                value={{ label: xaName, id: detailDiaChi.wardId }}
-                onChange={handleXaChange}
-                options={xa && xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
-                getOptionLabel={(option) => option.label}
-                renderInput={(params) => (
-                  <TextField
-                    placeholder="Chọn xã"
-                    label="Xã/phường/thị trấn"
-                    color="cam"
-                    {...params}
+                </Grid>
+                <Grid item xs={4}>
+                  <Autocomplete
+                    popupIcon={null}
+                    sx={{ mt: 1, width: '100%' }}
+                    size="small"
+                    className="search-field"
+                    value={{ label: huyenName, id: detailDiaChi.districtId }}
+                    onChange={handleHuyenChange}
+                    options={
+                      huyen &&
+                      huyen.map((item) => ({
+                        label: item.districtName,
+                        id: item.districtID,
+                      }))
+                    }
+                    getOptionLabel={(option) => option.label}
+                    renderInput={(params) => (
+                      <TextField
+                        placeholder="Chọn huyện"
+                        label="Quận/huyện"
+                        color="cam"
+                        {...params}
+                      />
+                    )}
                   />
-                )}
-              />
+                </Grid>
+                <Grid item xs={4}>
+                  <Autocomplete
+                    popupIcon={null}
+                    sx={{ mt: 1, width: '100%' }}
+                    size="small"
+                    className="search-field"
+                    value={{ label: xaName, id: detailDiaChi.wardId }}
+                    onChange={handleXaChange}
+                    options={xa && xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
+                    getOptionLabel={(option) => option.label}
+                    renderInput={(params) => (
+                      <TextField
+                        placeholder="Chọn xã"
+                        label="Xã/phường/thị trấn"
+                        color="cam"
+                        {...params}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
               <TextField
                 id="outlined-basic"
                 variant="outlined"
                 label="Địa chỉ cụ thể"
                 type="text"
                 size="small"
-                sx={{ mt: 2, width: '100%' }}
+                sx={{ mt: 1, width: '48%' }}
                 name="specificAddress"
                 value={detailDiaChi.specificAddress}
                 onChange={(e) => {
@@ -825,9 +1727,10 @@ export default function SellFrom({ idCart }) {
               />
               <TextField
                 disabled={!giaoHang}
-                sx={{ mt: 2, width: '100%' }}
+                sx={{ mt: 1, width: '48%', float: 'right' }}
                 label="Ghi chú"
                 size="small"
+                onChange={(e) => setKhachHang({ ...khachHang, note: e.target.value })}
               />
             </Box>
             <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
@@ -840,13 +1743,13 @@ export default function SellFrom({ idCart }) {
               <b>Thời gian dự kiến: </b>
               <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>
                 {' '}
-                {dayjs(timeShip).format('DD/MM/YYYY')}
+                {timeShip !== '' ? dayjs(timeShip).format('DD/MM/YYYY') : ''}
               </b>
             </Box>
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
             <Box sx={{ m: 1, ml: 3 }}>
-              <TextField label="Mã giảm giá" value={codeVoucher} size="small" />
+              <TextField label="Mã giảm giá" value={voucher?.code} size="small" disabled />
               <Button
                 sx={{ py: '6.7px', ml: 1 }}
                 variant="outlined"
@@ -890,7 +1793,7 @@ export default function SellFrom({ idCart }) {
                         }}
                         size="small"
                         variant="outlined"
-                        placeholder="Tìm khách hàng"
+                        placeholder="Tìm khuyến mãi"
                       />
                       <Button sx={{ ml: 2 }} variant="contained">
                         Tìm kiếm
@@ -907,7 +1810,7 @@ export default function SellFrom({ idCart }) {
                     <Table className="tableCss mt-5">
                       <TableHead>
                         <TableRow>
-                          <TableCell align="center" width={'7%'}>
+                          <TableCell align="center" width={'5%'}>
                             STT
                           </TableCell>
                           <TableCell align="center" width={'25%'}>
@@ -944,10 +1847,10 @@ export default function SellFrom({ idCart }) {
                           <TableRow
                             key={row.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                            <TableCell align="center">{}</TableCell>
+                            <TableCell align="center">{row.stt}</TableCell>
                             <TableCell align="center">{row.code}</TableCell>
                             <TableCell align="center">{row.name}</TableCell>
-                            <TableCell align="center">{row.value}</TableCell>
+                            <TableCell align="center">{row.value}%</TableCell>
                             <TableCell align="center">{row.maximumValue}</TableCell>
                             <TableCell align="center">{row.minimumAmount}</TableCell>
                             <TableCell align="center">
@@ -986,18 +1889,18 @@ export default function SellFrom({ idCart }) {
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Phí vận chuyển</Typography>
-                <Typography>{shipTotal}đ</Typography>
+                <Typography>{giaoHang ? `${shipTotal} ₫` : '0 ₫'}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Giảm giá</Typography>
-                <Typography>0₫</Typography>
+                <Typography>{formatPrice(totalMoneyReduce)}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>
                   <b>Tổng số tiền</b>
                 </Typography>
                 <Typography color={'red'}>
-                  <b>3,600,000₫</b>
+                  <b>{formatPrice(totalPrice)}</b>
                 </Typography>
               </Stack>
             </Box>
@@ -1005,7 +1908,7 @@ export default function SellFrom({ idCart }) {
         </Grid2>
         <Box p={2}>
           <Stack direction={'row'} justifyContent={'right'}>
-            <Button variant="contained" color="success">
+            <Button variant="contained" color="success" onClick={() => addBill(idBill)}>
               Xác nhận đặt hàng
             </Button>
           </Stack>

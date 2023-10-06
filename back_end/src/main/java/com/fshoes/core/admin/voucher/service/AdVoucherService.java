@@ -22,7 +22,7 @@ public interface AdVoucherService {
 
     Voucher addVoucher(AdVoucherRequest voucherRequest);
 
-    Boolean updateVoucher(String id, AdVoucherRequest voucherRequest) throws ParseException;
+    Voucher updateVoucher(String id, AdVoucherRequest voucherRequest) throws ParseException;
 
     Boolean deleteVoucher(String id) throws ParseException;
 

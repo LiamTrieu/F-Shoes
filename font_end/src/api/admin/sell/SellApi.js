@@ -16,21 +16,21 @@ const sellApi = {
     return axiosClient.get(urlGetAll)
   },
 
-  addCartDetail: (cartDetail) => {
+  addBillDetail: (billDetail) => {
     const urlGetAll = `/sell/add-product-sell`
-    return axiosClient.post(urlGetAll, cartDetail)
+    return axiosClient.post(urlGetAll, billDetail)
   },
-  createCart: () => {
-    const url = `/sell/create-cart`
+  createBill: () => {
+    const url = `/sell/create-bill`
     return axiosClient.post(url)
   },
-  deleteCart: (id) => {
-    const url = `/sell/delete-cart/${id}`
+  deleteBill: (id) => {
+    const url = `/sell/delete-bill/${id}`
     return axiosClient.delete(url)
   },
 
-  getProductDetailCart: (id) => {
-    const url = `/sell/get-product-detail-cart/${id}`
+  getProductDetailBill: (id) => {
+    const url = `/sell/get-product-detail-bill/${id}`
     return axiosClient.get(url)
   },
 
@@ -45,6 +45,11 @@ const sellApi = {
   getAount: (id) => {
     const url = `/sell/get-amount/${id}`
     return axiosClient.get(url)
+  },
+
+  addBill: (data, id) => {
+    const url = `/sell/add-bill/${id}`
+    return axiosClient.put(url, data)
   },
 }
 export default sellApi

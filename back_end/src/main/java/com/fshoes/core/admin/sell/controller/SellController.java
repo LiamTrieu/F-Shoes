@@ -1,7 +1,8 @@
 package com.fshoes.core.admin.sell.controller;
 
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
-import com.fshoes.core.admin.sell.model.request.CreateCartRequest;
+import com.fshoes.core.admin.sell.model.request.AddBillRequest;
+import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.service.AdminSellService;
 import com.fshoes.core.common.ObjectRespone;
@@ -34,20 +35,19 @@ public class SellController {
         return new ObjectRespone(getSell.getAmount(id));
     }
 
-    @GetMapping("/get-product-detail-cart/{id}")
-    public ObjectRespone getAllProductDetailCart(@PathVariable String id) {
-        return new ObjectRespone(getSell.getProductDetailCartSell(id));
+    @GetMapping("/get-product-detail-bill/{id}")
+    public ObjectRespone getAllProductDetailBill(@PathVariable String id) {
+        return new ObjectRespone(getSell.getProductDetailBillSell(id));
     }
 
-
-    @PostMapping("/create-cart")
-    public ObjectRespone createBill() {
-        return new ObjectRespone(getSell.createCart());
+    @PostMapping("/create-bill")
+    public ObjectRespone createBillSell() {
+        return new ObjectRespone(getSell.createBill());
     }
 
-    @DeleteMapping("/delete-cart/{id}")
-    public ObjectRespone deleteBill(@PathVariable String id) {
-        return new ObjectRespone(getSell.deleteCart(id));
+    @DeleteMapping("/delete-bill/{id}")
+    public ObjectRespone deleteBillSell(@PathVariable String id) {
+        return new ObjectRespone(getSell.deleteBill(id));
     }
 
     @GetMapping("/get-product-cart")
@@ -72,9 +72,15 @@ public class SellController {
     }
 
     @PostMapping("/add-product-sell")
-    public ObjectRespone addProductSell(@RequestBody CreateCartRequest request) {
-        return new ObjectRespone(getSell.addCartDetail(request));
+    public ObjectRespone addProductSell(@RequestBody CreateBillRequest request) {
+        return new ObjectRespone(getSell.addBillDetail(request));
     }
+
+    @PutMapping("/add-bill/{id}")
+    public ObjectRespone addBill(@RequestBody AddBillRequest request , @PathVariable String id) {
+        return new ObjectRespone(getSell.addBill(request,id));
+    }
+
 
 
 }
