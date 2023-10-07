@@ -31,7 +31,7 @@ public class StaffRequest {
 
     private String CitizenId;
 
-    private Integer role = 0;
+    private Integer role;
 
     private Integer status = 0;
 
@@ -42,7 +42,7 @@ public class StaffRequest {
         staff.setEmail(this.getEmail());
         staff.setGender(this.getGender());
         staff.setCitizenId(this.getCitizenId());
-        staff.setRole(this.role);
+        staff.setRole(this.getRole());
         staff.setStatus(this.status);
         return staff;
     }
