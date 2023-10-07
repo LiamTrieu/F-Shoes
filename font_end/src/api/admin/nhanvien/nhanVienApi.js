@@ -34,7 +34,9 @@ const staffApi = {
     formData.append('phoneNumber', staff.phoneNumber)
     formData.append('email', staff.email)
     formData.append('gender', staff.gender)
-    if (staff.avatar !== null) formData.append('avatar', staff.avatar)
+    if (formData.image !== null) {
+      formData.append('image', formData.image)
+    }
     formData.append('CitizenId', staff.citizenId)
     formData.append('role', staff.role)
     formData.append('status', staff.status)
