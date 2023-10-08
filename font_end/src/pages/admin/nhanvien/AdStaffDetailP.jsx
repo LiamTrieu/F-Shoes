@@ -115,6 +115,8 @@ export default function AdStaffDetail() {
 
   const handleButtonUpdateStaff = () => {
     const newErrors = {}
+    const currentDate = dayjs()
+    const dateBirth = dayjs(staffDetail.dateBirth, 'DD/MM/YYYY')
     let check = 0
 
     if (!staffDetail.fullName.trim()) {
@@ -173,7 +175,12 @@ export default function AdStaffDetail() {
       newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
       check++
     } else {
-      newErrors.dateBirth = ''
+      if (dateBirth.isAfter(currentDate)) {
+        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+        check++
+      } else {
+        newErrors.dateBirth = ''
+      }
     }
 
     if (check > 0) {
@@ -267,6 +274,7 @@ export default function AdStaffDetail() {
 
   const handleXaChange = (_, newValue) => {
     if (newValue) {
+      setXaName(newValue.label)
       setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
     } else {
       setDetailDiaChi({ ...detailDiaChi, wardId: '' })
@@ -322,7 +330,7 @@ export default function AdStaffDetail() {
     if (!detailDiaChi.name.trim()) {
       newErrors.name = 'Tên người nhận không được để trống'
       checkAA++
-    } else if (detailDiaChi.fullName.length > 100) {
+    } else if (detailDiaChi.name.trim().length > 100) {
       newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
       checkAA++
     } else {
@@ -333,7 +341,6 @@ export default function AdStaffDetail() {
       newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
       checkAA++
     } else {
-      // Kiểm tra định dạng email bằng regex
       const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
       if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
@@ -373,7 +380,7 @@ export default function AdStaffDetail() {
       <BreadcrumbsCustom nameHere={'Chi tiết nhân viên'} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={4}>
+          <Grid item xs={5}>
             <h3>Thông tin nhân viên</h3>
             <hr />
             <div
@@ -543,7 +550,7 @@ export default function AdStaffDetail() {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={7}>
             <h3>Thông tin địa chỉ</h3>
             <hr />
             {diaChi.map((item, index) => (

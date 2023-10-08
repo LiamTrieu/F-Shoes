@@ -72,16 +72,16 @@ public class DBGenerator implements CommandLineRunner {
         Account customer1 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn A").dateBirth(System.currentTimeMillis()).phoneNumber("0123456781").email("customer1@example.com").gender(true).password("password1").avatar(null).status(Status.HOAT_DONG).build();
         customer1.setId(accountRepository.save(customer1).getId());
 
-        Account customer2 = Account.builder().fullName("Nguyễn Văn B").dateBirth(System.currentTimeMillis()).phoneNumber("0234567890").email("customer2@example.com").gender(false).password("password2").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer2 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn B").dateBirth(System.currentTimeMillis()).phoneNumber("0234567890").email("customer2@example.com").gender(false).password("password2").avatar(null).status(Status.HOAT_DONG).build();
         customer2.setId(accountRepository.save(customer2).getId());
 
-        Account customer3 = Account.builder().fullName("Nguyễn Văn C").dateBirth(System.currentTimeMillis()).phoneNumber("0345678901").email("customer3@example.com").gender(true).password("password3").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer3 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn C").dateBirth(System.currentTimeMillis()).phoneNumber("0345678901").email("customer3@example.com").gender(true).password("password3").avatar(null).status(Status.HOAT_DONG).build();
         customer3.setId(accountRepository.save(customer3).getId());
 
-        Account customer4 = Account.builder().fullName("Nguyễn Văn D").dateBirth(System.currentTimeMillis()).phoneNumber("0456789012").email("customer4@example.com").gender(false).password("password4").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer4 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn D").dateBirth(System.currentTimeMillis()).phoneNumber("0456789012").email("customer4@example.com").gender(false).password("password4").avatar(null).status(Status.HOAT_DONG).build();
         customer4.setId(accountRepository.save(customer4).getId());
 
-        Account customer5 = Account.builder().fullName("Nguyễn Văn E").dateBirth(System.currentTimeMillis()).phoneNumber("0567890123").email("customer5@example.com").gender(true).password("password5").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer5 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn E").dateBirth(System.currentTimeMillis()).phoneNumber("0567890123").email("customer5@example.com").gender(true).password("password5").avatar(null).status(Status.HOAT_DONG).build();
         customer5.setId(accountRepository.save(customer5).getId());
         //Customer
 
@@ -262,6 +262,21 @@ public class DBGenerator implements CommandLineRunner {
 
         Address address5 = Address.builder().name("Địa chỉ 5").phoneNumber("0567890123").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(customer5).build();
         address5.setId(addressRepository.save(address5).getId());
+
+        Address address6 = Address.builder().name("Địa chỉ 6").phoneNumber("0281372615").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(staff1).build();
+        address6.setId(addressRepository.save(address6).getId());
+
+        Address address7 = Address.builder().name("Địa chỉ 7").phoneNumber("0172617261").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(staff2).build();
+        address7.setId(addressRepository.save(address7).getId());
+
+        Address address8 = Address.builder().name("Địa chỉ 8").phoneNumber("0675826371").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(staff3).build();
+        address8.setId(addressRepository.save(address8).getId());
+
+        Address address9 = Address.builder().name("Địa chỉ 9").phoneNumber("0452619201").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(staff4).build();
+        address9.setId(addressRepository.save(address9).getId());
+
+        Address address10 = Address.builder().name("Địa chỉ 10").phoneNumber("0261920192").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(staff5).build();
+        address10.setId(addressRepository.save(address10).getId());
         //Addesss
 
         //bill

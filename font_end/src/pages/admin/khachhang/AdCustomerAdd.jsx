@@ -174,6 +174,8 @@ export default function AdCustomerAdd() {
 
   const onSubmit = (khachHang) => {
     const newErrors = {}
+    const currentDate = dayjs()
+    const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
     let check = 0
 
     if (!khachHang.fullName) {
@@ -225,7 +227,12 @@ export default function AdCustomerAdd() {
       newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
       check++
     } else {
-      newErrors.dateBirth = ''
+      if (dateBirth.isAfter(currentDate)) {
+        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+        check++
+      } else {
+        newErrors.dateBirth = ''
+      }
     }
 
     if (!khachHang.gender) {

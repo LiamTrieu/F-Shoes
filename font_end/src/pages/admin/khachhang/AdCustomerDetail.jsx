@@ -69,7 +69,7 @@ export default function AdCustomerDetail() {
     phoneNumber: '',
     dateBirth: null,
     gender: '',
-    avatar: null,
+    avatar: '',
   })
 
   const [errorsKH, setErrorsKH] = useState({
@@ -143,6 +143,8 @@ export default function AdCustomerDetail() {
 
   const onSubmit = (id, khachHang) => {
     const newErrors = {}
+    const currentDate = dayjs()
+    const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
     let check = 0
 
     if (!khachHang.fullName.trim()) {
@@ -194,7 +196,12 @@ export default function AdCustomerDetail() {
       newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
       check++
     } else {
-      newErrors.dateBirth = ''
+      if (dateBirth.isAfter(currentDate)) {
+        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+        check++
+      } else {
+        newErrors.dateBirth = ''
+      }
     }
 
     if (khachHang.gender === null) {

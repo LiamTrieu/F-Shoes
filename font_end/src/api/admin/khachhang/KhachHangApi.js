@@ -44,7 +44,9 @@ const khachHangApi = {
     formData.append('phoneNumber', khachhang.phoneNumber)
     formData.append('email', khachhang.email)
     formData.append('gender', khachhang.gender)
-    if (khachhang.avatar !== null) formData.append('avatar', khachhang.avatar)
+    if (formData.image !== null) {
+      formData.append('image', formData.image)
+    }
     formData.append('role', khachhang.role)
     formData.append('status', khachhang.status)
 
