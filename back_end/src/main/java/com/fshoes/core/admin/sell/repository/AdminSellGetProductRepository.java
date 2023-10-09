@@ -13,20 +13,22 @@ import java.util.List;
 public interface AdminSellGetProductRepository extends ProductRepository {
 
     @Query(value = """
-             		SELECT  p.id, pr.id as promotion,pr.value, p.name, pd.price,pd.weight, s.size, i.url, pd.amount,pd.id as productDetailId,
-                                                 m.name as material, sl.name as sole,b.name as brand,c.name as color ,
-                                                 pd.code , cate.name as category
-             									FROM product p inner join product_detail pd
-                                                  on p.id = pd.id_product inner join size s
+                                                SELECT  p.id, pr.id as promotion,pr.value, p.name,
+                                                pd.price,pd.weight, s.size, MAX(i.url) as url, 
+                                                pd.amount,pd.id as productDetailId,
+                                                m.name as material, sl.name as sole,b.name as brand,c.name as color ,
+                                                pd.code , cate.name as category
+             									FROM product p left join product_detail pd
+                                                  on p.id = pd.id_product left join size s
                                                   on s.id = pd.id_size
-                                                  inner join material m on m.id = pd.id_material
-                                                  inner join category cate on cate.id = pd.id_category
-                                                  inner join sole sl on sl.id = pd.id_sole
-                                                  inner join brand b on b.id  = pd.id_brand
-                                                  inner join color c on c.id = pd.id_color
-                                                  inner join image i on i.id_product_detail = pd.id
-                                                  inner join product_promotion pp on pd.id = pp.id_product_detail
-                                                  inner join promotion pr on pr.id = pp.id_promotion
+                                                  left join material m on m.id = pd.id_material
+                                                  left join category cate on cate.id = pd.id_category
+                                                  left join sole sl on sl.id = pd.id_sole
+                                                  left join brand b on b.id  = pd.id_brand
+                                                  left join color c on c.id = pd.id_color
+                                                  left join image i on i.id_product_detail = pd.id
+                                                  left join product_promotion pp on pd.id = pp.id_product_detail
+                                                  left join promotion pr on pr.id = pp.id_promotion
                                                   where (:#{#req.category} IS NULL OR cate.id = :#{#req.category}) 
                                                   AND (:#{#req.color} IS NULL OR c.id = :#{#req.color}) 
                                                   AND (:#{#req.material} IS NULL OR m.id = :#{#req.material}) 
@@ -34,7 +36,8 @@ public interface AdminSellGetProductRepository extends ProductRepository {
                                                   AND (:#{#req.brand} IS NULL OR b.id = :#{#req.brand}) 
                                                   AND (:#{#req.sole} IS NULL OR sl.id = :#{#req.sole}) 
                                                   AND (:#{#req.codeProductDetail} IS NULL OR pd.code = :#{#req.codeProductDetail}) 
-                                                  AND (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) ;
+                                                  AND (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) 
+                                                  group by p.id, pr.id, pd.id;
             """, nativeQuery = true)
     List<GetAllProductResponse> getAllProduct(@Param("req") FilterProductDetailRequest req);
 

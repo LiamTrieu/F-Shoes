@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.sell.service.impl;
 
+import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
 import com.fshoes.core.admin.sell.model.request.AddBillRequest;
@@ -24,6 +25,7 @@ import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.Account;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.BillHistory;
 import com.fshoes.entity.Cart;
 import com.fshoes.entity.ProductDetail;
 import com.fshoes.entity.Voucher;
@@ -65,6 +67,9 @@ public class AdminSellServiceImpl implements AdminSellService {
     @Autowired
     private KhachHangRepository khachHangRepository;
 
+    @Autowired
+    private HDBillHistoryRepository billHistoryRepository;
+
     @Override
     public PageReponse<GetALlCustomerResponse> getAllCustomer(AdCustomerRequest request) {
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
@@ -83,7 +88,13 @@ public class AdminSellServiceImpl implements AdminSellService {
         bill.setCode(generateUniqueBillCode());
         bill.setType(0);
         bill.setStatus(8);
-        return billRepository.save(bill);
+        billRepository.save(bill);
+
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill);
+        billHistory.setStatusBill(8);
+billHistoryRepository.save(billHistory);
+        return bill;
     }
 
 
@@ -106,75 +117,70 @@ public class AdminSellServiceImpl implements AdminSellService {
             for (String bd : billDetail) {
                 billDetailRepositoty.deleteById(bd);
             }
+
+            List<String> billHistory = billHistoryRepository.getIdHistoryByIdBill(id);
+            for (String bh : billHistory){
+                billHistoryRepository.deleteById(bh);
+            }
             billRepository.delete(bill);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
 
     @Override
     public Bill addBill(AddBillRequest request, String id) {
-        Voucher voucher = voucherRepository.findById(request.getIdVourcher()).orElse(null);
-        assert voucher != null;
-        voucher.setQuantity(voucher.getQuantity() - 1);
-        voucherRepository.save(voucher);
-        Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
+        Bill bill = new Bill();
+        if(request.getIdVourcher() == null){
+            bill.setVoucher(null);
+        }else {
+            Voucher voucher = voucherRepository.findById(request.getIdVourcher()).orElse(null);
+            assert voucher != null;
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+            bill.setVoucher(voucher);
+        }
+
+        if(request.getIdCustomer() == null){
+            bill.setCustomer(null);
+        }else {
+            Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
+            assert account != null;
+            bill.setCustomer(account);
+        }
+
 
         Bill bill1 = billRepository.findById(id).orElse(null);
 
-        List<String> listIdProductDetail = billDetailRepositoty.findByProductDetailBYBillId(id);
-        for (String idPd : listIdProductDetail) {
-            Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPd);
-            if (optionalProductDetail.isPresent()) {
-                ProductDetail productDetail = optionalProductDetail.get();
-                BillDetail billDetail = billDetailRepositoty.findByProductIdAndBillId(productDetail.getId(), id);
-                productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
-            } else {
-                continue;
-            }
-        }
-        Bill bill = new Bill();
         bill.setId(id);
         bill.setCode(bill1.getCode());
         bill.setNote(request.getNote());
         bill.setAddress(request.getAddress());
-        bill.setCustomer(account);
-        bill.setVoucher(voucher);
         bill.setPhoneNumber(request.getPhoneNumber());
         bill.setFullName(request.getFullName());
         bill.setTotalMoney(request.getTotalMoney());
         bill.setMoneyShip(request.getMoneyShip());
         bill.setMoneyReduced(request.getMoneyReduce());
+        bill.setMoneyAfter(request.getMoneyAfter());
         bill.setType(request.getType());
         bill.setStatus(2);
-        return billRepository.save(bill);
+        billRepository.save(bill);
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill);
+        billHistory.setStatusBill(2);
+        billHistoryRepository.save(billHistory);
+        return bill;
     }
 
 
     @Override
     public BillDetail addBillDetail(CreateBillRequest request, String id) {
-//        List<String> listIdProductDetail = billDetailRepositoty.findByProductDetailBYBillId(id);
-//        for (String idPd : listIdProductDetail) {
-//            Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPd);
-//            if (optionalProductDetail.isPresent()) {
-//                ProductDetail productDetail = optionalProductDetail.get();
-//                System.out.println(productDetail + "=============");
-//                BillDetail billDetail = billDetailRepositoty.findByProductIdAndBillId(productDetail.getId(), id);
-//                productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
-//                System.out.println(billDetail.getQuantity() + "=======bill");
-//                productDetailRepository.save(productDetail);
-//
-//            } else {
-//                continue;
-//            }
-//        }
-
         BillDetail existingBillDetail = billDetailRepositoty.findByProductIdAndBillId(
                 request.getProductDetailId(),
                 request.getBillId()
         );
-
 
         if (existingBillDetail != null) {
             int newQuantity = existingBillDetail.getQuantity() + request.getQuantity();
@@ -248,6 +254,48 @@ public class AdminSellServiceImpl implements AdminSellService {
             billDetailRepositoty.deleteById(idBillDetail);
             return true;
         } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean increaseQuantityBillDetail(String idBillDetail, String idPrDetail) {
+        Optional<BillDetail> optionalBillDetail = billDetailRepositoty.findById(idBillDetail);
+        if(optionalBillDetail.isPresent()){
+            BillDetail billDetail = optionalBillDetail.get();
+            billDetail.setQuantity(billDetail.getQuantity()+1);
+            billDetailRepositoty.save(billDetail);
+            Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPrDetail);
+            if(optionalProductDetail.isPresent()){
+                ProductDetail productDetail = optionalProductDetail.get();
+                productDetail.setAmount(productDetail.getAmount()-1);
+                productDetailRepository.save(productDetail);
+            }else {
+                return false;
+            }
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean decreaseQuantityBillDetail(String idBillDetail, String idPrDetail) {
+        Optional<BillDetail> optionalBillDetail = billDetailRepositoty.findById(idBillDetail);
+        if(optionalBillDetail.isPresent()){
+            BillDetail billDetail = optionalBillDetail.get();
+            billDetail.setQuantity(billDetail.getQuantity()-1);
+            billDetailRepositoty.save(billDetail);
+            Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPrDetail);
+            if(optionalProductDetail.isPresent()){
+                ProductDetail productDetail = optionalProductDetail.get();
+                productDetail.setAmount(productDetail.getAmount()+1);
+                productDetailRepository.save(productDetail);
+            }else {
+                return false;
+            }
+            return true;
+        }else {
             return false;
         }
     }

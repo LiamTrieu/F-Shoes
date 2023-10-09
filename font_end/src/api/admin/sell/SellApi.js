@@ -66,5 +66,14 @@ const sellApi = {
     const url = `/sell/roll-back-quantity-product-detail?idBill=${idBill}&idPrDetail=${idPrDetail}`
     return axiosClient.put(url)
   },
+
+  increaseQuantityBillDetail: (idBillDetail, idPrDetail) => {
+    const url = `/sell/increase-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`
+    return axiosClient.put(url)
+  },
+  decreaseQuantityBillDetail: (idBillDetail, idPrDetail) => {
+    const url = `/sell/decrease-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`
+    return axiosClient.put(url)
+  },
 }
 export default sellApi

@@ -43,7 +43,7 @@ export default function OrderAdmin() {
 
   useEffect(() => {
     getAllBillTaoDonHang()
-  }, [listBill])
+  }, [])
 
   return (
     <>
@@ -104,7 +104,13 @@ export default function OrderAdmin() {
           )}
         </Tabs>
       </Box>
-      {selectBill !== '' && <SellFrom idBill={selectBill} />}
+      {selectBill !== '' && (
+        <SellFrom
+          idBill={selectBill}
+          getAllBillTaoDonHang={getAllBillTaoDonHang}
+          setSelectBill={setSelectBill}
+        />
+      )}
     </>
   )
 }

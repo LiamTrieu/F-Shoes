@@ -13,10 +13,17 @@ import java.util.List;
 @Repository
 public interface AdminProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
-                   SELECT  pd.id, pr.id as promotion,pr.value, bd.quantity, p.name as nameProduct, pd.price, s.size, i.url as image   FROM product_detail pd join bill_detail bd on bd.id_product_detail = pd.id join bill b
-                                       on b.id = bd.id_bill join product p on p.id = pd.id_product join size s on s.id = pd.id_size
-                                        join image i on i.id_product_detail = pd.id join product_promotion pp on pp.id_product_detail = pd.id
-                                         join promotion pr on pr.id = pp.id_promotion where b.id = ?;
+                   SELECT bd.id as idBillDetail ,pd.id, pr.id as promotion,pr.value, bd.quantity,
+                   p.name as nameProduct, pd.price, s.size, MAX(i.url) as image   
+                   FROM product_detail pd 
+                   left join bill_detail bd on bd.id_product_detail = pd.id 
+                   left join bill b on b.id = bd.id_bill 
+                   left join product p on p.id = pd.id_product 
+                   left join size s on s.id = pd.id_size
+                   left join image i on i.id_product_detail = pd.id 
+                   left join product_promotion pp on pp.id_product_detail = pd.id
+                  left join promotion pr on pr.id = pp.id_promotion where b.id = ? 
+                  group by pd.id, pr.id ,bd.id;
             """, nativeQuery = true)
     List<GetProductDetailBillSellResponse> getlistProductBilllSell(String id);
 

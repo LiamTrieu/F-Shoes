@@ -16,4 +16,5 @@ public interface AdminBillRepository extends BillRepository {
             select * from bill where status = 8
             """, nativeQuery = true)
     List<Bill> getAllBillTaoDonHang();
+
 }

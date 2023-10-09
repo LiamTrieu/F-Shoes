@@ -424,24 +424,26 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                     <TableCell width={'15%'} align="center">
                       <div style={{ position: 'relative' }}>
                         <img width={'100%'} alt="error" src={cart.url} />
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: '0',
-                            right: '0',
-                            backgroundColor:
-                              cart.value >= 1 && cart.value <= 50
-                                ? '#66CC00'
-                                : cart.value >= 51 && cart.value <= 80
-                                ? '#FF9900'
-                                : '#FF0000',
-                            color: 'white',
-                            padding: '6px 5px',
-                            borderRadius: '0 0 0 10px',
-                          }}
-                          className="discount">
-                          {cart.value}% OFF
-                        </div>
+                        {cart.value && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '0',
+                              right: '0',
+                              backgroundColor:
+                                cart.value >= 1 && cart.value <= 50
+                                  ? '#66CC00'
+                                  : cart.value >= 51 && cart.value <= 80
+                                  ? '#FF9900'
+                                  : '#FF0000',
+                              color: 'white',
+                              padding: '6px 5px',
+                              borderRadius: '0 0 0 10px',
+                            }}
+                            className="discount">
+                            {cart.value}% OFF
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell align="center">{cart.name}</TableCell>

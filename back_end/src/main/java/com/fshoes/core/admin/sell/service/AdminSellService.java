@@ -50,4 +50,8 @@ public interface AdminSellService {
     Boolean updateQuantityProductDetail(String idPrDetail, Integer quantity);
 
     Boolean rollBackQuantityProductDetail(String idBill, String idPrDetail);
+
+    Boolean increaseQuantityBillDetail(String idBillDetail,String idPrDetail);
+
+    Boolean decreaseQuantityBillDetail(String idBillDetail,String idPrDetail);
 }

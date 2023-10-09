@@ -104,4 +104,14 @@ public class SellController {
     public ObjectRespone rollBackQuantityProductDetail(@RequestParam("idBill") String idBill, @RequestParam("idPrDetail") String idPrDetail) {
         return new ObjectRespone(getSell.rollBackQuantityProductDetail(idBill, idPrDetail));
     }
+
+    @PutMapping("/increase-quantity-bill-detail")
+    public ObjectRespone increaseQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail){
+        return new ObjectRespone(getSell.increaseQuantityBillDetail(idBillDetail, idPrDetail));
+    }
+
+    @PutMapping("/decrease-quantity-bill-detail")
+    public ObjectRespone decreaseQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail){
+        return new ObjectRespone(getSell.decreaseQuantityBillDetail(idBillDetail, idPrDetail));
+    }
 }

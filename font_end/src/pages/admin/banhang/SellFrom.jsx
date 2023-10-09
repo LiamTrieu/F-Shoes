@@ -70,7 +70,7 @@ const styleModalAddCustomer = {
   boxShadow: 24,
 }
 
-export default function SellFrom({ idBill }) {
+export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }) {
   const theme = useTheme()
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
@@ -166,6 +166,20 @@ export default function SellFrom({ idBill }) {
       .catch((error) => {
         toast.error('Bạn đã bỏ sản phẩm ra thất bại', { position: toast.POSITION.TOP_CENTER })
       })
+  }
+
+  const increaseQuantityBillDetail = (idBillDetail, idPrDetail) => {
+    sellApi.increaseQuantityBillDetail(idBillDetail, idPrDetail).then((response) => {
+      toast.success('Tăng số lượng sản phẩm thành công', { position: toast.POSITION.TOP_CENTER })
+      fectchProductBillSell(idBill)
+    })
+  }
+
+  const decreaseQuantityBillDetail = (idBillDetail, idPrDetail) => {
+    sellApi.decreaseQuantityBillDetail(idBillDetail, idPrDetail).then((response) => {
+      toast.success('Giảm số lượng sản phẩm thành công', { position: toast.POSITION.TOP_CENTER })
+      fectchProductBillSell(idBill)
+    })
   }
 
   useEffect(() => {
@@ -715,21 +729,30 @@ export default function SellFrom({ idBill }) {
     const data = {
       fullName: detailDiaChi.name ? detailDiaChi.name : '',
       phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
-      idVourcher: voucher.id ? voucher.id : '',
-      idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : '',
+      idVourcher: voucher.id ? voucher.id : null,
+      idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : null,
       address: detailDiaChi.specificAddress ? detailDiaChi.specificAddress : '',
       note: khachHang.note ? khachHang.note : '',
       moneyShip: giaoHang ? shipTotal : 0,
       moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',
-      totalMoney: totalPrice ? totalPrice : '',
+      totalMoney: totalPriceCart ? totalPriceCart : '',
+      moneyAfter: totalPrice ? totalPrice : '',
       type: giaoHang === true ? 1 : 0,
     }
 
     console.log(data)
-    sellApi.addBill(data, id).then((response) => {
-      toast.success(' xác nhận thành công', {
-        position: toast.POSITION.TOP_CENTER,
-      })
+    const title = 'Xác nhận đặt hàng ?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        sellApi.addBill(data, id).then((response) => {
+          toast.success(' xác nhận thành công', {
+            position: toast.POSITION.TOP_CENTER,
+          })
+          getAllBillTaoDonHang()
+          setSelectBill('')
+        })
+      }
     })
   }
 
@@ -798,24 +821,26 @@ export default function SellFrom({ idBill }) {
                             verticalAlign: 'middle',
                           }}
                         />
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: '-530%',
-                            right: '0',
-                            backgroundColor:
-                              cart.value >= 1 && cart.value <= 50
-                                ? '#66CC00'
-                                : cart.value >= 51 && cart.value <= 80
-                                ? '#FF9900'
-                                : '#FF0000',
-                            color: 'white',
-                            padding: '6px 5px',
-                            borderRadius: '0 0 0 10px',
-                          }}
-                          className="discount">
-                          {cart.value}% OFF
-                        </div>
+                        {cart.value && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '-530%',
+                              right: '0',
+                              backgroundColor:
+                                cart.value >= 1 && cart.value <= 50
+                                  ? '#66CC00'
+                                  : cart.value >= 51 && cart.value <= 80
+                                  ? '#FF9900'
+                                  : '#FF0000',
+                              color: 'white',
+                              padding: '6px 5px',
+                              borderRadius: '0 0 0 10px',
+                            }}
+                            className="discount">
+                            {cart.value}% OFF
+                          </div>
+                        )}
                       </Box>
                       <span
                         style={{
@@ -857,7 +882,10 @@ export default function SellFrom({ idBill }) {
                           borderRadius: '20px',
                         }}
                         p={'3px'}>
-                        <IconButton sx={{ p: 0 }} size="small">
+                        <IconButton
+                          sx={{ p: 0 }}
+                          size="small"
+                          onClick={() => decreaseQuantityBillDetail(cart.idBillDetail, cart.id)}>
                           <RemoveIcon fontSize="1px" />
                         </IconButton>
                         <TextField
@@ -872,7 +900,10 @@ export default function SellFrom({ idBill }) {
                             },
                           }}
                         />
-                        <IconButton size="small" sx={{ p: 0 }}>
+                        <IconButton
+                          size="small"
+                          sx={{ p: 0 }}
+                          onClick={() => increaseQuantityBillDetail(cart.idBillDetail, cart.id)}>
                           <AddIcon fontSize="1px" />
                         </IconButton>
                       </Box>
