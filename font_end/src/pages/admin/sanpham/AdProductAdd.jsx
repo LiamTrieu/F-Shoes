@@ -18,7 +18,6 @@ import {
 import React, { useEffect, useState } from 'react'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
-import { LuSplitSquareVertical } from 'react-icons/lu'
 
 import './index.css'
 import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
@@ -41,6 +40,7 @@ import { useNavigate } from 'react-router-dom'
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 
 export default function AdProductAdd() {
+  const [products, setProducts] = useState([])
   const [categorys, setCategorys] = useState([])
   const [brands, setBrands] = useState([])
   const [soles, setSoles] = useState([])
@@ -50,7 +50,7 @@ export default function AdProductAdd() {
   const [modalOpen, setModalOpen] = useState(null)
 
   const [newProducts, setNewProducts] = useState({
-    product: '',
+    product: { label: '', value: '' },
     description: '',
     sole: [],
     category: [],
@@ -65,6 +65,14 @@ export default function AdProductAdd() {
   const [loadImage, setLoadImage] = useState(false)
 
   useEffect(() => {
+    sanPhamApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setProducts(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
     categoryApi.getList().then(
       (result) => {
         if (result.data.success) {
@@ -117,7 +125,8 @@ export default function AdProductAdd() {
 
   const newProductIsUndefined = (newProducts) => {
     return (
-      newProducts.product.trim() !== '' &&
+      newProducts.product !== null &&
+      newProducts.product.label.trim() !== '' &&
       newProducts.sole.length !== 0 &&
       newProducts.category.length !== 0 &&
       newProducts.brand.length !== 0 &&
@@ -150,8 +159,6 @@ export default function AdProductAdd() {
                 newProducts.size.forEach((size) => {
                   preNewProductDetails.push({
                     key: `${sole.value}${category.value}${brand.value}${color.value}${size.value}${material.value}`,
-                    product: newProducts.product,
-                    description: newProducts.description,
                     category: category,
                     brand: brand,
                     sole: sole,
@@ -172,11 +179,26 @@ export default function AdProductAdd() {
       setNewProductDetails(
         preNewProductDetails.map((productDetail) => {
           const checkExists = newProductDetails.find((pd) => pd.key === productDetail.key)
-          if (checkExists) return checkExists
-          return productDetail
+          if (checkExists)
+            return {
+              ...checkExists,
+              product: newProducts.product,
+              description: newProducts.description,
+            }
+          return {
+            ...productDetail,
+            product: newProducts.product,
+            description: newProducts.description,
+          }
         }),
       )
     }
+  }
+
+  function deleteNewProduct(productDetail) {
+    const preNewProductDetails = [...newProductDetails]
+    preNewProductDetails.splice(preNewProductDetails.indexOf(productDetail), 1)
+    setNewProductDetails(preNewProductDetails)
   }
 
   const closeModal = () => {
@@ -207,11 +229,11 @@ export default function AdProductAdd() {
           setImageSelect((prevImages) => [...prevImages, selectedImage])
         }
       } else {
-        preImageSelect.splice(
-          preImageSelect.indexOf((img) => img === selectedImage),
-          1,
-        )
-        setImageSelect(preImageSelect)
+        const index = preImageSelect.findIndex((img) => img === selectedImage)
+        if (index !== -1) {
+          preImageSelect.splice(index, 1)
+        }
+        setImageSelect([...preImageSelect])
       }
 
       setNewProductDetails((prevDetails) =>
@@ -271,7 +293,7 @@ export default function AdProductAdd() {
                 />
                 <img
                   style={{ border: '1px dashed #FC7C27', borderRadius: '5px' }}
-                  height={'130px'}
+                  height={'90px'}
                   width={'100%'}
                   src={image}
                   alt={`anh-${index}`}
@@ -280,7 +302,7 @@ export default function AdProductAdd() {
             ))}
           </Grid>
         ) : (
-          <img height={'130px'} src={require('../../../assets/image/no-data.png')} alt="no-data" />
+          <img height={'90px'} src={require('../../../assets/image/no-data.png')} alt="no-data" />
         )}
       </div>
     )
@@ -322,27 +344,30 @@ export default function AdProductAdd() {
       const text = ''
       confirmSatus(title, text).then((result) => {
         if (result.isConfirmed) {
-          sanPhamApi.addProuct(
-            newProductDetails.map((product) => {
-              return {
-                idSole: product.sole.value,
-                idBrand: product.brand.value,
-                idCategory: product.category.value,
-                idMaterial: product.material.value,
-                idSize: product.size.value,
-                idColor: product.color.value,
-                nameProduct: product.product,
-                price: product.price,
-                amount: product.amount,
-                weight: product.weight,
-                description: product.description,
-                listImage: product.images,
-              }
-            }),
-          )
-
-          toast.success('Thêm sản phẩm thành công')
-          navigator('/admin/product')
+          sanPhamApi
+            .addProuct(
+              newProductDetails.map((product) => {
+                return {
+                  idSole: product.sole.value,
+                  idBrand: product.brand.value,
+                  idCategory: product.category.value,
+                  idMaterial: product.material.value,
+                  idSize: product.size.value,
+                  idColor: product.color.value,
+                  nameProduct: product.product.label,
+                  idProduct: product.product.value,
+                  price: product.price,
+                  amount: product.amount,
+                  weight: product.weight,
+                  description: product.description,
+                  listImage: product.images,
+                }
+              }),
+            )
+            .finally(() => {
+              toast.success('Thêm sản phẩm thành công')
+              navigator('/admin/product')
+            })
         }
       })
     } catch (error) {
@@ -395,15 +420,31 @@ export default function AdProductAdd() {
             <span style={{ color: 'red' }}>*</span>Tên sản phẩm
           </b>
           <Stack direction="row" spacing={1}>
-            <TextField
-              onChange={(e) => {
-                genNewProductDetail({ ...newProducts, product: e.target.value })
+            <Autocomplete
+              freeSolo
+              size="small"
+              fullWidth
+              onChange={(_, e) => {
+                genNewProductDetail({ ...newProducts, product: e })
               }}
               className="search-field"
-              fullWidth
-              size="small"
-              color="cam"
-              placeholder="Nhập tên sản phẩm"
+              id="combo-box-product"
+              options={products.map((product) => {
+                return { label: product.name, value: product.id }
+              })}
+              renderInput={(params) => (
+                <TextField
+                  onChange={(e) => {
+                    genNewProductDetail({
+                      ...newProducts,
+                      product: { label: e.target.value, value: '' },
+                    })
+                  }}
+                  color="cam"
+                  {...params}
+                  placeholder="Nhập tên sản phẩm"
+                />
+              )}
             />
           </Stack>
           <Stack className="mt-3" direction="row" spacing={1}>
@@ -632,10 +673,6 @@ export default function AdProductAdd() {
                             Danh sách sản phẩm cùng loại [ {category.label} - {brand.label} -{' '}
                             {sole.label} - {material.label} - {color.label} ]
                           </Typography>
-                          <Button size="small" variant="outlined" color="cam">
-                            <LuSplitSquareVertical />
-                            Khôi phục
-                          </Button>
                         </Stack>
                         <Table sx={{ mt: 1, mb: 1 }} className="tableCss">
                           <TableHead>
@@ -668,13 +705,16 @@ export default function AdProductAdd() {
                                   <TableRow key={productDetail.key}>
                                     <TableCell align="center">
                                       <RiDeleteBin2Line
+                                        onClick={() => {
+                                          deleteNewProduct(productDetail)
+                                        }}
                                         style={{ cursor: 'pointer' }}
                                         fontSize={'20px'}
                                         color="#da0722"
                                       />
                                     </TableCell>
                                     <TableCell sx={{ maxWidth: '0px' }}>
-                                      {newProducts.product}
+                                      {newProducts.product.label}
                                     </TableCell>
                                     <TableCell>{productDetail.size.label}</TableCell>
                                     <TableCell>

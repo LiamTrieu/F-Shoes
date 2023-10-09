@@ -7,6 +7,8 @@ import com.fshoes.core.admin.sanpham.model.respone.ProductDetailResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
 import com.fshoes.core.common.PageReponse;
+import com.fshoes.entity.Image;
+import com.fshoes.entity.ProductDetail;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,4 +29,15 @@ public interface ProductService {
     PageReponse<ProductDetailResponse> getProductDetail(PrdDetailFilterRequest request);
 
     ProductMaxPriceResponse getMaxPriceProductId(String productId);
+
+    Boolean changeProduct(String id);
+
+    ProductDetail details(String id);
+
+    List<Image> getImageProduct(String id);
+
+    void updateProductDetail(String id, ProductDetailRequest request);
+
+    Boolean changeStatusProduct(String id);
+
 }

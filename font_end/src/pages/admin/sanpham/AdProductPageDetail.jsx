@@ -28,6 +28,8 @@ import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
 import Empty from '../../../components/Empty'
 import colorApi from '../../../api/admin/sanpham/colorApi'
 import materialApi from '../../../api/admin/sanpham/materialApi'
+import categoryApi from '../../../api/admin/sanpham/categoryApi'
+import bradApi from '../../../api/admin/sanpham/bradApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import { useParams } from 'react-router-dom'
@@ -38,6 +40,9 @@ import PropTypes from 'prop-types'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import styled from '@emotion/styled'
 import ModalAddProduct from './ModalAddProduct'
+import { toast } from 'react-toastify'
+import AdModalDetailProductDetail from './AdModalDetailProductDetail'
+import confirmSatus from '../../../components/comfirmSwal'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 function AirbnbThumbComponent(props) {
@@ -82,18 +87,22 @@ export default function AdProductPageDetail() {
   const [listMaterial, setListMaterial] = useState([])
   const [listSize, setListSize] = useState([])
   const [listSole, setListSole] = useState([])
+  const [listCategory, setListCategory] = useState([])
+  const [listBrand, setListBrand] = useState([])
   const [priceMax, setPriceMax] = useState(999999999)
   const [listProductDetail, setListProductDetail] = useState([])
   const [total, setTotal] = useState([])
   const [filter, setFilter] = useState({
     product: id,
     name: null,
-    priceMin: 0,
     color: null,
     material: null,
     sizeFilter: null,
     sole: null,
+    category: null,
+    brand: null,
     status: null,
+    priceMin: 0,
     size: 5,
     page: 1,
   })
@@ -104,6 +113,12 @@ export default function AdProductPageDetail() {
     sanPhamApi.getNameProduct(id).then((result) => {
       setProduct(result.data.data)
       setPriceMax(result.data.data.price)
+    })
+    categoryApi.findAll().then((response) => {
+      setListCategory(response.data.data)
+    })
+    bradApi.findAll().then((response) => {
+      setListBrand(response.data.data)
     })
     colorApi.findAll().then((response) => {
       setListColor(response.data.data)
@@ -120,6 +135,10 @@ export default function AdProductPageDetail() {
   }, [id])
 
   useEffect(() => {
+    fetchData(filter, priceMax)
+  }, [filter, priceMax])
+
+  function fetchData(filter, priceMax) {
     sanPhamApi.getProductDetail({ ...filter, priceMax: priceMax }).then((response) => {
       setListProductDetail(response.data.data.data)
       setTotal(response.data.data.totalPages)
@@ -128,7 +147,39 @@ export default function AdProductPageDetail() {
           setFilter({ ...filter, page: response.data.data.totalPages })
         }
     })
-  }, [filter, priceMax])
+  }
+
+  const [open, setOpen] = useState(false)
+  const [productDetail, setProductDetail] = useState({})
+
+  const handleClickOpen = (idProductDetail, listImage) => {
+    sanPhamApi
+      .updateProductDetail(idProductDetail)
+      .then((result) => {
+        if (result.data.success) {
+          setProductDetail({ ...result.data.data, image: listImage })
+          setOpen(true)
+        }
+      })
+      .catch((error) => {
+        toast.error('Lỗi hệ thống, Vui lòng thử lại')
+        console.error(error)
+      })
+  }
+  const handleDelete = (id) => {
+    const title = 'Bạn có muốn chuyển trạng thái không'
+    const text = ''
+    confirmSatus(title, text).then((result) => {
+      if (result.isConfirmed) {
+        sanPhamApi.changeStatus(id).then(() => {
+          fetchData(filter, priceMax)
+          toast.success('Chuyển trạng thái thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+        })
+      }
+    })
+  }
 
   return (
     <div className="san-pham">
@@ -198,13 +249,43 @@ export default function AdProductPageDetail() {
         </Stack>
         <Stack my={2} direction="row" justifyContent="start" alignItems="center" spacing={1}>
           <div className="filter">
+            <b>Danh mục:</b>
+            <Select
+              displayEmpty
+              size="small"
+              value={filter.category}
+              onChange={(e) => {
+                setFilter({ ...filter, category: e.target.value })
+              }}>
+              <MenuItem value={null}>Tất cả</MenuItem>
+              {listCategory?.map((item) => (
+                <MenuItem key={item?.id} value={item?.id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <b>Thương hiệu:</b>
+            <Select
+              displayEmpty
+              size="small"
+              value={filter.brand}
+              onChange={(e) => {
+                setFilter({ ...filter, brand: e.target.value })
+              }}>
+              <MenuItem value={null}>Tất cả</MenuItem>
+              {listBrand?.map((item) => (
+                <MenuItem key={item?.id} value={item?.id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
             <b>Màu sắc:</b>
             <Select
               displayEmpty
               size="small"
               value={filter.color}
               onChange={(e) => {
-                setFilter({ ...filter, coloe: e.target.value })
+                setFilter({ ...filter, color: e.target.value })
               }}>
               <MenuItem value={null}>Tất cả</MenuItem>
               {listColor?.map((item) => (
@@ -239,11 +320,12 @@ export default function AdProductPageDetail() {
               <MenuItem value={null}>Tất cả</MenuItem>
               {listSize?.map((item) => (
                 <MenuItem key={item?.id} value={item?.id}>
-                  {item.name}
+                  {item.size}
                 </MenuItem>
               ))}
             </Select>
-            <b style={{ marginLeft: '15px' }}>Đế giày:</b>
+            <br />
+            <b>Đế giày:</b>
             <Select
               displayEmpty
               size="small"
@@ -286,14 +368,18 @@ export default function AdProductPageDetail() {
                   <TableCell align="center" width={'5%'}>
                     STT
                   </TableCell>
+                  <TableCell align="center">Ảnh</TableCell>
                   <TableCell>Mã</TableCell>
-                  <TableCell>Màu sắc</TableCell>
+                  <TableCell>Thương hiệu</TableCell>
+                  <TableCell>Danh mục</TableCell>
+                  <TableCell>Đế giày</TableCell>
                   <TableCell>Chất liệu</TableCell>
+                  <TableCell>Màu sắc</TableCell>
                   <TableCell>Size</TableCell>
                   <TableCell align="center">Cân nặng</TableCell>
                   <TableCell align="center">Số lượng</TableCell>
                   <TableCell align="center">Đơn giá</TableCell>
-                  <TableCell>Trạng thái</TableCell>
+                  <TableCell width={'10%'}>Trạng thái</TableCell>
                   <TableCell align="center">Thao tác</TableCell>
                 </TableRow>
               </TableHead>
@@ -302,7 +388,18 @@ export default function AdProductPageDetail() {
                   return (
                     <TableRow key={product.id}>
                       <TableCell align="center">{product.stt}</TableCell>
+                      <TableCell align="center">
+                        <img
+                          width={'50px'}
+                          height={'50px'}
+                          src={product.image.split(',')[0]}
+                          alt="anh"
+                        />
+                      </TableCell>
                       <TableCell sx={{ maxWidth: '0px' }}>{product?.code}</TableCell>
+                      <TableCell>{product?.brand}</TableCell>
+                      <TableCell>{product?.category}</TableCell>
+                      <TableCell>{product?.sole}</TableCell>
                       <TableCell>{product?.colorName}</TableCell>
                       <TableCell>{product?.material}</TableCell>
                       <TableCell>{product?.size}</TableCell>
@@ -311,6 +408,7 @@ export default function AdProductPageDetail() {
                       <TableCell align="center">{product.price}</TableCell>
                       <TableCell>
                         <Chip
+                          onClick={() => handleDelete(product.id)}
                           className={
                             product.deleted === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'
                           }
@@ -319,7 +417,14 @@ export default function AdProductPageDetail() {
                         />
                       </TableCell>
                       <TableCell align="center">
-                        <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
+                        <TbEyeEdit
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            handleClickOpen(product.id, product.image.split(','))
+                          }}
+                          fontSize={'25px'}
+                          color="#FC7C27"
+                        />
                       </TableCell>
                     </TableRow>
                   )
@@ -367,6 +472,16 @@ export default function AdProductPageDetail() {
           <Empty />
         )}
       </Container>
+      {open && (
+        <AdModalDetailProductDetail
+          productDetail={productDetail}
+          open={open}
+          setOpen={setOpen}
+          fetchData={fetchData}
+          filter={filter}
+          priceMax={priceMax}
+        />
+      )}
     </div>
   )
 }

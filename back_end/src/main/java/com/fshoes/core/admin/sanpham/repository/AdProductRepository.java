@@ -16,7 +16,7 @@ public interface AdProductRepository extends ProductRepository {
 
 
     @Query(value = """
-            select ROW_NUMBER() over (ORDER BY p.created_at desc ) as stt,p.id, p.name,
+            select ROW_NUMBER() over (ORDER BY p.updated_at desc ) as stt,p.id, p.name,
                 count(pd.id) as amount, p.deleted as status, p.created_at as createdAt
                 from product p
                 join product_detail pd
