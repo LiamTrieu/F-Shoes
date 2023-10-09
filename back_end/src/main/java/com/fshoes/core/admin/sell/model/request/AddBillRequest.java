@@ -1,7 +1,5 @@
 package com.fshoes.core.admin.sell.model.request;
 
-import com.fshoes.entity.Account;
-import com.fshoes.entity.Voucher;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +28,7 @@ public class AddBillRequest {
 
     private BigDecimal moneyReduce;
 
+    private BigDecimal moneyAfter;
 
     private BigDecimal totalMoney;
 

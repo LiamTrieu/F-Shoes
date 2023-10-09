@@ -294,6 +294,9 @@ export default function AdPromotionAdd() {
                       size="large"
                       sx={{ width: '100%' }}
                       format={'DD-MM-YYYY HH:mm:ss'}
+                      ampm={false}
+                      minutesStep={1}
+                      minDateTime={dayjs()}
                       name="timeStart"
                       className="dateTimePro "
                       onChange={(e) =>
@@ -318,6 +321,9 @@ export default function AdPromotionAdd() {
                       size="large"
                       sx={{ width: '100%' }}
                       name="timeEnd"
+                      ampm={false}
+                      minutesStep={1}
+                      minDateTime={dayjs()}
                       className="dateTimePro"
                       onChange={(e) => {
                         setAddPromotionRe({

@@ -21,5 +21,8 @@ public interface HDBillHistoryRepository extends BillHistoryRepository {
             """, nativeQuery = true)
     List<HDBillHistoryResponse> getListBillHistoryByIdBill(@Param("idBill") String idBill);
 
-
+    @Query(value = """
+    select  id from bill_history where id_bill = ?;
+""",nativeQuery = true)
+    List<String> getIdHistoryByIdBill(String idBill);
 }

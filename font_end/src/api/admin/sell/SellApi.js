@@ -11,13 +11,18 @@ const sellApi = {
     return axiosClient.get(urlGetAll)
   },
 
+  getAllBillTaoDonHang: () => {
+    const urlGetAll = `/sell/get-all-bill-tao-don-hang`
+    return axiosClient.get(urlGetAll)
+  },
+
   getAllCustomer: () => {
     const urlGetAll = `/sell/getCustomer`
     return axiosClient.get(urlGetAll)
   },
 
-  addBillDetail: (billDetail) => {
-    const urlGetAll = `/sell/add-product-sell`
+  addBillDetail: (billDetail, id) => {
+    const urlGetAll = `/sell/add-product-sell/${id}`
     return axiosClient.post(urlGetAll, billDetail)
   },
   createBill: () => {
@@ -50,6 +55,25 @@ const sellApi = {
   addBill: (data, id) => {
     const url = `/sell/add-bill/${id}`
     return axiosClient.put(url, data)
+  },
+
+  updateQuantityProductDetail: (id, quantity) => {
+    const url = `/sell/update-quantity-product-detail/${id}?quantity=${quantity}`
+    return axiosClient.put(url)
+  },
+
+  rollBackQuantityProductDetail: (idBill, idPrDetail) => {
+    const url = `/sell/roll-back-quantity-product-detail?idBill=${idBill}&idPrDetail=${idPrDetail}`
+    return axiosClient.put(url)
+  },
+
+  increaseQuantityBillDetail: (idBillDetail, idPrDetail) => {
+    const url = `/sell/increase-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`
+    return axiosClient.put(url)
+  },
+  decreaseQuantityBillDetail: (idBillDetail, idPrDetail) => {
+    const url = `/sell/decrease-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`
+    return axiosClient.put(url)
   },
 }
 export default sellApi

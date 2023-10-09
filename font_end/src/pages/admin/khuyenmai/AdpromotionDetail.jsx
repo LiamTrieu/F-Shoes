@@ -342,6 +342,8 @@ export default function AdPromotionDetail() {
                       format={'DD-MM-YYYY HH:mm:ss'}
                       sx={{ width: '100%' }}
                       name="timeStart"
+                      ampm={false}
+                      minDateTime={dayjs()}
                       className="dateTimePro "
                       value={dayjs(updatePromotion?.timeStart, 'DD-MM-YYYY HH:mm:ss')}
                       onChange={(e) => {
@@ -366,6 +368,8 @@ export default function AdPromotionDetail() {
                       size="small"
                       sx={{ width: '100%' }}
                       name="timeEnd"
+                      ampm={false}
+                      minDateTime={dayjs()}
                       className="dateTimePro "
                       value={dayjs(updatePromotion?.timeEnd, 'DD-MM-YYYY HH:mm:ss')}
                       onChange={(e) => {

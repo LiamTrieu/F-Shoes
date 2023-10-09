@@ -12,6 +12,7 @@ import com.fshoes.entity.Promotion;
 import com.fshoes.infrastructure.constant.StatusVoucher;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.ProductPromotionRepository;
+import com.fshoes.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,8 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -75,10 +79,15 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     //    @Override
-    public Promotion deleteKhuyenMai(String id) {
+    public Promotion deleteKhuyenMai(String id) throws ParseException {
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String formattedDate = dateFormat.format(currentDate);
+        Long endDate = DateUtil.parseDateTimeLong(formattedDate);
         try {
             Promotion promotion = khuyenMaiRepository.findById(id).orElse(null);
             promotion.setStatus(2);
+            promotion.setTimeEnd(endDate);
             return khuyenMaiRepository.save(promotion);
         } catch (Exception e) {
             return null;
@@ -159,7 +168,6 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
 
-    //============================================================================
     @Override
     public Page<PromotionRespone> getAllPromotion(PromotionSearch filter) {
         Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());

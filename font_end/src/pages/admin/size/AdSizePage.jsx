@@ -454,11 +454,11 @@ export default function AdSizePage() {
                   <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
                   <Select
                     onChange={(e) => {
-                      setFilter({ ...filter, size: e.target.value })
+                      setFilter({ ...filter, pageSize: e.target.value })
                     }}
                     sx={{ height: '25px', mx: 0.5 }}
                     size="small"
-                    value={filter.size}>
+                    value={filter.pageSize}>
                     <MenuItem value={1}>1</MenuItem>
                     <MenuItem value={5}>5</MenuItem>
                     <MenuItem value={10}>10</MenuItem>

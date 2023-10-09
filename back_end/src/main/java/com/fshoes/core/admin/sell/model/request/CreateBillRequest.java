@@ -15,6 +15,6 @@ public class CreateBillRequest {
 
    private Integer quantity;
 
-//   private BigDecimal price;
+   private BigDecimal price;
 
 }

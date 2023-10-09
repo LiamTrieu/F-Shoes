@@ -25,4 +25,29 @@ public interface AdminBillDetailRepositoty extends BillDetailRepository {
               select id_product_detail from bill_detail where id_bill = ?
             """, nativeQuery = true)
     List<String> findByProductDetailBYBillId(String billId);
+
+    @Query(value = """
+            select quantity
+            from bill_detail
+            where id_bill = ? and id_product_detail = ?
+            """, nativeQuery = true)
+    Integer quantityProductDetail(String idBill, String idPrDetail);
+
+    @Query(value = """
+            select id
+            from bill_detail
+            where id_bill = ? and id_product_detail = ?
+            """, nativeQuery = true)
+    String idBillDetailProductDetail(String idBill, String idPrDetail);
+
+    @Query(value = """
+                select quantity from bill_detail where id_bill = ? and id_product_detail = ?
+            """, nativeQuery = true)
+    Integer increaseQuantityBillDetail(String idBill, String idPrDetail);
+
+    @Query(value = """
+                select quantity from bill_detail where id_bill = ? and id_product_detail = ?
+            """, nativeQuery = true)
+    Integer decreaseQuantityBillDetail(String idBill, String idPrDetail);
+
 }
