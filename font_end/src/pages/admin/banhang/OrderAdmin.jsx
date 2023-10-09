@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, Container, Stack, Tab, Tabs, Typography } from '@mui/material'
 
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
@@ -9,6 +9,12 @@ import { toast } from 'react-toastify'
 export default function OrderAdmin() {
   const [listBill, setlistBill] = useState([])
   const [selectBill, setSelectBill] = useState('')
+
+  const getAllBillTaoDonHang = () => {
+    sellApi.getAllBillTaoDonHang().then((response) => {
+      setlistBill(response.data.data)
+    })
+  }
 
   const handleAddSellClick = async () => {
     if (listBill.length === 5) {
@@ -34,6 +40,10 @@ export default function OrderAdmin() {
       }
     })
   }
+
+  useEffect(() => {
+    getAllBillTaoDonHang()
+  }, [listBill])
 
   return (
     <>

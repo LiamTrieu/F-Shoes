@@ -63,7 +63,7 @@ public class PromotionController {
     }
 @Transactional
     @PutMapping("/delete/{id}")
-    public ObjectRespone deleteKhuyenMai( @PathVariable String id){
+    public ObjectRespone deleteKhuyenMai( @PathVariable String id) throws ParseException {
         return new ObjectRespone(khuyenMaiService.deleteKhuyenMai(id));
     }
 

@@ -156,6 +156,18 @@ export default function SellFrom({ idBill }) {
     })
   }
 
+  const rollBackQuantityProductDetail = (idBill, idPrDetail) => {
+    sellApi
+      .rollBackQuantityProductDetail(idBill, idPrDetail)
+      .then((response) => {
+        toast.success('Bạn đã bỏ sản phẩm ra thành công', { position: toast.POSITION.TOP_CENTER })
+        fectchProductBillSell(idBill)
+      })
+      .catch((error) => {
+        toast.error('Bạn đã bỏ sản phẩm ra thất bại', { position: toast.POSITION.TOP_CENTER })
+      })
+  }
+
   useEffect(() => {
     fecthDataCustomer()
     fecthDataProductCart()
@@ -732,6 +744,7 @@ export default function SellFrom({ idBill }) {
 
   const totalPrice = totalPriceCart + ShipingFree - moneyReducedVoucher
   const totalMoneyReduce = (voucher.value * totalPriceCart) / 100
+
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -764,7 +777,9 @@ export default function SellFrom({ idBill }) {
                 <Table>
                   <TableRow sx={{ border: 0 }} key={cart.id}>
                     <TableCell sx={{ px: 0 }} width={'5%'}>
-                      <IconButton color="error">
+                      <IconButton
+                        color="error"
+                        onClick={() => rollBackQuantityProductDetail(idBill, cart.id)}>
                         <CloseIcon />
                       </IconButton>
                     </TableCell>

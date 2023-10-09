@@ -20,6 +20,8 @@ import java.util.List;
 
 public interface AdminSellService {
 
+    List<Bill> getAllBillTaoDonHang();
+
     List<GetAllProductResponse> getAllProduct(FilterProductDetailRequest request);
     List<GetAllProductResponse> getAllProductCart();
 
@@ -34,7 +36,7 @@ public interface AdminSellService {
 
     Bill addBill(AddBillRequest request, String id);
 
-    BillDetail addBillDetail(CreateBillRequest request);
+    BillDetail addBillDetail(CreateBillRequest request, String id);
 
     List<Cart> getAllCart();
 
@@ -44,4 +46,8 @@ public interface AdminSellService {
     List<GetColorResponse> getListColor();
 
     GetAmountProductResponse getAmount(String id);
+
+    Boolean updateQuantityProductDetail(String idPrDetail, Integer quantity);
+
+    Boolean rollBackQuantityProductDetail(String idBill, String idPrDetail);
 }
