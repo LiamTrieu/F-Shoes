@@ -123,51 +123,10 @@ public class DBGenerator implements CommandLineRunner {
         Voucher voucher1 = Voucher.builder().code("VC12345").name("Voucher 1").value(BigDecimal.valueOf(25)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.CA_NHAN).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
         voucher1.setId(voucherRepository.save(voucher1).getId());
 
-        Voucher voucher2 = Voucher.builder().code("VC23456").name("Voucher 2").value(BigDecimal.valueOf(30)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.CA_NHAN).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher2.setId(voucherRepository.save(voucher2).getId());
-
-        Voucher voucher3 = Voucher.builder().code("VC34567").name("Voucher 3").value(BigDecimal.valueOf(40)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.CA_NHAN).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher3.setId(voucherRepository.save(voucher3).getId());
-
-        Voucher voucher4 = Voucher.builder().code("VC45678").name("Voucher 4").value(BigDecimal.valueOf(50)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.CA_NHAN).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher4.setId(voucherRepository.save(voucher4).getId());
-
-        Voucher voucher5 = Voucher.builder().code("VC56789").name("Voucher 5").value(BigDecimal.valueOf(60)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.CA_NHAN).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher5.setId(voucherRepository.save(voucher5).getId());
-
-        Voucher voucher6 = Voucher.builder().code("VC67890").name("Voucher 6").value(BigDecimal.valueOf(25)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.TAT_CA).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher6.setId(voucherRepository.save(voucher6).getId());
-
-        Voucher voucher7 = Voucher.builder().code("VC78901").name("Voucher 7").value(BigDecimal.valueOf(30)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.TAT_CA).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher7.setId(voucherRepository.save(voucher7).getId());
-
-        Voucher voucher8 = Voucher.builder().code("VC89012").name("Voucher 8").value(BigDecimal.valueOf(40)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.TAT_CA).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher8.setId(voucherRepository.save(voucher8).getId());
-
-        Voucher voucher9 = Voucher.builder().code("VC90123").name("Voucher 9").value(BigDecimal.valueOf(50)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.TAT_CA).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher9.setId(voucherRepository.save(voucher9).getId());
-
-        Voucher voucher10 = Voucher.builder().code("VC01234").name("Voucher 10").value(BigDecimal.valueOf(60)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.TAT_CA).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
-        voucher10.setId(voucherRepository.save(voucher10).getId());
-        //Voucher
-
         //CustomerVoucher
         //Cá nhân
         CustomerVoucher customerVoucher1 = CustomerVoucher.builder().account(customer1).voucher(voucher1).build();
         customerVoucher1.setId(customerVoucherRepository.save(customerVoucher1).getId());
-
-        CustomerVoucher customerVoucher2 = CustomerVoucher.builder().account(customer1).voucher(voucher2).build();
-        customerVoucher2.setId(customerVoucherRepository.save(customerVoucher2).getId());
-
-        CustomerVoucher customerVoucher3 = CustomerVoucher.builder().account(customer1).voucher(voucher3).build();
-        customerVoucher3.setId(customerVoucherRepository.save(customerVoucher3).getId());
-
-        CustomerVoucher customerVoucher4 = CustomerVoucher.builder().account(customer1).voucher(voucher4).build();
-        customerVoucher4.setId(customerVoucherRepository.save(customerVoucher4).getId());
-
-        CustomerVoucher customerVoucher5 = CustomerVoucher.builder().account(customer1).voucher(voucher5).build();
-        customerVoucher5.setId(customerVoucherRepository.save(customerVoucher5).getId());
-        //cá nhân
 
         //tất cả
 //        CustomerVoucher customerVoucher6 = CustomerVoucher.builder().account(customer1).voucher(voucher6).build();

@@ -474,6 +474,7 @@ export default function AdVoucherAdd() {
                   <TableRow>
                     <TableCell width={'7%'}>
                       <Checkbox
+                        disabled={voucherAdd.type === 0 ? true : false}
                         name="tất cả"
                         checked={selectAll}
                         onChange={handleSelectAllChange}
@@ -491,6 +492,7 @@ export default function AdVoucherAdd() {
                     <TableRow key={row.id}>
                       <TableCell>
                         <Checkbox
+                          disabled={voucherAdd.type === 0 ? true : false}
                           key={row.id}
                           checked={selectedCustomerIds.indexOf(row.id) !== -1}
                           onChange={(event) => handleRowCheckboxChange(event, row.id)}
