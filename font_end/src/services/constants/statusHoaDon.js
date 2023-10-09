@@ -16,6 +16,8 @@ export const getStatus = (status) => {
       return 'Chờ thanh toán'
     case 7:
       return 'Hoàn thành'
+    case 8:
+      return 'Tạo đơn hàng'
     default:
       console.error('Trạng thái hóa đơn không hợp lệ')
       break
