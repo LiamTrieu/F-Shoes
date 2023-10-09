@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface AdminProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
-                   SELECT pd.id, pr.id as promotion,pr.value, bd.quantity, p.name as nameProduct, pd.price, s.size, i.url as image   FROM product_detail pd join bill_detail bd on bd.id_product_detail = pd.id join bill b
+                   SELECT  pd.id, pr.id as promotion,pr.value, bd.quantity, p.name as nameProduct, pd.price, s.size, i.url as image   FROM product_detail pd join bill_detail bd on bd.id_product_detail = pd.id join bill b
                                        on b.id = bd.id_bill join product p on p.id = pd.id_product join size s on s.id = pd.id_size
                                         join image i on i.id_product_detail = pd.id join product_promotion pp on pp.id_product_detail = pd.id
                                          join promotion pr on pr.id = pp.id_promotion where b.id = ?;

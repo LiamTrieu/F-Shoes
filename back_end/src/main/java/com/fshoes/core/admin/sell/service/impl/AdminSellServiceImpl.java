@@ -82,7 +82,7 @@ public class AdminSellServiceImpl implements AdminSellService {
         Bill bill = new Bill();
         bill.setCode(generateUniqueBillCode());
         bill.setType(0);
-        bill.setStatus(1);
+        bill.setStatus(8);
         return billRepository.save(bill);
     }
 
@@ -91,6 +91,17 @@ public class AdminSellServiceImpl implements AdminSellService {
     public Boolean deleteBill(String id) {
         try {
             Bill bill = billRepository.findById(id).get();
+            List<String> listIdProductDetail = billDetailRepositoty.findByProductDetailBYBillId(id);
+            for (String idPd : listIdProductDetail) {
+                Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPd);
+                if (optionalProductDetail.isPresent()) {
+                    ProductDetail productDetail = optionalProductDetail.get();
+                    BillDetail billDetail = billDetailRepositoty.findByProductIdAndBillId(productDetail.getId(), id);
+                    productDetail.setAmount(productDetail.getAmount() + billDetail.getQuantity());
+                } else {
+                    continue;
+                }
+            }
             List<String> billDetail = billDetailRepositoty.findByBillId(id);
             for (String bd : billDetail) {
                 billDetailRepositoty.deleteById(bd);
@@ -136,17 +147,34 @@ public class AdminSellServiceImpl implements AdminSellService {
         bill.setMoneyShip(request.getMoneyShip());
         bill.setMoneyReduced(request.getMoneyReduce());
         bill.setType(request.getType());
-        bill.setStatus(1);
+        bill.setStatus(2);
         return billRepository.save(bill);
     }
 
 
     @Override
-    public BillDetail addBillDetail(CreateBillRequest request) {
+    public BillDetail addBillDetail(CreateBillRequest request, String id) {
+//        List<String> listIdProductDetail = billDetailRepositoty.findByProductDetailBYBillId(id);
+//        for (String idPd : listIdProductDetail) {
+//            Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPd);
+//            if (optionalProductDetail.isPresent()) {
+//                ProductDetail productDetail = optionalProductDetail.get();
+//                System.out.println(productDetail + "=============");
+//                BillDetail billDetail = billDetailRepositoty.findByProductIdAndBillId(productDetail.getId(), id);
+//                productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
+//                System.out.println(billDetail.getQuantity() + "=======bill");
+//                productDetailRepository.save(productDetail);
+//
+//            } else {
+//                continue;
+//            }
+//        }
+
         BillDetail existingBillDetail = billDetailRepositoty.findByProductIdAndBillId(
                 request.getProductDetailId(),
                 request.getBillId()
         );
+
 
         if (existingBillDetail != null) {
             int newQuantity = existingBillDetail.getQuantity() + request.getQuantity();
@@ -155,12 +183,15 @@ public class AdminSellServiceImpl implements AdminSellService {
         } else {
             ProductDetail productDetail = productDetailRepository.findById(request.getProductDetailId()).orElse(null);
             Bill bill = billRepository.findById(request.getBillId()).orElse(null);
+
             BillDetail billDetail = new BillDetail();
             billDetail.setQuantity(request.getQuantity());
             billDetail.setProductDetail(productDetail);
-//            billDetail.setPrice(request.getPrice());
+            billDetail.setPrice(request.getPrice());
             billDetail.setBill(bill);
             billDetail.setStatus(0);
+
+
             return billDetailRepositoty.save(billDetail);
         }
 
@@ -193,6 +224,40 @@ public class AdminSellServiceImpl implements AdminSellService {
     }
 
     @Override
+    public Boolean updateQuantityProductDetail(String idPrDetail, Integer quantity) {
+        Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPrDetail);
+        if (optionalProductDetail.isPresent()) {
+            ProductDetail productDetail = optionalProductDetail.get();
+            productDetail.setAmount(productDetail.getAmount() - quantity);
+            productDetailRepository.save(productDetail);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean rollBackQuantityProductDetail(String idBill, String idPrDetail) {
+        Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPrDetail);
+        if (optionalProductDetail.isPresent()) {
+            ProductDetail productDetail = optionalProductDetail.get();
+            Integer quantity = billDetailRepositoty.quantityProductDetail(idBill, productDetail.getId());
+            productDetail.setAmount(productDetail.getAmount() + quantity);
+            productDetailRepository.save(productDetail);
+            String idBillDetail = billDetailRepositoty.idBillDetailProductDetail(idBill, productDetail.getId());
+            billDetailRepositoty.deleteById(idBillDetail);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public List<Bill> getAllBillTaoDonHang() {
+        return billRepository.getAllBillTaoDonHang();
+    }
+
+    @Override
     public List<GetAllProductResponse> getAllProduct(FilterProductDetailRequest request) {
         return getProductRepository.getAllProduct(request);
     }
@@ -207,7 +272,6 @@ public class AdminSellServiceImpl implements AdminSellService {
         int counter = 1;
         String uniqueCode = baseCode + counter;
 
-        // Kiểm tra sự trùng lặp và tăng biến đếm cho đến khi tạo được mã duy nhất
         while (billRepository.existsByCode(uniqueCode)) {
             counter++;
             uniqueCode = baseCode + counter;

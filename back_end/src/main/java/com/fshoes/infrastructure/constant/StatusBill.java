@@ -8,5 +8,6 @@ public enum StatusBill {
     DA_GIAO_HANG,
     DA_THANH_TOAN,
     CHO_THANH_TOAN,
-    HOAN_THANH
+    HOAN_THANH,
+    TAO_DON_HANG
 }

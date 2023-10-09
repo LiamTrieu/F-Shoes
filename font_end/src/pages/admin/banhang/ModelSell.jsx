@@ -52,8 +52,8 @@ const styleModalProductDetail = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: { xs: '60vw', md: '30vw' },
-  height: '300px',
+  width: { xs: '40vw', md: '28vw' },
+  height: '150px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
@@ -86,12 +86,29 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
   const [getListColorByProduct, setGetListColorByProduct] = useState([])
   const [getAmountProduct, setGetAmountProduct] = useState([])
 
-  const [addAmount, setAddAmount] = useState([])
+  const [addAmount, setAddAmount] = useState(1)
+
+  const handleAddAmount = () => {
+    setAddAmount(addAmount + 1)
+  }
+
+  const handleRemoveAmount = () => {
+    if (addAmount > 1) {
+      setAddAmount(addAmount - 1)
+    }
+  }
 
   const hanldeAmountProduct = (id) => {
     sellApi.getAount(id).then((response) => {
       setGetAmountProduct(response.data.data)
     })
+  }
+
+  const updateQuantityProductDetail = (id, quantity) => {
+    sellApi
+      .updateQuantityProductDetail(id, quantity)
+      .then((response) => {})
+      .catch((error) => {})
   }
 
   useEffect(() => {
@@ -131,18 +148,20 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     fecthData(filter)
   }, [filter])
 
-  const onSubmitAddBillDetail = (id) => {
+  const onSubmitAddBillDetail = (id, idBill) => {
     const BillDetail = {
       billId: idBill,
       productDetailId: id,
       quantity: addAmount,
-      // price: selectedProduct.price,
+      price: selectedProduct.price * selectedProduct.value,
     }
 
-    sellApi.addBillDetail(BillDetail).then((response) => {
+    console.log(BillDetail + '==========')
+    sellApi.addBillDetail(BillDetail, idBill).then(() => {
       toast.success('Thêm sản phẩm thành công', {
         position: toast.POSITION.TOP_CENTER,
       })
+      setAddAmount(1)
       setIsShowProductDetail(false)
       load(idBill)
     })
@@ -388,9 +407,9 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                   <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
                     Chất liệu
                   </TableCell>
-                  {/* <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
+                  <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
                     size
-                  </TableCell> */}
+                  </TableCell>
                   <TableCell width={'15%'} align="center" sx={{ fontWeight: 'bold' }}>
                     Giá
                   </TableCell>
@@ -432,7 +451,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                     <TableCell align="center">{cart.brand}</TableCell>
                     <TableCell align="center">{cart.color}</TableCell>
                     <TableCell align="center">{cart.material}</TableCell>
-                    {/* <TableCell align="center">{cart.size}</TableCell> */}
+                    <TableCell align="center">{cart.size}</TableCell>
 
                     <TableCell
                       align="center"
@@ -509,7 +528,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                 </IconButton>
               </Toolbar>
               <Container>
-                <Box py={1}>
+                {/* <Box py={1}>
                   <Typography mr={2} fontWeight={'bold'} variant="button" gutterBottom>
                     Size :
                   </Typography>
@@ -548,7 +567,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       </RadioGroup>
                     </FormControl>
                   ))}
-                </Box>
+                </Box> */}
                 <Box py={1}>
                   <Typography
                     sx={{ float: 'left' }}
@@ -568,11 +587,11 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       borderRadius: '20px',
                     }}
                     p={'3px'}>
-                    <IconButton sx={{ p: 0 }} size="small">
+                    <IconButton sx={{ p: 0 }} size="small" onClick={handleRemoveAmount}>
                       <RemoveIcon fontSize="1px" />
                     </IconButton>
                     <TextField
-                      defaultValue="1"
+                      value={addAmount}
                       inputProps={{ min: 1 }}
                       onChange={(e) => setAddAmount(e.target.value)}
                       size="small"
@@ -584,7 +603,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                         },
                       }}
                     />
-                    <IconButton size="small" sx={{ p: 0 }}>
+                    <IconButton size="small" sx={{ p: 0 }} onClick={handleAddAmount}>
                       <AddIcon fontSize="1px" />
                     </IconButton>
                   </Box>
@@ -592,7 +611,10 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                 <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2}>
                   <Box>
                     <Button
-                      onClick={() => onSubmitAddBillDetail(selectedProduct.productDetailId)}
+                      onClick={() => {
+                        onSubmitAddBillDetail(selectedProduct.productDetailId, idBill)
+                        updateQuantityProductDetail(selectedProduct.productDetailId, addAmount)
+                      }}
                       variant="outlined"
                       color="cam">
                       <b>Xác nhận</b>

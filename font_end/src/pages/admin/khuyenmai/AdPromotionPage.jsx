@@ -42,6 +42,7 @@ export default function AdPromotionPage() {
   const [listKhuyenMai, setListKhuyenMai] = useState([])
   const [listKhuyenMaiUpdate, setListKhuyenMaiUpdate] = useState([])
   const [totalPages, setTotalPages] = useState(0)
+
   const [filter, setFilter] = useState({
     page: 1,
     size: 5,
@@ -94,14 +95,14 @@ export default function AdPromotionPage() {
         position: toast.POSITION.TOP_RIGHT,
       })
     } else {
-      const title = 'Bạn có muốn chuyển trạng thái không'
+      const title = 'Bạn có muốn kết thúc khuyến mại không ?'
       const text = ''
 
       confirmSatus(title, text, theme).then((result) => {
         if (result.isConfirmed) {
           khuyenMaiApi.deletePromotion(id).then(() => {
-            fecthData()
-            toast.success('Chuyển trạng thái thành công', {
+            fecthData(filter)
+            toast.success('Khuyến mại đã kết thúc', {
               position: toast.POSITION.TOP_RIGHT,
             })
           })
@@ -139,7 +140,7 @@ export default function AdPromotionPage() {
           <Box sx={{ width: '100%' }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <TextField
-                sx={{ width: '50%' }}
+                sx={{ width: '48%' }}
                 placeholder="Tìm kiếm theo tên khuyến mại"
                 className="text-field-css"
                 size="small"
@@ -181,7 +182,6 @@ export default function AdPromotionPage() {
                   <DateTimePicker
                     className="dateTimePro"
                     format="DD/MM/YYYY HH:mm:ss"
-                    // value={dayjs(filter?.timeStart, 'DD/MM/YYYY HH:mm:ss')}
                     onChange={(e) =>
                       setFilter({
                         ...filter,
@@ -203,7 +203,6 @@ export default function AdPromotionPage() {
                   <DateTimePicker
                     className="dateTimePro"
                     format={'DD/MM/YYYY HH:mm:ss'}
-                    // value={dayjs(filter?.timeEnd, 'DD/MM/YYYY HH:mm:ss')}
                     onChange={(e) =>
                       setFilter({
                         ...filter,
