@@ -37,6 +37,8 @@ public class ProductDetailRequest {
 
     private String nameProduct;
 
+    private String idProduct;
+
     private String price;
 
     private String amount;
@@ -81,7 +83,7 @@ public class ProductDetailRequest {
 
         productDetail.setWeight(Integer.parseInt(this.weight));
 
-        productDetail.setDescription(description);
+        productDetail.setDescription(this.description);
 
         return productDetail;
     }

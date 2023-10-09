@@ -29,6 +29,8 @@ import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
 import { Link } from 'react-router-dom'
 import Empty from '../../../components/Empty'
 import dayjs from 'dayjs'
+import confirmSatus from '../../../components/comfirmSwal'
+import { toast } from 'react-toastify'
 
 export default function AdProductPage() {
   const [listProduct, setListProduct] = useState([])
@@ -52,6 +54,21 @@ export default function AdProductPage() {
         if (response.data.data.totalPages > 0) {
           setFilter({ ...filter, page: response.data.data.totalPages })
         }
+    })
+  }
+
+  const handleDelete = (id) => {
+    const title = 'Bạn có muốn chuyển trạng thái không'
+    const text = ''
+    confirmSatus(title, text).then((result) => {
+      if (result.isConfirmed) {
+        sanPhamApi.deleteProduct(id).then(() => {
+          fetchData(filter)
+          toast.success('Chuyển trạng thái thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+        })
+      }
     })
   }
 
@@ -147,6 +164,7 @@ export default function AdProductPage() {
                       <TableCell align="center">{product.amount}</TableCell>
                       <TableCell align="center">
                         <Chip
+                          onClick={() => handleDelete(product.id)}
                           className={
                             product.status === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'
                           }

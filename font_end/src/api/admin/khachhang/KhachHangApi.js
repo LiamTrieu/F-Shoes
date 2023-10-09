@@ -44,12 +44,11 @@ const khachHangApi = {
     formData.append('phoneNumber', khachhang.phoneNumber)
     formData.append('email', khachhang.email)
     formData.append('gender', khachhang.gender)
-    if (formData.image !== null) {
-      formData.append('image', formData.image)
+    if (khachhang.avatar !== null && typeof khachhang.avatar !== 'string') {
+      formData.append('avatar', khachhang.avatar)
     }
     formData.append('role', khachhang.role)
     formData.append('status', khachhang.status)
-
     return axios.put(`http://localhost:8080/api/khach-hang/update/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

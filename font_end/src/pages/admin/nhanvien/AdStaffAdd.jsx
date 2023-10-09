@@ -508,6 +508,7 @@ const AddStaff = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: '100%' }}
+                    value={staffAdd.dateBirth ? dayjs(staffAdd.dateBirth, 'DD-MM-YYYY') : null}
                     className="small-datepicker"
                     onChange={(e) =>
                       setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })

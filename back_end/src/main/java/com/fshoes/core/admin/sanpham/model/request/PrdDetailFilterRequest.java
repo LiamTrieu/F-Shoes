@@ -22,6 +22,10 @@ public class PrdDetailFilterRequest extends PageableRequest {
 
     private String sole;
 
+    private String category;
+
+    private String brand;
+
     private Integer status;
 
     private BigDecimal priceMin;

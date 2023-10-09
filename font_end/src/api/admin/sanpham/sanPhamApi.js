@@ -26,6 +26,10 @@ const sanPhamApi = {
     const url = `/product/add`
     return axiosClient.post(url, request)
   },
+  updateProduct: (request) => {
+    const url = `/product/update/${request.id}`
+    return axiosClient.post(url, request)
+  },
   getProductDetail: (request) => {
     const url = `/product/product-detail`
     return axiosClient.get(url, { params: request })
@@ -33,6 +37,23 @@ const sanPhamApi = {
   getNameProduct: (id) => {
     const url = `/product/name-by-id/${id}`
     return axiosClient.get(url)
+  },
+
+  getImageProduct: (id) => {
+    const url = `/product/image-product/${id}`
+    return axiosClient.get(url)
+  },
+  updateProductDetail: (id) => {
+    const url = `/product/product-detail/${id}`
+    return axiosClient.get(url)
+  },
+  deleteProduct: (id) => {
+    const url = `/product/delete/${id}`
+    return axiosClient.delete(url)
+  },
+  changeStatus: (id) => {
+    const url = `/product/change-status/${id}`
+    return axiosClient.delete(url)
   },
 }
 export default sanPhamApi
