@@ -35,6 +35,7 @@ public interface HDBillRepository extends BillRepository {
                 OR c.phone_number LIKE CONCAT('%', :inputSearch, '%')
                 OR c.email LIKE CONCAT('%', :inputSearch, '%')
             )
+            AND b.status <> 8
             GROUP BY b.id, b.code, c.full_name, c.phone_number, b.address,
             b.total_money, b.money_reduced, b.money_after, b.money_ship,
             b.type,b.note, b.created_at,b.created_by,b.status
@@ -61,8 +62,8 @@ public interface HDBillRepository extends BillRepository {
             FROM bill b
                   LEFT JOIN bill_detail bt ON b.id = bt.id_bill
                   LEFT JOIN Account c ON b.id_customer= c.id
-            WHERE b.id = :id
-                                      
+            WHERE b.id = :id AND b.status <> 8
+                   
             """, nativeQuery = true)
     HDBillResponse getBillResponse(@Param("id") String id);
 

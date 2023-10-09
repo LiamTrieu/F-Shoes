@@ -24,6 +24,10 @@ const hoaDonApi = {
     const url = `/bill/update-billDetail/${idBill}`
     return axiosClient.put(url, lstBillDetailRequest)
   },
+  cancelBill: (idBill, updateBillRequest) => {
+    const url = `/bill/cancel/${idBill}`
+    return axiosClient.put(url, updateBillRequest)
+  },
 }
 
 export default hoaDonApi

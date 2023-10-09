@@ -71,9 +71,72 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         return hdBillDetailRepository.getBillDetailsByBillIdAndStatus(idBill, status);
     }
 
+
     @Override
     public BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail) {
         return hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(idBill, idProductDetail);
+    }
+
+    @Override
+    public BillDetail decrementQuantity(String idBillDetail) {
+        BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
+        Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
+        if (bill.getStatus() == 1) {
+            billDetail.setQuantity(billDetail.getQuantity() - 1);
+            return hdBillDetailRepository.save(billDetail);
+        } else {
+            billDetail.setQuantity(billDetail.getQuantity() - 1);
+            ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
+            productDetail.setAmount(productDetail.getAmount() + 1);
+            productDetailRepository.save(productDetail);
+            return hdBillDetailRepository.save(billDetail);
+        }
+    }
+
+    @Override
+    public BillDetail incrementQuantity(String idBillDetail) {
+        BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
+        Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
+        if (bill.getStatus() == 1) {
+            billDetail.setQuantity(billDetail.getQuantity() + 1);
+            return hdBillDetailRepository.save(billDetail);
+        } else {
+            billDetail.setQuantity(billDetail.getQuantity() + 1);
+            ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
+            productDetail.setAmount(productDetail.getAmount() - 1);
+            productDetailRepository.save(productDetail);
+            return hdBillDetailRepository.save(billDetail);
+        }
+    }
+
+    @Override
+    public BillDetail changeQuantity(String idBillDetail, Integer quantity) {
+        BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
+        ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
+        Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
+        if (bill.getStatus() == 1) {
+            billDetail.setQuantity(quantity);
+            return hdBillDetailRepository.save(billDetail);
+        } else {
+            if (!(billDetail.getQuantity() == quantity)) {
+                if (billDetail.getQuantity() > quantity) {
+                    Integer differenceQuantity = billDetail.getQuantity() - quantity;
+                    productDetail.setAmount(productDetail.getAmount() + differenceQuantity);
+                    productDetailRepository.save(productDetail);
+                    billDetail.setQuantity(quantity);
+                    hdBillDetailRepository.save(billDetail);
+                    return billDetail;
+                } else {
+                    Integer differenceQuantity = quantity - billDetail.getQuantity();
+                    productDetail.setAmount(productDetail.getAmount() - differenceQuantity);
+                    productDetailRepository.save(productDetail);
+                    billDetail.setQuantity(quantity);
+                    hdBillDetailRepository.save(billDetail);
+                    return billDetail;
+                }
+            }
+        }
+        return billDetail;
     }
 
 }

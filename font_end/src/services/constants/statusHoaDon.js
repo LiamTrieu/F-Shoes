@@ -1,23 +1,23 @@
 export const getStatus = (status) => {
   switch (status) {
     case 0:
-      return "Đã hủy";
+      return 'Đã hủy'
     case 1:
-      return "Chờ xác nhận";
+      return 'Chờ xác nhận'
     case 2:
-      return "Đã xác nhận";
+      return 'Đã xác nhận'
     case 3:
-      return "Đang vận chuyển";
+      return 'Đang vận chuyển'
     case 4:
-      return "Đã giao hàng";
+      return 'Đã giao hàng'
     case 5:
-      return "Đã thanh toán";
+      return 'Đã thanh toán'
     case 6:
-      return "Chờ thanh toán";
+      return 'Chờ thanh toán'
     case 7:
-      return "Hoàn thành";
+      return 'Hoàn thành'
     default:
-      console.error("Trạng thái hóa đơn không hợp lệ");
-      break;
+      console.error('Trạng thái hóa đơn không hợp lệ')
+      break
   }
-};
+}
