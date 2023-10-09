@@ -33,6 +33,8 @@ public class Transaction extends PrimaryEntity {
 
     private String note;
 
+    private String transactionCode;
+
     private Status status;
 
     @ManyToOne

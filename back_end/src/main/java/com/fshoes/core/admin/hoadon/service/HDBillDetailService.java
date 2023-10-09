@@ -17,5 +17,11 @@ public interface HDBillDetailService {
 
     BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
 
+    BillDetail decrementQuantity(String idBillDetail);
+
+    BillDetail incrementQuantity(String idBillDetail);
+
+    BillDetail changeQuantity(String idBillDetail, Integer quantity);
+
 
 }

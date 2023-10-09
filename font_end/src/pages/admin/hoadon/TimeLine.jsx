@@ -18,7 +18,7 @@ const TimeLine = (props) => {
         let icon
 
         switch (item.statusBill) {
-          case 1:
+          case (1, 8):
             color = '#00CC00'
             icon = FaRegFileAlt
             break
