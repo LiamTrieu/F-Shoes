@@ -5,6 +5,7 @@ import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,6 +49,21 @@ public class HDBillDetailController {
     public ObjectRespone getByBillAndProductDetail(@RequestParam(name = "idBill") String idBill,
                                                    @RequestParam(name = "idProductDetail") String idProductDetail) {
         return new ObjectRespone(hdBillDetailService.getBillDetailByBillIdAndProductDetailId(idBill, idProductDetail));
+    }
+
+    @PutMapping("/decrementQuantity/{idBillDetail}")
+    public ObjectRespone decrementQuantity(@PathVariable("idBillDetail") String idBillDetail) {
+        return new ObjectRespone(hdBillDetailService.decrementQuantity(idBillDetail));
+    }
+
+    @PutMapping("/incrementQuantity/{idBillDetail}")
+    public ObjectRespone incrementQuantity(@PathVariable("idBillDetail") String idBillDetail) {
+        return new ObjectRespone(hdBillDetailService.incrementQuantity(idBillDetail));
+    }
+
+    @PutMapping("/changeQuantity/{idBillDetail}")
+    public ObjectRespone changeQuantity(@PathVariable("idBillDetail") String idBillDetail, @RequestBody Integer quantity) {
+        return new ObjectRespone(hdBillDetailService.changeQuantity(idBillDetail, quantity));
     }
 
 }

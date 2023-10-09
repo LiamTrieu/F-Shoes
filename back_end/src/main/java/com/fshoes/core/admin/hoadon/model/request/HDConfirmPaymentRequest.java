@@ -19,4 +19,6 @@ public class HDConfirmPaymentRequest extends HDBillRequest {
 
     private BigDecimal paymentAmount;
 
+    private String transactionCode;
+
 }

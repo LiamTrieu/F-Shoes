@@ -118,7 +118,6 @@
 
 .hoa-don .table-container-custom-scrollbar::-webkit-scrollbar {
   width: 3px !important;
-  /* Độ rộng thanh cuộn */
 }
 
 .hoa-don .table-container-custom-scrollbar::-webkit-scrollbar-thumb {
@@ -148,7 +147,35 @@
   display: none !important;
 }
 
-
 .hoa-don .time-line {
   padding-right: 8px;
+}
+
+.hoa-don .dateTime .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  height: 0.6em !important;
+}
+.hoa-don .dateTime .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
+  line-height: 0.6em !important;
+  padding-top: 2px !important;
+  padding-bottom: 14px !important;
+}
+
+.dateTime fieldset {
+  border-radius: 8px !important;
+}
+
+.dateTime:hover fieldset {
+  border-color: #fc7c27 !important;
+}
+
+.hoa-don .MuiButton-root {
+  border-radius: 8px !important;
+  text-transform: none !important;
+  box-shadow: none;
+}
+.hoa-don .search-field .MuiOutlinedInput-notchedOutline {
+  border-radius: 8px !important;
+}
+.hoa-don .search-field:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #fc7c27 !important;
 }

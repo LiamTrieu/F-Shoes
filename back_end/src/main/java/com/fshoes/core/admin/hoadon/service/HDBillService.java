@@ -18,7 +18,7 @@ public interface HDBillService {
 
     Bill updateBill(String idBill, HDBillRequest hdBillRequest);
 
-    Bill cancelOrder(String idBill, HDBillRequest hdBillRequest);
+    Boolean cancelOrder(String idBill, HDBillRequest hdBillRequest);
 
     Bill confirmOrder(String idBill, BillConfirmRequest billConfirmRequest);
 
