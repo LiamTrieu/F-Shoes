@@ -596,7 +596,7 @@ export default function AdBillDetail() {
         billDetail={billDetail}
       />
       <BreadcrumbsCustom listLink={listHis} nameHere={'Chi tiết hoá đơn'} />
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
+      <Paper className="time-line" elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
         <h3>Lịch sử đơn hàng</h3>
         {/* timeline */}
         {/* {loadingTimeline ? (

@@ -153,6 +153,10 @@
   justify-content: center !important;
 }
 
+body {
+  overflow-x: hidden !important;
+}
+
 /* body */
 /* Thiết lập thanh cuộn trong tài liệu */
 body::-webkit-scrollbar {

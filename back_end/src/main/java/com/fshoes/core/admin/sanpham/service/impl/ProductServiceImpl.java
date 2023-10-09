@@ -15,7 +15,6 @@ import com.fshoes.entity.Image;
 import com.fshoes.entity.Product;
 import com.fshoes.entity.ProductDetail;
 import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
-import com.fshoes.infrastructure.constant.Status;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,7 +27,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.IntStream;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -71,8 +72,13 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Async
     public void addProductDetail(List<ProductDetailRequest> request) {
-        Product product = new Product(request.get(0).getNameProduct(), Status.HOAT_DONG);
-        productRepository.save(product);
+        Product product = new Product();
+        if (!Objects.equals(request.get(0).getIdProduct(), "")) {
+            product.setId(request.get(0).getIdProduct());
+        } else {
+            product.setName(request.get(0).getNameProduct());
+            productRepository.save(product);
+        }
 
         AtomicLong maxLength = new AtomicLong(productDetailRepository.count() + 1);
         List<ProductDetail> newProductDetail = request.stream().map(productDetailRequest -> {
@@ -102,5 +108,42 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductMaxPriceResponse getMaxPriceProductId(String productId) {
         return productDetailRepository.getProductMaxPrice(productId);
+    }
+
+    @Override
+    public Boolean changeProduct(String id) {
+        Product product = productRepository.getReferenceById(id);
+        product.setDeleted(product.getDeleted() == 0 ? 1 : 0);
+        productRepository.save(product);
+        return true;
+    }
+
+    @Override
+    public ProductDetail details(String id) {
+        return productDetailRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public List<Image> getImageProduct(String id) {
+        return imageRepository.getImageByProductDetailId(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateProductDetail(String id, ProductDetailRequest request) {
+        ProductDetail productDetail = productDetailRepository.findById(id).orElseThrow();
+        List<Image> images = imageRepository.getImageByProductDetailId(id);
+        IntStream.range(0, images.size())
+                .forEach(index -> images.get(index).setUrl(request.getListImage().get(index)));
+        imageRepository.saveAll(images);
+        productDetailRepository.save(request.tranDetail(productDetail));
+    }
+
+    @Override
+    public Boolean changeStatusProduct(String id) {
+        ProductDetail product = productDetailRepository.getReferenceById(id);
+        product.setDeleted(product.getDeleted() == 0 ? 1 : 0);
+        productDetailRepository.save(product);
+        return true;
     }
 }

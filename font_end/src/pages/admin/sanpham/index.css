@@ -24,6 +24,18 @@
   border-width: 1px !important;
 }
 
+.san-pham2 .search-field .MuiInputBase-root {
+  border-radius: 8px !important;
+}
+
+.san-pham2 .search-field .MuiInputBase-root:hover fieldset {
+  border-color: #F2741F !important;
+}
+
+.san-pham2 .search-field .Mui-focused fieldset {
+  border-width: 1px !important;
+}
+
 .san-pham .filter .MuiSelect-select {
   padding-left: 8px;
   color: #fc7c27;

@@ -73,9 +73,11 @@
   background: #f5d7f5 !important;
   border-color: #ff00ff !important;
 }
+
 .hoa-don .billDetailInfo {
   font-size: 14px;
 }
+
 .hoa-don .filter .MuiSelect-select {
   padding-left: 8px;
   color: #fc7c27;
@@ -115,7 +117,8 @@
 }
 
 .hoa-don .table-container-custom-scrollbar::-webkit-scrollbar {
-  width: 3px !important; /* Độ rộng thanh cuộn */
+  width: 3px !important;
+  /* Độ rộng thanh cuộn */
 }
 
 .hoa-don .table-container-custom-scrollbar::-webkit-scrollbar-thumb {
@@ -124,4 +127,28 @@
 
 .hoa-don .table-container-custom-scrollbar::-webkit-scrollbar-button {
   display: none !important;
+}
+
+.hoa-don .time-line .scrollbar-container {
+  overflow-x: auto;
+}
+
+.hoa-don .time-line .scrollbar-container::-webkit-scrollbar {
+  width: 3px !important;
+  height: 10px !important;
+}
+
+/* Thiết lập màu thanh cuộn */
+.hoa-don .time-line .scrollbar-container::-webkit-scrollbar-thumb {
+  background-color: rgb(206, 206, 206) !important;
+}
+
+/* Thiết lập phần cuối cùng của thanh cuộn */
+.hoa-don .time-line .scrollbar-container::-webkit-scrollbar-button {
+  display: none !important;
+}
+
+
+.hoa-don .time-line {
+  padding-right: 8px;
 }

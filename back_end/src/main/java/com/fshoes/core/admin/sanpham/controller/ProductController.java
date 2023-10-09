@@ -7,13 +7,7 @@ import com.fshoes.core.admin.sanpham.service.ProductService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -38,6 +32,14 @@ public class ProductController {
     public ObjectRespone getListImage(@PathVariable String idColor) {
         return new ObjectRespone(productService.getListImage(idColor));
     }
+    @DeleteMapping("/delete/{id}")
+    public ObjectRespone delete(@PathVariable String id) {
+        return new ObjectRespone(productService.changeProduct(id));
+    }
+    @DeleteMapping("/change-status/{id}")
+    public ObjectRespone ChangeStatus(@PathVariable String id) {
+        return new ObjectRespone(productService.changeStatusProduct(id));
+    }
 
     @PostMapping("/upload-image/{idColor}")
     public ObjectRespone updateImage(@PathVariable String idColor,
@@ -49,6 +51,10 @@ public class ProductController {
     public void addProductDetail(@RequestBody List<ProductDetailRequest>  request){
         productService.addProductDetail(request);
     }
+    @PostMapping("/update/{id}")
+    public void addProductDetail(@PathVariable String id, @RequestBody ProductDetailRequest request){
+        productService.updateProductDetail(id,request);
+    }
 
     @GetMapping("/product-detail")
     public ObjectRespone productDetail(PrdDetailFilterRequest request) {
@@ -58,5 +64,15 @@ public class ProductController {
     @GetMapping("/name-by-id/{id}")
     public ObjectRespone nameById(@PathVariable String id) {
         return new ObjectRespone(productService.getMaxPriceProductId(id));
+    }
+
+    @GetMapping("/product-detail/{id}")
+    public ObjectRespone getProductDetail(@PathVariable String id) {
+        return new ObjectRespone(productService.details(id));
+    }
+
+    @GetMapping("/image-product/{id}")
+    public ObjectRespone getImageProduct(@PathVariable String id) {
+        return new ObjectRespone(productService.getImageProduct(id));
     }
 }

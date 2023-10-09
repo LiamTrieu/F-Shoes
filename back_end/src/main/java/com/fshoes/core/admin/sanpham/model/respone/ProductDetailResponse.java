@@ -13,7 +13,10 @@ public interface ProductDetailResponse extends IsIdentified {
 
     String getColorName();
 
+    String getBrand();
+    String getCategory();
     String getSole();
+    String getImage();
 
     String getMaterial();
 
