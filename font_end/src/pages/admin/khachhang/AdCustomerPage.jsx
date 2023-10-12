@@ -97,6 +97,18 @@ export default function AdCustomerPage() {
                 setSearchKhachHang({ ...searchKhachHang, nameSearch: e.target.value })
               }}
             />
+            <Button
+              variant="outlined"
+              style={{ float: 'right' }}
+              color="cam"
+              className="them-moi"
+              component={Link}
+              to="/admin/customer/add">
+              <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
+              <Typography sx={{ ml: 1 }}>Tạo khách hàng</Typography>
+            </Button>
+          </Stack>
+          <Stack my={2} direction="row" justifyContent="start" alignItems="center" spacing={1}>
             <div className="filter">
               <b>Giới tính: </b>
               <Select
@@ -127,16 +139,6 @@ export default function AdCustomerPage() {
                 <MenuItem></MenuItem>
               </Select>
             </div>
-            <Button
-              variant="outlined"
-              style={{ float: 'right' }}
-              color="cam"
-              className="them-moi"
-              component={Link}
-              to="/admin/customer/add">
-              <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
-              <Typography sx={{ ml: 1 }}>Tạo khách hàng</Typography>
-            </Button>
           </Stack>
 
           <Table className="tableCss mt-5">

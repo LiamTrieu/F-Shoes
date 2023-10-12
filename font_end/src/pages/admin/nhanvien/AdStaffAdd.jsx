@@ -190,7 +190,7 @@ const AddStaff = () => {
         email: initStaff.email,
         phoneNumber: initStaff.phoneNumber,
         avatar: initStaff.avatar,
-        role: initStaff.role,
+        role: 0,
       })
       setQrScannerVisible(false)
     }
@@ -342,7 +342,7 @@ const AddStaff = () => {
             let khachHangId = response.data.id
             const obj = {
               name: diaChi.name,
-              phoneNumber: diaChi.phoneNumber,
+              phoneNumber: staffAdd.phoneNumber,
               specificAddress: diaChi.specificAddress,
               type: 0,
               idCustomer: khachHangId,
@@ -433,24 +433,6 @@ const AddStaff = () => {
             <Typography variant="body2" color="error">
               {errors.fullName}
             </Typography>
-
-            <Grid item xs={12} sx={{ mt: 3 }}>
-              <Typography>
-                <span className="required"> *</span>Chức vụ
-              </Typography>
-              <FormControl size="small">
-                <RadioGroup
-                  row
-                  value={staffAdd.role}
-                  onChange={(e) => setStaffAdd({ ...staffAdd, role: e.target.value })}>
-                  <FormControlLabel name="role" value={0} control={<Radio />} label="Nhân viên" />
-                  <FormControlLabel name="role" value={1} control={<Radio />} label="Quản lí" />
-                </RadioGroup>
-              </FormControl>
-              <Typography variant="body2" color="error">
-                {errors.gender}
-              </Typography>
-            </Grid>
           </Grid>
           <Grid item xs={8}>
             <h3>Thông tin chi tiết</h3>

@@ -295,6 +295,7 @@ export default function AdStaffDetail() {
 
   const fillDetailDiaChi = (idDiaChi) => {
     DiaChiApi.getById(idDiaChi).then((response) => {
+      console.log(response.data.data)
       const { name, email, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
         response.data.data
 
@@ -563,7 +564,7 @@ export default function AdStaffDetail() {
                     <Typography>Địa chỉ</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Grid container spacing={2} sx={{ mt: 3 }}>
+                    <Grid container spacing={2}>
                       <Grid item xs={12} md={6}>
                         <Typography>
                           <span className="required"> *</span>Tên

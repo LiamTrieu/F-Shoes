@@ -94,6 +94,17 @@ export default function AdCustomerPage() {
               ),
             }}
           />
+          <Button
+            variant="outlined"
+            style={{ float: 'right' }}
+            color="cam"
+            component={Link}
+            to="/admin/staff/add">
+            <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
+            <Typography sx={{ ml: 1 }}>Tạo Nhân Viên</Typography>
+          </Button>
+        </Stack>
+        <Stack my={2} direction="row" justifyContent="start" alignItems="center" spacing={1}>
           <div className="filter">
             <b>Giới tính: </b>
             <Select
@@ -131,15 +142,6 @@ export default function AdCustomerPage() {
               <MenuItem></MenuItem>
             </Select>
           </div>
-          <Button
-            variant="outlined"
-            style={{ float: 'right' }}
-            color="cam"
-            component={Link}
-            to="/admin/staff/add">
-            <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
-            <Typography sx={{ ml: 1 }}>Tạo Nhân Viên</Typography>
-          </Button>
         </Stack>
 
         <Table aria-label="simple table" className="tableCss mt-5">
@@ -152,10 +154,10 @@ export default function AdCustomerPage() {
               <TableCell align="center" width={'15%'}>
                 Họ và tên
               </TableCell>
-              <TableCell align="center" width={'20%'}>
+              <TableCell align="center" width={'15%'}>
                 Email
               </TableCell>
-              <TableCell align="center" width={'10%'}>
+              <TableCell align="center" width={'8%'}>
                 SDT
               </TableCell>
               <TableCell align="center" width={'10%'}>
@@ -168,7 +170,7 @@ export default function AdCustomerPage() {
                 Chức vụ
               </TableCell>
               {/* <TableCell align="center">CCCD</TableCell> */}
-              <TableCell align="center" width={'15%'}>
+              <TableCell align="center" width={'20%'}>
                 Trạng thái
               </TableCell>
               <TableCell align="center" width={'9%'}>
