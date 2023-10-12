@@ -92,11 +92,10 @@ export default function AdCustomerDetail() {
   }
 
   const loadHuyen = (idProvince) => {
-    let dsHuyen
+    console.log(idProvince)
     ghnAPI.getDistrict(idProvince).then((response) => {
-      dsHuyen = response.data
+      setHuyen(response.data)
     })
-    return dsHuyen
   }
 
   const loadXa = (idDistrict) => {
@@ -114,7 +113,24 @@ export default function AdCustomerDetail() {
 
   const loadDiaChi = (initPage, idCustomer) => {
     DiaChiApi.getAll(initPage, idCustomer).then((response) => {
-      setDiaChi(response.data.data.content)
+      setDiaChi(
+        response.data.data.content.map((item) => {
+          const specificAddressParts = item.specificAddress.split(', ')
+          const [diaChiCuThe, xaDetail, huyenDetail, tinhDetail] = specificAddressParts
+          return {
+            id: item.id,
+            name: item.name,
+            phoneNumber: item.phoneNumber,
+            tinh: tinhDetail,
+            huyen: huyenDetail,
+            xa: xaDetail,
+            specificAddress: diaChiCuThe,
+            provinceId: item.provinceId,
+            districtId: item.districtId,
+            wardId: item.wardId,
+          }
+        }),
+      )
       setTotalPages(response.data.data.totalPages)
     })
   }
@@ -262,51 +278,61 @@ export default function AdCustomerDetail() {
     wardId: '',
     specificAddress: '',
   })
-  const handleTinhChange = (_, newValue) => {
+  const handleTinhChange = (newValue, index) => {
+    let preDiaChi = diaChi
     if (newValue) {
-      loadHuyen(newValue.id)
       setSelectedProvince(newValue)
       setNewDiaChi({ ...newDiaChi, provinceId: { id: newValue.id, label: newValue.label } })
       setTinhName(newValue.label)
-      setDetailDiaChi({ ...detailDiaChi, provinceId: newValue.id })
+      preDiaChi[index] = { ...preDiaChi[index], provinceId: newValue.id, tinh: newValue.label }
+      setDiaChi(preDiaChi)
     } else {
       setHuyen([])
       setSelectedProvince(null)
       setSelectedDistrict(null)
       setSelectedWard(null)
-      setDetailDiaChi({ ...detailDiaChi, provinceId: '' })
       setNewDiaChi({ ...newDiaChi, provinceId: { id: '', label: '' } })
       setErrorsAA({ ...errorsAA, province: 'Vui lòng chọn Tỉnh/Thành phố.' })
+      preDiaChi[index] = { ...preDiaChi[index], provinceId: '', tinh: '' }
+      preDiaChi[index] = { ...preDiaChi[index], districtId: '', huyen: '' }
+      preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
+      setDiaChi(preDiaChi)
     }
   }
 
-  const handleHuyenChange = (_, newValue) => {
+  const handleHuyenChange = (newValue, index) => {
+    let preDiaChi = diaChi
     if (newValue) {
       loadXa(newValue.id)
       setSelectedDistrict(newValue)
       setNewDiaChi({ ...newDiaChi, districtId: { id: newValue.id, label: newValue.label } })
       setHuyenName(newValue.label)
-      setDetailDiaChi({ ...detailDiaChi, districtId: newValue.id })
+      preDiaChi[index] = { ...preDiaChi[index], districtId: newValue.id, huyen: newValue.label }
+      setDiaChi(preDiaChi)
     } else {
       setXa([])
       setSelectedDistrict(null)
       setSelectedWard(null)
-      setDetailDiaChi({ ...detailDiaChi, districtId: '' })
-      setNewDiaChi({ ...newDiaChi, districtId: { id: '', label: '' } })
       setErrorsAA({ ...errorsAA, district: 'Vui lòng chọn Quận/Huyện.' })
+      setNewDiaChi({ ...newDiaChi, districtId: { id: '', label: '' } })
+      preDiaChi[index] = { ...preDiaChi[index], districtId: '', huyen: '' }
+      preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
+      setDiaChi(preDiaChi)
     }
   }
 
-  const handleXaChange = (_, newValue) => {
+  const handleXaChange = (newValue, index) => {
+    let preDiaChi = diaChi
     if (newValue) {
       setSelectedWard(newValue)
       setNewDiaChi({ ...newDiaChi, wardId: { id: newValue.id, label: newValue.label } })
       setXaName(newValue.label)
-      setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
+      preDiaChi[index] = { ...preDiaChi[index], wardId: newValue.id, xa: newValue.label }
+      setDiaChi(preDiaChi)
     } else {
       setSelectedWard(null)
-      setDetailDiaChi({ ...detailDiaChi, wardId: '' })
       setNewDiaChi({ ...newDiaChi, wardId: { id: '', label: '' } })
+      setDiaChi(preDiaChi)
     }
   }
 
@@ -404,14 +430,6 @@ export default function AdCustomerDetail() {
     specificAddress: '',
   })
 
-  const [detailDiaChi, setDetailDiaChi] = useState({
-    name: '',
-    phoneNumber: '',
-    email: '',
-    specificAddress: '',
-    type: 0,
-    idCustomer: id,
-  })
   const [xaName, setXaName] = useState('')
   const [huyenName, setHuyenName] = useState('')
   const [tinhName, setTinhName] = useState('')
@@ -431,27 +449,26 @@ export default function AdCustomerDetail() {
     })
   }
 
-  const onUpdateDiaChi = (detailDiaChi, idDiaChi) => {
-    console.log(detailDiaChi)
+  const onUpdateDiaChi = (diaChi) => {
     const newErrors = {}
     let checkAU = 0
 
-    if (!detailDiaChi.name.trim()) {
+    if (!diaChi.name.trim()) {
       newErrors.name = 'Tên người nhận không được để trống'
       checkAU++
-    } else if (detailDiaChi.name.trim().length > 100) {
+    } else if (diaChi.name.trim().length > 100) {
       newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
       checkAU++
     } else {
       newErrors.name = ''
     }
 
-    if (!detailDiaChi.phoneNumber.trim()) {
+    if (!diaChi.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
       checkAU++
     } else {
       const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
-      if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
+      if (!phoneNumberRegex.test(diaChi.phoneNumber.trim())) {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
         checkAU++
       } else {
@@ -467,9 +484,9 @@ export default function AdCustomerDetail() {
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        detailDiaChi.specificAddress = `${detailDiaChi.specificAddress}, ${xaName}, ${huyenName}, ${tinhName}`
+        diaChi.specificAddress = `${diaChi.specificAddress}, ${diaChi.xa}, ${diaChi.huyen}, ${diaChi.tinh}`
 
-        DiaChiApi.update(idDiaChi, detailDiaChi)
+        DiaChiApi.update(diaChi.id, diaChi)
           .then(() => {
             loadDiaChi(initPage - 1, id)
             toast.success('Cập nhật địa chỉ thành công', {
@@ -654,21 +671,6 @@ export default function AdCustomerDetail() {
               <h2>Danh sách địa chỉ</h2>
               <hr />
               {diaChi.map((item, index) => {
-                const specificAddressParts = item.specificAddress.split(', ')
-                const [diaChiCuThe, xaDetail, huyenDetail, tinhDetail] = specificAddressParts
-
-                const detailDiaChi = {
-                  name: item.name,
-                  phoneNumber: item.phoneNumber,
-                  tinh: tinhDetail,
-                  huyen: huyenDetail,
-                  xa: xaDetail,
-                  specificAddress: diaChiCuThe,
-                  provinceId: item.provinceId,
-                  districtId: item.districtId,
-                  wardId: item.wardId,
-                }
-
                 return (
                   <div key={index} className="custom-accordion">
                     <Accordion>
@@ -700,9 +702,11 @@ export default function AdCustomerDetail() {
                               size="small"
                               fullWidth
                               name="name"
-                              value={detailDiaChi.name}
+                              value={item.name}
                               onChange={(e) => {
-                                setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
+                                let preDiaChi = diaChi
+                                preDiaChi[index].name = e.target.value
+                                setDiaChi(preDiaChi)
                               }}
                             />
                             <Typography variant="body2" color="error">
@@ -720,9 +724,11 @@ export default function AdCustomerDetail() {
                               size="small"
                               fullWidth
                               name="phoneNumber"
-                              value={detailDiaChi.phoneNumber}
+                              value={item.phoneNumber}
                               onChange={(e) => {
-                                setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
+                                let preDiaChi = diaChi
+                                preDiaChi[index].phoneNumber = e.target.value
+                                setDiaChi(preDiaChi)
                               }}
                             />
                             <Typography variant="body2" color="error">
@@ -742,8 +748,10 @@ export default function AdCustomerDetail() {
                                 size="small"
                                 className="search-field"
                                 id="combo-box-demo"
-                                value={{ label: detailDiaChi.tinh, id: detailDiaChi.provinceId }}
-                                onChange={handleTinhChange}
+                                value={{ label: item.tinh, id: item.provinceId }}
+                                onChange={(_, newValue) => {
+                                  handleTinhChange(newValue, index)
+                                }}
                                 options={
                                   tinh &&
                                   tinh.map((item) => ({
@@ -758,7 +766,13 @@ export default function AdCustomerDetail() {
                               />
                             </Box>
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid
+                            item
+                            xs={12}
+                            md={4}
+                            onClick={() => {
+                              loadHuyen(item.provinceId)
+                            }}>
                             <Box sx={{ minWidth: 120 }}>
                               <Typography>
                                 <span className="required"> *</span>Quận/huyện
@@ -768,8 +782,10 @@ export default function AdCustomerDetail() {
                                 fullWidth
                                 size="small"
                                 className="search-field"
-                                value={{ label: detailDiaChi.huyen, id: detailDiaChi.districtId }}
-                                onChange={handleHuyenChange}
+                                value={{ label: item.huyen, id: item.districtId }}
+                                onChange={(_, newValue) => {
+                                  handleHuyenChange(newValue, index)
+                                }}
                                 options={huyen.map((item) => ({
                                   label: item.districtName,
                                   id: item.districtID,
@@ -782,7 +798,11 @@ export default function AdCustomerDetail() {
                             </Box>
                           </Grid>
                           <Grid item xs={12} md={4}>
-                            <Box sx={{ minWidth: 120 }}>
+                            <Box
+                              sx={{ minWidth: 120 }}
+                              onClick={() => {
+                                loadXa(item.districtId)
+                              }}>
                               <Typography>
                                 <span className="required"> *</span>Xã/phường/thị trấn
                               </Typography>
@@ -791,8 +811,10 @@ export default function AdCustomerDetail() {
                                 fullWidth
                                 size="small"
                                 className="search-field"
-                                value={{ label: detailDiaChi.xa, id: detailDiaChi.wardId }}
-                                onChange={handleXaChange}
+                                value={{ label: item.xa, id: item.wardId }}
+                                onChange={(_, newValue) => {
+                                  handleXaChange(newValue, index)
+                                }}
                                 options={
                                   xa &&
                                   xa.map((item) => ({ label: item.wardName, id: item.wardCode }))
@@ -818,11 +840,11 @@ export default function AdCustomerDetail() {
                               size="small"
                               fullWidth
                               name="specificAddress"
-                              value={detailDiaChi.specificAddress}
+                              value={item.specificAddress}
                               onChange={(e) => {
-                                const updatedDetailDiaChi = { ...detailDiaChi }
-                                updatedDetailDiaChi.specificAddress = e.target.value
-                                setDetailDiaChi(updatedDetailDiaChi)
+                                let preDiaChi = diaChi
+                                preDiaChi[index].specificAddress = e.target.value
+                                setDiaChi(preDiaChi)
                               }}
                             />
                           </Grid>
@@ -843,7 +865,7 @@ export default function AdCustomerDetail() {
                         </IconButton>
                         <Tooltip title="chỉnh sửa">
                           <IconButton
-                            onClick={() => onUpdateDiaChi(detailDiaChi, item.id)}
+                            onClick={() => onUpdateDiaChi(item)}
                             size="small"
                             color="cam"
                             sx={{ float: 'right' }}>
