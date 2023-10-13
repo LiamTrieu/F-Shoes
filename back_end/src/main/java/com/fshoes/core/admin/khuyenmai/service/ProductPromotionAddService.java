@@ -13,5 +13,5 @@ public interface ProductPromotionAddService {
 
     PageReponse<AddProductPromotionResponse> getAllProductDetail(ProductPromotionSearch req);
     PageReponse<AddProductPromotionResponse> getAll(ProductPromotionSearch req);
-    PageReponse<AddProductPromotionResponse> getProductDetailByProduct(GetProductDetailByIdProduct req, String id);
+    PageReponse<AddProductPromotionResponse> getProductDetailByProduct(GetProductDetailByIdProduct req, List<String> id);
 }

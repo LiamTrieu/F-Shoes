@@ -19,18 +19,10 @@
 }
 
 .promotion .css-a643pv-MuiStack-root {
-  padding-top: 20px !important;
+  padding-top: 5px !important;
 }
 .promotion .css-x6y40x-MuiFormLabel-root-MuiInputLabel-root.Mui-error {
   padding-top: 30px !important;
-}
-
-.promotion .css-x6y40x-MuiFormLabel-root-MuiInputLabel-root {
-  padding-top: 30px !important;
-}
-
-.timeStartAdd .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
-  height: 0.6em !important;
 }
 .timeStartAdd .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
   line-height: 0.6em !important;

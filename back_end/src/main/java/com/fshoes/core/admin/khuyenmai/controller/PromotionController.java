@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/promotion")
@@ -44,7 +45,7 @@ public class PromotionController {
     }
 
     @GetMapping("/get-product-detail-by-product/{id}")
-    public ObjectRespone getAllProductDeatilByProduct(GetProductDetailByIdProduct red,@PathVariable  String id){
+    public ObjectRespone getAllProductDeatilByProduct(GetProductDetailByIdProduct red, @PathVariable List<String> id){
         return new ObjectRespone( productPromotionAddService.getProductDetailByProduct(red,id));
     }
     @GetMapping("/get-product")

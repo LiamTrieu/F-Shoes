@@ -105,6 +105,11 @@ public class SellController {
         return new ObjectRespone(getSell.rollBackQuantityProductDetail(idBill, idPrDetail));
     }
 
+    @PutMapping("/input-quantity-bill-detail")
+    public ObjectRespone inputQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail, @RequestParam("quantity") Integer quantity){
+        return new ObjectRespone(getSell.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity));
+    }
+
     @PutMapping("/increase-quantity-bill-detail")
     public ObjectRespone increaseQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail){
         return new ObjectRespone(getSell.increaseQuantityBillDetail(idBillDetail, idPrDetail));
@@ -113,5 +118,10 @@ public class SellController {
     @PutMapping("/decrease-quantity-bill-detail")
     public ObjectRespone decreaseQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail){
         return new ObjectRespone(getSell.decreaseQuantityBillDetail(idBillDetail, idPrDetail));
+    }
+
+    @GetMapping("/max-price")
+    public ObjectRespone nameById() {
+        return new ObjectRespone(getSell.getMaxPriceProductId());
     }
 }
