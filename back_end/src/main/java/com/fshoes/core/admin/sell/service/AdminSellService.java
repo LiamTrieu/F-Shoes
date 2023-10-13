@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.sell.service;
 
+import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
 import com.fshoes.core.admin.sell.model.request.AddBillRequest;
 import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
@@ -16,6 +17,7 @@ import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
 import com.fshoes.entity.Cart;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface AdminSellService {
@@ -54,4 +56,9 @@ public interface AdminSellService {
     Boolean increaseQuantityBillDetail(String idBillDetail,String idPrDetail);
 
     Boolean decreaseQuantityBillDetail(String idBillDetail,String idPrDetail);
+
+    Boolean inputQuantityBillDetail(String idBillDetail, String idProDetail, Integer quantity);
+
+    List<ProductMaxPriceResponse> getMaxPriceProductId();
+
 }

@@ -75,5 +75,15 @@ const sellApi = {
     const url = `/sell/decrease-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`
     return axiosClient.put(url)
   },
+
+  inputQuantityBillDetail: (idBillDetail, idPrDetail, quantity) => {
+    const url = `/sell/decrease-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`
+    return axiosClient.put(url, quantity)
+  },
+
+  getNameProduct: () => {
+    const url = `/sell/max-price`
+    return axiosClient.get(url)
+  },
 }
 export default sellApi
