@@ -1,13 +1,16 @@
 package com.fshoes.core.admin.sell.repository;
 
+import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sell.model.response.GetAmountProductResponse;
 import com.fshoes.core.admin.sell.model.response.GetColorResponse;
 import com.fshoes.core.admin.sell.model.response.GetProductDetailBillSellResponse;
 import com.fshoes.core.admin.sell.model.response.GetSizeResponse;
 import com.fshoes.repository.ProductDetailRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -42,4 +45,13 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
             SELECT id, amount  FROM product_detail where id = ?
             """, nativeQuery = true)
     GetAmountProductResponse getAmount(String id);
+
+    @Query(value = """
+            SELECT p.id, MAX(pd.price) AS price
+            FROM product p
+            JOIN product_detail pd ON p.id = pd.id_product
+            GROUP BY p.id
+            ORDER BY price DESC;
+            """, nativeQuery = true)
+    List<ProductMaxPriceResponse> getProductMaxPrice();
 }

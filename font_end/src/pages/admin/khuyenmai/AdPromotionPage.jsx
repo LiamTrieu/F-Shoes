@@ -178,7 +178,7 @@ export default function AdPromotionPage() {
               alignItems="center"
               spacing={2}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
+                <DemoContainer components={['DateTimePicker']}>
                   <DateTimePicker
                     className="dateTimePro"
                     format="DD/MM/YYYY HH:mm:ss"
@@ -199,7 +199,7 @@ export default function AdPromotionPage() {
                 </DemoContainer>
               </LocalizationProvider>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DateTimePicker']} sx={{ mt: 0.9 }}>
+                <DemoContainer components={['DateTimePicker']}>
                   <DateTimePicker
                     className="dateTimePro"
                     format={'DD/MM/YYYY HH:mm:ss'}
@@ -262,7 +262,9 @@ export default function AdPromotionPage() {
                 <TableCell align="center" width={'5%'}>
                   STT
                 </TableCell>
-                <TableCell align="center">Tên Khuyến Mại</TableCell>
+                <TableCell align="left" width={'20%'}>
+                  Tên Khuyến Mại
+                </TableCell>
                 <TableCell align="center" width={'6%'}>
                   Giá trị
                 </TableCell>
@@ -287,11 +289,15 @@ export default function AdPromotionPage() {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell align="center">{promotion.stt}</TableCell>
 
-                  <TableCell align="center">{promotion.name}</TableCell>
+                  <TableCell align="left">{promotion.name}</TableCell>
                   <TableCell align="center">{promotion.value}%</TableCell>
                   <TableCell align="center">
                     <Chip
-                      onClick={() => handleDelete(promotion.id)}
+                      onClick={() => {
+                        if (promotion.status === 0 || promotion.status === 1) {
+                          handleDelete(promotion.id)
+                        }
+                      }}
                       className={
                         promotion.status === 0
                           ? 'chip-sap-hoat-dong'

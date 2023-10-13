@@ -63,9 +63,10 @@ export default function OrderAdmin() {
               marginTop: '5px',
               textTransform: 'none',
               fontWeight: 'bold',
+              borderRadius: '8px',
             }}
-            variant="contained"
-            color="success">
+            variant="outlined"
+            color="cam">
             Tạo đơn hàng
           </Button>
         </Box>

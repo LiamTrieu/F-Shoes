@@ -2,7 +2,6 @@ import {
   Button,
   Checkbox,
   Grid,
-  InputAdornment,
   Pagination,
   Paper,
   TextField,
@@ -12,7 +11,7 @@ import {
 import React, { useEffect, useState } from 'react'
 
 import khuyenMaiApi from '../../../api/admin/khuyenmai/khuyenMaiApi'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -25,7 +24,6 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
-import SearchIcon from '@mui/icons-material/Search'
 import './home.css'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
@@ -37,7 +35,6 @@ export default function AdPromotionAdd() {
   const [getProductDetailByProduct, setGetProductDetailByProduct] = useState([])
   const [getPromotion, setGetPromotion] = useState([])
 
-  const { id } = useParams()
   const [selectAll, setSelectAll] = useState(false)
   const [selectAllProduct, setSelectAllProduct] = useState(false)
   const [selectedRows, setSelectedRows] = useState([])
@@ -146,7 +143,7 @@ export default function AdPromotionAdd() {
     name: '',
     value: '',
     type: true,
-    status: '2',
+    status: '0',
     timeStart: '',
     timeEnd: '',
     idProductDetail: selectedRows,
@@ -346,32 +343,17 @@ export default function AdPromotionAdd() {
             </Grid>
 
             <Grid item xs={7}>
-              {/* <TextField
-                id="standard-basic"
-                sx={{ width: '50%', float: 'left', marginBottom: '20px' }}
-                placeholder="Tìm kiếm theo tên sản phẩm"
-                className="search-promotion"
-                size="small"
-                onChange={(e) => setFilter({ ...filter, nameProduct: e.target.value })}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon color="cam" />
-                    </InputAdornment>
-                  ),
-                }}
-              /> */}
               <div style={{ height: 400, width: '100%' }}>
                 <Table sx={{ minWidth: '100%' }} aria-label="simple table" className="tableCss">
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ width: '8%' }}>
+                      <TableCell sx={{ width: '3%' }}>
                         <Checkbox
                           checked={selectAllProduct}
                           onChange={handleSelectAllChangeProduct}
                         />
                       </TableCell>
-                      <TableCell align="center" sx={{ width: '8%' }}>
+                      <TableCell align="center" sx={{ width: '5%' }}>
                         STT
                       </TableCell>
 
