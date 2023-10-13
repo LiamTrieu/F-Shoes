@@ -2,6 +2,7 @@ package com.fshoes.core.admin.sell.service.impl;
 
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
+import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
 import com.fshoes.core.admin.sell.model.request.AddBillRequest;
 import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
@@ -35,6 +36,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -298,6 +300,32 @@ billHistoryRepository.save(billHistory);
         }else {
             return false;
         }
+    }
+
+    @Override
+    public Boolean inputQuantityBillDetail(String idBillDetail, String idProDetail, Integer quantity) {
+        Optional<BillDetail> optionalBillDetail = billDetailRepositoty.findById(idBillDetail);
+        if(optionalBillDetail.isPresent()){
+            BillDetail billDetail1 = optionalBillDetail.get();
+            billDetail1.setQuantity(quantity);
+            billDetailRepositoty.save(billDetail1);
+            Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idProDetail);
+            if(optionalProductDetail.isPresent()){
+                ProductDetail productDetail = optionalProductDetail.get();
+                productDetail.setAmount(productDetail.getAmount() - quantity);
+                productDetailRepository.save(productDetail);
+            }else {
+                return false;
+            }
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    @Override
+    public List<ProductMaxPriceResponse> getMaxPriceProductId() {
+        return getProduct.getProductMaxPrice();
     }
 
     @Override

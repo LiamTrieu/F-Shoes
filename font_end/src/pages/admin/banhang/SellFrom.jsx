@@ -77,12 +77,14 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [isShowVoucher, setIsShowVoucher] = useState(false)
   const [isShowDiaChi, setIsShowDiaChi] = useState(false)
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false)
+  const [quantityBillDetail, setQuantityBillDetail] = useState({
+    quantity: 0,
+  })
   const [isShowAddDiaChi, setIsShowAddDiaChi] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
 
-  const [listProductCart, setListProductCart] = useState([])
   const [listKhachHang, setlistKhachHang] = useState([])
   const [listVoucher, setListVoucher] = useState([])
   const [listProductDetailBill, setListProductDetailBill] = useState([])
@@ -92,7 +94,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [idFillVoucher, setIdFIllVoucher] = useState('')
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
-  const [moneyReduced, setMoneyReduced] = useState([])
   const [list, setList] = useState([])
 
   const [khachHang, setKhachHang] = useState({
@@ -139,12 +140,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     })
   }
 
-  const fecthDataProductCart = () => {
-    sellApi.getAllProductCart().then((response) => {
-      setListProductCart(response.data.data)
-    })
-  }
-
   const fecthDataCustomer = () => {
     sellApi.getAllCustomer().then((response) => {
       setlistKhachHang(response.data.data.data)
@@ -182,9 +177,18 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     })
   }
 
+  const inputQuantityBillDetail = (idBillDetail, idPrDetail, quantity) => {
+    sellApi.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity).then((response) => {
+      toast.success('Thay đổi số lượng sản phẩm thành công', {
+        position: toast.POSITION.TOP_CENTER,
+      })
+      fectchProductBillSell(idBill)
+      console.log(quantity)
+    })
+  }
+
   useEffect(() => {
     fecthDataCustomer()
-    fecthDataProductCart()
     fecthDataVoucher()
     loadTinh()
     loadList()
@@ -763,11 +767,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
 
   const totalPriceCart = totalSum
   const ShipingFree = giaoHang ? shipTotal : 0
-  const moneyReducedVoucher = 0
+  // const moneyReducedVoucher = 0
 
-  const totalPrice = totalPriceCart + ShipingFree - moneyReducedVoucher
   const totalMoneyReduce = (voucher.value * totalPriceCart) / 100
 
+  const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -778,10 +782,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
 
           <Button
             onClick={openAddProductModal}
-            sx={{ float: 'right' }}
+            sx={{ float: 'right', borderRadius: '8px' }}
             size="small"
-            variant="contained"
-            color="warning">
+            variant="outlined"
+            color="cam">
             <AddIcon fontSize="small" /> Thêm sản phẩm
           </Button>
         </Box>
@@ -796,7 +800,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         <Box>
           <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>
             {listProductDetailBill.length > 0 ? (
-              listProductDetailBill.map((cart) => (
+              listProductDetailBill.map((cart, index) => (
                 <Table>
                   <TableRow sx={{ border: 0 }} key={cart.id}>
                     <TableCell sx={{ px: 0 }} width={'5%'}>
@@ -899,6 +903,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                               border: 'none',
                             },
                           }}
+                          onChange={(e) => {
+                            inputQuantityBillDetail(cart.idBillDetail, cart.id, e.target.value)
+                          }}
                         />
                         <IconButton
                           size="small"
@@ -953,9 +960,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
             onClick={() => {
               setIsShowCustomer(true)
             }}
-            sx={{ float: 'right' }}
+            sx={{ float: 'right', borderRadius: '8px' }}
             size="small"
-            variant="contained"
+            variant="outlined"
             color="cam">
             <Person4Icon fontSize="small" /> Chọn khách hàng
           </Button>
@@ -1348,7 +1355,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 marginLeft: '20px',
                 backgroundColor: 'rgb(240,240,240)',
               }}>
-              Khách lẻ
+              {newDiaChi.name || 'khách lẻ'}
             </span>
             <Button
               sx={{ py: '6.7px', ml: 1 }}
@@ -1954,7 +1961,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         </Grid2>
         <Box p={2}>
           <Stack direction={'row'} justifyContent={'right'}>
-            <Button variant="contained" color="success" onClick={() => addBill(idBill)}>
+            <Button
+              variant="outlined"
+              style={{ borderRadius: '8px' }}
+              color="cam"
+              onClick={() => addBill(idBill)}>
               Xác nhận đặt hàng
             </Button>
           </Stack>

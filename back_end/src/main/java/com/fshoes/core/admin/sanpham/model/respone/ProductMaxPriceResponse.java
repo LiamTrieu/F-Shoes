@@ -5,7 +5,5 @@ import com.fshoes.entity.base.IsIdentified;
 import java.math.BigDecimal;
 
 public interface ProductMaxPriceResponse extends IsIdentified {
-    String getName();
-
     BigDecimal getPrice();
 }

@@ -41,7 +41,7 @@ public interface ProductPromotionAddRepository extends ProductRepository {
         JOIN product p ON pd.id_product = p.id 
         JOIN category c ON pd.id_category = c.id 
         JOIN brand b ON pd.id_brand = b.id 
-        WHERE p.id  = :id ;
+        WHERE p.id In :id ;
         """, nativeQuery = true)
-    Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") String id, Pageable pageable);
+    Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") List<String> id, Pageable pageable);
 }
