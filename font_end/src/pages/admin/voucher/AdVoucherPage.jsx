@@ -24,7 +24,7 @@ import voucherApi from '../../../api/admin/voucher/VoucherApi'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import SearchIcon from '@mui/icons-material/Search'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
+import { AiOutlinePlus } from 'react-icons/ai'
 import { TbEyeEdit } from 'react-icons/tb'
 import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
@@ -176,8 +176,9 @@ export default function AdVoucherPage() {
             <Link to={'/admin/voucher/add'}>
               <Button
                 variant="outlined"
-                style={{ borderRadius: '8px ', borderColor: '#fc7c27', color: '#fc7c27' }}>
-                <AiOutlinePlusCircle className="icon-css" />
+                color="cam"
+                style={{ borderRadius: '8px ', borderColor: '#fc7c27' }}>
+                <AiOutlinePlus className="icon-css" />
                 <Typography>Tạo khuyễn mãi</Typography>
               </Button>
             </Link>
@@ -267,22 +268,22 @@ export default function AdVoucherPage() {
                   <TableCell align="center" width={'5%'}>
                     STT
                   </TableCell>
-                  <TableCell align="center" width={'10%'}>
+                  <TableCell align="center" width={'8%'}>
                     Mã
                   </TableCell>
-                  <TableCell align="center" width={'20%'}>
+                  <TableCell align="center" width={'15%'}>
                     Tên
                   </TableCell>
-                  <TableCell align="center" width={'10%'}>
+                  <TableCell align="center" width={'15%'}>
                     Kiểu
                   </TableCell>
-                  <TableCell align="center" width={'20%'}>
+                  <TableCell align="center" width={'17.5%'}>
                     Ngày bắt đầu
                   </TableCell>
-                  <TableCell align="center" width={'20%'}>
+                  <TableCell align="center" width={'17.5%'}>
                     Ngày kết thúc
                   </TableCell>
-                  <TableCell align="center" width={'10%'}>
+                  <TableCell align="center" width={'20%'}>
                     Trạng thái
                   </TableCell>
                   <TableCell align="center" width={'10%'}>
@@ -326,8 +327,8 @@ export default function AdVoucherPage() {
                     <TableCell align="center">
                       <Link to={`/admin/voucher/${row.id}/detail`}>
                         <Tooltip title="Xem chi tiết">
-                          <IconButton>
-                            <TbEyeEdit style={{ color: '#c56729', fontSize: '30px' }} />
+                          <IconButton color="cam">
+                            <TbEyeEdit style={{ fontSize: '30px' }} />
                           </IconButton>
                         </Tooltip>
                       </Link>
@@ -353,7 +354,7 @@ export default function AdVoucherPage() {
               <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
               <Select
                 onChange={(e) => {
-                  setSearchVoucher({ ...searchVoucher, size: e.target.value })
+                  setSearchVoucher({ ...searchVoucher, size: e.target.value, page: 1 })
                 }}
                 sx={{ height: '25px', mx: 0.5 }}
                 size="small"

@@ -8,6 +8,7 @@ import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.Image;
+import com.fshoes.entity.Product;
 import com.fshoes.entity.ProductDetail;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,4 +41,5 @@ public interface ProductService {
 
     Boolean changeStatusProduct(String id);
 
+    Product updateNameProduct(String idProduct, String nameProduct);
 }

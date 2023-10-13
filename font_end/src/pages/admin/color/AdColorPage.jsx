@@ -33,7 +33,6 @@ import { MdEditSquare } from 'react-icons/md'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import colorApi from '../../../api/admin/sanpham/colorApi'
 import colorHelper from 'color-convert'
-import Avatar from '@mui/material/Avatar'
 
 const listBreadcrumb = [{ name: 'Quản lý màu sắc' }]
 export default function AdColorPage() {

@@ -8,4 +8,6 @@ import lombok.Setter;
 @Setter
 public class AdCallVoucherOfSell extends PageableRequest {
     private String idCustomer;
+    private Integer condition;
+    private String textSearch;
 }

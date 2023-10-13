@@ -22,4 +22,6 @@ public interface ColorService {
     Boolean swapColor(String id);
 
     List<String> getAllCodeColor();
+
+    List<String> getAllNameColor();
 }

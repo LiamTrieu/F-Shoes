@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 
@@ -145,5 +146,23 @@ public class ProductServiceImpl implements ProductService {
         product.setDeleted(product.getDeleted() == 0 ? 1 : 0);
         productDetailRepository.save(product);
         return true;
+    }
+
+    @Override
+    public Product updateNameProduct(String idProduct, String nameProduct) {
+        try {
+            Optional<Product> optionalProduct = productRepository.findById(idProduct);
+            if (optionalProduct.isPresent()) {
+                Product product = optionalProduct.get();
+                product.setName(nameProduct);
+                productRepository.save(product);
+                return product;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

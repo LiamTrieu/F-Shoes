@@ -18,13 +18,14 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
     @GetMapping
     public ObjectRespone getAllProducts(ProductFilterRequest filter) {
         return new ObjectRespone(new PageReponse<>(productService.getProduct(filter)));
     }
 
     @GetMapping("/get-list")
-    public ObjectRespone getListProduct(){
+    public ObjectRespone getListProduct() {
         return new ObjectRespone(productService.listProducts());
     }
 
@@ -32,10 +33,12 @@ public class ProductController {
     public ObjectRespone getListImage(@PathVariable String idColor) {
         return new ObjectRespone(productService.getListImage(idColor));
     }
+
     @DeleteMapping("/delete/{id}")
     public ObjectRespone delete(@PathVariable String id) {
         return new ObjectRespone(productService.changeProduct(id));
     }
+
     @DeleteMapping("/change-status/{id}")
     public ObjectRespone ChangeStatus(@PathVariable String id) {
         return new ObjectRespone(productService.changeStatusProduct(id));
@@ -43,17 +46,18 @@ public class ProductController {
 
     @PostMapping("/upload-image/{idColor}")
     public ObjectRespone updateImage(@PathVariable String idColor,
-                                     @ModelAttribute List<MultipartFile> listImage){
+                                     @ModelAttribute List<MultipartFile> listImage) {
         return new ObjectRespone(productService.uploadListImage(idColor, listImage));
     }
 
     @PostMapping("/add")
-    public void addProductDetail(@RequestBody List<ProductDetailRequest>  request){
+    public void addProductDetail(@RequestBody List<ProductDetailRequest> request) {
         productService.addProductDetail(request);
     }
+
     @PostMapping("/update/{id}")
-    public void addProductDetail(@PathVariable String id, @RequestBody ProductDetailRequest request){
-        productService.updateProductDetail(id,request);
+    public void addProductDetail(@PathVariable String id, @RequestBody ProductDetailRequest request) {
+        productService.updateProductDetail(id, request);
     }
 
     @GetMapping("/product-detail")
@@ -74,5 +78,10 @@ public class ProductController {
     @GetMapping("/image-product/{id}")
     public ObjectRespone getImageProduct(@PathVariable String id) {
         return new ObjectRespone(productService.getImageProduct(id));
+    }
+
+    @PutMapping("/update-name/{id}")
+    public ObjectRespone updateNameProduct(@PathVariable String id, @RequestParam("nameProduct") String nameProduct) {
+        return new ObjectRespone(productService.updateNameProduct(id, nameProduct));
     }
 }

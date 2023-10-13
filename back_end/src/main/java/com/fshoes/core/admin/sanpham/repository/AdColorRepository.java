@@ -31,4 +31,10 @@ public interface AdColorRepository extends ColorRepository {
             FROM color
             """, nativeQuery = true)
     List<String> getAllCodeColor();
+
+    @Query(value = """
+            SELECT name
+            FROM color
+            """, nativeQuery = true)
+    List<String> getAllNameColor();
 }
