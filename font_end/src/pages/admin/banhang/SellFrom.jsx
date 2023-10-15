@@ -3,6 +3,7 @@ import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   Chip,
   Container,
   FormControl,
@@ -47,6 +48,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -78,6 +80,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [isShowVoucher, setIsShowVoucher] = useState(false)
   const [isShowDiaChi, setIsShowDiaChi] = useState(false)
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false)
+  const [selectAll, setSelectAll] = useState(false)
+  const [selectedRows, setSelectedRows] = useState([])
   const [quantityBillDetail, setQuantityBillDetail] = useState({
     quantity: 0,
   })
@@ -134,6 +138,51 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     wardId: '',
     specificAddress: '',
   })
+  const [selectedProductIds, setSelectedProductIds] = useState([])
+
+  const handleSelectAllChange = (event) => {
+    const selectedIds = event.target.checked
+      ? listProductDetailBill.map((row) => row.productDetail)
+      : []
+    setSelectedRows(selectedIds)
+    setSelectAll(event.target.checked)
+  }
+
+  const handleRowCheckboxChange = (event, ProductDetailId) => {
+    const selectedIndex = selectedRows.indexOf(ProductDetailId)
+    let newSelected = []
+
+    if (selectedIndex === -1) {
+      newSelected = [...selectedRows, ProductDetailId]
+    } else {
+      newSelected = [
+        ...selectedRows.slice(0, selectedIndex),
+        ...selectedRows.slice(selectedIndex + 1),
+      ]
+    }
+
+    setSelectedRows(newSelected)
+    setSelectAll(newSelected.length === listProductDetailBill.length)
+
+    const selectedProductIds = listProductDetailBill
+      .filter((row) => newSelected.includes(row.idBillDetail))
+      .map((selectedProduct) => selectedProduct.idBillDetail)
+    setSelectedProductIds(selectedProductIds)
+  }
+
+  console.log(selectedProductIds + '==================== id product')
+
+  const deleteProductDetail = (idBill, idPrDetail) => {
+    sellApi
+      .deleteProductDetail(idBill, idPrDetail)
+      .then((response) => {
+        toast.success('Bạn đã bỏ sản phẩm ra thành công', { position: toast.POSITION.TOP_CENTER })
+        fectchProductBillSell(idBill)
+      })
+      .catch((error) => {
+        toast.error('Bạn đã bỏ sản phẩm ra thất bại', { position: toast.POSITION.TOP_CENTER })
+      })
+  }
 
   const openAddProductModal = () => {
     setShowModal(true)
@@ -787,6 +836,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
         <Box p={2} sx={{ borderBottom: '1px dotted gray' }}>
+          {/* <Checkbox checked={selectAll} onChange={handleSelectAllChange} /> */}
+          <DeleteForeverIcon onClick={() => deleteProductDetail(idBill, selectedProductIds)} />
           <Typography fontWeight={'bold'} variant="h6" display={'inline'}>
             Sản phẩm
           </Typography>
@@ -814,6 +865,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
               listProductDetailBill.map((cart, index) => (
                 <Table>
                   <TableRow sx={{ border: 0 }} key={cart.id}>
+                    <TableCell>
+                      <Checkbox
+                        key={cart.id}
+                        checked={selectedRows.indexOf(cart.id) !== -1}
+                        onChange={(event) => handleRowCheckboxChange(event, cart.id)}
+                      />
+                    </TableCell>
                     <TableCell sx={{ px: 0 }} width={'5%'}>
                       <IconButton
                         color="error"

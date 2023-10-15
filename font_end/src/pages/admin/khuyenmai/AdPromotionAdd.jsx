@@ -189,10 +189,6 @@ export default function AdPromotionAdd() {
     if (addPromotionRe.timeStart === '') {
       errors.timeStart = 'Vui lòng nhập thời gian bắt đầu'
     }
-    // else if (timeStart.isBefore(currentDate)) {
-    //   errors.timeStart = 'Ngày bắt đầu phải lớn hơn ngày hiện tại'
-    // }
-
     if (addPromotionRe.timeEnd === '') {
       errors.timeEnd = 'Vui lòng nhập thời gian kết thúc'
     } else if (timeEnd.isBefore(currentDate)) {

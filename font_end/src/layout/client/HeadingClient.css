@@ -1,0 +1,70 @@
+.css-hyum1k-MuiToolbar-root {
+  min-height: 80px !important;
+}
+.text-field-css {
+  background-color: white;
+  border-radius: 8px;
+  margin-left: 30px !important;
+  justify-content: center;
+  width: 48%;
+}
+
+.text-field-css .MuiInputBase-root:hover fieldset {
+  border-color: #f2741f !important;
+}
+.css-6ah90r {
+  align-items: center;
+
+  display: flex;
+}
+.footerTitle {
+  font-weight: 1000 !important;
+  font-size: 20px !important;
+  margin-bottom: 20px !important;
+  margin-top: 20px !important;
+}
+.title-footer {
+  font-weight: 1000 !important;
+}
+.phoneNumber {
+  color: blue;
+  font-weight: 700 !important;
+}
+.text-footer {
+  margin-top: 6px !important;
+  font-size: 14px !important;
+}
+
+.img-contact {
+  width: 18% !important;
+  margin-right: 15px !important;
+}
+.link-with-underline {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Noto Sans NKo Unjoined', sans-serif;
+  font-family: 'Roboto', sans-serif;
+}
+
+.link-with-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 2px;
+  background-color: black;
+  transform: scaleX(0);
+  transform-origin: 0% 100%;
+  transition: transform 0.3s ease-in-out;
+}
+
+.link-with-underline:hover::after {
+  transform: scaleX(1);
+}
+.menu-title {
+  display: flex;
+  justify-content: center !important;
+}

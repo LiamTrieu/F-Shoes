@@ -382,7 +382,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                 ))}
               </Select>
 
-              <b>Đế dày:</b>
+              <b>Đế giày:</b>
               <Select
                 displayEmpty
                 sx={{
@@ -450,7 +450,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       Mã
                     </TableCell>
                     <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
-                      Đế dày
+                      Đế Giày
                     </TableCell>
                     <TableCell width={'10%'} align="center" sx={{ fontWeight: 'bold' }}>
                       Danh mục
