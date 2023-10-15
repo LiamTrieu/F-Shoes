@@ -304,6 +304,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     if (newValue) {
       setSelectedXa(newValue)
       setDiaChi({ ...diaChi, wardId: newValue?.id })
+      setXaName(newValue.label)
       setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
       setNewDiaChi({ ...newDiaChi, wardId: { id: newValue.id, label: newValue.label } })
     } else {
@@ -1681,9 +1682,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 sx={{ mt: 1, width: '48%' }}
                 name="name"
                 value={detailDiaChi.name}
-                // onChange={(e) => {
-                //   setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
-                // }}
+                onChange={(e) => {
+                  setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
+                }}
               />
               <TextField
                 id="outlined-basic"
@@ -1694,9 +1695,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 sx={{ mt: 1, width: '48%', float: 'right' }}
                 name="phoneNumber"
                 value={detailDiaChi.phoneNumber}
-                // onChange={(e) => {
-                //   setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
-                // }}
+                onChange={(e) => {
+                  setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
+                }}
               />
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={4}>
@@ -1796,19 +1797,37 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 onChange={(e) => setKhachHang({ ...khachHang, note: e.target.value })}
               />
             </Box>
-            <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
-              <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
-              <b>Đơn vị vận chuyển: </b>
-              <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>Giao hàng nhanh</b>
-            </Box>
-            <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
-              <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
-              <b>Thời gian dự kiến: </b>
-              <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>
-                {' '}
-                {timeShip !== '' ? dayjs(timeShip).format('DD/MM/YYYY') : ''}
-              </b>
-            </Box>
+            <Grid container>
+              <Grid item xs={6}>
+                <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
+                  <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
+                  <b>Đơn vị vận chuyển: </b>
+                  <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>
+                    Giao hàng nhanh
+                  </b>
+                </Box>
+
+                <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
+                  <LocalShipping sx={{ mr: '5px' }} />
+                  <b>Thời gian dự kiến: </b>
+                  <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>
+                    {' '}
+                    {timeShip !== '' ? dayjs(timeShip).format('DD/MM/YYYY') : ''}
+                  </b>
+                </Box>
+              </Grid>
+              <Grid item xs={6}>
+                {giaoHang && (
+                  <Box sx={{ float: 'right' }}>
+                    <img
+                      style={{ width: '200px', mb: '-5px', height: '110px' }}
+                      src={require('../../../assets/image/ghnlogo.png')}
+                      alt=""
+                    />
+                  </Box>
+                )}
+              </Grid>
+            </Grid>
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
             <Box sx={{ m: 1, ml: 3 }}>

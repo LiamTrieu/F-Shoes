@@ -320,34 +320,22 @@ export default function AdCustomerDetail() {
     }
   }
 
-  const onCreateDiaChi = (newDiaChi) => {
-    const title = 'Xác nhận Thêm mới địa chỉ?'
-    const text = ''
-    const obj = {
-      name: newDiaChi.name,
-      phoneNumber: newDiaChi.phoneNumber,
-      email: newDiaChi.email,
-      provinceId: selectedProvince ? selectedProvince.id : null,
-      districtId: selectedDistrict ? selectedDistrict.id : null,
-      wardId: selectedWard ? selectedWard.id : null,
-      specificAddress:
-        newDiaChi.specificAddress +
-        (selectedWard ? `, ${selectedWard.label}` : '') +
-        (selectedDistrict ? `, ${selectedDistrict.label}` : '') +
-        (selectedProvince ? `, ${selectedProvince.label}` : ''),
+  const createDiaChi = () => {
+    const newDiaChi = {
+      name: '',
+      phoneNumber: '',
+      email: '',
+      provinceId: null,
+      districtId: null,
+      wardId: null,
+      specificAddress: '',
       type: 0,
       idCustomer: id,
     }
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        DiaChiApi.add(obj).then(() => {
-          loadDiaChi(initPage - 1, id)
-          toast.success('Thêm địa chỉ thành công', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-        })
-      }
-    })
+
+    const updatedDiaChiList = [...diaChi, newDiaChi]
+
+    setDiaChi(updatedDiaChiList)
   }
 
   const [errorsAU, setErrorsAU] = useState({
@@ -383,7 +371,7 @@ export default function AdCustomerDetail() {
       newErrors.name = 'Tên người nhận không được để trống'
       checkAU++
     } else if (diaChi.name.trim().length > 100) {
-      newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
+      newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
       checkAU++
     } else {
       newErrors.name = ''
@@ -406,24 +394,49 @@ export default function AdCustomerDetail() {
       setErrorsAU(newErrors)
       return
     }
-    const title = 'Xác nhận Cập nhật địa chỉ?'
+
+    const title = diaChi.id ? 'Xác nhận Cập nhật địa chỉ?' : 'Xác nhận Thêm mới địa chỉ?'
     const text = ''
+    const updatedDiaChi = {
+      name: diaChi.name,
+      phoneNumber: diaChi.phoneNumber,
+      email: diaChi.email,
+      provinceId: selectedProvince ? selectedProvince.id : null,
+      districtId: selectedDistrict ? selectedDistrict.id : null,
+      wardId: selectedWard ? selectedWard.id : null,
+      specificAddress:
+        diaChi.specificAddress +
+        (selectedWard ? `, ${selectedWard.label}` : '') +
+        (selectedDistrict ? `, ${selectedDistrict.label}` : '') +
+        (selectedProvince ? `, ${selectedProvince.label}` : ''),
+      type: 0,
+      idCustomer: id,
+    }
+
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        diaChi.specificAddress = `${diaChi.specificAddress}, ${diaChi.xa}, ${diaChi.huyen}, ${diaChi.tinh}`
-
-        DiaChiApi.update(diaChi.id, diaChi)
-          .then(() => {
+        if (diaChi.id) {
+          updatedDiaChi.specificAddress = `${diaChi.specificAddress}, ${diaChi.xa}, ${diaChi.huyen}, ${diaChi.tinh}`
+          DiaChiApi.update(diaChi.id, updatedDiaChi)
+            .then(() => {
+              loadDiaChi(initPage - 1, id)
+              toast.success('Cập nhật địa chỉ thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            })
+            .catch(() => {
+              toast.error('Đã xảy ra lỗi khi cập nhật địa chỉ', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+            })
+        } else {
+          DiaChiApi.add(updatedDiaChi).then(() => {
             loadDiaChi(initPage - 1, id)
-            toast.success('Cập nhật địa chỉ thành công', {
+            toast.success('Thêm địa chỉ thành công', {
               position: toast.POSITION.TOP_RIGHT,
             })
           })
-          .catch(() => {
-            toast.error('Đã xảy ra lỗi khi cập nhật địa chỉ', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          })
+        }
       }
     })
   }
@@ -674,7 +687,11 @@ export default function AdCustomerDetail() {
                                 size="small"
                                 className="search-field"
                                 id="combo-box-demo"
-                                value={{ label: item.tinh, id: item.provinceId }}
+                                value={
+                                  item.tinh && item.provinceId
+                                    ? { label: item.tinh, id: item.provinceId }
+                                    : null
+                                }
                                 onChange={(_, newValue) => {
                                   handleTinhChange(newValue, index)
                                 }}
@@ -708,7 +725,11 @@ export default function AdCustomerDetail() {
                                 fullWidth
                                 size="small"
                                 className="search-field"
-                                value={{ label: item.huyen, id: item.districtId }}
+                                value={
+                                  item.huyen && item.districtId
+                                    ? { label: item.huyen, id: item.districtId }
+                                    : null
+                                }
                                 onChange={(_, newValue) => {
                                   handleHuyenChange(newValue, index)
                                 }}
@@ -737,7 +758,11 @@ export default function AdCustomerDetail() {
                                 fullWidth
                                 size="small"
                                 className="search-field"
-                                value={{ label: item.xa, id: item.wardId }}
+                                value={
+                                  item.xa && item.wardId
+                                    ? { label: item.xa, id: item.wardId }
+                                    : null
+                                }
                                 onChange={(_, newValue) => {
                                   handleXaChange(newValue, index)
                                 }}
@@ -807,7 +832,7 @@ export default function AdCustomerDetail() {
                 <Grid item xs={12} md={4}>
                   <Button
                     onClick={() => {
-                      onCreateDiaChi(newDiaChi)
+                      createDiaChi()
                     }}
                     variant="outlined"
                     color="cam"
