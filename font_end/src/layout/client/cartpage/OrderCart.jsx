@@ -1,14 +1,8 @@
-import {
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-  tableCellClasses,
-} from "@mui/material";
-import React, { Fragment } from "react";
+import { TableCell, TableHead, TableRow, Typography, tableCellClasses } from '@mui/material'
+import React, { Fragment } from 'react'
 
 export default function OrderCart() {
-  return <div>OrderCart</div>;
+  return <div>OrderCart</div>
 }
 
 export function TableCellCustom({ labels, align, isCart }) {
@@ -18,22 +12,16 @@ export function TableCellCustom({ labels, align, isCart }) {
         align={align}
         key={i}
         sx={{
-          px: label === "Tạm tính" ? 1 : 0,
-          fontWeight: "700",
-          fontFamily: "monospace",
-          fontSize: "17px",
-          width: isCart
-            ? label === "Sản phẩm"
-              ? "38%"
-              : label === ""
-              ? "1%"
-              : "15%"
-            : "default",
+          px: label === 'Tạm tính' ? 1 : 0,
+          fontWeight: '700',
+          fontFamily: 'monospace',
+          fontSize: '17px',
+          width: isCart ? (label === 'Sản phẩm' ? '38%' : label === '' ? '1%' : '15%') : 'default',
         }}>
         {label}
       </TableCell>
-    );
-  });
+    )
+  })
 }
 
 export function OrderCartHeading() {
@@ -43,25 +31,25 @@ export function OrderCartHeading() {
         <TableCell
           align="left"
           sx={{
-            fontWeight: "700",
-            fontFamily: "monospace",
-            fontSize: "17px",
+            fontWeight: '700',
+            fontFamily: 'monospace',
+            fontSize: '17px',
           }}>
           Sản phẩm
         </TableCell>
         <TableCell
           align="right"
-          width={"40%"}
+          width={'40%'}
           sx={{
-            fontWeight: "700",
-            fontFamily: "monospace",
-            fontSize: "17px",
+            fontWeight: '700',
+            fontFamily: 'monospace',
+            fontSize: '17px',
           }}>
           Giá(vnđ)
         </TableCell>
       </TableRow>
     </TableHead>
-  );
+  )
 }
 
 export function OrderCartBody({ orders }) {
@@ -72,29 +60,29 @@ export function OrderCartBody({ orders }) {
           <TableRow key={order.id}>
             <TableCell align="left">{order.name}</TableCell>
             <TableCell align="right">
-              <b>{order.gia}</b>
+              <b style={{ color: 'red' }}>{order.gia}₫</b>
             </TableCell>
           </TableRow>
-        );
+        )
       })}
     </Fragment>
-  );
+  )
 }
 export function OrderCartFotter({ label, value }) {
   return (
     <TableRow
       sx={{
-        "& td": { py: 1, px: 2 },
+        '& td': { py: 1, px: 2 },
         [`& .${tableCellClasses.root}`]: {
-          borderTop: "solid 1px gray",
+          borderTop: 'solid 1px gray',
         },
       }}>
       <TableCellCustom labels={[label]} />
       <TableCell align="right">
-        <Typography fontWeight={800} color={"error"}>
-          {value}
+        <Typography fontWeight={800} color={'red'}>
+          {value}₫
         </Typography>
       </TableCell>
     </TableRow>
-  );
+  )
 }
