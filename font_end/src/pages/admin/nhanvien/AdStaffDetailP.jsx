@@ -15,7 +15,6 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  IconButton,
   Autocomplete,
   Box,
 } from '@mui/material'
@@ -27,15 +26,12 @@ import confirmSatus from '../../../components/comfirmSwal'
 import './AdStaffPage.css'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import EditIcon from '@mui/icons-material/Edit'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
-import { useTheme } from '@emotion/react'
 
 const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
 
 export default function AdStaffDetail() {
-  const theme = useTheme()
   const { id } = useParams()
   const [staffDetail, setStaffDetail] = useState({ avatar: null, gender: '', role: '' }) // Khởi tạo giá trị ban đầu cho gender và role
   const [image, setImage] = useState(null)
@@ -196,6 +192,7 @@ export default function AdStaffDetail() {
         staffApi
           .update(id, staffDetail)
           .then(() => {
+            onUpdateDiaChi(detailDiaChi)
             toast.success('Cập nhật nhân viên thành công!', {
               position: toast.POSITION.TOP_RIGHT,
             })
@@ -354,26 +351,17 @@ export default function AdStaffDetail() {
       setErrorsAA(newErrors)
       return
     }
-    const title = 'Xác nhận Cập nhật địa chỉ?'
-    const text = ''
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        detailDiaChi.specificAddress = `${detailDiaChi.specificAddress}, ${xaName}, ${huyenName}, ${tinhName}`
+    detailDiaChi.specificAddress = `${detailDiaChi.specificAddress}, ${xaName}, ${huyenName}, ${tinhName}`
 
-        DiaChiApi.update(detailDiaChi.id, detailDiaChi)
-          .then(() => {
-            loadDiaChi(initPage - 1, id)
-            toast.success('Cập nhật địa chỉ thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          })
-          .catch(() => {
-            toast.error('Đã xảy ra lỗi khi cập nhật địa chỉ', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          })
-      }
-    })
+    DiaChiApi.update(detailDiaChi.id, detailDiaChi)
+      .then(() => {
+        loadDiaChi(initPage - 1, id)
+      })
+      .catch(() => {
+        toast.error('Đã xảy ra lỗi khi cập nhật địa chỉ', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      })
   }
 
   return (
@@ -705,14 +693,6 @@ export default function AdStaffDetail() {
                         />
                       </Grid>
                     </Grid>
-
-                    <IconButton
-                      onClick={() => onUpdateDiaChi(detailDiaChi)}
-                      size="small"
-                      color="cam"
-                      sx={{ float: 'right' }}>
-                      <EditIcon />
-                    </IconButton>
                   </AccordionDetails>
                 </Accordion>
               </div>

@@ -92,7 +92,6 @@ export default function AdCustomerDetail() {
   }
 
   const loadHuyen = (idProvince) => {
-    console.log(idProvince)
     ghnAPI.getDistrict(idProvince).then((response) => {
       setHuyen(response.data)
     })
@@ -128,6 +127,7 @@ export default function AdCustomerDetail() {
             provinceId: item.provinceId,
             districtId: item.districtId,
             wardId: item.wardId,
+            type: item.type,
           }
         }),
       )
@@ -269,21 +269,11 @@ export default function AdCustomerDetail() {
     type: null,
     idCustomer: id,
   })
-  const [errorsAA, setErrorsAA] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    provinceId: '',
-    districtId: '',
-    wardId: '',
-    specificAddress: '',
-  })
   const handleTinhChange = (newValue, index) => {
     let preDiaChi = diaChi
     if (newValue) {
       setSelectedProvince(newValue)
       setNewDiaChi({ ...newDiaChi, provinceId: { id: newValue.id, label: newValue.label } })
-      setTinhName(newValue.label)
       preDiaChi[index] = { ...preDiaChi[index], provinceId: newValue.id, tinh: newValue.label }
       setDiaChi(preDiaChi)
     } else {
@@ -291,8 +281,7 @@ export default function AdCustomerDetail() {
       setSelectedProvince(null)
       setSelectedDistrict(null)
       setSelectedWard(null)
-      setNewDiaChi({ ...newDiaChi, provinceId: { id: '', label: '' } })
-      setErrorsAA({ ...errorsAA, province: 'Vui lòng chọn Tỉnh/Thành phố.' })
+
       preDiaChi[index] = { ...preDiaChi[index], provinceId: '', tinh: '' }
       preDiaChi[index] = { ...preDiaChi[index], districtId: '', huyen: '' }
       preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
@@ -306,15 +295,12 @@ export default function AdCustomerDetail() {
       loadXa(newValue.id)
       setSelectedDistrict(newValue)
       setNewDiaChi({ ...newDiaChi, districtId: { id: newValue.id, label: newValue.label } })
-      setHuyenName(newValue.label)
       preDiaChi[index] = { ...preDiaChi[index], districtId: newValue.id, huyen: newValue.label }
       setDiaChi(preDiaChi)
     } else {
       setXa([])
       setSelectedDistrict(null)
       setSelectedWard(null)
-      setErrorsAA({ ...errorsAA, district: 'Vui lòng chọn Quận/Huyện.' })
-      setNewDiaChi({ ...newDiaChi, districtId: { id: '', label: '' } })
       preDiaChi[index] = { ...preDiaChi[index], districtId: '', huyen: '' }
       preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
       setDiaChi(preDiaChi)
@@ -325,8 +311,6 @@ export default function AdCustomerDetail() {
     let preDiaChi = diaChi
     if (newValue) {
       setSelectedWard(newValue)
-      setNewDiaChi({ ...newDiaChi, wardId: { id: newValue.id, label: newValue.label } })
-      setXaName(newValue.label)
       preDiaChi[index] = { ...preDiaChi[index], wardId: newValue.id, xa: newValue.label }
       setDiaChi(preDiaChi)
     } else {
@@ -337,60 +321,6 @@ export default function AdCustomerDetail() {
   }
 
   const onCreateDiaChi = (newDiaChi) => {
-    const newErrors = {}
-    let checkAA = 0
-
-    if (!newDiaChi.name.trim()) {
-      newErrors.name = 'Tên người nhận không được để trống'
-      checkAA++
-    } else if (newDiaChi.name.trim().length > 100) {
-      newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
-      checkAA++
-    } else {
-      newErrors.name = ''
-    }
-
-    if (!newDiaChi.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
-      checkAA++
-    } else {
-      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
-      if (!phoneNumberRegex.test(newDiaChi.phoneNumber.trim())) {
-        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
-        checkAA++
-        // } else if (isPhoneNumberDuplicate(khachHang.phoneNumber)) {
-        //   newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
-        //   check++
-      } else {
-        newErrors.phoneNumber = ''
-      }
-    }
-
-    if (!selectedProvince) {
-      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
-      checkAA++
-    } else {
-      newErrors.provinceId = ''
-    }
-
-    if (!selectedDistrict) {
-      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
-      checkAA++
-    } else {
-      newErrors.districtId = ''
-    }
-
-    if (!selectedWard) {
-      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
-      checkAA++
-    } else {
-      newErrors.wardId = ''
-    }
-    if (checkAA > 0) {
-      setErrorsAA(newErrors)
-      return
-    }
-
     const title = 'Xác nhận Thêm mới địa chỉ?'
     const text = ''
     const obj = {
@@ -429,10 +359,6 @@ export default function AdCustomerDetail() {
     wardId: '',
     specificAddress: '',
   })
-
-  const [xaName, setXaName] = useState('')
-  const [huyenName, setHuyenName] = useState('')
-  const [tinhName, setTinhName] = useState('')
 
   const deleteDiaChi = (idDC) => {
     const title = 'Xác nhận xóa địa chỉ?'
@@ -605,7 +531,7 @@ export default function AdCustomerDetail() {
                     <DatePicker
                       className="small-datepicker"
                       name="dateBirth"
-                      value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')} // Chuyển đổi sang đối tượng Date
+                      value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')}
                       onChange={(date) =>
                         updateKhachHang({
                           target: {
@@ -704,9 +630,9 @@ export default function AdCustomerDetail() {
                               name="name"
                               value={item.name}
                               onChange={(e) => {
-                                let preDiaChi = diaChi
-                                preDiaChi[index].name = e.target.value
-                                setDiaChi(preDiaChi)
+                                const updatedDiaChi = [...diaChi]
+                                updatedDiaChi[index].name = e.target.value
+                                setDiaChi(updatedDiaChi)
                               }}
                             />
                             <Typography variant="body2" color="error">
@@ -726,9 +652,9 @@ export default function AdCustomerDetail() {
                               name="phoneNumber"
                               value={item.phoneNumber}
                               onChange={(e) => {
-                                let preDiaChi = diaChi
-                                preDiaChi[index].phoneNumber = e.target.value
-                                setDiaChi(preDiaChi)
+                                const updatedDiaChi = [...diaChi]
+                                updatedDiaChi[index].phoneNumber = e.target.value
+                                setDiaChi(updatedDiaChi)
                               }}
                             />
                             <Typography variant="body2" color="error">
@@ -842,9 +768,9 @@ export default function AdCustomerDetail() {
                               name="specificAddress"
                               value={item.specificAddress}
                               onChange={(e) => {
-                                let preDiaChi = diaChi
-                                preDiaChi[index].specificAddress = e.target.value
-                                setDiaChi(preDiaChi)
+                                const updatedDiaChi = [...diaChi]
+                                updatedDiaChi[index].specificAddress = e.target.value
+                                setDiaChi(updatedDiaChi)
                               }}
                             />
                           </Grid>
@@ -879,7 +805,13 @@ export default function AdCustomerDetail() {
               })}
               <Grid container item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
                 <Grid item xs={12} md={4}>
-                  <Button variant="outlined" color="cam" size="small">
+                  <Button
+                    onClick={() => {
+                      onCreateDiaChi(newDiaChi)
+                    }}
+                    variant="outlined"
+                    color="cam"
+                    size="small">
                     Thêm địa chỉ
                   </Button>
                 </Grid>

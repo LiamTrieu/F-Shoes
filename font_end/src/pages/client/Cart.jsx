@@ -30,6 +30,7 @@ import {
 import { BoderDotted, NoBoder } from '../../styles/TableStyle'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
+import './Cart.css'
 const arrData = [
   {
     id: 2,
@@ -157,6 +158,17 @@ export default function Cart() {
               <p style={{ margin: 0 }}>size:{cart.size}</p>
             </span>
           </TableCell>
+          <TableCell
+            className="table-gia"
+            sx={{
+              maxWidth: '10px',
+              display: { md: 'table-cell', xs: 'none' },
+              color: 'red',
+              fontWeight: 'bold',
+              textAlign: 'left',
+            }}>
+            {cart.gia}&#8363;
+          </TableCell>
           <TableCell sx={{ px: 0 }}>
             <Box
               width={'65px'}
@@ -189,6 +201,7 @@ export default function Cart() {
             </Box>
           </TableCell>
           <TableCell
+            className="table-gia"
             sx={{
               maxWidth: '10px',
               display: { md: 'table-cell', xs: 'none' },
@@ -237,7 +250,8 @@ export default function Cart() {
                     <Checkbox checked={isChk} size="small" onClick={() => chageChk()} />
                   </TableCell>
                   <TableCellCustom
-                    labels={['Sản phẩm', 'Số lượng', 'Tạm tính', '']}
+                    className="table-custom"
+                    labels={['Sản phẩm', 'Giá', 'Số lượng', 'Tạm tính', '']}
                     isCart={true}
                   />
                 </TableRow>
@@ -259,7 +273,7 @@ export default function Cart() {
         <Grid2 lg={4} xs={12}>
           <Paper component={Container} variant="outlined" sx={{ minHeight: '74vh' }}>
             <Typography variant="h6" sx={{ fontFamily: 'monospace', fontWeight: '900' }}>
-              Đơn hàng của bạn
+              Cộng giỏ hàng
             </Typography>
             <Table>
               <OrderCartHeading />

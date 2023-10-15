@@ -1,0 +1,12 @@
+.ck-tong-tien {
+  font-size: x-large;
+}
+
+.ck-phi {
+  font-size: 14px;
+}
+.ck-pttt {
+  border-top: none;
+  border: 1px solid dimgrey;
+  box-shadow: '0 0 10px rgba(0, 0, 0, 0.2)';
+}
