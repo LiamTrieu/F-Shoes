@@ -55,7 +55,7 @@ const AddStaff = () => {
     phoneNumber: '',
     dateBirth: '',
     citizenId: '',
-    role: null,
+    role: 0,
     gender: '',
     avatar: null,
   }
@@ -69,6 +69,9 @@ const AddStaff = () => {
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
 
+  const [selectedTinh, setSelectedTinh] = useState(null)
+  const [selectedHuyen, setSelectedHuyen] = useState(null)
+  const [selectedXa, setSelectedXa] = useState(null)
   const [diaChi, setDiaChi] = useState({
     name: '',
     phoneNumber: '',
@@ -108,19 +111,18 @@ const AddStaff = () => {
     })
   }
 
-  const loadHuyen = (idProvince) => {
-    ghnAPI.getDistrict(idProvince).then((response) => {
-      setHuyen(response.data)
-    })
+  async function loadHuyen(idProvince) {
+    const response = await ghnAPI.getDistrict(idProvince)
+    setHuyen(response.data)
+    return response.data
   }
 
-  const loadXa = (idDistrict) => {
-    ghnAPI.getWard(idDistrict).then((response) => {
-      setXa(response.data)
-    })
+  async function loadXa(idDistrict) {
+    const response = await ghnAPI.getWard(idDistrict)
+    setXa(response.data)
+    return response.data
   }
 
-  const [selectedTinh, setSelectedTinh] = useState(null)
   const handleTinhChange = (_, newValue) => {
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
@@ -133,8 +135,6 @@ const AddStaff = () => {
     }
   }
 
-  const [selectedHuyen, setSelectedHuyen] = useState(null)
-  const [selectedXa, setSelectedXa] = useState(null)
   const handleHuyenChange = (_, newValue) => {
     setSelectedHuyen(newValue)
     setSelectedXa(null)
@@ -178,8 +178,37 @@ const AddStaff = () => {
       const fullName = qrDataArray[2]
       const dateOfBirthRaw = qrDataArray[3]
       const gender = qrDataArray[4] === 'Nam'
+      const fullAddress = qrDataArray[5]
 
       const dateBirth = dayjs(dateOfBirthRaw, 'DDMMYYYY').format('DD-MM-YYYY')
+      const [specificAddress, wardLabel, districtLabel, provinceLabel] = fullAddress.split(', ')
+
+      const selectTinh = tinh.find((item) => item.provinceName === provinceLabel) || null
+      setSelectedTinh({ id: selectTinh.provinceID, label: selectTinh.provinceName })
+
+      if (selectTinh) {
+        ;(async () => {
+          const huyenData = await loadHuyen(selectTinh.provinceID)
+          const selectHuyen =
+            huyenData.find((item) => item.districtName.includes(districtLabel)) || null
+          setSelectedHuyen({ id: selectHuyen.districtID, label: selectHuyen.districtName })
+
+          if (selectHuyen) {
+            ;(async () => {
+              const xaData = await loadXa(selectHuyen.districtID)
+              const selectXa = xaData.find((item) => item.wardName.includes(wardLabel)) || null
+              setSelectedXa({ id: selectXa.wardCode, label: selectXa.wardName })
+              setDiaChi({
+                ...diaChi,
+                provinceId: selectTinh.provinceID,
+                districtId: selectHuyen.districtID,
+                wardId: selectXa.wardCode,
+                specificAddress: specificAddress,
+              })
+            })()
+          }
+        })()
+      }
 
       setStaffAdd({
         ...staffAdd,
@@ -190,10 +219,13 @@ const AddStaff = () => {
         email: initStaff.email,
         phoneNumber: initStaff.phoneNumber,
         avatar: initStaff.avatar,
-        role: initStaff.role,
+        role: 0,
       })
       setQrScannerVisible(false)
     }
+  }
+  const getTinhOptionLabel = (option) => {
+    return option ? option.label : ''
   }
 
   const handleOpenQRScanner = () => {
@@ -342,8 +374,15 @@ const AddStaff = () => {
             let khachHangId = response.data.id
             const obj = {
               name: diaChi.name,
-              phoneNumber: diaChi.phoneNumber,
-              specificAddress: diaChi.specificAddress,
+              phoneNumber: staffAdd.phoneNumber,
+              specificAddress:
+                diaChi.specificAddress +
+                ', ' +
+                selectedXa.label +
+                ', ' +
+                selectedHuyen.label +
+                ', ' +
+                selectedTinh.label,
               type: 0,
               idCustomer: khachHangId,
               provinceId: diaChi.provinceId,
@@ -433,24 +472,6 @@ const AddStaff = () => {
             <Typography variant="body2" color="error">
               {errors.fullName}
             </Typography>
-
-            <Grid item xs={12} sx={{ mt: 3 }}>
-              <Typography>
-                <span className="required"> *</span>Chức vụ
-              </Typography>
-              <FormControl size="small">
-                <RadioGroup
-                  row
-                  value={staffAdd.role}
-                  onChange={(e) => setStaffAdd({ ...staffAdd, role: e.target.value })}>
-                  <FormControlLabel name="role" value={0} control={<Radio />} label="Nhân viên" />
-                  <FormControlLabel name="role" value={1} control={<Radio />} label="Quản lí" />
-                </RadioGroup>
-              </FormControl>
-              <Typography variant="body2" color="error">
-                {errors.gender}
-              </Typography>
-            </Grid>
           </Grid>
           <Grid item xs={8}>
             <h3>Thông tin chi tiết</h3>
@@ -553,7 +574,7 @@ const AddStaff = () => {
                       label: item.provinceName,
                       id: item.provinceID,
                     }))}
-                    getOptionLabel={(options) => options.label}
+                    getOptionLabel={getTinhOptionLabel}
                     renderInput={(params) => (
                       <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
                     )}
@@ -644,17 +665,11 @@ const AddStaff = () => {
                   type="text"
                   size="small"
                   fullWidth
+                  value={diaChi.specificAddress}
                   onChange={(e) =>
                     setDiaChi({
                       ...diaChi,
-                      specificAddress:
-                        e.target.value.trim() +
-                        ', ' +
-                        selectedXa.label +
-                        ', ' +
-                        selectedHuyen.label +
-                        ', ' +
-                        selectedTinh.label,
+                      specificAddress: e.target.value,
                     })
                   }
                   disabled={!selectedXa}

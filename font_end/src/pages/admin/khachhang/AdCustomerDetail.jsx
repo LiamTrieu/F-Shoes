@@ -7,12 +7,12 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
-  Modal,
   Pagination,
   Paper,
   Radio,
   RadioGroup,
   TextField,
+  Tooltip,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
@@ -39,16 +39,9 @@ import './AdCustomerAdd.css'
 import './AdCustomerDetail.css'
 import StarBorderPurple500SharpIcon from '@mui/icons-material/StarBorderPurple500Sharp'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 500,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-}
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+
+const listBreadcrumbs = [{ name: 'Khách hàng', link: '/admin/customer' }]
 export default function AdCustomerDetail() {
   const theme = useTheme()
   const { id } = useParams()
@@ -119,7 +112,25 @@ export default function AdCustomerDetail() {
 
   const loadDiaChi = (initPage, idCustomer) => {
     DiaChiApi.getAll(initPage, idCustomer).then((response) => {
-      setDiaChi(response.data.data.content)
+      setDiaChi(
+        response.data.data.content.map((item) => {
+          const specificAddressParts = item.specificAddress.split(', ')
+          const [diaChiCuThe, xaDetail, huyenDetail, tinhDetail] = specificAddressParts
+          return {
+            id: item.id,
+            name: item.name,
+            phoneNumber: item.phoneNumber,
+            tinh: tinhDetail,
+            huyen: huyenDetail,
+            xa: xaDetail,
+            specificAddress: diaChiCuThe,
+            provinceId: item.provinceId,
+            districtId: item.districtId,
+            wardId: item.wardId,
+            type: item.type,
+          }
+        }),
+      )
       setTotalPages(response.data.data.totalPages)
     })
   }
@@ -258,135 +269,58 @@ export default function AdCustomerDetail() {
     type: null,
     idCustomer: id,
   })
-  const [errorsAA, setErrorsAA] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    provinceId: '',
-    districtId: '',
-    wardId: '',
-    specificAddress: '',
-  })
-  const handleTinhChange = (_, newValue) => {
+  const handleTinhChange = (newValue, index) => {
+    let preDiaChi = diaChi
     if (newValue) {
-      loadHuyen(newValue.id)
       setSelectedProvince(newValue)
       setNewDiaChi({ ...newDiaChi, provinceId: { id: newValue.id, label: newValue.label } })
-      setTinhName(newValue.label)
-      setDetailDiaChi({ ...detailDiaChi, provinceId: newValue.id })
+      preDiaChi[index] = { ...preDiaChi[index], provinceId: newValue.id, tinh: newValue.label }
+      setDiaChi(preDiaChi)
     } else {
       setHuyen([])
       setSelectedProvince(null)
       setSelectedDistrict(null)
       setSelectedWard(null)
-      setDetailDiaChi({ ...detailDiaChi, provinceId: '' })
-      setNewDiaChi({ ...newDiaChi, provinceId: { id: '', label: '' } })
-      setErrorsAA({ ...errorsAA, province: 'Vui lòng chọn Tỉnh/Thành phố.' })
+
+      preDiaChi[index] = { ...preDiaChi[index], provinceId: '', tinh: '' }
+      preDiaChi[index] = { ...preDiaChi[index], districtId: '', huyen: '' }
+      preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
+      setDiaChi(preDiaChi)
     }
   }
 
-  const handleHuyenChange = (_, newValue) => {
+  const handleHuyenChange = (newValue, index) => {
+    let preDiaChi = diaChi
     if (newValue) {
       loadXa(newValue.id)
       setSelectedDistrict(newValue)
       setNewDiaChi({ ...newDiaChi, districtId: { id: newValue.id, label: newValue.label } })
-      setHuyenName(newValue.label)
-      setDetailDiaChi({ ...detailDiaChi, districtId: newValue.id })
+      preDiaChi[index] = { ...preDiaChi[index], districtId: newValue.id, huyen: newValue.label }
+      setDiaChi(preDiaChi)
     } else {
       setXa([])
       setSelectedDistrict(null)
       setSelectedWard(null)
-      setDetailDiaChi({ ...detailDiaChi, districtId: '' })
-      setNewDiaChi({ ...newDiaChi, districtId: { id: '', label: '' } })
-      setErrorsAA({ ...errorsAA, district: 'Vui lòng chọn Quận/Huyện.' })
+      preDiaChi[index] = { ...preDiaChi[index], districtId: '', huyen: '' }
+      preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
+      setDiaChi(preDiaChi)
     }
   }
 
-  const handleXaChange = (_, newValue) => {
+  const handleXaChange = (newValue, index) => {
+    let preDiaChi = diaChi
     if (newValue) {
       setSelectedWard(newValue)
-      setNewDiaChi({ ...newDiaChi, wardId: { id: newValue.id, label: newValue.label } })
-      setXaName(newValue.label)
-      setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
+      preDiaChi[index] = { ...preDiaChi[index], wardId: newValue.id, xa: newValue.label }
+      setDiaChi(preDiaChi)
     } else {
       setSelectedWard(null)
-      setDetailDiaChi({ ...detailDiaChi, wardId: '' })
       setNewDiaChi({ ...newDiaChi, wardId: { id: '', label: '' } })
+      setDiaChi(preDiaChi)
     }
   }
-
-  //Thêm mới địa chỉ
-  const [open, setOpen] = React.useState(false)
-  const handleOpen = () => {
-    setNewDiaChi({
-      name: '',
-      phoneNumber: '',
-      specificAddress: '',
-      provinceId: null,
-      districtId: null,
-      wardId: null,
-      type: null,
-      idCustomer: id,
-    })
-    setOpen(true)
-  }
-  const handleClose = () => setOpen(false)
 
   const onCreateDiaChi = (newDiaChi) => {
-    const newErrors = {}
-    let checkAA = 0
-
-    if (!newDiaChi.name.trim()) {
-      newErrors.name = 'Tên người nhận không được để trống'
-      checkAA++
-    } else if (newDiaChi.name.trim().length > 100) {
-      newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
-      checkAA++
-    } else {
-      newErrors.name = ''
-    }
-
-    if (!newDiaChi.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
-      checkAA++
-    } else {
-      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
-      if (!phoneNumberRegex.test(newDiaChi.phoneNumber.trim())) {
-        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
-        checkAA++
-        // } else if (isPhoneNumberDuplicate(khachHang.phoneNumber)) {
-        //   newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
-        //   check++
-      } else {
-        newErrors.phoneNumber = ''
-      }
-    }
-
-    if (!selectedProvince) {
-      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
-      checkAA++
-    } else {
-      newErrors.provinceId = ''
-    }
-
-    if (!selectedDistrict) {
-      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
-      checkAA++
-    } else {
-      newErrors.districtId = ''
-    }
-
-    if (!selectedWard) {
-      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
-      checkAA++
-    } else {
-      newErrors.wardId = ''
-    }
-    if (checkAA > 0) {
-      setErrorsAA(newErrors)
-      return
-    }
-
     const title = 'Xác nhận Thêm mới địa chỉ?'
     const text = ''
     const obj = {
@@ -407,7 +341,6 @@ export default function AdCustomerDetail() {
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         DiaChiApi.add(obj).then(() => {
-          handleClose()
           loadDiaChi(initPage - 1, id)
           toast.success('Thêm địa chỉ thành công', {
             position: toast.POSITION.TOP_RIGHT,
@@ -426,54 +359,6 @@ export default function AdCustomerDetail() {
     wardId: '',
     specificAddress: '',
   })
-  // Update địa chỉ
-  const [openUpdate, setOpenUpdate] = React.useState(false)
-  const handleOpenUpdate = (idDC) => {
-    fillDetailDiaChi(idDC)
-    setOpenUpdate(true)
-  }
-  const handleCloseUpdate = () => setOpenUpdate(false)
-  const [detailDiaChi, setDetailDiaChi] = useState({
-    name: '',
-    phoneNumber: '',
-    email: '',
-    specificAddress: '',
-    type: 0,
-    idCustomer: id,
-  })
-  const [xaName, setXaName] = useState('')
-  const [huyenName, setHuyenName] = useState('')
-  const [tinhName, setTinhName] = useState('')
-
-  const fillDetailDiaChi = (idDiaChi) => {
-    DiaChiApi.getById(idDiaChi).then((response) => {
-      const { name, email, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
-        response.data.data
-
-      loadTinh()
-      loadHuyen(provinceId)
-      loadXa(districtId)
-      const addressParts = specificAddress.split(', ')
-      if (addressParts.length === 4) {
-        const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
-        setXaName(xaDetail)
-        setHuyenName(huyenDetail)
-        setTinhName(tinhDetail)
-
-        setDetailDiaChi({
-          id: idDiaChi,
-          name: name,
-          type: type,
-          phoneNumber: phoneNumber,
-          email: email,
-          specificAddress: address,
-          provinceId: provinceId,
-          districtId: districtId,
-          wardId: wardId,
-        })
-      }
-    })
-  }
 
   const deleteDiaChi = (idDC) => {
     const title = 'Xác nhận xóa địa chỉ?'
@@ -490,26 +375,26 @@ export default function AdCustomerDetail() {
     })
   }
 
-  const onUpdateDiaChi = (detailDiaChi) => {
+  const onUpdateDiaChi = (diaChi) => {
     const newErrors = {}
     let checkAU = 0
 
-    if (!detailDiaChi.name.trim()) {
+    if (!diaChi.name.trim()) {
       newErrors.name = 'Tên người nhận không được để trống'
       checkAU++
-    } else if (detailDiaChi.name.trim().length > 100) {
+    } else if (diaChi.name.trim().length > 100) {
       newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
       checkAU++
     } else {
       newErrors.name = ''
     }
 
-    if (!detailDiaChi.phoneNumber.trim()) {
+    if (!diaChi.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
       checkAU++
     } else {
       const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
-      if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
+      if (!phoneNumberRegex.test(diaChi.phoneNumber.trim())) {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
         checkAU++
       } else {
@@ -525,15 +410,14 @@ export default function AdCustomerDetail() {
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        detailDiaChi.specificAddress = `${detailDiaChi.specificAddress}, ${xaName}, ${huyenName}, ${tinhName}`
+        diaChi.specificAddress = `${diaChi.specificAddress}, ${diaChi.xa}, ${diaChi.huyen}, ${diaChi.tinh}`
 
-        DiaChiApi.update(detailDiaChi.id, detailDiaChi)
+        DiaChiApi.update(diaChi.id, diaChi)
           .then(() => {
             loadDiaChi(initPage - 1, id)
             toast.success('Cập nhật địa chỉ thành công', {
               position: toast.POSITION.TOP_RIGHT,
             })
-            setOpenUpdate(false)
           })
           .catch(() => {
             toast.error('Đã xảy ra lỗi khi cập nhật địa chỉ', {
@@ -554,6 +438,7 @@ export default function AdCustomerDetail() {
   }
   return (
     <div className="khachhangdetail">
+      <BreadcrumbsCustom nameHere={'Chi tiết khách hàng'} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Toast />
         <Box>
@@ -646,7 +531,7 @@ export default function AdCustomerDetail() {
                     <DatePicker
                       className="small-datepicker"
                       name="dateBirth"
-                      value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')} // Chuyển đổi sang đối tượng Date
+                      value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')}
                       onChange={(date) =>
                         updateKhachHang({
                           target: {
@@ -711,56 +596,222 @@ export default function AdCustomerDetail() {
             <Grid item xs={12} md={8}>
               <h2>Danh sách địa chỉ</h2>
               <hr />
-              {diaChi.map((item, index) => (
-                <div key={index} className="custom-accordion">
-                  <Accordion>
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls={`panel${index}-content`}
-                      id={`panel${index}-header`}
-                      className="custom-accordion-header">
-                      <div className="accordion-content">
-                        <Typography variant="body1" className="accordion-text">
-                          Địa chỉ: {item.specificAddress}
-                        </Typography>
-                        <Typography variant="body1" className="accordion-text">
-                          Số điện thoại: {item.phoneNumber}
-                        </Typography>
-                        <Typography variant="body1" className="accordion-text">
-                          Tên người nhận: {item.name}
-                        </Typography>
-                      </div>
-                    </AccordionSummary>
+              {diaChi.map((item, index) => {
+                return (
+                  <div key={index} className="custom-accordion">
+                    <Accordion>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls={`panel${index}-content`}
+                        id={`panel${index}-header`}
+                        className="custom-accordion-header">
+                        <div className="accordion-content">
+                          <Typography
+                            sx={{ color: 'cam', fontWeight: '600' }}
+                            variant="body1"
+                            className="accordion-text">
+                            Địa chỉ {index + 1}
+                          </Typography>
+                        </div>
+                      </AccordionSummary>
 
-                    <AccordionDetails>
-                      <IconButton
-                        color="cam"
-                        aria-label="favorite"
-                        size="small"
-                        onClick={() => handleUpdateType(item.id)}>
-                        {item.type === true ? <StarIcon /> : <StarBorderPurple500SharpIcon />}
-                      </IconButton>
-                      <IconButton
-                        onClick={() => deleteDiaChi(item.id)}
-                        size="small"
-                        color="error"
-                        sx={{ float: 'right' }}>
-                        <DeleteIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleOpenUpdate(item.id)}
-                        size="small"
-                        color="cam"
-                        sx={{ float: 'right' }}>
-                        <EditIcon />
-                      </IconButton>
-                    </AccordionDetails>
-                  </Accordion>
-                </div>
-              ))}
+                      <AccordionDetails>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={6}>
+                            <Typography>
+                              <span className="required"> *</span>Tên
+                            </Typography>
+                            <TextField
+                              id="outlined-basic"
+                              variant="outlined"
+                              type="text"
+                              size="small"
+                              fullWidth
+                              name="name"
+                              value={item.name}
+                              onChange={(e) => {
+                                const updatedDiaChi = [...diaChi]
+                                updatedDiaChi[index].name = e.target.value
+                                setDiaChi(updatedDiaChi)
+                              }}
+                            />
+                            <Typography variant="body2" color="error">
+                              {errorsAU.name}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} md={6}>
+                            <Typography>
+                              <span className="required"> *</span>Số điện thoại
+                            </Typography>
+                            <TextField
+                              id="outlined-basic"
+                              variant="outlined"
+                              type="text"
+                              size="small"
+                              fullWidth
+                              name="phoneNumber"
+                              value={item.phoneNumber}
+                              onChange={(e) => {
+                                const updatedDiaChi = [...diaChi]
+                                updatedDiaChi[index].phoneNumber = e.target.value
+                                setDiaChi(updatedDiaChi)
+                              }}
+                            />
+                            <Typography variant="body2" color="error">
+                              {errorsAU.phoneNumber}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                          <Grid item xs={12} md={4}>
+                            <Box sx={{ minWidth: 120 }}>
+                              <Typography>
+                                <span className="required"> *</span>Tỉnh/thành phố
+                              </Typography>
+                              <Autocomplete
+                                popupIcon={null}
+                                fullWidth
+                                size="small"
+                                className="search-field"
+                                id="combo-box-demo"
+                                value={{ label: item.tinh, id: item.provinceId }}
+                                onChange={(_, newValue) => {
+                                  handleTinhChange(newValue, index)
+                                }}
+                                options={
+                                  tinh &&
+                                  tinh.map((item) => ({
+                                    label: item.provinceName,
+                                    id: item.provinceID,
+                                  }))
+                                }
+                                getOptionLabel={(options) => options.label}
+                                renderInput={(params) => (
+                                  <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
+                                )}
+                              />
+                            </Box>
+                          </Grid>
+                          <Grid
+                            item
+                            xs={12}
+                            md={4}
+                            onClick={() => {
+                              loadHuyen(item.provinceId)
+                            }}>
+                            <Box sx={{ minWidth: 120 }}>
+                              <Typography>
+                                <span className="required"> *</span>Quận/huyện
+                              </Typography>
+                              <Autocomplete
+                                popupIcon={null}
+                                fullWidth
+                                size="small"
+                                className="search-field"
+                                value={{ label: item.huyen, id: item.districtId }}
+                                onChange={(_, newValue) => {
+                                  handleHuyenChange(newValue, index)
+                                }}
+                                options={huyen.map((item) => ({
+                                  label: item.districtName,
+                                  id: item.districtID,
+                                }))}
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                  <TextField placeholder="Chọn huyện" color="cam" {...params} />
+                                )}
+                              />
+                            </Box>
+                          </Grid>
+                          <Grid item xs={12} md={4}>
+                            <Box
+                              sx={{ minWidth: 120 }}
+                              onClick={() => {
+                                loadXa(item.districtId)
+                              }}>
+                              <Typography>
+                                <span className="required"> *</span>Xã/phường/thị trấn
+                              </Typography>
+                              <Autocomplete
+                                popupIcon={null}
+                                fullWidth
+                                size="small"
+                                className="search-field"
+                                value={{ label: item.xa, id: item.wardId }}
+                                onChange={(_, newValue) => {
+                                  handleXaChange(newValue, index)
+                                }}
+                                options={
+                                  xa &&
+                                  xa.map((item) => ({ label: item.wardName, id: item.wardCode }))
+                                }
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                  <TextField placeholder="Chọn xã" color="cam" {...params} />
+                                )}
+                              />
+                            </Box>
+                          </Grid>
+                        </Grid>
+
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                          <Grid item xs={12} md={12}>
+                            <Typography>
+                              <span className="required"> *</span>Địa chỉ cụ thể
+                            </Typography>
+                            <TextField
+                              id="outlined-basic"
+                              variant="outlined"
+                              type="text"
+                              size="small"
+                              fullWidth
+                              name="specificAddress"
+                              value={item.specificAddress}
+                              onChange={(e) => {
+                                const updatedDiaChi = [...diaChi]
+                                updatedDiaChi[index].specificAddress = e.target.value
+                                setDiaChi(updatedDiaChi)
+                              }}
+                            />
+                          </Grid>
+                        </Grid>
+                        <IconButton
+                          color="cam"
+                          aria-label="favorite"
+                          size="small"
+                          onClick={() => handleUpdateType(item.id)}>
+                          {item.type === true ? <StarIcon /> : <StarBorderPurple500SharpIcon />}
+                        </IconButton>
+                        <IconButton
+                          onClick={() => deleteDiaChi(item.id)}
+                          size="small"
+                          color="error"
+                          sx={{ float: 'right' }}>
+                          <DeleteIcon />
+                        </IconButton>
+                        <Tooltip title="chỉnh sửa">
+                          <IconButton
+                            onClick={() => onUpdateDiaChi(item)}
+                            size="small"
+                            color="cam"
+                            sx={{ float: 'right' }}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </AccordionDetails>
+                    </Accordion>
+                  </div>
+                )
+              })}
               <Grid container item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
                 <Grid item xs={12} md={4}>
-                  <Button onClick={handleOpen} variant="outlined" color="cam" size="small">
+                  <Button
+                    onClick={() => {
+                      onCreateDiaChi(newDiaChi)
+                    }}
+                    variant="outlined"
+                    color="cam"
+                    size="small">
                     Thêm địa chỉ
                   </Button>
                 </Grid>
@@ -790,341 +841,6 @@ export default function AdCustomerDetail() {
           </Grid>
         </Box>
       </Paper>
-
-      {/* Modal thêm địa chỉ */}
-
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description">
-        <Box sx={style}>
-          <h1>Thêm địa chỉ</h1>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={6}>
-              <Typography>
-                <span className="required"> *</span>Tên người nhận
-              </Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                name="name"
-                fullWidth
-                onChange={(e) => {
-                  setNewDiaChi({ ...newDiaChi, name: e.target.value })
-                }}
-              />
-              <Typography variant="body2" color="error">
-                {errorsAA.name}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>
-                <span className="required"> *</span>Số điện thoại
-              </Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                name="phoneNumber"
-                fullWidth
-                onChange={(e) => {
-                  setNewDiaChi({ ...newDiaChi, phoneNumber: e.target.value })
-                }}
-              />
-              <Typography variant="body2" color="error">
-                {errorsAA.phoneNumber}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={12}>
-              <Typography>
-                <span className="required"> *</span>Tỉnh/thành phố
-              </Typography>
-              <Box sx={{ minWidth: 120 }}>
-                <Autocomplete
-                  popupIcon={null}
-                  fullWidth
-                  size="small"
-                  className="search-field"
-                  id="combo-box-demo"
-                  value={selectedProvince}
-                  onChange={handleTinhChange}
-                  options={
-                    tinh && tinh.map((item) => ({ label: item.provinceName, id: item.provinceID }))
-                  }
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-              <Typography variant="body2" color="error">
-                {errorsAA.provinceId}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={12}>
-              <Typography>
-                <span className="required"> *</span>Quận/huyện
-              </Typography>
-              <Box sx={{ minWidth: 120 }}>
-                <Autocomplete
-                  popupIcon={null}
-                  fullWidth
-                  size="small"
-                  className="search-field"
-                  id="huyen-autocomplete"
-                  value={selectedDistrict}
-                  onChange={handleHuyenChange}
-                  options={
-                    huyen &&
-                    huyen.map((item) => ({ label: item.districtName, id: item.districtID }))
-                  }
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="nhập tên huyện" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-              <Typography variant="body2" color="error">
-                {errorsAA.districtId}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={12}>
-              <Typography>
-                <span className="required"> *</span>Xã/phường/thị trấn
-              </Typography>
-              <Box sx={{ minWidth: 120 }}>
-                <Autocomplete
-                  popupIcon={null}
-                  fullWidth
-                  size="small"
-                  className="search-field"
-                  id="xa-autocomplete"
-                  value={selectedWard}
-                  onChange={handleXaChange}
-                  options={xa && xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="nhập tên Xã" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-              <Typography variant="body2" color="error">
-                {errorsAA.wardId}
-              </Typography>
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Typography>
-              <span className="required"> *</span>Địa chỉ cụ thể
-            </Typography>
-            <Grid item xs={12} md={12}>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                onChange={(e) =>
-                  setNewDiaChi({
-                    ...newDiaChi,
-                    specificAddress: e.target.value,
-                  })
-                }
-                disabled={!selectedWard}
-              />
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12}>
-              <Button
-                onClick={() => onCreateDiaChi(newDiaChi)}
-                variant="outlined"
-                color="cam"
-                sx={{ float: 'right' }}>
-                Tạo Mới
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Modal>
-
-      {/* Modal update địa chỉ */}
-
-      <Modal
-        open={openUpdate}
-        onClose={handleCloseUpdate}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description">
-        <Box sx={style}>
-          <h1>Update địa chỉ</h1>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={6}>
-              <Typography>
-                <span className="required"> *</span>Tên
-              </Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                name="name"
-                value={detailDiaChi.name}
-                onChange={(e) => {
-                  setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
-                }}
-              />
-              <Typography variant="body2" color="error">
-                {errorsAU.name}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography>
-                <span className="required"> *</span>Số điện thoại
-              </Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                name="phoneNumber"
-                value={detailDiaChi.phoneNumber}
-                onChange={(e) => {
-                  setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
-                }}
-              />
-              <Typography variant="body2" color="error">
-                {errorsAU.phoneNumber}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={12}>
-              <Box sx={{ minWidth: 120 }}>
-                <Typography>
-                  <span className="required"> *</span>Tỉnh/thành phố
-                </Typography>
-                <Autocomplete
-                  popupIcon={null}
-                  fullWidth
-                  size="small"
-                  className="search-field"
-                  id="combo-box-demo"
-                  value={{ label: tinhName, id: detailDiaChi.provinceId }}
-                  onChange={handleTinhChange}
-                  options={
-                    tinh &&
-                    tinh.map((item) => ({
-                      label: item.provinceName,
-                      id: item.provinceID,
-                    }))
-                  }
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={12}>
-              <Box sx={{ minWidth: 120 }}>
-                <Typography>
-                  <span className="required"> *</span>Quận/huyện
-                </Typography>
-                <Autocomplete
-                  popupIcon={null}
-                  fullWidth
-                  size="small"
-                  className="search-field"
-                  value={{ label: huyenName, id: detailDiaChi.districtId }}
-                  onChange={handleHuyenChange}
-                  options={
-                    huyen &&
-                    huyen.map((item) => ({
-                      label: item.districtName,
-                      id: item.districtID,
-                    }))
-                  }
-                  getOptionLabel={(option) => option.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="Chọn huyện" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={12}>
-              <Box sx={{ minWidth: 120 }}>
-                <Typography>
-                  <span className="required"> *</span>Xã/phường/thị trấn
-                </Typography>
-                <Autocomplete
-                  popupIcon={null}
-                  fullWidth
-                  size="small"
-                  className="search-field"
-                  value={{ label: xaName, id: detailDiaChi.wardId }}
-                  onChange={handleXaChange}
-                  options={xa && xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
-                  getOptionLabel={(option) => option.label}
-                  renderInput={(params) => (
-                    <TextField placeholder="Chọn xã" color="cam" {...params} />
-                  )}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={12}>
-              <Typography>
-                <span className="required"> *</span>Địa chỉ cụ thể
-              </Typography>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                name="specificAddress"
-                value={detailDiaChi.specificAddress}
-                onChange={(e) => {
-                  const updatedDetailDiaChi = { ...detailDiaChi }
-                  updatedDetailDiaChi.specificAddress = e.target.value
-                  setDetailDiaChi(updatedDetailDiaChi)
-                }}
-              />
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12}>
-              <Button
-                onClick={() => onUpdateDiaChi(detailDiaChi)}
-                variant="outlined"
-                color="cam"
-                sx={{ float: 'right' }}>
-                Cập nhật
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Modal>
     </div>
   )
 }
