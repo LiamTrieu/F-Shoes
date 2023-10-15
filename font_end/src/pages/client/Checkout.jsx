@@ -21,7 +21,6 @@ import ghnAPI from '../../api/admin/ghn/ghnApi'
 import './Checkout.css'
 import PaidIcon from '@mui/icons-material/Paid'
 import PaymentIcon from '@mui/icons-material/Payment'
-import codesvg from '../../assets/iconsvg/cod.svg'
 
 const arrData = [
   {
