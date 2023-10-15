@@ -10,6 +10,7 @@ import {
   Grid,
   IconButton,
   Modal,
+  Pagination,
   Paper,
   Radio,
   RadioGroup,
@@ -91,11 +92,18 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [listDiaChiDetail, setListDiaChiDetail] = useState([])
 
   const [codeVoucher, setCodeVoucher] = useState('')
-  const [idFillVoucher, setIdFIllVoucher] = useState('')
+  const [totalPagesVoucher, setTotalPagesVoucher] = useState(0)
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
   const [list, setList] = useState([])
 
+  const [adCallVoucherOfSell, setAdCallVoucherOfSell] = useState({
+    idCustomer: null,
+    condition: 0,
+    textSearch: '',
+    page: 1,
+    size: 5,
+  })
   const [khachHang, setKhachHang] = useState({
     fullName: '',
     email: '',
@@ -145,11 +153,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       setlistKhachHang(response.data.data.data)
     })
   }
-  const fecthDataVoucher = () => {
-    voucherApi.getAllVoucherBystatus().then((response) => {
-      setListVoucher(response.data.data)
-    })
-  }
 
   const rollBackQuantityProductDetail = (idBill, idPrDetail) => {
     sellApi
@@ -187,24 +190,31 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     })
   }
 
+  const fecthDataVoucherByIdCustomer = (adCallVoucherOfSell) => {
+    voucherApi
+      .getAllVoucherByIdCustomer(adCallVoucherOfSell)
+      .then((response) => {
+        setListVoucher(response.data.data.content)
+        setTotalPagesVoucher(response.data.data.totalPages)
+      })
+      .catch((error) => {
+        toast.error('Vui Lòng f5 tải lại trang', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const handelOnchangePage = (page) => {
+    setAdCallVoucherOfSell({ ...adCallVoucherOfSell, page: page })
+    fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
+  }
+
   useEffect(() => {
     fecthDataCustomer()
-    fecthDataVoucher()
+    fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
     loadTinh()
     loadList()
-
-    const fecthDataVoucherByIdCustomer = () => {
-      if (idFillVoucher !== '') {
-        voucherApi.getAllVoucherByIdCustomer(idFillVoucher).then((response) => {
-          const newVouchers = response.data.data
-          setListVoucher((prevVouchers) => [...prevVouchers, ...newVouchers])
-        })
-      }
-    }
-    if (idFillVoucher !== '') {
-      fecthDataVoucherByIdCustomer()
-    }
-  }, [idFillVoucher])
+  }, [adCallVoucherOfSell])
 
   const loadDiaChi = (initPage, idCustomer) => {
     DiaChiApi.getAll(initPage - 1, idCustomer).then((response) => {
@@ -294,6 +304,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     if (newValue) {
       setSelectedXa(newValue)
       setDiaChi({ ...diaChi, wardId: newValue?.id })
+      setXaName(newValue.label)
       setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
       setNewDiaChi({ ...newDiaChi, wardId: { id: newValue.id, label: newValue.label } })
     } else {
@@ -611,7 +622,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setIsShowCustomer(false)
     loadDiaChi(initPage, idCustomer)
     fillDetailDiaChi(idCustomer)
-    setIdFIllVoucher(idCustomer)
+    setAdCallVoucherOfSell({ ...adCallVoucherOfSell, idCustomer: idCustomer })
     setNewDiaChi({
       ...newDiaChi,
       idCustomer: idCustomer,
@@ -1671,9 +1682,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 sx={{ mt: 1, width: '48%' }}
                 name="name"
                 value={detailDiaChi.name}
-                // onChange={(e) => {
-                //   setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
-                // }}
+                onChange={(e) => {
+                  setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
+                }}
               />
               <TextField
                 id="outlined-basic"
@@ -1684,9 +1695,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 sx={{ mt: 1, width: '48%', float: 'right' }}
                 name="phoneNumber"
                 value={detailDiaChi.phoneNumber}
-                // onChange={(e) => {
-                //   setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
-                // }}
+                onChange={(e) => {
+                  setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
+                }}
               />
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={4}>
@@ -1786,19 +1797,37 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 onChange={(e) => setKhachHang({ ...khachHang, note: e.target.value })}
               />
             </Box>
-            <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
-              <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
-              <b>Đơn vị vận chuyển: </b>
-              <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>Giao hàng nhanh</b>
-            </Box>
-            <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
-              <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
-              <b>Thời gian dự kiến: </b>
-              <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>
-                {' '}
-                {timeShip !== '' ? dayjs(timeShip).format('DD/MM/YYYY') : ''}
-              </b>
-            </Box>
+            <Grid container>
+              <Grid item xs={6}>
+                <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
+                  <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
+                  <b>Đơn vị vận chuyển: </b>
+                  <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>
+                    Giao hàng nhanh
+                  </b>
+                </Box>
+
+                <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
+                  <LocalShipping sx={{ mr: '5px' }} />
+                  <b>Thời gian dự kiến: </b>
+                  <b style={{ color: !giaoHang ? '#E0E0E0' : 'rgb(20, 95, 227)' }}>
+                    {' '}
+                    {timeShip !== '' ? dayjs(timeShip).format('DD/MM/YYYY') : ''}
+                  </b>
+                </Box>
+              </Grid>
+              <Grid item xs={6}>
+                {giaoHang && (
+                  <Box sx={{ float: 'right' }}>
+                    <img
+                      style={{ width: '200px', mb: '-5px', height: '110px' }}
+                      src={require('../../../assets/image/ghnlogo.png')}
+                      alt=""
+                    />
+                  </Box>
+                )}
+              </Grid>
+            </Grid>
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
             <Box sx={{ m: 1, ml: 3 }}>
@@ -1806,13 +1835,25 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
               <Button
                 sx={{ py: '6.7px', ml: 1 }}
                 variant="outlined"
-                onClick={() => setIsShowVoucher(true)}>
+                onClick={() => {
+                  setIsShowVoucher(true)
+                  setAdCallVoucherOfSell({
+                    ...adCallVoucherOfSell,
+                    condition: parseFloat(totalSum),
+                  })
+                  console.log('adCallVoucherOfSell:', adCallVoucherOfSell)
+                }}>
                 <b>Chọn mã giảm giá</b>
               </Button>
               <Modal
                 open={isShowVoucher}
                 onClose={() => {
                   setIsShowVoucher(false)
+                  setAdCallVoucherOfSell({
+                    ...adCallVoucherOfSell,
+                    textSearch: '',
+                    condition: parseFloat(totalSum),
+                  })
                 }}>
                 <Box sx={styleModalProduct}>
                   <Toolbar sx={{ mb: 1 }}>
@@ -1847,6 +1888,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         size="small"
                         variant="outlined"
                         placeholder="Tìm khuyến mãi"
+                        onChange={(e) =>
+                          setAdCallVoucherOfSell({
+                            ...adCallVoucherOfSell,
+                            textSearch: e.target.value,
+                            page: 1,
+                          })
+                        }
                       />
                       <Button sx={{ ml: 2 }} variant="contained">
                         Tìm kiếm
@@ -1931,6 +1979,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         ))}
                       </TableBody>
                     </Table>
+                    <Pagination
+                      variant="outlined"
+                      color="cam"
+                      page={adCallVoucherOfSell.page}
+                      onChange={(_, page) => handelOnchangePage(page)}
+                      count={totalPagesVoucher}
+                    />
                   </Container>
                 </Box>
               </Modal>

@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.voucher.controller;
 
+import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
@@ -37,14 +38,9 @@ public class AdVoucherController {
         return new ObjectRespone(voucherService.getFindAllCustomer(page));
     }
 
-    @GetMapping("/view/voucher-by-customer/{idCustomer}")
-    public ObjectRespone getAllVoucherByIdCustomer(@PathVariable String idCustomer) {
-        return new ObjectRespone(voucherService.getAllVoucherByIdCustomer(idCustomer));
-    }
-
-    @GetMapping("/view/voucher-by-status")
-    public ObjectRespone getAllVoucherHoatDong() {
-        return new ObjectRespone(voucherService.getAllVoucherHoatDong());
+    @GetMapping("/view/voucher-by-customer")
+    public ObjectRespone getAllVoucherByIdCustomer(@ModelAttribute AdCallVoucherOfSell adCallVoucherOfSell) {
+        return new ObjectRespone(voucherService.getAllVoucherByIdCustomer(adCallVoucherOfSell));
     }
 
     @PostMapping("/add")

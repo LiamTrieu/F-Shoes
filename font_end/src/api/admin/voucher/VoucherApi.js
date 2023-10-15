@@ -41,13 +41,9 @@ const voucherApi = {
     const url = `/voucher/view/code-voucher`
     return axiosClient.get(url)
   },
-  getAllVoucherByIdCustomer: (idCutsomer) => {
-    const url = `/voucher/view/voucher-by-customer/${idCutsomer}`
-    return axiosClient.get(url)
-  },
-  getAllVoucherBystatus: () => {
-    const url = `/voucher/view/voucher-by-status`
-    return axiosClient.get(url)
+  getAllVoucherByIdCustomer: (adCallVoucherOfSell) => {
+    const url = `/voucher/view/voucher-by-customer`
+    return axiosClient.get(url, { params: adCallVoucherOfSell })
   },
 }
 

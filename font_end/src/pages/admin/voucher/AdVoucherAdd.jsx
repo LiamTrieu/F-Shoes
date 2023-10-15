@@ -151,6 +151,12 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.startDate.trim() === '') {
       errors.startDate = 'Ngày bắt đầu không được để trống'
+    } else if (
+      dayjs(voucherAdd.startDate, 'DD-MM-YYYY HH:mm:ss').isAfter(
+        dayjs(voucherAdd.endDate, 'DD-MM-YYYY HH:mm:ss'),
+      )
+    ) {
+      errors.startDate = 'Ngày bắt đầu không được lớn hơn ngày kết thúc'
     }
 
     if (voucherAdd.endDate.trim() === '') {
@@ -437,7 +443,7 @@ export default function AdVoucherAdd() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
               <FormLabel>Kiểu</FormLabel>
-              <FormControl size="small" sx={{ flex: 1, ml: 2 }}>
+              <FormControl size="small" sx={{ flex: 1 }}>
                 <RadioGroup row>
                   <FormControlLabel
                     name="typeAdd"
@@ -458,7 +464,6 @@ export default function AdVoucherAdd() {
                     onClick={() => {
                       setIsSelectVisible(true)
                       setVoucherAdd({ ...voucherAdd, type: 1 })
-                      setSelectedCustomerIds([])
                       setSelectAll(false)
                     }}
                     checked={isSelectVisible === true}

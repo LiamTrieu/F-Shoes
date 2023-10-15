@@ -28,9 +28,7 @@ public interface AdVoucherService {
 
     List<String> getAllCodeVoucher();
 
-    List<AdVoucherRespone> getAllVoucherByIdCustomer(String idCustomer);
-
-    List<AdVoucherRespone> getAllVoucherHoatDong();
+    Page<AdVoucherRespone> getAllVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell);
 
     Page<AdVoucherRespone> getSearchVoucher(AdVoucherSearch adVoucherSearch);
 }

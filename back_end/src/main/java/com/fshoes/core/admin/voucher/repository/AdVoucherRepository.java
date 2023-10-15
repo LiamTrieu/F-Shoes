@@ -67,28 +67,26 @@ public interface AdVoucherRepository extends VoucherRepository {
     List<String> getAllCodeVoucher();
 
     @Query(value = """
-            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
-            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
-            v.type, v.minimum_amount as minimumAmount, v.quantity,
-            v.start_date as startDate, v.end_date as endDate, v.status
-            from voucher v
-            join customer_voucher cv on cv.id_voucher = v.id
-            where v.status = 1 and v.quantity > 0
-            and (:#{#idCustomer} is null or cv.id_account = :#{#idCustomer}) 
-            order by v.type asc , v.created_at desc
+            SELECT row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value AS maximumValue,
+            v.type, v.minimum_amount AS minimumAmount, v.quantity,
+            v.start_date AS startDate, v.end_date AS endDate, v.status
+            FROM voucher v
+            LEFT JOIN customer_voucher cv ON v.id = cv.id_voucher
+            WHERE
+            v.status = 1
+            AND (:#{#adCallVoucherOfSell.condition} IS NULL OR v.minimum_amount <= :#{#adCallVoucherOfSell.condition})
+            AND 
+            ((cv.id_account IS NULL AND v.type = 0)
+            OR (cv.id_account = :#{#adCallVoucherOfSell.idCustomer} AND v.type = 1)
+            )
+            AND
+            (:#{#adCallVoucherOfSell.textSearch} IS NULL 
+            OR v.code like %:#{#adCallVoucherOfSell.textSearch}% 
+            OR v.name like %:#{#adCallVoucherOfSell.textSearch}%
+            )
             """, nativeQuery = true)
-    List<AdVoucherRespone> getAllVoucherByIdCustomer(String idCustomer);
-
-    @Query(value = """
-            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
-            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
-            v.type, v.minimum_amount as minimumAmount, v.quantity,
-            v.start_date as startDate, v.end_date as endDate, v.status
-            from voucher v
-            where v.status = 1 and v.type = 0 and v.quantity > 0
-            order by v.created_at asc 
-            """, nativeQuery = true)
-    List<AdVoucherRespone> getAllVoucherHoatDong();
+    Page<AdVoucherRespone> getAllVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell, Pageable pageable);
 
     @Query("""
             select v from Voucher v

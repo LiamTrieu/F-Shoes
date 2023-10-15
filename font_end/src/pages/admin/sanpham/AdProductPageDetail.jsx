@@ -108,6 +108,8 @@ export default function AdProductPageDetail() {
   })
   const [openEditProduct, setOpenEditProduct] = useState(false)
 
+  const [nameProduct, setNameProduct] = useState('')
+
   useEffect(() => {
     document.title = 'Admin - Sản phẩm chi tiết'
     sanPhamApi.getNameProduct(id).then((result) => {
@@ -185,6 +187,8 @@ export default function AdProductPageDetail() {
     <div className="san-pham">
       <ModalAddProduct
         dataProduct={product}
+        nameProduct={nameProduct}
+        setNameProduct={setNameProduct}
         title={'Cập nhập sản phẩm'}
         setOpen={setOpenEditProduct}
         open={openEditProduct}

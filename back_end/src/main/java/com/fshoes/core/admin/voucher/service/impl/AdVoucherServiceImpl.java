@@ -94,6 +94,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                     adCustomerVoucherRequest.setAccount(customer);
                     CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
                     customerVoucherList.add(customerVoucher);
+                    adCustomerVoucherRepository.save(customerVoucher);
 
                     String[] toMail = {customer.getEmail()};
                     Email email = new Email();
@@ -184,13 +185,9 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
-    public List<AdVoucherRespone> getAllVoucherByIdCustomer(String idCutsomer) {
-        return adVoucherRepository.getAllVoucherByIdCustomer(idCutsomer);
-    }
-
-    @Override
-    public List<AdVoucherRespone> getAllVoucherHoatDong() {
-        return adVoucherRepository.getAllVoucherHoatDong();
+    public Page<AdVoucherRespone> getAllVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell) {
+        Pageable pageable = PageRequest.of(adCallVoucherOfSell.getPage() - 1, adCallVoucherOfSell.getSize());
+        return adVoucherRepository.getAllVoucherByIdCustomer(adCallVoucherOfSell, pageable);
     }
 
     @Override

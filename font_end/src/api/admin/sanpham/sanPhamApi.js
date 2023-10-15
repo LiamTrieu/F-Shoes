@@ -55,5 +55,9 @@ const sanPhamApi = {
     const url = `/product/change-status/${id}`
     return axiosClient.delete(url)
   },
+  updateNameProduct: (id, nameProduct) => {
+    const url = `/product/update-name/${id}?nameProduct=${nameProduct}`
+    return axiosClient.put(url)
+  },
 }
 export default sanPhamApi

@@ -26,6 +26,10 @@ const colorApi = {
     return axiosClient.delete(url)
   },
   getAllCodeColor: () => {
+    const url = `/color/get-all-code`
+    return axiosClient.get(url)
+  },
+  getAllNameColor: () => {
     const url = `/color/get-all-name`
     return axiosClient.get(url)
   },
