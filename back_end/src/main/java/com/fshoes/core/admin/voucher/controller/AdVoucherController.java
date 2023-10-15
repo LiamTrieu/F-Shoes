@@ -39,7 +39,7 @@ public class AdVoucherController {
     }
 
     @GetMapping("/view/voucher-by-customer")
-    public ObjectRespone getAllVoucherByIdCustomer(@RequestBody AdCallVoucherOfSell adCallVoucherOfSell) {
+    public ObjectRespone getAllVoucherByIdCustomer(@ModelAttribute AdCallVoucherOfSell adCallVoucherOfSell) {
         return new ObjectRespone(voucherService.getAllVoucherByIdCustomer(adCallVoucherOfSell));
     }
 

@@ -75,12 +75,16 @@ public interface AdVoucherRepository extends VoucherRepository {
             LEFT JOIN customer_voucher cv ON v.id = cv.id_voucher
             WHERE
             v.status = 1
-            AND v.minimum_amount >= :#{#adCallVoucherOfSell.condition}
+            AND (:#{#adCallVoucherOfSell.condition} IS NULL OR v.minimum_amount <= :#{#adCallVoucherOfSell.condition})
             AND 
             ((cv.id_account IS NULL AND v.type = 0)
             OR (cv.id_account = :#{#adCallVoucherOfSell.idCustomer} AND v.type = 1)
             )
-            order by v.type asc , v.created_at desc
+            AND
+            (:#{#adCallVoucherOfSell.textSearch} IS NULL 
+            OR v.code like %:#{#adCallVoucherOfSell.textSearch}% 
+            OR v.name like %:#{#adCallVoucherOfSell.textSearch}%
+            )
             """, nativeQuery = true)
     Page<AdVoucherRespone> getAllVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell, Pageable pageable);
 

@@ -186,7 +186,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
 
     @Override
     public Page<AdVoucherRespone> getAllVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell) {
-        Pageable pageable = PageRequest.of(adCallVoucherOfSell.getPage()-1, adCallVoucherOfSell.getSize());
+        Pageable pageable = PageRequest.of(adCallVoucherOfSell.getPage() - 1, adCallVoucherOfSell.getSize());
         return adVoucherRepository.getAllVoucherByIdCustomer(adCallVoucherOfSell, pageable);
     }
 
