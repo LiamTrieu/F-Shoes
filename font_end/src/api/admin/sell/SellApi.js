@@ -67,6 +67,11 @@ const sellApi = {
     return axiosClient.put(url)
   },
 
+  deleteProductDetail: (idBill, idPrDetail) => {
+    const url = `/sell/delete-product-detail-by-bill?idBill=${idBill}&idPrDetail=${idPrDetail}`
+    return axiosClient.delete(url)
+  },
+
   increaseQuantityBillDetail: (idBillDetail, idPrDetail) => {
     const url = `/sell/increase-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`
     return axiosClient.put(url)

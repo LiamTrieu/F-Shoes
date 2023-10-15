@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/sell")
 public class SellController {
@@ -104,6 +106,12 @@ public class SellController {
     public ObjectRespone rollBackQuantityProductDetail(@RequestParam("idBill") String idBill, @RequestParam("idPrDetail") String idPrDetail) {
         return new ObjectRespone(getSell.rollBackQuantityProductDetail(idBill, idPrDetail));
     }
+
+    @DeleteMapping("/delete-product-detail-by-bill")
+    public ObjectRespone deleteProductDetailByBill(@RequestParam("idBill") String idBill, @RequestParam("idPrDetail") List<String> idPrDetail) {
+        return new ObjectRespone(getSell.deleteProductsDetail(idBill, idPrDetail));
+    }
+
 
     @PutMapping("/input-quantity-bill-detail")
     public ObjectRespone inputQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail, @RequestParam("quantity") Integer quantity){

@@ -1,0 +1,15 @@
+.title {
+  font-weight: 700 !important;
+}
+.price {
+  text-transform: lowercase;
+  text-decoration: line-through;
+}
+.buy {
+  text-transform: lowercase;
+}
+.price-discount {
+  text-decoration: none;
+  color: red;
+  font-weight: 700;
+}

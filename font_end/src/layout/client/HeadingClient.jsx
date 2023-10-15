@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
+import './HeadingClient.css'
 
 export default function HeadingClient() {
   const [openDrawer, setOpenDrawer] = useState(false)
@@ -15,7 +16,7 @@ export default function HeadingClient() {
 
   const BarSelect = () => {
     return (
-      <Box mx={3} display={{ md: 'flex' }}>
+      <Box mx={3} display={{ md: 'flex' }} className="menu-title">
         <Typography
           display={{ md: 'none', xs: 'block' }}
           variant="h5"
@@ -31,12 +32,13 @@ export default function HeadingClient() {
           component={Link}
           to="/"
           color="inherit"
+          className="link-with-underline"
           sx={{
             my: { md: 0, xs: 2 },
             display: 'block',
             fontFamily: 'monospace',
             fontSize: '17px',
-            fontWeight: 700,
+            fontWeight: 600,
             textDecoration: 'none',
           }}>
           Trang chủ
@@ -45,11 +47,12 @@ export default function HeadingClient() {
           onClick={() => {
             setOpenDrawer(false)
           }}
+          className="link-with-underline"
           sx={{
-            marginLeft: { md: 3 },
+            marginLeft: { md: 4 },
             fontFamily: 'monospace',
             fontSize: '17px',
-            fontWeight: 700,
+            fontWeight: 600,
             textDecoration: 'none',
           }}
           component={Link}
@@ -57,12 +60,46 @@ export default function HeadingClient() {
           color="inherit">
           Sản phẩm
         </Typography>
+        <Typography
+          onClick={() => {
+            setOpenDrawer(false)
+          }}
+          className="link-with-underline"
+          sx={{
+            marginLeft: { md: 4 },
+            fontFamily: 'monospace',
+            fontSize: '17px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+          component={Link}
+          to="/products"
+          color="inherit">
+          Giới thiệu
+        </Typography>
+        <Typography
+          onClick={() => {
+            setOpenDrawer(false)
+          }}
+          className="link-with-underline"
+          sx={{
+            marginLeft: { md: 4 },
+            fontFamily: 'monospace',
+            fontSize: '17px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+          component={Link}
+          to="/products"
+          color="inherit">
+          Liên hệ
+        </Typography>
       </Box>
     )
   }
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: 'white', color: 'black', mb: 2 }}>
+    <AppBar position="sticky" sx={{ backgroundColor: 'white', color: 'black', mb: 2 }}>
       <Toolbar>
         <IconButton
           color="inherit"
@@ -91,7 +128,7 @@ export default function HeadingClient() {
               transition: 'width 0.5s',
               height: '60px',
             }}
-            src={require('../../assets/image/logoweb.png')}
+            src={require('../../assets/image/logowebnobg.png')}
             alt="logo"
           />
         </Typography>

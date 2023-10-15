@@ -260,6 +260,7 @@ billHistoryRepository.save(billHistory);
         }
     }
 
+
     @Override
     public Boolean increaseQuantityBillDetail(String idBillDetail, String idPrDetail) {
         Optional<BillDetail> optionalBillDetail = billDetailRepositoty.findById(idBillDetail);
@@ -326,6 +327,29 @@ billHistoryRepository.save(billHistory);
     @Override
     public List<ProductMaxPriceResponse> getMaxPriceProductId() {
         return getProduct.getProductMaxPrice();
+    }
+
+    @Override
+    public Boolean deleteProductsDetail(String idBill, List<String> idPrDetail) {
+        try{
+            List<String> listIdProductDetail = billDetailRepositoty.findByProductDetailBYBillId(idBill);
+            for (String idPd : listIdProductDetail) {
+                Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPd);
+                if (optionalProductDetail.isPresent()) {
+                    ProductDetail productDetail = optionalProductDetail.get();
+                    Integer quantity = billDetailRepositoty.quantityProductDetail(idBill, productDetail.getId());
+                    productDetail.setAmount(productDetail.getAmount() + quantity);
+                    productDetailRepository.save(productDetail);
+                    String idBillDetail = billDetailRepositoty.idBillDetailProductDetail(idBill, productDetail.getId());
+                    billDetailRepositoty.deleteById(idBillDetail);
+                } else {
+                    return false;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

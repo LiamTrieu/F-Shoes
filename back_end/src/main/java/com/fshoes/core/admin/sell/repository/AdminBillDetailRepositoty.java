@@ -3,6 +3,7 @@ package com.fshoes.core.admin.sell.repository;
 import com.fshoes.entity.BillDetail;
 import com.fshoes.repository.BillDetailRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -39,6 +40,13 @@ public interface AdminBillDetailRepositoty extends BillDetailRepository {
             where id_bill = ? and id_product_detail = ?
             """, nativeQuery = true)
     String idBillDetailProductDetail(String idBill, String idPrDetail);
+    @Query(value = """
+            select id
+            from bill_detail
+            where id_bill = :idBill and id_product_detail in :idPrDetail
+            """, nativeQuery = true)
+    List<String> deleteBillDetailProductDetail(String idBill,@Param("idPrDetail") List<String> idPrDetail);
+
 
     @Query(value = """
                 select quantity from bill_detail where id_bill = ? and id_product_detail = ?
