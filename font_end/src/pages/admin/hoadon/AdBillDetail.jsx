@@ -40,6 +40,7 @@ import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { toast } from 'react-toastify'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import TimeLine from './TimeLine'
+import AdBillModalThemSP from './AdBillModalThemSP'
 
 const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
 
@@ -64,6 +65,7 @@ export default function AdBillDetail() {
   const [openModalCancelBill, setOpenModalCancelBill] = useState(false)
   const [isUpdateBill, setIsUpdateBill] = useState(false)
   const [isShowBtnConfirmPayment, setIsShowBtnConfirmPayment] = useState(false)
+  const [openModalThemSP, setOpenModalThemSP] = useState(false)
 
   const totalProductsCost = listBillDetail.reduce((total, row) => {
     return total + row.quantity * row.price
@@ -519,6 +521,7 @@ export default function AdBillDetail() {
             onChange={(e) => setTransactionCode(e.target.value)}
             style={{ marginBottom: '10px' }}
             disabled={paymentMethod !== '0'}
+            required={paymentMethod === '0'}
           />
         </div>
       </DialogAddUpdate>
@@ -832,6 +835,7 @@ export default function AdBillDetail() {
         open={openCodalConfirmReceived}
         billDetail={billDetail}
       />
+      <AdBillModalThemSP open={openModalThemSP} setOPen={setOpenModalThemSP} />
       <BreadcrumbsCustom listLink={listHis} nameHere={'Chi tiết hoá đơn'} />
       <Paper className="time-line" elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
         <h3>Lịch sử đơn hàng</h3>
@@ -882,7 +886,7 @@ export default function AdBillDetail() {
           <div>
             <Grid container spacing={2} className="billDetailInfo">
               <Grid item xs={12} sm={4}>
-                <Typography>
+                <Typography variant="p">
                   <label>Mã: </label>
                   {billDetail?.code}
                 </Typography>
@@ -906,7 +910,7 @@ export default function AdBillDetail() {
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
-                <Typography>
+                <Typography variant="p">
                   <label>Sđt người nhận: </label>
                   {billDetail?.recipientPhoneNumber ? billDetail.recipientPhoneNumber : ''}
                 </Typography>
@@ -924,7 +928,7 @@ export default function AdBillDetail() {
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
-                <Typography>
+                <Typography variant="p">
                   <label>Tên người nhận: </label>
                   {billDetail?.recipientName ? billDetail.recipientName : ''}
                 </Typography>
@@ -975,7 +979,8 @@ export default function AdBillDetail() {
                 variant="outlined"
                 className="them-moi"
                 color="cam"
-                style={{ marginRight: '5px' }}>
+                style={{ marginRight: '5px' }}
+                onClick={() => setOpenModalThemSP(true)}>
                 Thêm sản phẩm
               </Button>
             </Stack>
