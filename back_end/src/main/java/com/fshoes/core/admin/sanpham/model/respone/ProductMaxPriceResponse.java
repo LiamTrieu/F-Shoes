@@ -6,4 +6,6 @@ import java.math.BigDecimal;
 
 public interface ProductMaxPriceResponse extends IsIdentified {
     BigDecimal getPrice();
+
+    String getName();
 }

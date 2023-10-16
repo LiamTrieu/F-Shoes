@@ -35,7 +35,7 @@ export default function CartProduct({ products, colmd, collg }) {
                     <CardMedia
                       component="img"
                       alt="Product"
-                      image={product.image}
+                      image={product.image[0]}
                       sx={{
                         maxWidth: '100%',
                         maxHeight: '100%',
@@ -50,7 +50,7 @@ export default function CartProduct({ products, colmd, collg }) {
                   </Typography>
                   <Typography gutterBottom component="div">
                     <span className="price"> {product.price} </span>
-                    <span className="price-discount"> 800.000đ</span>
+                    <span className="price-discount"> {product.priceAfter}đ</span>
                   </Typography>
                 </CardContent>
               </Card>

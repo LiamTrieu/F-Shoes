@@ -53,18 +53,24 @@ export function OrderCartHeading() {
 }
 
 export function OrderCartBody({ orders }) {
+  console.log(orders)
   return (
     <Fragment>
-      {orders.map((order) => {
-        return (
-          <TableRow key={order.id}>
-            <TableCell align="left">{order.name}</TableCell>
-            <TableCell align="right">
-              <b style={{ color: 'red' }}>{order.gia}₫</b>
-            </TableCell>
-          </TableRow>
-        )
-      })}
+      {orders.length !== 0 &&
+        orders.map((order) => {
+          return (
+            <TableRow key={order.id}>
+              <TableCell align="left">
+                {order?.name + ' - ' + order.size} <b>{' x' + order.soLuong}</b>
+              </TableCell>
+              <TableCell align="right">
+                <b style={{ color: 'red' }}>
+                  {order.gia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                </b>
+              </TableCell>
+            </TableRow>
+          )
+        })}
     </Fragment>
   )
 }
@@ -80,7 +86,7 @@ export function OrderCartFotter({ label, value }) {
       <TableCellCustom labels={[label]} />
       <TableCell align="right">
         <Typography fontWeight={800} color={'red'}>
-          {value}₫
+          {value}
         </Typography>
       </TableCell>
     </TableRow>

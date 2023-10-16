@@ -31,47 +31,29 @@ import { BoderDotted, NoBoder } from '../../styles/TableStyle'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import './Cart.css'
-const arrData = [
-  {
-    id: 2,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 40,
-    gia: '100.000',
-    soLuong: 1,
-    image: 'https://shorturl.at/dfhyC',
-    checked: false,
-  },
-  {
-    id: 1,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 43,
-    gia: '500.000',
-    soLuong: 3,
-    image: 'https://shorturl.at/dfhyC',
-    checked: false,
-  },
-]
-
-const arrData2 = [
-  {
-    id: 2,
-    name: 'Air Jordan 1 Mid - Neutral Grey - 41 x 2',
-    gia: 20000,
-  },
-  {
-    id: 1,
-    name: 'Air Jordan 1 Mid - Neutral Grey - 41 x 3',
-    gia: 30000,
-  },
-]
 
 export default function Cart() {
   const [product, setProduct] = useState([])
+  const [arrData2, setArrData2] = useState([])
   const [isChk, setisChk] = useState(false)
 
   useEffect(() => {
-    setProduct(arrData)
+    setProduct(
+      JSON.parse(localStorage.getItem('cart')).map((e) => {
+        return { ...e, checked: false }
+      }),
+    )
   }, [])
+
+  useEffect(() => {
+    setArrData2(
+      product
+        .filter((product) => product.checked)
+        .map((product) => {
+          return { ...product, gia: product.gia * product.soLuong }
+        }),
+    )
+  }, [isChk, product])
 
   const onChangeCheck = (id) => {
     setisChk(true)
@@ -103,6 +85,7 @@ export default function Cart() {
       return cart
     })
     setProduct(updatedProduct)
+    localStorage.setItem('cart', JSON.stringify(updatedProduct))
   }
 
   const onInputChangeSL = (id, e) => {
@@ -118,6 +101,7 @@ export default function Cart() {
       return cart
     })
     setProduct(updatedProduct)
+    localStorage.setItem('cart', JSON.stringify(updatedProduct))
   }
 
   const RowDataCustom = ({ cartDatas }) => {
@@ -153,7 +137,7 @@ export default function Cart() {
                 <b>{cart.name}</b>
               </p>
               <p style={{ color: 'red', margin: '5px 0' }}>
-                <b>{cart.gia}&#8363;</b>
+                <b>{cart.gia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</b>
               </p>
               <p style={{ margin: 0 }}>size:{cart.size}</p>
             </span>
@@ -167,7 +151,7 @@ export default function Cart() {
               fontWeight: 'bold',
               textAlign: 'left',
             }}>
-            {cart.gia}&#8363;
+            {cart.gia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
           </TableCell>
           <TableCell sx={{ px: 0 }}>
             <Box
@@ -208,7 +192,10 @@ export default function Cart() {
               color: 'red',
               fontWeight: 'bold',
             }}>
-            {cart.gia * cart.soLuong}.000&#8363;
+            {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
+              style: 'currency',
+              currency: 'VND',
+            })}
           </TableCell>
           <TableCell>
             <Button
@@ -271,30 +258,40 @@ export default function Cart() {
           </Button>
         </Grid2>
         <Grid2 lg={4} xs={12}>
-          <Paper component={Container} variant="outlined" sx={{ minHeight: '74vh' }}>
-            <Typography variant="h6" sx={{ fontFamily: 'monospace', fontWeight: '900' }}>
-              Cộng giỏ hàng
-            </Typography>
-            <Table>
-              <OrderCartHeading />
-              <TableBody sx={BoderDotted}>
-                <OrderCartBody orders={arrData2} />
-              </TableBody>
-              <TableFooter sx={NoBoder}>
-                <OrderCartFotter label="Tạm tính" value={2000000} />
-              </TableFooter>
-            </Table>
-            <Button
-              component={Link}
-              to="/checkout"
-              size="sm"
-              variant="contained"
-              color="warning"
-              sx={{ minWidth: '100%' }}>
-              <PaidRoundedIcon />
-              <b> Tiến hành thanh toán</b>
-            </Button>
-          </Paper>
+          {arrData2.length !== 0 && (
+            <Paper component={Container} variant="outlined" sx={{ minHeight: '74vh' }}>
+              <Typography variant="h6" sx={{ fontFamily: 'monospace', fontWeight: '900' }}>
+                Cộng giỏ hàng
+              </Typography>
+              <Table>
+                <OrderCartHeading />
+                <TableBody sx={BoderDotted}>
+                  <OrderCartBody orders={arrData2} />
+                </TableBody>
+                <TableFooter sx={NoBoder}>
+                  <OrderCartFotter
+                    label="Tạm tính"
+                    value={arrData2
+                      .reduce((tong, e) => tong + e.gia, 0)
+                      .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                  />
+                </TableFooter>
+              </Table>
+              <Button
+                component={Link}
+                to="/checkout"
+                onClick={() => {
+                  localStorage.setItem('checkout', JSON.stringify(arrData2))
+                }}
+                size="sm"
+                variant="contained"
+                color="warning"
+                sx={{ minWidth: '100%' }}>
+                <PaidRoundedIcon />
+                <b> Tiến hành thanh toán</b>
+              </Button>
+            </Paper>
+          )}
         </Grid2>
       </Grid2>
     </Container>
