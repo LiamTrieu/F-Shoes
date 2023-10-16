@@ -40,7 +40,7 @@ export default function AdminMenu() {
   return (
     <List component="nav" aria-labelledby="nested-list-subheader" className="admin-menu">
       <Box>
-        <ListItemButton className="mt-3">
+        <ListItemButton className="mt-3" component={Link} to="/admin/dashboard">
           <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
             <Box component={AiOutlineDashboard} sx={{ fontSize: '25px' }} />
           </ListItemIcon>
