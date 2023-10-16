@@ -1,71 +1,36 @@
-import React, { Fragment, useRef } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import { Button, Container, Grid, Typography } from '@mui/material'
 import CartProduct from '../../layout/client/CartProduct'
 import LabelTitle from '../../layout/client/LabelTitle'
 import './Home.css'
-
-const products = [
-  {
-    id: 1,
-    title: 'Giày Sneaker',
-    price: '1.000.000đ',
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-sneaker-lv-x-yayoi-kusama-2023-auth-tuong-6.jpeg',
-  },
-  {
-    id: 7,
-    title: 'Giày Sneaker',
-    price: '1.000.000đ',
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-new-york-navy-auth-tuong-6.jpeg',
-  },
-  {
-    id: 8,
-    title: 'Giày Sneaker',
-    price: '1.000.000đ',
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-white-red-auth-tuong-6.jpeg',
-  },
-  {
-    id: 2,
-    title: 'Giày Sneaker',
-    price: '1.000.000đ',
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-signature-green-white-auth-tuong-5.jpeg',
-  },
-  {
-    id: 7,
-    title: 'Giày Sneaker',
-    price: '1.000.000đ',
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-louis-vuitton-lv-trainer-maxi-trang-auth-tuong-5.jpeg',
-  },
-  {
-    id: 8,
-    title: 'Giày Sneaker',
-    price: '1.000.000đ',
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-sneaker-lv-x-yayoi-kusama-2023-auth-tuong-6.jpeg',
-  },
-  {
-    id: 8,
-    title: 'Giày Sneaker',
-    price: '1.000.000đ',
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-sneaker-lv-x-yayoi-kusama-2023-auth-tuong-6.jpeg',
-  },
-  {
-    id: 4,
-    title: 'Giày Sneaker',
-    price: '1.000.000đ',
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-sneaker-lv-x-yayoi-kusama-2023-auth-tuong-6.jpeg',
-  },
-]
+import clientProductApi from '../../api/client/clientProductApi'
 
 export default function Home() {
+  const [products, setProducts] = useState([])
   const videoRef = useRef(null)
+  useEffect(() => {
+    clientProductApi.get().then((result) => {
+      const data = result.data.data
+      setProducts(
+        data.map((e) => {
+          return {
+            id: e.id,
+            title: e.name,
+            priceBefort: e.price,
+            priceAfter: e.price,
+            image: e.image.split(','),
+            idProduct: e.idProduct,
+            idColor: e.idColor,
+            idMaterial: e.idMaterial,
+            idSole: e.idSole,
+            idCategory: e.idCategory,
+            idBrand: e.idBrand,
+          }
+        }),
+      )
+    })
+  }, [])
 
   const handleVideoEnded = () => {
     videoRef.current.play()

@@ -138,7 +138,7 @@ export default function HeadingClient() {
           </Box>
         </Box>
         <Button component={Link} to="/cart" color="inherit">
-          <Badge badgeContent={4} color="error">
+          <Badge badgeContent={JSON.parse(localStorage.getItem('cart'))?.length} color="error">
             <ShoppingCartIcon />
           </Badge>
         </Button>

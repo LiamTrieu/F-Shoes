@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -30,156 +30,9 @@ import './Product.css'
 import { BiCategoryAlt, BiFontSize, BiSolidColorFill } from 'react-icons/bi'
 import { GiBrandyBottle, GiMaterialsScience, GiBootPrints } from 'react-icons/gi'
 import { GrMoney } from 'react-icons/gr'
-import { AiOutlineCheck } from 'react-icons/ai'
 import SearchIcon from '@mui/icons-material/Search'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
-
-const products = [
-  {
-    id: 1,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-sneaker-lv-x-yayoi-kusama-2023-auth-tuong-6.jpeg',
-  },
-  {
-    id: 2,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-sneaker-lv-x-yayoi-kusama-2023-auth-tuong-6.jpeg',
-  },
-  {
-    id: 3,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-sneaker-lv-x-yayoi-kusama-2023-auth-tuong-6.jpeg',
-  },
-  {
-    id: 4,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-sneaker-lv-x-yayoi-kusama-2023-auth-tuong-6.jpeg',
-  },
-  {
-    id: 5,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-signature-green-white-auth-tuong-5.jpeg',
-  },
-  {
-    id: 6,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-signature-green-white-auth-tuong-5.jpeg',
-  },
-  {
-    id: 7,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-signature-green-white-auth-tuong-5.jpeg',
-  },
-  {
-    id: 8,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-signature-green-white-auth-tuong-5.jpeg',
-  },
-  {
-    id: 9,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-white-red-auth-tuong-6.jpeg',
-  },
-  {
-    id: 10,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-white-red-auth-tuong-6.jpeg',
-  },
-  {
-    id: 11,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-white-red-auth-tuong-6.jpeg',
-  },
-  {
-    id: 12,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-white-red-auth-tuong-6.jpeg',
-  },
-  {
-    id: 13,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-new-york-navy-auth-tuong-6.jpeg',
-  },
-  {
-    id: 14,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-new-york-navy-auth-tuong-6.jpeg',
-  },
-  {
-    id: 15,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-new-york-navy-auth-tuong-6.jpeg',
-  },
-  {
-    id: 16,
-    title: 'Giay so 1',
-    sold: 100,
-    priceBefort: 2500,
-    priceAfter: 1500,
-    image:
-      'https://tyhisneaker.com/wp-content/uploads/2023/09/giay-lv-trainer-54-new-york-navy-auth-tuong-6.jpeg',
-  },
-]
+import clientProductApi from '../../api/client/clientProductApi'
 
 const listFake = [
   { id: 1, title: 'fake 1', code: '#0294D7' },
@@ -201,6 +54,30 @@ export default function Product() {
   const [openSize, setOpenSize] = useState(false)
   const [openColor, setOpenColor] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false)
+  const [products, setProducts] = useState([])
+
+  useEffect(() => {
+    clientProductApi.get().then((result) => {
+      const data = result.data.data
+      setProducts(
+        data.map((e) => {
+          return {
+            id: e.id,
+            title: e.name,
+            priceBefort: e.price,
+            priceAfter: e.price,
+            image: e.image.split(','),
+            idProduct: e.idProduct,
+            idColor: e.idColor,
+            idMaterial: e.idMaterial,
+            idSole: e.idSole,
+            idCategory: e.idCategory,
+            idBrand: e.idBrand,
+          }
+        }),
+      )
+    })
+  }, [])
 
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer)
