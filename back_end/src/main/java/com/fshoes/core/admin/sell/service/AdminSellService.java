@@ -61,6 +61,6 @@ public interface AdminSellService {
 
     List<ProductMaxPriceResponse> getMaxPriceProductId();
 
-    Boolean deleteProductsDetail(String idBill, List<String> idPrDetail);
+    Boolean deleteProductsDetail(String idBill, String idPrDetail);
 
 }

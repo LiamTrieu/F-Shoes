@@ -2,16 +2,21 @@ import React from 'react'
 import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
 import { Box } from '@mui/material'
+import dayjs from 'dayjs'
 
 ChartJS.register()
 
-export default function LineChartDashBoard() {
+export default function LineChartDashBoard(props) {
+  const { dataBieuDo, typeBieuDo } = props
+
+  const ngayArr = dataBieuDo.map((item) => dayjs(item.ngay).format('DD-MM-YYYY'))
+  const giaTriArr = dataBieuDo.map((item) => (typeBieuDo === 1 ? item.giaTri : item.giaTri * 1000))
   const data = {
-    labels: [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023],
+    labels: ngayArr,
     datasets: [
       {
-        label: 'Sản phẩm',
-        data: [220, 321, 603, 503, 650, 35, 512, 84, 91, 232, 521, 112, 213, 113],
+        label: typeBieuDo === 1 ? 'Số lượng' : 'Tổng tiền (VNĐ)',
+        data: giaTriArr,
       },
     ],
   }
