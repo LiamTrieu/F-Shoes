@@ -251,8 +251,6 @@ public class DBGenerator implements CommandLineRunner {
         Bill bill4 = Bill.builder().code("HD004").fullName("Nguyễn Văn D").phoneNumber("0123456789").address("125 Đường ABC, Quận XYZ, Thành phố HCM").totalMoney(BigDecimal.valueOf(15000000.0)).moneyReduced(BigDecimal.valueOf(0.0)).moneyAfter(BigDecimal.valueOf(15000000.0)).shipDate(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000).receiveDate(null).moneyShip(BigDecimal.valueOf(20000.0)).confirmationDate(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000).type(TypeBill.DAT_HANG).note("Đặt hàng online").customerAmount(BigDecimal.valueOf(15000000.0)).desiredReceiptDate(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000).completeDate(null).status(StatusBill.DANG_VAN_CHUYEN).customer(customer3).voucher(null).build();
         bill4.setId(billRepository.save(bill4).getId());
 
-        Bill bill5 = Bill.builder().code("HD005").fullName("Nguyễn Văn E").phoneNumber("0123456789").address("127 Đường ABC, Quận XYZ, Thành phố HCM").totalMoney(BigDecimal.valueOf(15000000.0)).moneyReduced(BigDecimal.valueOf(500000.0)).moneyAfter(BigDecimal.valueOf(14500000.0)).shipDate(null).receiveDate(null).moneyShip(BigDecimal.valueOf(0.0)).confirmationDate(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000).type(TypeBill.DAT_HANG).note("Đặt hàng").customerAmount(BigDecimal.valueOf(14500000.0)).desiredReceiptDate(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000).completeDate(null).status(StatusBill.TAO_DON_HANG).customer(customer5).voucher(null).build();
-        bill5.setId(billRepository.save(bill5).getId());
 
         Bill bill6 = Bill.builder().code("HD006").fullName("Nguyễn Văn F").phoneNumber("0123456789").address("128 Đường ABC, Quận XYZ, Thành phố HCM").totalMoney(BigDecimal.valueOf(16000000.0)).moneyReduced(BigDecimal.valueOf(600000.0)).moneyAfter(BigDecimal.valueOf(15400000.0)).shipDate(null).receiveDate(null).moneyShip(BigDecimal.valueOf(0.0)).confirmationDate(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000).type(TypeBill.DAT_HANG).note("Đặt hàng online").customerAmount(BigDecimal.valueOf(15400000.0)).desiredReceiptDate(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000).completeDate(null).status(StatusBill.DA_XAC_NHAN).customer(customer2).voucher(null).build();
         bill6.setId(billRepository.save(bill6).getId());
@@ -557,8 +555,6 @@ public class DBGenerator implements CommandLineRunner {
         BillDetail billDetail4 = BillDetail.builder().quantity(4).price(BigDecimal.valueOf(280000)).status(StatusBillDetail.TON_TAI).bill(bill4).productDetail(productDetail4).build();
         billDetail4.setId(billDetailRepository.save(billDetail4).getId());
 
-        BillDetail billDetail5 = BillDetail.builder().quantity(2).price(BigDecimal.valueOf(120000)).status(StatusBillDetail.TON_TAI).bill(bill5).productDetail(productDetail5).build();
-        billDetail5.setId(billDetailRepository.save(billDetail5).getId());
 
         BillDetail billDetail6 = BillDetail.builder().quantity(2).price(BigDecimal.valueOf(200000)).status(StatusBillDetail.TON_TAI).bill(bill6).productDetail(productDetail6).build();
         billDetail6.setId(billDetailRepository.save(billDetail6).getId());
@@ -596,8 +592,6 @@ public class DBGenerator implements CommandLineRunner {
         BillDetail billDetail17 = BillDetail.builder().quantity(4).price(BigDecimal.valueOf(280000)).status(StatusBillDetail.TON_TAI).bill(bill4).productDetail(productDetail17).build();
         billDetail17.setId(billDetailRepository.save(billDetail17).getId());
 
-        BillDetail billDetail18 = BillDetail.builder().quantity(2).price(BigDecimal.valueOf(120000)).status(StatusBillDetail.TON_TAI).bill(bill5).productDetail(productDetail18).build();
-        billDetail18.setId(billDetailRepository.save(billDetail18).getId());
 
         BillDetail billDetail19 = BillDetail.builder().quantity(2).price(BigDecimal.valueOf(200000)).status(StatusBillDetail.TON_TAI).bill(bill6).productDetail(productDetail19).build();
         billDetail19.setId(billDetailRepository.save(billDetail19).getId());
@@ -638,8 +632,6 @@ public class DBGenerator implements CommandLineRunner {
         Transaction transaction4 = Transaction.builder().type(TypeTransaction.THANH_TOAN).totalMoney(BigDecimal.valueOf(800000)).paymentMethod(PaymentMethod.CHUYEN_KHOAN).note("Payment for Order #HD4").status(Status.HOAT_DONG).bill(bill4).account(staff4).build();
         transaction4.setId(transactionRepository.save(transaction4).getId());
 
-        Transaction transaction5 = Transaction.builder().type(TypeTransaction.THANH_TOAN).totalMoney(BigDecimal.valueOf(900000)).paymentMethod(PaymentMethod.TIEN_MAT).note("Payment for Order #HD5").status(Status.HOAT_DONG).bill(bill5).account(staff5).build();
-        transaction5.setId(transactionRepository.save(transaction5).getId());
 
         Transaction transaction6 = Transaction.builder().type(TypeTransaction.THANH_TOAN).totalMoney(BigDecimal.valueOf(1000000)).paymentMethod(PaymentMethod.CHUYEN_KHOAN).note("Payment for Order #HD6").status(Status.HOAT_DONG).bill(bill6).account(staff1).build();
         transaction6.setId(transactionRepository.save(transaction6).getId());
@@ -790,16 +782,6 @@ public class DBGenerator implements CommandLineRunner {
 
         BillHistory billHistory20 = BillHistory.builder().statusBill(StatusBill.DANG_VAN_CHUYEN).note("Don hang dang giao den ban").bill(bill4).account(staff1).build();
         billHistory20.setId(billHistoryRepository.save(billHistory20).getId());
-
-        //bill 5:
-        BillHistory billHistory21 = BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).note("Tạo đơn hàng").bill(bill5).account(null).build();
-        billHistory21.setId(billHistoryRepository.save(billHistory21).getId());
-
-        BillHistory billHistory22 = BillHistory.builder().statusBill(StatusBill.DA_THANH_TOAN).note("Thanh toan").bill(bill5).account(null).build();
-        billHistory22.setId(billHistoryRepository.save(billHistory22).getId());
-
-        BillHistory billHistory23 = BillHistory.builder().statusBill(StatusBill.DA_XAC_NHAN).note("Xac nhan don hang").bill(bill5).account(staff1).build();
-        billHistory23.setId(billHistoryRepository.save(billHistory23).getId());
 
         //bill 6:
         BillHistory billHistory24 = BillHistory.builder().statusBill(StatusBill.CHO_XAC_NHAN).note("Tạo đơn hàng").bill(bill6).account(null).build();

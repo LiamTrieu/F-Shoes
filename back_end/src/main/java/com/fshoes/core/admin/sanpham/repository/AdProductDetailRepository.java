@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface AdProductDetailRepository extends ProductDetailRepository {
 
     @Query(value = """
-        SELECT 
+        SELECT
             ROW_NUMBER() over (ORDER BY pd.created_at desc ) as stt,
             pd.id as id, 
             pd.code as code, 
@@ -31,7 +31,7 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
             pd.weight, 
             pd.price, 
             pd.deleted,
-            GROUP_CONCAT(i.url) as image -- Concatenate the URLs into a single string
+            GROUP_CONCAT(i.url) as image
         FROM 
             product_detail pd
         JOIN 
@@ -46,7 +46,7 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
             material m ON m.id = pd.id_material
         JOIN 
             size si ON si.id = pd.id_size
-        LEFT JOIN -- Use LEFT JOIN to include products without images
+        LEFT JOIN
             image i ON pd.id = i.id_product_detail
         WHERE 
             pd.id_product = :#{#request.product}

@@ -17,6 +17,7 @@ import adBrandRoute from './adminroute/adbrandroute'
 import adSellRoute from './adminroute/adsell'
 import HeadingClient from '../layout/client/HeadingClient'
 import FooterClient from '../layout/client/FooterClient'
+import Dashboard from '../pages/admin/thongke/Dashboard'
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,7 @@ const router = createBrowserRouter([
       ...adMaterialRoute,
       ...adBrandRoute,
       ...adSellRoute,
+      { path: '/admin/dashboard', element: <Dashboard /> },
     ],
   },
 ])

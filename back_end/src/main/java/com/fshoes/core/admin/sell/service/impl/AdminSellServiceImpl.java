@@ -330,11 +330,10 @@ billHistoryRepository.save(billHistory);
     }
 
     @Override
-    public Boolean deleteProductsDetail(String idBill, List<String> idPrDetail) {
+    public Boolean deleteProductsDetail(String idBill, String idPrDetail) {
         try{
-            List<String> listIdProductDetail = billDetailRepositoty.findByProductDetailBYBillId(idBill);
-            for (String idPd : listIdProductDetail) {
-                Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPd);
+
+                Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPrDetail);
                 if (optionalProductDetail.isPresent()) {
                     ProductDetail productDetail = optionalProductDetail.get();
                     Integer quantity = billDetailRepositoty.quantityProductDetail(idBill, productDetail.getId());
@@ -345,11 +344,12 @@ billHistoryRepository.save(billHistory);
                 } else {
                     return false;
                 }
-            }
+
+            return true;
         }catch (Exception e){
             e.printStackTrace();
+            return false;
         }
-        return null;
     }
 
     @Override
