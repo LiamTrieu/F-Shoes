@@ -21,6 +21,8 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import { useEffect } from 'react'
 import clientProductApi from '../../api/client/clientProductApi'
 import { Link, useParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { addCart } from '../../services/slices/cartSlice'
 
 export default function DetailProduct() {
   const [soLuong, setSoluong] = useState(1)
@@ -77,27 +79,17 @@ export default function DetailProduct() {
     })
   }, [param])
 
-  const addCart = () => {
-    let existingCart = JSON.parse(localStorage.getItem('cart')) || []
-
-    const existingItem = existingCart.find((item) => item.id === param.id)
-
-    if (existingItem) {
-      existingItem.soLuong += soLuong
-    } else {
-      const newItem = {
-        id: param.id,
-        name: product.name,
-        gia: product.price,
-        image: product.image[0],
-        soLuong: soLuong,
-        size: sizeSelect,
-      }
-
-      existingCart.push(newItem)
+  const dispatch = useDispatch()
+  const addProductToCart = () => {
+    const newItem = {
+      id: param.id,
+      name: product.name,
+      gia: product.price,
+      image: product.image[0],
+      soLuong: soLuong,
+      size: sizeSelect,
     }
-
-    localStorage.setItem('cart', JSON.stringify(existingCart))
+    dispatch(addCart(newItem))
   }
 
   return (
@@ -197,7 +189,7 @@ export default function DetailProduct() {
           </Box>
           <ThemeProvider theme={ColorCustom}>
             <Button
-              onClick={addCart}
+              onClick={addProductToCart}
               type="submit"
               variant="contained"
               color="neutral"

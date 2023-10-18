@@ -31,19 +31,14 @@ import { BoderDotted, NoBoder } from '../../styles/TableStyle'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import './Cart.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { GetCart, removeCart, updateCart } from '../../services/slices/cartSlice'
 
 export default function Cart() {
-  const [product, setProduct] = useState([])
+  const product = useSelector(GetCart)
   const [arrData2, setArrData2] = useState([])
   const [isChk, setisChk] = useState(false)
-
-  useEffect(() => {
-    setProduct(
-      JSON.parse(localStorage.getItem('cart')).map((e) => {
-        return { ...e, checked: false }
-      }),
-    )
-  }, [])
+  const dispath = useDispatch()
 
   useEffect(() => {
     setArrData2(
@@ -72,36 +67,20 @@ export default function Cart() {
       }
       return cart
     })
-    setProduct(updatedProduct)
+    // setProduct(updatedProduct)
   }
-  const onChangeSL = (id, num) => {
-    const updatedProduct = product.map((cart) => {
-      if (cart.id === id) {
-        return {
-          ...cart,
-          soLuong: cart.soLuong + (cart.soLuong + num < 1 ? 0 : num),
-        }
+  const onChangeSL = (cart, num) => {
+    const soluong = cart.soLuong + num
+    if (soluong <= 0) {
+      dispath(removeCart(cart))
+    } else {
+      const updatedProduct = {
+        ...cart,
+        soLuong: soluong,
       }
-      return cart
-    })
-    setProduct(updatedProduct)
-    localStorage.setItem('cart', JSON.stringify(updatedProduct))
-  }
-
-  const onInputChangeSL = (id, e) => {
-    const parsedValue = parseInt(e.target.value)
-    const updatedProduct = product.map((cart) => {
-      if (cart.id === id) {
-        return {
-          ...cart,
-          soLuong:
-            e.target.value === '' ? 0 : isNaN(parsedValue) || parsedValue < 1 ? 1 : parsedValue,
-        }
-      }
-      return cart
-    })
-    setProduct(updatedProduct)
-    localStorage.setItem('cart', JSON.stringify(updatedProduct))
+      console.log(updatedProduct)
+      dispath(updateCart(updatedProduct))
+    }
   }
 
   const RowDataCustom = ({ cartDatas }) => {
@@ -163,12 +142,14 @@ export default function Cart() {
                 borderRadius: '20px',
               }}
               p={'3px'}>
-              <IconButton onClick={() => onChangeSL(cart.id, -1)} sx={{ p: 0 }} size="small">
+              <IconButton onClick={() => onChangeSL(cart, -1)} sx={{ p: 0 }} size="small">
                 <RemoveIcon fontSize="1px" />
               </IconButton>
               <TextField
-                onChange={(e) => onInputChangeSL(cart.id, e)}
-                value={cart.soLuong}
+                onChange={(e) => {
+                  dispath(updateCart({ ...cart, soLuong: e.target.value }))
+                }}
+                defaultValue={cart.soLuong}
                 inputProps={{ min: 1 }}
                 size="small"
                 sx={{
@@ -179,7 +160,7 @@ export default function Cart() {
                   },
                 }}
               />
-              <IconButton onClick={() => onChangeSL(cart.id, 1)} size="small" sx={{ p: 0 }}>
+              <IconButton onClick={() => onChangeSL(cart, 1)} size="small" sx={{ p: 0 }}>
                 <AddIcon fontSize="1px" />
               </IconButton>
             </Box>
@@ -201,7 +182,7 @@ export default function Cart() {
             <Button
               onClick={() => {
                 const updatedProduct = product.filter((item) => item.id !== cart.id)
-                setProduct(updatedProduct)
+                // setProduct(updatedProduct)
               }}
               sx={{
                 minHeight: 0,
@@ -222,7 +203,7 @@ export default function Cart() {
       return { ...p, checked: !isChk }
     })
     setisChk(!isChk)
-    setProduct(tempPrd)
+    // setProduct(tempPrd)
   }
 
   return (

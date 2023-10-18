@@ -4,6 +4,7 @@ import com.fshoes.core.admin.sanpham.model.request.SoleFilterRequest;
 import com.fshoes.core.admin.sanpham.model.request.SoleRequest;
 import com.fshoes.core.admin.sanpham.service.SoleService;
 import com.fshoes.core.common.ObjectRespone;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class SoleController {
     }
 
     @PostMapping("/add")
-    public ObjectRespone addSole(@RequestBody SoleRequest soleRequest) {
+    public ObjectRespone addSole(@Valid @RequestBody SoleRequest soleRequest) {
         return new ObjectRespone(soleService.addSole(soleRequest));
     }
 
