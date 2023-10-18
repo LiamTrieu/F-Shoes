@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import './HeadingClient.css'
+import { useSelector } from 'react-redux'
+import { GetCart } from '../../services/slices/cartSlice'
 
 export default function HeadingClient() {
   const [openDrawer, setOpenDrawer] = useState(false)
@@ -13,6 +15,8 @@ export default function HeadingClient() {
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer)
   }
+
+  const amountProduct = useSelector(GetCart).length
 
   const BarSelect = () => {
     return (
@@ -138,7 +142,7 @@ export default function HeadingClient() {
           </Box>
         </Box>
         <Button component={Link} to="/cart" color="inherit">
-          <Badge badgeContent={JSON.parse(localStorage.getItem('cart'))?.length} color="error">
+          <Badge badgeContent={amountProduct} color="error">
             <ShoppingCartIcon />
           </Badge>
         </Button>

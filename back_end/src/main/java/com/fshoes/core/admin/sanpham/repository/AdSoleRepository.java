@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AdSoleRepository extends SoleRepository {
@@ -30,4 +31,6 @@ public interface AdSoleRepository extends SoleRepository {
             FROM sole
             """, nativeQuery = true)
     List<String> getAllNameSole();
+
+    Sole findByName(String name);
 }
