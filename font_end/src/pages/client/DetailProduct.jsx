@@ -9,186 +9,161 @@ import {
   TextField,
   ThemeProvider,
   Typography,
-} from "@mui/material";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
-import React, { useState } from "react";
-import { ColorCustom } from "../../styles/ColorCustom";
-import CartProduct from "../../layout/client/CartProduct";
-import LabelTitle from "../../layout/client/LabelTitle";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-
-const products = [
-  {
-    id: 1,
-    title: "Giay so 1",
-    image:
-      "https://images-ext-1.discordapp.net/external/d9tmOqHZxmsQv_ed6p_sl5cEf8vzGe3u7AizusjbLq4/https/a.ipricegroup.com/trends-article/top-3-mau-giay-converse-duoc-cac-ngoi-sao-quoc-te-ua-chuong-medium.jpg?width=947&height=498",
-  },
-  {
-    id: 2,
-    title: "Giay so 1",
-    image: "https://shorturl.at/dfhyC",
-  },
-  {
-    id: 3,
-    title: "Giay so 1",
-    image: "https://shorturl.at/dfhyC",
-  },
-  {
-    id: 4,
-    title: "Giay so 1",
-    image: "https://shorturl.at/dfhyC",
-  },
-  {
-    id: 5,
-    title: "Giay so 1",
-    image: "https://shorturl.at/dfhyC",
-  },
-  {
-    id: 6,
-    title: "Giay so 1",
-    image: "https://shorturl.at/dfhyC",
-  },
-  {
-    id: 7,
-    title: "Giay so 1",
-    image: "https://shorturl.at/dfhyC",
-  },
-  {
-    id: 8,
-    title: "Giay so 1",
-    image: "https://shorturl.at/dfhyC",
-  },
-];
+} from '@mui/material'
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
+import React, { useState } from 'react'
+import { ColorCustom } from '../../styles/ColorCustom'
+import CartProduct from '../../layout/client/CartProduct'
+import LabelTitle from '../../layout/client/LabelTitle'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import AddIcon from '@mui/icons-material/Add'
+import RemoveIcon from '@mui/icons-material/Remove'
+import { useEffect } from 'react'
+import clientProductApi from '../../api/client/clientProductApi'
+import { Link, useParams } from 'react-router-dom'
 
 export default function DetailProduct() {
-  const [soLuong, setSoluong] = useState(1);
+  const [soLuong, setSoluong] = useState(1)
+  const [product, setProduct] = useState({ image: [], price: '' })
+  const [products, setProducts] = useState([])
+  const [sizes, setSizes] = useState([])
+  const [sizeSelect, setSizeSelect] = useState()
+  const param = useParams('id')
+  useEffect(() => {
+    let data
+    clientProductApi
+      .get(param)
+      .then((result) => {
+        data = result.data.data[0]
+        setProduct({
+          ...data,
+          image: data.image.split(','),
+        })
+      })
+      .finally(() => {
+        clientProductApi
+          .getSizes({
+            idProduct: data.idProduct,
+            idColor: data.idColor,
+            idCategory: data.idCategory,
+            idBrand: data.idBrand,
+            idSole: data.idSole,
+            idMaterial: data.idMaterial,
+          })
+          .then((result) => {
+            setSizes(result.data.data)
+            setSizeSelect(result.data.data.find((data) => data.id === param.id).size)
+          })
+      })
+    clientProductApi.get().then((result) => {
+      const data = result.data.data
+      setProducts(
+        data.map((e) => {
+          return {
+            id: e.id,
+            title: e.name,
+            priceBefort: e.price,
+            priceAfter: e.price,
+            image: e.image.split(','),
+            idProduct: e.idProduct,
+            idColor: e.idColor,
+            idMaterial: e.idMaterial,
+            idSole: e.idSole,
+            idCategory: e.idCategory,
+            idBrand: e.idBrand,
+          }
+        }),
+      )
+    })
+  }, [param])
+
+  const addCart = () => {
+    let existingCart = JSON.parse(localStorage.getItem('cart')) || []
+
+    const existingItem = existingCart.find((item) => item.id === param.id)
+
+    if (existingItem) {
+      existingItem.soLuong += soLuong
+    } else {
+      const newItem = {
+        id: param.id,
+        name: product.name,
+        gia: product.price,
+        image: product.image[0],
+        soLuong: soLuong,
+        size: sizeSelect,
+      }
+
+      existingCart.push(newItem)
+    }
+
+    localStorage.setItem('cart', JSON.stringify(existingCart))
+  }
+
   return (
     <Container maxWidth="lg">
       <Grid2 container rowSpacing={1} columnSpacing={3}>
-        <Grid2 md={6} textAlign={"center"} width={"100%"}>
-          <Box
-            component={"img"}
-            src="https://shorturl.at/dfhyC"
-            width={"100%"}
-            alt="error"></Box>
+        <Grid2 md={6} textAlign={'center'} width={'100%'}>
+          <Box component={'img'} src={product.image[0]} width={'100%'} alt="error"></Box>
         </Grid2>
-        <Grid2 md={6} width={"100%"}>
-          <Box borderBottom={"1px dotted gray"} py={2}>
-            <Typography
-              variant="h4"
-              fontFamily={"monospace"}
-              fontWeight={"bolder"}>
-              New Balance 530 – Bone
+        <Grid2 md={6} width={'100%'}>
+          <Box borderBottom={'1px dotted gray'} py={2}>
+            <Typography variant="h4" fontFamily={'monospace'} fontWeight={'bolder'}>
+              {product.name}
             </Typography>
-            <Typography
-              variant="h5"
-              fontFamily={"monospace"}
-              fontWeight={"900"}
-              color={"red"}>
-              3.000.000₫
+            <Typography variant="h5" fontFamily={'monospace'} fontWeight={'900'} color={'red'}>
+              {product.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
             </Typography>
           </Box>
-          <Box borderBottom={"1px dotted gray"} py={2} mb={2}>
+          <Box borderBottom={'1px dotted gray'} py={2} mb={2}>
             <Box py={2}>
-              <Typography
-                mr={2}
-                fontWeight={"bold"}
-                variant="button"
-                gutterBottom>
+              <Typography mr={2} fontWeight={'bold'} variant="button" gutterBottom>
                 Size
               </Typography>
-              <Button
-                variant="outlined"
-                style={{
-                  marginLeft: "10px",
-                  color: "black",
-                  padding: "2px 0px 2px 0px",
-                  border: "1px solid gray",
-                }}>
-                30
-              </Button>
-              <Button
-                variant="outlined"
-                style={{
-                  marginLeft: "10px",
-                  color: "black",
-                  padding: "2px 0px 2px 0px",
-                  border: "1px solid gray",
-                }}>
-                31
-              </Button>
-              <Button
-                variant="outlined"
-                style={{
-                  marginLeft: "10px",
-                  color: "black",
-                  padding: "2px 0px 2px 0px",
-                  border: "1px solid gray",
-                }}>
-                32
-              </Button>
+              {sizes.map((e, index) => {
+                return (
+                  <Button
+                    onClick={() => {
+                      setSizeSelect(e.size)
+                    }}
+                    component={Link}
+                    to={`/product/${e.id}`}
+                    key={'size' + index}
+                    variant="outlined"
+                    style={{
+                      marginLeft: '10px',
+                      color: param.id === e.id ? 'white' : 'black',
+                      backgroundColor: param.id === e.id ? 'black' : 'white',
+                      padding: '2px 0px 2px 0px',
+                      border: '1px solid gray',
+                    }}>
+                    {parseInt(e.size)}
+                  </Button>
+                )
+              })}
             </Box>
             <Box py={2}>
               <Typography
+                sx={{ float: 'left', mt: '3px' }}
+                color={'red'}
                 mr={2}
-                fontWeight={"bold"}
+                fontWeight={'bold'}
                 variant="button"
                 gutterBottom>
-                Color
-              </Typography>
-              <Button
-                color="secondary"
-                variant="contained"
-                style={{
-                  height: "30px",
-                  marginLeft: "10px",
-                  padding: "2px 0px 2px 0px",
-                  border: "1px solid gray",
-                }}></Button>
-              <Button
-                color="success"
-                variant="contained"
-                style={{
-                  height: "30px",
-                  marginLeft: "10px",
-                  padding: "2px 0px 2px 0px",
-                  border: "1px solid gray",
-                }}></Button>
-              <Button
-                color="error"
-                variant="contained"
-                style={{
-                  height: "30px",
-                  marginLeft: "10px",
-                  padding: "2px 0px 2px 0px",
-                  border: "1px solid gray",
-                }}></Button>
-            </Box>
-            <Box py={2}>
-              <Typography
-                sx={{ float: "left", mt: "3px" }}
-                color={"red"}
-                mr={2}
-                fontWeight={"bold"}
-                variant="button"
-                gutterBottom>
-                Số lượng: 100
+                Số lượng: {product.amount}
               </Typography>
               <Box
-                width={"65px"}
+                width={'65px'}
                 display="flex"
                 alignItems="center"
                 sx={{
-                  border: "1px solid gray",
-                  borderRadius: "20px",
+                  border: '1px solid gray',
+                  borderRadius: '20px',
                 }}
-                p={"3px"}>
+                p={'3px'}>
                 <IconButton
                   onClick={(e) => {
-                    setSoluong(soLuong - 1);
+                    setSoluong(soLuong - 1)
                   }}
                   sx={{ p: 0 }}
                   size="small">
@@ -196,22 +171,22 @@ export default function DetailProduct() {
                 </IconButton>
                 <TextField
                   onChange={(e) => {
-                    setSoluong(e.target.value);
+                    setSoluong(e.target.value)
                   }}
                   value={soLuong}
                   inputProps={{ min: 1 }}
                   size="small"
                   sx={{
-                    width: "30px ",
-                    "& input": { p: 0, textAlign: "center" },
-                    "& fieldset": {
-                      border: "none",
+                    width: '30px ',
+                    '& input': { p: 0, textAlign: 'center' },
+                    '& fieldset': {
+                      border: 'none',
                     },
                   }}
                 />
                 <IconButton
                   onClick={() => {
-                    setSoluong(soLuong + 1);
+                    setSoluong(soLuong + 1)
                   }}
                   size="small"
                   sx={{ p: 0 }}>
@@ -222,42 +197,35 @@ export default function DetailProduct() {
           </Box>
           <ThemeProvider theme={ColorCustom}>
             <Button
+              onClick={addCart}
               type="submit"
               variant="contained"
               color="neutral"
-              sx={{ marginRight: "15px" }}>
+              sx={{ marginRight: '15px' }}>
               Thêm vào giỏ hàng
             </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="red"
-              sx={{ marginRight: "15px" }}>
+            <Button type="submit" variant="contained" color="red" sx={{ marginRight: '15px' }}>
               Mua ngay
             </Button>
           </ThemeProvider>
-          <Accordion sx={{ boxShadow: "none", mt: 3 }}>
+          <Accordion sx={{ boxShadow: 'none', mt: 3 }}>
             <AccordionSummary
               sx={{ padding: 0 }}
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
               id="panel1a-header">
-              <Typography color={"gray"}>Mô tả sản phẩm</Typography>
+              <Typography color={'gray'}>Mô tả sản phẩm</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0 }}>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
-              </Typography>
+              <Typography>{product.description}</Typography>
             </AccordionDetails>
           </Accordion>
         </Grid2>
       </Grid2>
-      <Box sx={{ width: "100%" }} mt={5}>
+      <Box sx={{ width: '100%' }} mt={5}>
         <LabelTitle text="Sản phẩm mới" />
         <CartProduct products={products} colsm={6} colmd={4} collg={3} />
       </Box>
     </Container>
-  );
+  )
 }

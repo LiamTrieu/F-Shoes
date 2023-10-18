@@ -47,7 +47,7 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
     GetAmountProductResponse getAmount(String id);
 
     @Query(value = """
-            SELECT p.id, MAX(pd.price) AS price
+            SELECT p.id, MAX(pd.price) AS price, p.name as name
             FROM product p
             JOIN product_detail pd ON p.id = pd.id_product
             GROUP BY p.id

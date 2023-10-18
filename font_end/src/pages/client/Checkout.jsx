@@ -19,37 +19,18 @@ import React, { useEffect, useState } from 'react'
 import LabelTitle from '../../layout/client/checkoutpage/LabelTitle'
 import ghnAPI from '../../api/admin/ghn/ghnApi'
 import './Checkout.css'
-import PaidIcon from '@mui/icons-material/Paid'
-import PaymentIcon from '@mui/icons-material/Payment'
-
-const arrData = [
-  {
-    id: 2,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 40,
-    gia: '100.000',
-    soLuong: 1,
-    image: 'https://shorturl.at/dfhyC',
-    checked: false,
-  },
-  {
-    id: 1,
-    name: 'Air Jordan 1 Mid - Neutral Grey',
-    size: 43,
-    gia: '500.000',
-    soLuong: 3,
-    image: 'https://shorturl.at/dfhyC',
-    checked: false,
-  },
-]
 
 export default function Checkout() {
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
+
+  const [arrData, setArrData] = useState([])
   useEffect(() => {
     loadTinh()
+    setArrData(JSON.parse(localStorage.getItem('checkout')))
   }, [])
+
   const loadTinh = () => {
     ghnAPI.getProvince().then((response) => {
       setTinh(response.data)
@@ -71,6 +52,8 @@ export default function Checkout() {
   const [selectedTinh, setSelectedTinh] = useState(null)
   const [selectedHuyen, setSelectedHuyen] = useState(null)
   const [selectedXa, setSelectedXa] = useState(null)
+  const [phiShip, setPhiShip] = useState(20000)
+  const [giamGia, setGiamGia] = useState(0)
 
   const handleTinhChange = (_, newValue) => {
     setSelectedTinh(newValue)
@@ -100,6 +83,7 @@ export default function Checkout() {
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value)
   }
+
   return (
     <Container maxWidth="xl" sx={{ mt: 3 }}>
       <Paper
@@ -310,13 +294,17 @@ export default function Checkout() {
                 <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                   <Typography>Phí vận chuyển</Typography>
                   <Typography color={'red'}>
-                    <b className="ck-phi">30000₫</b>
+                    <b className="ck-phi">
+                      {phiShip.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                    </b>
                   </Typography>
                 </Stack>
                 <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                   <Typography>Giảm giá</Typography>
                   <Typography color={'red'}>
-                    <b className="ck-phi">30000₫</b>
+                    <b className="ck-phi">
+                      {giamGia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                    </b>
                   </Typography>
                 </Stack>
                 <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
@@ -324,7 +312,13 @@ export default function Checkout() {
                     <b className="ck-tong-tien">Tổng số tiền</b>
                   </Typography>
                   <Typography color={'red'}>
-                    <b className="ck-tong-tien">30000₫</b>
+                    <b className="ck-tong-tien">
+                      {(
+                        arrData.reduce((tong, e) => tong + e.gia, 0) +
+                        phiShip -
+                        giamGia
+                      ).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                    </b>
                   </Typography>
                 </Stack>
               </Box>
