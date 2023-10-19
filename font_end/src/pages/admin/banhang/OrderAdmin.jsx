@@ -13,11 +13,10 @@ export default function OrderAdmin() {
   const getAllBillTaoDonHang = () => {
     sellApi.getAllBillTaoDonHang().then((response) => {
       setlistBill(response.data.data)
-      if (listBill.length >= 0) {
+      if (response.data.data.length > 0) {
         setSelectBill(response.data.data[0].id)
-      }
-      if (listBill.length < 0) {
-        setSelectBill('')
+      } else if (response.data.data === null) {
+        setSelectBill(null)
       }
     })
   }
@@ -42,7 +41,6 @@ export default function OrderAdmin() {
         setlistBill(updatedListBill)
         if (selectBill !== id) {
           setSelectBill(updatedListBill[0].id)
-          console.log(selectBill)
         }
         if (selectBill === id) {
           const newSelectedBillId = updatedListBill.length > 0 ? updatedListBill[0].id : ''

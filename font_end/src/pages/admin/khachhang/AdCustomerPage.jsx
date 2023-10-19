@@ -59,12 +59,12 @@ export default function AdCustomerPage() {
   }
 
   const deleteKhachHang = (id) => {
-    const title = 'Xác nhận xóa khách hàng?'
+    const title = 'Xác nhận thay đổi trạng thái hoạt động?'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         khachHangApi.delete(id).then(() => {
-          toast.success('Xóa khách hàng thành công', {
+          toast.success('Thay đổi trạng thái hoạt động thành công', {
             position: toast.POSITION.TOP_RIGHT,
           })
           fetchData(searchKhachHang)
@@ -144,28 +144,28 @@ export default function AdCustomerPage() {
           <Table className="tableCss mt-5">
             <TableHead>
               <TableRow>
-                <TableCell align="center" width={'7%'}>
+                <TableCell align="center" width={'4%'}>
                   <span className="head-table">STT</span>
                 </TableCell>
-                <TableCell align="center" width={'25%'}>
+                <TableCell align="center" width={'20%'}>
                   <span className="head-table">Email</span>
                 </TableCell>
-                <TableCell align="center" width={'12%'}>
+                <TableCell align="center" width={'18%'}>
                   <span className="head-table">Họ tên</span>
                 </TableCell>
-                <TableCell align="center" width={'15%'}>
+                <TableCell align="center" width={'11%'}>
                   <span className="head-table">Ngày sinh</span>
                 </TableCell>
-                <TableCell align="center" width={'15%'}>
+                <TableCell align="center" width={'11%'}>
                   <span className="head-table">Số điện thoại</span>
                 </TableCell>
-                <TableCell align="center" width={'15%'}>
+                <TableCell align="center" width={'10%'}>
                   <span className="head-table">Giới tính</span>
                 </TableCell>
                 <TableCell align="center" width={'15%'}>
                   <span className="head-table">Trạng thái</span>
                 </TableCell>
-                <TableCell align="center" width={'10%'}>
+                <TableCell align="center" width={'11%'}>
                   <span className="head-table">Thao tác</span>
                 </TableCell>
               </TableRow>
@@ -192,6 +192,7 @@ export default function AdCustomerPage() {
                         />
                       ) : (
                         <Chip
+                          onClick={() => deleteKhachHang(row.id)}
                           className="chip-khong-hoat-dong"
                           size="small"
                           label="Không hoạt động"
