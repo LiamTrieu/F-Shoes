@@ -36,7 +36,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,7 +94,7 @@ public class AdminSellServiceImpl implements AdminSellService {
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill);
         billHistory.setStatusBill(8);
-billHistoryRepository.save(billHistory);
+        billHistoryRepository.save(billHistory);
         return bill;
     }
 
@@ -121,7 +120,7 @@ billHistoryRepository.save(billHistory);
             }
 
             List<String> billHistory = billHistoryRepository.getIdHistoryByIdBill(id);
-            for (String bh : billHistory){
+            for (String bh : billHistory) {
                 billHistoryRepository.deleteById(bh);
             }
             billRepository.delete(bill);
@@ -135,9 +134,9 @@ billHistoryRepository.save(billHistory);
     @Override
     public Bill addBill(AddBillRequest request, String id) {
         Bill bill = new Bill();
-        if(request.getIdVourcher() == null){
+        if (request.getIdVourcher() == null) {
             bill.setVoucher(null);
-        }else {
+        } else {
             Voucher voucher = voucherRepository.findById(request.getIdVourcher()).orElse(null);
             assert voucher != null;
             voucher.setQuantity(voucher.getQuantity() - 1);
@@ -145,9 +144,9 @@ billHistoryRepository.save(billHistory);
             bill.setVoucher(voucher);
         }
 
-        if(request.getIdCustomer() == null){
+        if (request.getIdCustomer() == null) {
             bill.setCustomer(null);
-        }else {
+        } else {
             Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
             assert account != null;
             bill.setCustomer(account);
@@ -264,20 +263,20 @@ billHistoryRepository.save(billHistory);
     @Override
     public Boolean increaseQuantityBillDetail(String idBillDetail, String idPrDetail) {
         Optional<BillDetail> optionalBillDetail = billDetailRepositoty.findById(idBillDetail);
-        if(optionalBillDetail.isPresent()){
+        if (optionalBillDetail.isPresent()) {
             BillDetail billDetail = optionalBillDetail.get();
-            billDetail.setQuantity(billDetail.getQuantity()+1);
+            billDetail.setQuantity(billDetail.getQuantity() + 1);
             billDetailRepositoty.save(billDetail);
             Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPrDetail);
-            if(optionalProductDetail.isPresent()){
+            if (optionalProductDetail.isPresent()) {
                 ProductDetail productDetail = optionalProductDetail.get();
-                productDetail.setAmount(productDetail.getAmount()-1);
+                productDetail.setAmount(productDetail.getAmount() - 1);
                 productDetailRepository.save(productDetail);
-            }else {
+            } else {
                 return false;
             }
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -285,20 +284,20 @@ billHistoryRepository.save(billHistory);
     @Override
     public Boolean decreaseQuantityBillDetail(String idBillDetail, String idPrDetail) {
         Optional<BillDetail> optionalBillDetail = billDetailRepositoty.findById(idBillDetail);
-        if(optionalBillDetail.isPresent()){
+        if (optionalBillDetail.isPresent()) {
             BillDetail billDetail = optionalBillDetail.get();
-            billDetail.setQuantity(billDetail.getQuantity()-1);
+            billDetail.setQuantity(billDetail.getQuantity() - 1);
             billDetailRepositoty.save(billDetail);
             Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPrDetail);
-            if(optionalProductDetail.isPresent()){
+            if (optionalProductDetail.isPresent()) {
                 ProductDetail productDetail = optionalProductDetail.get();
-                productDetail.setAmount(productDetail.getAmount()+1);
+                productDetail.setAmount(productDetail.getAmount() + 1);
                 productDetailRepository.save(productDetail);
-            }else {
+            } else {
                 return false;
             }
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -306,20 +305,20 @@ billHistoryRepository.save(billHistory);
     @Override
     public Boolean inputQuantityBillDetail(String idBillDetail, String idProDetail, Integer quantity) {
         Optional<BillDetail> optionalBillDetail = billDetailRepositoty.findById(idBillDetail);
-        if(optionalBillDetail.isPresent()){
+        if (optionalBillDetail.isPresent()) {
             BillDetail billDetail1 = optionalBillDetail.get();
             billDetail1.setQuantity(quantity);
             billDetailRepositoty.save(billDetail1);
             Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idProDetail);
-            if(optionalProductDetail.isPresent()){
+            if (optionalProductDetail.isPresent()) {
                 ProductDetail productDetail = optionalProductDetail.get();
                 productDetail.setAmount(productDetail.getAmount() - quantity);
                 productDetailRepository.save(productDetail);
-            }else {
+            } else {
                 return false;
             }
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -330,10 +329,10 @@ billHistoryRepository.save(billHistory);
     }
 
     @Override
-    public Boolean deleteProductsDetail(String idBill, String idPrDetail) {
-        try{
-
-                Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idPrDetail);
+    public Boolean deleteProductsDetail(String idBill, List<String> idPrDetail) {
+        try {
+            for (String idpd : idPrDetail) {
+                Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idpd);
                 if (optionalProductDetail.isPresent()) {
                     ProductDetail productDetail = optionalProductDetail.get();
                     Integer quantity = billDetailRepositoty.quantityProductDetail(idBill, productDetail.getId());
@@ -342,11 +341,11 @@ billHistoryRepository.save(billHistory);
                     String idBillDetail = billDetailRepositoty.idBillDetailProductDetail(idBill, productDetail.getId());
                     billDetailRepositoty.deleteById(idBillDetail);
                 } else {
-                    return false;
+                    continue;
                 }
-
+            }
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

@@ -254,7 +254,7 @@ export default function AdPromotionAdd() {
                   variant="outlined"
                   className="text-field-css"
                   size="small"
-                  sx={{ width: '100%', borderRadius: '20px' }}
+                  sx={{ width: '100%' }}
                   name="name"
                   onChange={(e) => handleInputChange(e)}
                 />

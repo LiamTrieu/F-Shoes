@@ -1,13 +1,6 @@
 .css-hyum1k-MuiToolbar-root {
   min-height: 80px !important;
 }
-.text-field-css {
-  background-color: white;
-  border-radius: 8px;
-  margin-left: 30px !important;
-  justify-content: center;
-  width: 48%;
-}
 
 .text-field-css .MuiInputBase-root:hover fieldset {
   border-color: #f2741f !important;
