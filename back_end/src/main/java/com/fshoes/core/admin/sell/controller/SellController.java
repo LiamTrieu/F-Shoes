@@ -108,7 +108,7 @@ public class SellController {
     }
 
     @DeleteMapping("/delete-product-detail-by-bill")
-    public ObjectRespone deleteProductDetailByBill(@RequestParam("idBill") String idBill, @RequestParam("idPrDetail") String idPrDetail) {
+    public ObjectRespone deleteProductDetailByBill(@RequestParam("idBill") String idBill, @RequestParam("idPrDetail") List<String> idPrDetail) {
         return new ObjectRespone(getSell.deleteProductsDetail(idBill, idPrDetail));
     }
 

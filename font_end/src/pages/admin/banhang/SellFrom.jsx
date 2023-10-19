@@ -165,14 +165,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setSelectAll(newSelected.length === listProductDetailBill.length)
 
     const selectedProductIds = listProductDetailBill
-      .filter((row) => newSelected.includes(row.idBillDetail))
-      .map((selectedProduct) => selectedProduct.idBillDetail)
+      .filter((row) => newSelected.includes(row.id))
+      .map((selectedProduct) => selectedProduct.id)
     setSelectedProductIds(selectedProductIds)
   }
 
   console.log(selectedProductIds + '==================== id product')
 
   const deleteProductDetail = (idBill, idPrDetail) => {
+    console.log(idBill + '===================' + idPrDetail)
     sellApi
       .deleteProductDetail(idBill, idPrDetail)
       .then((response) => {
