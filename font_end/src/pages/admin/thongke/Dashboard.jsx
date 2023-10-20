@@ -142,7 +142,7 @@ export default function Dashboard() {
           iconCart={<EventNoteIcon />}
           title={'hôm nay'}
           total={doanhThu.doanhSoNgay}
-          product={doanhThu.soLuongSan}
+          product={doanhThu.soLuongSanPhamNgay}
           order={doanhThu.soDonHangNgay}
           color={'#0694a2'}
         />
@@ -235,7 +235,7 @@ export default function Dashboard() {
               <TableCell>Tên sản phẩm</TableCell>
               <TableCell align="right">Số lượng</TableCell>
               <TableCell align="right">Giá tiền</TableCell>
-              <TableCell align="right">Kích cỡ</TableCell>
+              {/* <TableCell align="right">Kích cỡ</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -249,7 +249,7 @@ export default function Dashboard() {
                 </TableCell>
                 <TableCell align="right">{row.quantity}</TableCell>
                 <TableCell align="right">{row.price}</TableCell>
-                <TableCell align="right">{row.size}</TableCell>
+                {/* <TableCell align="right">{row.size}</TableCell> */}
               </TableRow>
             ))}
           </TableBody>

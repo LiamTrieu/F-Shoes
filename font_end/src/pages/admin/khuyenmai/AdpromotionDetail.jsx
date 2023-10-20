@@ -122,8 +122,6 @@ export default function AdPromotionDetail() {
       setGetProductDetailByProduct([])
       setTotalPagesDetailByProduct(0)
     }
-
-    console.log('ID của sản phẩm đã chọn:', selectedProductIds)
   }
   useEffect(() => {
     getProductDetailById(filterDetailByProduct, selectedProductIds)
@@ -262,6 +260,7 @@ export default function AdPromotionDetail() {
       setTotalPages(response.data.data.totalPages)
     })
   }, [filter])
+
   return (
     <>
       <div className="promotionUpdate">

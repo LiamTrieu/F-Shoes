@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, Container, Stack, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material'
 
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import SellFrom from './SellFrom'
@@ -13,6 +13,11 @@ export default function OrderAdmin() {
   const getAllBillTaoDonHang = () => {
     sellApi.getAllBillTaoDonHang().then((response) => {
       setlistBill(response.data.data)
+      if (response.data.data.length > 0) {
+        setSelectBill(response.data.data[0].id)
+      } else if (response.data.data === null) {
+        setSelectBill(null)
+      }
     })
   }
 
@@ -34,8 +39,12 @@ export default function OrderAdmin() {
       if (res.data.success) {
         const updatedListBill = listBill.filter((item) => item.id !== id)
         setlistBill(updatedListBill)
+        if (selectBill !== id) {
+          setSelectBill(updatedListBill[0].id)
+        }
         if (selectBill === id) {
-          setSelectBill('')
+          const newSelectedBillId = updatedListBill.length > 0 ? updatedListBill[0].id : ''
+          setSelectBill(newSelectedBillId)
         }
       }
     })

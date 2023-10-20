@@ -71,7 +71,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     category: null,
     size: null,
     nameProductDetail: '',
-    priceMin: 0,
   })
   const { id } = useParams()
   const [listBrand, setListBrand] = useState([])
@@ -142,20 +141,25 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
       setListProduct(response.data.data)
     })
   }
-
+  // const [, forceUpdate] = useState()
   useEffect(() => {
     fecthData(filter)
+    // forceUpdate({})
   }, [filter])
 
   const onSubmitAddBillDetail = (id, idBill) => {
+    let priceToAdd = selectedProduct.price
+    if (selectedProduct.value) {
+      priceToAdd = (selectedProduct.price * (100 - selectedProduct.value)) / 100
+    }
     const BillDetail = {
       billId: idBill,
       productDetailId: id,
       quantity: addAmount,
-      price: selectedProduct.price * selectedProduct.value,
+      price: priceToAdd,
     }
+    console.log(BillDetail)
 
-    console.log(BillDetail + '==========')
     sellApi.addBillDetail(BillDetail, idBill).then(() => {
       toast.success('Thêm sản phẩm thành công', {
         position: toast.POSITION.TOP_CENTER,
@@ -229,7 +233,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                 Tìm kiếm sản phẩm
               </Typography>
             </Box>
-            <Box sx={{ width: '250px' }}>
+            {/* <Box sx={{ width: '250px' }}>
               <b>0 VND</b>
               <b style={{ float: 'right' }}>{`${parseInt(listProduct.price).toLocaleString(
                 'it-IT',
@@ -252,7 +256,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                   `${value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}`
                 }
               />
-            </Box>
+            </Box> */}
             <IconButton
               onClick={() => {
                 setOPen(false)
@@ -279,9 +283,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                   setFilter({ ...filter, nameProductDetail: e.target.value })
                 }}
               />
-              <Button sx={{ ml: 2 }} color="cam" variant="outlined">
-                Tìm kiếm
-              </Button>
             </Box>
             <Box>
               <b>Danh mục:</b>
@@ -477,7 +478,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                 </TableHead>
                 <TableBody>
                   {listProduct.map((cart, index) => (
-                    <TableRow key={cart.id}>
+                    <TableRow key={index.id}>
                       <TableCell width={'15%'} align="center">
                         <div style={{ position: 'relative' }}>
                           <img width={'100%'} alt="error" src={cart.url} />

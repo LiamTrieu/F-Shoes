@@ -100,6 +100,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
   const [list, setList] = useState([])
+  const [nameCustomer, setNameCustomer] = useState('')
 
   const [adCallVoucherOfSell, setAdCallVoucherOfSell] = useState({
     idCustomer: null,
@@ -165,14 +166,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setSelectAll(newSelected.length === listProductDetailBill.length)
 
     const selectedProductIds = listProductDetailBill
-      .filter((row) => newSelected.includes(row.idBillDetail))
-      .map((selectedProduct) => selectedProduct.idBillDetail)
+      .filter((row) => newSelected.includes(row.id))
+      .map((selectedProduct) => selectedProduct.id)
     setSelectedProductIds(selectedProductIds)
   }
 
   console.log(selectedProductIds + '==================== id product')
 
   const deleteProductDetail = (idBill, idPrDetail) => {
+    console.log(idBill + '===================' + idPrDetail)
     sellApi
       .deleteProductDetail(idBill, idPrDetail)
       .then((response) => {
@@ -1401,7 +1403,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         <TableCell align="center">
                           <Button
                             variant="contained"
-                            onClick={() => handleDiaChi(row.id)}
+                            onClick={() => {
+                              handleDiaChi(row.id)
+                              setNameCustomer(row.fullName)
+                            }}
                             color="success">
                             <b>chọn</b>
                           </Button>
@@ -1416,22 +1421,38 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         </Box>
         <Box p={2}>
           <Box display={'inline'}>
-            <b>Tên Khách hàng </b>
-            <span
-              style={{
-                padding: '5px 10px',
-                borderRadius: '50px',
-                marginLeft: '20px',
-                backgroundColor: 'rgb(240,240,240)',
-              }}>
-              {newDiaChi.name || 'khách lẻ'}
-            </span>
-            <Button
-              sx={{ py: '6.7px', ml: 1 }}
-              variant="outlined"
-              onClick={() => setIsShowDiaChi(true)}>
-              <b>Chọn Địa chỉ</b>
-            </Button>
+            <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
+              <b>Tên Khách hàng </b>
+              <span
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: '50px',
+                  marginLeft: '20px',
+                  backgroundColor: 'rgb(240,240,240)',
+                }}>
+                {nameCustomer !== '' ? nameCustomer : 'khách lẻ'}
+              </span>
+              <Button
+                sx={{ py: '6.7px', ml: 1 }}
+                color="cam"
+                size="small"
+                variant="outlined"
+                onClick={() => setIsShowDiaChi(true)}>
+                <b>Chọn Địa chỉ</b>
+              </Button>
+
+              <Box display={'inline'} sx={{ float: 'right' }}>
+                <b>Giao hàng</b>
+                <Switch
+                  onChange={() => {
+                    setGiaoHang(!giaoHang)
+                  }}
+                  color="secondary"
+                  checked={giaoHang}
+                  size="small"
+                />
+              </Box>
+            </Stack>
             <Modal
               open={isShowDiaChi}
               onClose={() => {
@@ -1715,17 +1736,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 </Container>
               </Box>
             </Modal>
-          </Box>
-          <Box display={'inline'} sx={{ float: 'right' }}>
-            <b>Giao hàng</b>
-            <Switch
-              onChange={() => {
-                setGiaoHang(!giaoHang)
-              }}
-              color="secondary"
-              checked={giaoHang}
-              size="small"
-            />
           </Box>
         </Box>
         <Grid2 container spacing={2}>
