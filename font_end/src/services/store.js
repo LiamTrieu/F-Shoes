@@ -49,6 +49,7 @@ const store = configureStore({
     transaction: transactionReducer,
     voucher: voucherReducer,
     checkout: checkoutReducer,
+    loading: loadingReducer,
   },
 })
 export default store
