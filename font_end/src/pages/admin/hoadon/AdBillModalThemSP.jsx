@@ -29,29 +29,29 @@ import soleApi from '../../../api/admin/sanpham/soleApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
 import sellApi from '../../../api/admin/sell/SellApi'
 import { formatCurrency } from '../../../services/common/formatCurrency '
-const styleModalProduct = {
+import hoaDonChiTietApi from '../../../api/admin/hoadon/hoaDonChiTiet'
+import { toast } from 'react-toastify'
+const styleAdBillModalThemSP = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: { xs: '90vw', md: '80vw' },
-  height: '600px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
 }
-const styleModalProductDetail = {
+const styleAdBillModalThemSPDetail = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: { xs: '40vw', md: '28vw' },
-  height: '230px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
 }
-export default function AdBillModalThemSP({ open, setOPen }) {
+export default function AdBillModalThemSP({ open, setOPen, idBill }) {
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
   const [listColor, setListColor] = useState([])
@@ -136,7 +136,39 @@ export default function AdBillModalThemSP({ open, setOPen }) {
       setAddAmount(1)
     }
   }
-
+  const confirmAddProduct = (idBill, selectedProduct) => {
+    var price = 0
+    if (selectedProduct.value != null) {
+      price = (
+        selectedProduct.price -
+        (selectedProduct.price * selectedProduct.value) / 100
+      ).toFixed(0)
+    } else {
+      price = selectedProduct.price
+    }
+    const billDetailReq = {
+      productDetailId: selectedProduct.productDetailId,
+      idBill: idBill,
+      quantity: addAmount,
+      price: price,
+      status: 0,
+    }
+    console.log(billDetailReq)
+    hoaDonChiTietApi
+      .saveBillDetail(billDetailReq)
+      .then((response) => {
+        toast.success('Đã thêm sản phẩm', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        setIsProductDetailModalOpen(false)
+      })
+      .catch((error) => {
+        toast.error('Đã xảy ra lỗi', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        console.error('Lỗi khi gửi yêu cầu APIsaveBillDetail: ', error)
+      })
+  }
   return (
     <div>
       <Modal
@@ -144,7 +176,7 @@ export default function AdBillModalThemSP({ open, setOPen }) {
         onClose={() => {
           setOPen(false)
         }}>
-        <Box sx={styleModalProduct}>
+        <Box sx={styleAdBillModalThemSP}>
           <Toolbar>
             <Box
               sx={{
@@ -379,7 +411,7 @@ export default function AdBillModalThemSP({ open, setOPen }) {
                 </TableHead>
                 <TableBody>
                   {listProduct.map((cart, index) => (
-                    <TableRow key={index.id}>
+                    <TableRow key={cart.productDetailId}>
                       <TableCell width={'15%'} align="center">
                         <div style={{ position: 'relative' }}>
                           <img width={'100%'} alt="error" src={cart.url} />
@@ -475,7 +507,7 @@ export default function AdBillModalThemSP({ open, setOPen }) {
         </Box>
       </Modal>
       <Modal open={isProductDetailModalOpen} onClose={() => setIsProductDetailModalOpen(false)}>
-        <Box sx={styleModalProductDetail}>
+        <Box sx={styleAdBillModalThemSPDetail}>
           <Toolbar>
             <Box sx={{ color: 'black', flexGrow: 1 }}>
               <Typography variant="h6" component="div">
@@ -550,9 +582,12 @@ export default function AdBillModalThemSP({ open, setOPen }) {
               justifyContent="flex-end"
               alignItems="flex-end"
               spacing={2}
-              sx={{ marginTop: 'auto' }}>
+              sx={{ marginTop: 3, marginBottom: 3 }}>
               <Box>
-                <Button variant="outlined" color="cam">
+                <Button
+                  variant="outlined"
+                  color="cam"
+                  onClick={() => confirmAddProduct(idBill, selectedProduct)}>
                   <b>Xác nhận</b>
                 </Button>
               </Box>

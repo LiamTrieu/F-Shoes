@@ -20,9 +20,11 @@ import {
   RadioGroup,
   FormControl,
   Divider,
+  Tooltip,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
+import { CiCircleRemove } from 'react-icons/ci'
 import React, { useState, useEffect, useCallback } from 'react'
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
 import { getStatus } from '../../../services/constants/statusHoaDon'
@@ -41,6 +43,7 @@ import { toast } from 'react-toastify'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import TimeLine from './TimeLine'
 import AdBillModalThemSP from './AdBillModalThemSP'
+import confirmSatus from '../../../components/comfirmSwal'
 
 const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
 
@@ -72,7 +75,7 @@ export default function AdBillDetail() {
   }, 0)
 
   const handleIncrementQuantity = (row, index) => {
-    if (row.quantity > 0) {
+    if (row.quantity >= 0) {
       const updatedList = listBillDetail.map((item, i) =>
         i === index ? { ...item, quantity: item.quantity + 1 } : item,
       )
@@ -82,12 +85,14 @@ export default function AdBillDetail() {
       incrementQuantity(row.id)
       if (billDetail.moneyReduced != null) {
         const newMoneyAfter =
-          updatedList.reduce((totalMoney, item) => totalMoney + item.quantity * item.price, 0) -
-          billDetail.moneyReduced
-        setMoneyAfter(newMoneyAfter)
+          updatedList.reduce(
+            (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
+            0,
+          ) - billDetail.moneyReduced
+        setMoneyAfter(newMoneyAfter + billDetail.moneyShip)
       } else {
         const newMoneyAfter = updatedList.reduce(
-          (totalMoney, item) => totalMoney + item.quantity * item.price,
+          (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
           0,
         )
         setMoneyAfter(newMoneyAfter)
@@ -96,7 +101,7 @@ export default function AdBillDetail() {
   }
 
   const handleDecrementQuantity = (row, index) => {
-    if (row.quantity > 0) {
+    if (row.quantity >= 0) {
       const updatedList = listBillDetail.map((item, i) =>
         i === index ? { ...item, quantity: item.quantity - 1 } : item,
       )
@@ -106,12 +111,14 @@ export default function AdBillDetail() {
       decrementQuantity(row.id)
       if (billDetail.moneyReduced != null) {
         const newMoneyAfter =
-          updatedList.reduce((totalMoney, item) => totalMoney + item.quantity * item.price, 0) -
-          billDetail.moneyReduced
+          updatedList.reduce(
+            (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
+            0,
+          ) - billDetail.moneyReduced
         setMoneyAfter(newMoneyAfter)
       } else {
         const newMoneyAfter = updatedList.reduce(
-          (totalMoney, item) => totalMoney + item.quantity * item.price,
+          (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
           0,
         )
         setMoneyAfter(newMoneyAfter)
@@ -128,12 +135,14 @@ export default function AdBillDetail() {
       changeQuantity(row.id, newValue)
       if (billDetail.moneyReduced != null) {
         const newMoneyAfter =
-          updatedList.reduce((totalMoney, item) => totalMoney + item.quantity * item.price, 0) -
-          billDetail.moneyReduced
+          updatedList.reduce(
+            (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
+            0,
+          ) - billDetail.moneyReduced
         setMoneyAfter(newMoneyAfter)
       } else {
         const newMoneyAfter = updatedList.reduce(
-          (totalMoney, item) => totalMoney + item.quantity * item.price,
+          (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
           0,
         )
         setMoneyAfter(newMoneyAfter)
@@ -169,11 +178,13 @@ export default function AdBillDetail() {
 
   const showBtnConfirmPayment = useCallback(
     (billDetail, listTransaction) => {
-      if (!loading && !loadingTransaction) {
-        if (billDetail.status === 1 || listTransaction.length === 0) {
-          setIsShowBtnConfirmPayment(true)
-        } else {
-          setIsShowBtnConfirmPayment(false)
+      if (billDetail && billDetail.status !== 0) {
+        if (!loading && !loadingTransaction) {
+          if (billDetail.status === 1 || listTransaction.length === 0) {
+            setIsShowBtnConfirmPayment(true)
+          } else {
+            setIsShowBtnConfirmPayment(false)
+          }
         }
       }
     },
@@ -202,69 +213,71 @@ export default function AdBillDetail() {
     }
     //billDetail.type: giao hàng
     if (billDetail.type) {
-      switch (billDetail.status) {
-        case 1:
-          return (
-            <div>
-              <Button
-                variant="outlined"
-                className="them-moi"
-                color="cam"
-                style={{ marginRight: '5px' }}
-                onClick={() => setOpenModalConfirm(true)}
-                sx={{ minWidth: '30px' }}>
-                Xác nhận đơn hàng
-              </Button>
-              <Button
-                variant="contained"
-                className="them-moi"
-                color="error"
-                style={{ marginRight: '5px' }}
-                onClick={() => setOpenModalCancelBill(true)}
-                sx={{ minWidth: '30px' }}>
-                Huỷ đơn
-              </Button>
-            </div>
-          )
-        case 2:
-          return (
-            <div>
-              <Button
-                variant="outlined"
-                className="them-moi"
-                color="cam"
-                style={{ marginRight: '5px' }}
-                onClick={() => setOpenModalConfirmDelive(true)}
-                sx={{ minWidth: '30px' }}>
-                Xác nhận giao hàng
-              </Button>
-              <Button
-                variant="contained"
-                className="them-moi"
-                color="error"
-                style={{ marginRight: '5px' }}
-                onClick={() => setOpenModalCancelBill(true)}
-                sx={{ minWidth: '30px' }}>
-                Huỷ đơn
-              </Button>
-            </div>
-          )
-        case 3:
-          return (
-            <div>
-              <Button
-                variant="outlined"
-                className="them-moi"
-                color="cam"
-                style={{ marginRight: '5px' }}
-                onClick={() => setOpenModalConfirmReceived(true)}
-                sx={{ minWidth: '30px' }}>
-                Xác nhận lấy hàng
-              </Button>
-            </div>
-          )
-        default:
-          return null
+      if (billDetail.status !== 0) {
+        switch (billDetail.status) {
+          case 1:
+            return (
+              <div>
+                <Button
+                  variant="outlined"
+                  className="them-moi"
+                  color="cam"
+                  style={{ marginRight: '5px' }}
+                  onClick={() => setOpenModalConfirm(true)}
+                  sx={{ minWidth: '30px' }}>
+                  Xác nhận đơn hàng
+                </Button>
+                <Button
+                  variant="contained"
+                  className="them-moi"
+                  color="error"
+                  style={{ marginRight: '5px' }}
+                  onClick={() => setOpenModalCancelBill(true)}
+                  sx={{ minWidth: '30px' }}>
+                  Huỷ đơn
+                </Button>
+              </div>
+            )
+          case 2:
+            return (
+              <div>
+                <Button
+                  variant="outlined"
+                  className="them-moi"
+                  color="cam"
+                  style={{ marginRight: '5px' }}
+                  onClick={() => setOpenModalConfirmDelive(true)}
+                  sx={{ minWidth: '30px' }}>
+                  Xác nhận giao hàng
+                </Button>
+                <Button
+                  variant="contained"
+                  className="them-moi"
+                  color="error"
+                  style={{ marginRight: '5px' }}
+                  onClick={() => setOpenModalCancelBill(true)}
+                  sx={{ minWidth: '30px' }}>
+                  Huỷ đơn
+                </Button>
+              </div>
+            )
+          case 3:
+            return (
+              <div>
+                <Button
+                  variant="outlined"
+                  className="them-moi"
+                  color="cam"
+                  style={{ marginRight: '5px' }}
+                  onClick={() => setOpenModalConfirmReceived(true)}
+                  sx={{ minWidth: '30px' }}>
+                  Xác nhận lấy hàng
+                </Button>
+              </div>
+            )
+          default:
+            return null
+        }
       }
     } else {
       switch (billDetail.status) {
@@ -295,7 +308,7 @@ export default function AdBillDetail() {
           idBill: billDetail.id,
           quantity: item.quantity,
           price: item.price,
-          status: 1,
+          status: 0,
         })),
       }
       hoaDonApi
@@ -598,7 +611,6 @@ export default function AdBillDetail() {
         hoaDonApi
           .cancelBill(id, updateStatusBillRequest)
           .then((response) => {
-            console.log(response)
             toast.success('Đã huỷ đơn hàng', {
               position: toast.POSITION.TOP_RIGHT,
             })
@@ -769,39 +781,52 @@ export default function AdBillDetail() {
         setLoadingListBillDetail(false)
       })
   }
+
   const decrementQuantity = (idBillDetail) => {
-    hoaDonChiTietApi
-      .decrementQuantity(idBillDetail)
-      .then((response) => {
-        console.log(response.data.data)
-      })
-      .catch((error) => {
-        console.error('NO ok', error)
-      })
+    hoaDonChiTietApi.decrementQuantity(idBillDetail).catch((error) => {
+      console.error('NO ok', error)
+    })
   }
 
   const incrementQuantity = (idBillDetail) => {
-    hoaDonChiTietApi
-      .incrementQuantity(idBillDetail)
-      .then((response) => {
-        console.log(response.data.data)
-      })
-      .catch((error) => {
-        console.error('NO ok', error)
-      })
+    hoaDonChiTietApi.incrementQuantity(idBillDetail).catch((error) => {
+      console.error('NO ok', error)
+    })
   }
 
   const changeQuantity = (idBillDetail, quantity) => {
-    hoaDonChiTietApi
-      .changeQuantity(idBillDetail, quantity)
-      .then((response) => {
-        console.log(response.data.data)
-      })
-      .catch((error) => {
-        console.error('NO ok', error)
-      })
+    hoaDonChiTietApi.changeQuantity(idBillDetail, quantity).catch((error) => {
+      console.error('NO ok', error)
+    })
   }
 
+  const deleteBillDetail = (hdct, idBill) => {
+    const hdBillDetailReq = {
+      productDetailId: hdct.productDetailId,
+      idBill: idBill,
+      status: hdct.status,
+    }
+    hoaDonChiTietApi
+      .delete(hdBillDetailReq)
+      .then(() => {
+        toast.success('Đã xoá sản phẩm khỏi đơn hàng', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        setIsUpdateBill(true)
+      })
+      .catch(() => {
+        toast.error('Đã sảy ra lỗi', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      })
+  }
+  const handleDeleteSPConfirmation = (hdct, idBill) => {
+    confirmSatus('Xác nhận xoá', 'Bạn có chắc chắn muốn xoá sản phẩm này?').then((result) => {
+      if (result.isConfirmed) {
+        deleteBillDetail(hdct, idBill)
+      }
+    })
+  }
   return (
     <div className="hoa-don">
       <ModalConfirmBill
@@ -835,7 +860,11 @@ export default function AdBillDetail() {
         open={openCodalConfirmReceived}
         billDetail={billDetail}
       />
-      <AdBillModalThemSP open={openModalThemSP} setOPen={setOpenModalThemSP} />
+      <AdBillModalThemSP
+        open={openModalThemSP}
+        setOPen={setOpenModalThemSP}
+        idBill={billDetail ? billDetail.id : null}
+      />
       <BreadcrumbsCustom listLink={listHis} nameHere={'Chi tiết hoá đơn'} />
       <Paper className="time-line" elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
         <h3>Lịch sử đơn hàng</h3>
@@ -869,14 +898,17 @@ export default function AdBillDetail() {
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
           <h3>Thông tin đơn hàng</h3>
-          <Button
-            variant="outlined"
-            className="them-moi"
-            color="cam"
-            style={{ marginRight: '5px' }}>
-            Cập nhật
-          </Button>
+          {billDetail && billDetail.status !== 0 && (
+            <Button
+              variant="outlined"
+              className="them-moi"
+              color="cam"
+              style={{ marginRight: '5px' }}>
+              Cập nhật
+            </Button>
+          )}
         </Stack>
+
         <Divider
           style={{ backgroundColor: 'black', height: '1px', marginTop: 10, marginBottom: 10 }}
         />
@@ -967,275 +999,334 @@ export default function AdBillDetail() {
       )}
       {/* Hoá đơn chi tiết */}
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-        {listBillDetail.length > 0 ? (
-          <div>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-start"
-              spacing={2}>
-              <h3>Hoá đơn chi tiết</h3>
-              <Button
-                variant="outlined"
-                className="them-moi"
-                color="cam"
-                style={{ marginRight: '5px' }}
-                onClick={() => setOpenModalThemSP(true)}>
-                Thêm sản phẩm
-              </Button>
-            </Stack>
-            <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
-            {loadingListBillDetail ? (
-              <div>Loading BillDetail...</div>
-            ) : (
-              <div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TableContainer
-                      sx={{ maxHeight: 300, marginBottom: 5 }}
-                      className="table-container-custom-scrollbar">
-                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableBody>
-                          {listBillDetail.map((row, index) => (
-                            <TableRow key={'billDetail' + row.id}>
-                              <TableCell align="center">
-                                <img src={row.productImg} alt="" width={'100px'} />
-                              </TableCell>
-                              <TableCell>
-                                {row.productName} <br></br>
-                                {row.price !== row.productPrice ? (
-                                  <span>
-                                    <del
-                                      style={{
-                                        color: 'gray',
-                                        textDecorationColor: 'gray',
-                                        textDecorationLine: 'line-through',
-                                      }}>
-                                      {formatCurrency(row.productPrice)}
-                                    </del>
+        <div>
+          {' '}
+          {billDetail && (
+            <div>
+              {listBillDetail.length > 0 ? (
+                <div>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    spacing={2}>
+                    <h3>Hoá đơn chi tiết</h3>
+                    {billDetail &&
+                      (billDetail.status === 1 ||
+                        billDetail.status === 2 ||
+                        billDetail.status === 6) && (
+                        <Button
+                          variant="outlined"
+                          className="them-moi"
+                          color="cam"
+                          style={{ marginRight: '5px' }}
+                          onClick={() => setOpenModalThemSP(true)}>
+                          Thêm sản phẩm
+                        </Button>
+                      )}
+                  </Stack>
 
-                                    <span
-                                      style={{
-                                        color: 'red',
-                                        marginLeft: 15,
-                                      }}>
-                                      {formatCurrency(row.price)}
-                                    </span>
-                                  </span>
-                                ) : (
-                                  <span
-                                    style={{
-                                      color: 'red',
-                                      marginLeft: 15,
-                                    }}>
-                                    {formatCurrency(row.productPrice)}
-                                  </span>
-                                )}
-                                <br />
-                                Size: {row.size}
-                                <br />x{row.quantity}
-                              </TableCell>
-                              <TableCell align="center">
-                                <Box
-                                  width={'65px'}
-                                  display="flex"
-                                  alignItems="center"
-                                  sx={{ border: '1px solid gray', borderRadius: '20px' }}
-                                  p={'3px'}>
-                                  <IconButton
-                                    sx={{ p: 0 }}
-                                    size="small"
-                                    onClick={() => handleDecrementQuantity(row, index)}>
-                                    <RemoveIcon fontSize="1px" />
-                                  </IconButton>
-                                  <TextField
-                                    value={row.quantity}
-                                    inputProps={{ min: 1 }}
-                                    size="small"
-                                    sx={{
-                                      width: '30px ',
-                                      '& input': { p: 0, textAlign: 'center' },
-                                      '& fieldset': {
-                                        border: 'none',
-                                      },
-                                    }}
-                                    onChange={(e) =>
-                                      handleTextFieldQuantityChange(row, index, e.target.value)
-                                    }
-                                    onFocus={(e) => handleTextFieldQuanityFocus(e, index)}
-                                  />
+                  <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
+                  {loadingListBillDetail ? (
+                    <div>Loading BillDetail...</div>
+                  ) : (
+                    <div>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <TableContainer
+                            sx={{ maxHeight: 300, marginBottom: 5 }}
+                            className="table-container-custom-scrollbar">
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                              <TableBody>
+                                {listBillDetail.map((row, index) => (
+                                  <TableRow key={row.id + index}>
+                                    <TableCell align="center">
+                                      <img src={row.productImg} alt="" width={'100px'} />
+                                    </TableCell>
+                                    <TableCell>
+                                      {row.productName} <br></br>
+                                      {row.price !== row.productPrice ? (
+                                        <span>
+                                          <del
+                                            style={{
+                                              color: 'gray',
+                                              textDecorationColor: 'gray',
+                                              textDecorationLine: 'line-through',
+                                            }}>
+                                            {formatCurrency(row.productPrice)}
+                                          </del>
 
-                                  <IconButton
-                                    sx={{ p: 0 }}
-                                    size="small"
-                                    onClick={() => handleIncrementQuantity(row, index)}>
-                                    <AddIcon fontSize="1px" />
-                                  </IconButton>
-                                </Box>
-                              </TableCell>
-                              <TableCell
-                                align="center"
-                                style={{ fontWeight: 'bold', color: 'red' }}>
-                                {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
-                                <br />
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                </Grid>
-              </div>
-            )}
-          </div>
-        ) : null}
+                                          <span
+                                            style={{
+                                              color: 'red',
+                                              marginLeft: 15,
+                                            }}>
+                                            {formatCurrency(row.price)}
+                                          </span>
+                                        </span>
+                                      ) : (
+                                        <span
+                                          style={{
+                                            color: 'red',
+                                            marginLeft: 15,
+                                          }}>
+                                          {formatCurrency(row.productPrice)}
+                                        </span>
+                                      )}
+                                      <br />
+                                      Size: {row.size}
+                                      <br />x{row.quantity}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                      <Box
+                                        width={'65px'}
+                                        display="flex"
+                                        alignItems="center"
+                                        sx={{ border: '1px solid gray', borderRadius: '20px' }}
+                                        p={'3px'}>
+                                        <IconButton
+                                          sx={{ p: 0 }}
+                                          size="small"
+                                          onClick={() => handleDecrementQuantity(row, index)}
+                                          disabled={
+                                            (billDetail &&
+                                              billDetail.status !== 6 &&
+                                              billDetail.status > 2) ||
+                                            billDetail.status === 0
+                                          }>
+                                          <RemoveIcon fontSize="1px" />
+                                        </IconButton>
+                                        <TextField
+                                          value={row.quantity}
+                                          inputProps={{ min: 1 }}
+                                          size="small"
+                                          sx={{
+                                            width: '30px',
+                                            '& input': { p: 0, textAlign: 'center' },
+                                            '& fieldset': {
+                                              border: 'none',
+                                            },
+                                          }}
+                                          onChange={(e) =>
+                                            handleTextFieldQuantityChange(
+                                              row,
+                                              index,
+                                              e.target.value,
+                                            )
+                                          }
+                                          onFocus={(e) => handleTextFieldQuanityFocus(e, index)}
+                                          disabled={
+                                            (billDetail &&
+                                              billDetail.status !== 6 &&
+                                              billDetail.status > 2) ||
+                                            billDetail.status === 0
+                                          }
+                                        />
 
+                                        <IconButton
+                                          sx={{ p: 0 }}
+                                          size="small"
+                                          onClick={() => handleIncrementQuantity(row, index)}
+                                          disabled={
+                                            (billDetail &&
+                                              billDetail.status !== 6 &&
+                                              billDetail.status > 2) ||
+                                            billDetail.status === 0
+                                          }>
+                                          <AddIcon fontSize="1px" />
+                                        </IconButton>
+                                      </Box>
+                                    </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      style={{ fontWeight: 'bold', color: 'red' }}>
+                                      {row.price !== null
+                                        ? formatCurrency(row.price * row.quantity)
+                                        : 0}
+                                      <br />
+                                    </TableCell>
+                                    <TableCell>
+                                      {billDetail &&
+                                        (billDetail.status === 6 || billDetail.status < 3) && (
+                                          <Tooltip title="Xoá sản phẩm">
+                                            <IconButton
+                                              onClick={() =>
+                                                handleDeleteSPConfirmation(row, billDetail.id)
+                                              }>
+                                              <CiCircleRemove />
+                                            </IconButton>
+                                          </Tooltip>
+                                        )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </Grid>
+                      </Grid>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
         {/* list hoàn trả */}
-        {listBillDetailUnactive.length > 0 ? (
-          <div>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-start"
-              spacing={2}>
-              <h3>Hoàn trả</h3>
-            </Stack>
-            <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
-            {listBillDetailUnactive.length === 0 ? (
-              <div>Loading BillDetail...</div>
-            ) : (
-              <div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TableContainer
-                      sx={{ maxHeight: 300, marginBottom: 5 }}
-                      className="table-container-custom-scrollbar">
-                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableBody>
-                          {listBillDetailUnactive.map((row, index) => (
-                            <TableRow key={'billDetail' + row.id}>
-                              <TableCell align="center">
-                                <img src={row.productImg} alt="" width={'100px'} />
-                              </TableCell>
-                              <TableCell>
-                                {row.productName} <br></br>
-                                {row.price !== row.productPrice ? (
-                                  <span>
-                                    <del
-                                      style={{
-                                        color: 'gray',
-                                        textDecorationColor: 'gray',
-                                        textDecorationLine: 'line-through',
-                                      }}>
-                                      {formatCurrency(row.productPrice)}
-                                    </del>
+        <div>
+          {billDetail && billDetail.status > 3 && billDetail.status !== 6 && (
+            <div>
+              {listBillDetailUnactive.length > 0 ? (
+                <div>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    spacing={2}>
+                    <h3>Hoàn trả</h3>
+                  </Stack>
+                  <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
+                  {listBillDetailUnactive.length === 0 ? (
+                    <div>Loading BillDetail...</div>
+                  ) : (
+                    <div>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <TableContainer
+                            sx={{ maxHeight: 300, marginBottom: 5 }}
+                            className="table-container-custom-scrollbar">
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                              <TableBody>
+                                {listBillDetailUnactive.map((row, index) => (
+                                  <TableRow key={'billDetail' + row.id}>
+                                    <TableCell align="center">
+                                      <img src={row.productImg} alt="" width={'100px'} />
+                                    </TableCell>
+                                    <TableCell>
+                                      {row.productName} <br></br>
+                                      {row.price !== row.productPrice ? (
+                                        <span>
+                                          <del
+                                            style={{
+                                              color: 'gray',
+                                              textDecorationColor: 'gray',
+                                              textDecorationLine: 'line-through',
+                                            }}>
+                                            {formatCurrency(row.productPrice)}
+                                          </del>
 
-                                    <span
-                                      style={{
-                                        color: 'red',
-                                        marginLeft: 15,
-                                      }}>
-                                      {formatCurrency(row.price)}
-                                    </span>
-                                  </span>
-                                ) : (
-                                  <span
-                                    style={{
-                                      color: 'red',
-                                      marginLeft: 15,
-                                    }}>
-                                    {formatCurrency(row.productPrice)}
-                                    {formatCurrency(row.price)}
-                                  </span>
-                                )}
-                                <br />
-                                Size: {row.size}
-                                <br />x{row.quantity}
-                              </TableCell>
-                              <TableCell align="center">
-                                <Box
-                                  width={'65px'}
-                                  display="flex"
-                                  alignItems="center"
-                                  sx={{ border: '1px solid gray', borderRadius: '20px' }}
-                                  p={'3px'}>
-                                  <IconButton
-                                    sx={{ p: 0 }}
-                                    size="small"
-                                    onClick={() => handleDecrementQuantity(row, index)}>
-                                    <RemoveIcon fontSize="1px" />
-                                  </IconButton>
-                                  <TextField
-                                    value={row.quantity}
-                                    inputProps={{ min: 1 }}
-                                    size="small"
-                                    sx={{
-                                      width: '30px ',
-                                      '& input': { p: 0, textAlign: 'center' },
-                                      '& fieldset': {
-                                        border: 'none',
-                                      },
-                                    }}
-                                    onChange={(e) =>
-                                      handleTextFieldQuantityChange(index, e.target.value)
-                                    }
-                                    onFocus={(e) => handleTextFieldQuanityFocus(e, index)}
-                                  />
+                                          <span
+                                            style={{
+                                              color: 'red',
+                                              marginLeft: 15,
+                                            }}>
+                                            {formatCurrency(row.price)}
+                                          </span>
+                                        </span>
+                                      ) : (
+                                        <span
+                                          style={{
+                                            color: 'red',
+                                            marginLeft: 15,
+                                          }}>
+                                          {formatCurrency(row.productPrice)}
+                                          {formatCurrency(row.price)}
+                                        </span>
+                                      )}
+                                      <br />
+                                      Size: {row.size}
+                                      <br />x{row.quantity}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                      <Box
+                                        width={'65px'}
+                                        display="flex"
+                                        alignItems="center"
+                                        sx={{ border: '1px solid gray', borderRadius: '20px' }}
+                                        p={'3px'}>
+                                        <IconButton
+                                          sx={{ p: 0 }}
+                                          size="small"
+                                          onClick={() => handleDecrementQuantity(row, index)}>
+                                          <RemoveIcon fontSize="1px" />
+                                        </IconButton>
+                                        <TextField
+                                          value={row.quantity}
+                                          inputProps={{ min: 1 }}
+                                          size="small"
+                                          sx={{
+                                            width: '30px ',
+                                            '& input': { p: 0, textAlign: 'center' },
+                                            '& fieldset': {
+                                              border: 'none',
+                                            },
+                                          }}
+                                          onChange={(e) =>
+                                            handleTextFieldQuantityChange(index, e.target.value)
+                                          }
+                                          onFocus={(e) => handleTextFieldQuanityFocus(e, index)}
+                                        />
 
-                                  <IconButton
-                                    sx={{ p: 0 }}
-                                    size="small"
-                                    onClick={() => handleIncrementQuantity(row, index)}>
-                                    <AddIcon fontSize="1px" />
-                                  </IconButton>
-                                </Box>
-                              </TableCell>
-                              <TableCell
-                                align="center"
-                                style={{ fontWeight: 'bold', color: 'red' }}>
-                                {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
-                                <br />
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                </Grid>
-              </div>
-            )}
-          </div>
-        ) : null}
+                                        <IconButton
+                                          sx={{ p: 0 }}
+                                          size="small"
+                                          onClick={() => handleIncrementQuantity(row, index)}>
+                                          <AddIcon fontSize="1px" />
+                                        </IconButton>
+                                      </Box>
+                                    </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      style={{ fontWeight: 'bold', color: 'red' }}>
+                                      {row.price !== null
+                                        ? formatCurrency(row.price * row.quantity)
+                                        : 0}
+                                      <br />
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </Grid>
+                      </Grid>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
 
-        <Stack sx={{ marginLeft: 'auto', width: 300, paddingRight: 5 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-            Tổng tiền hàng:
-            <span style={{ fontWeight: 'bold' }}>{formatCurrency(totalProductsCost)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span>Giảm giá:</span>
-            <span style={{ fontWeight: 'bold' }}>
-              {billDetail && billDetail.moneyReduced
-                ? formatCurrency(billDetail.moneyReduced)
-                : formatCurrency(0)}
-            </span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span>Phí vận chuyển:</span>
-            <span style={{ fontWeight: 'bold' }}>
-              {billDetail && billDetail.moneyReduced
-                ? formatCurrency(billDetail.moneyShip)
-                : formatCurrency(0)}
-            </span>
-          </div>
-          <Divider style={{ backgroundColor: 'black', height: '2px' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span style={{ fontWeight: 'bold' }}>Tổng tiền:</span>
-            <span style={{ fontWeight: 'bold', color: 'red' }}>{moneyAfter}</span>
-          </div>
-        </Stack>
+        <div>
+          <Stack sx={{ marginLeft: 'auto', width: 300, paddingRight: 5 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              Tổng tiền hàng:
+              <span style={{ fontWeight: 'bold' }}>{formatCurrency(totalProductsCost)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <span>Giảm giá:</span>
+              <span style={{ fontWeight: 'bold' }}>
+                {billDetail && billDetail.moneyReduced
+                  ? formatCurrency(billDetail.moneyReduced)
+                  : formatCurrency(0)}
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <span>Phí vận chuyển:</span>
+              <span style={{ fontWeight: 'bold' }}>
+                {billDetail && billDetail.moneyShip
+                  ? formatCurrency(billDetail.moneyShip)
+                  : formatCurrency(0)}
+              </span>
+            </div>
+            <Divider style={{ backgroundColor: 'black', height: '2px' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <span style={{ fontWeight: 'bold' }}>Tổng tiền:</span>
+              <span style={{ fontWeight: 'bold', color: 'red' }}>{formatCurrency(moneyAfter)}</span>
+            </div>
+          </Stack>
+        </div>
       </Paper>
     </div>
   )

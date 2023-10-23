@@ -66,4 +66,9 @@ public class HDBillDetailController {
         return new ObjectRespone(hdBillDetailService.changeQuantity(idBillDetail, quantity));
     }
 
+    @PutMapping("/delete")
+    public Boolean delete(@RequestBody HDBillDetailRequest hdBillDetailRequest) {
+        return hdBillDetailService.delete(hdBillDetailRequest);
+    }
+
 }

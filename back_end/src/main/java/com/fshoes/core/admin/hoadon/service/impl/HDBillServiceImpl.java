@@ -233,6 +233,12 @@ public class HDBillServiceImpl implements HDBillService {
             for (BillDetail detail : newBillDetails) {
                 totalMoney = totalMoney.add(detail.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
             }
+
+          if(bill.getMoneyReduced() != null){
+              BigDecimal moneyAfter = totalMoney.subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
+              bill.setMoneyAfter(moneyAfter);
+          }
+
             // Lưu danh sách chi tiết hóa đơn mới vào cơ sở dữ liệu
             hdBillDetailRepository.saveAll(newBillDetails);
 
@@ -247,6 +253,7 @@ public class HDBillServiceImpl implements HDBillService {
             bill.setConfirmationDate(Calendar.getInstance().getTimeInMillis());
             bill.setTotalMoney(totalMoney);
             bill.setConfirmationDate(DateUtil.getCurrentTimeNow());
+
             hdBillRepository.save(bill);
 
             // Lưu lịch sử hóa đơn

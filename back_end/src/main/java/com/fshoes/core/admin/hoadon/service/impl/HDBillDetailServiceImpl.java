@@ -14,7 +14,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class HDBillDetailServiceImpl implements HDBillDetailService {
@@ -31,16 +33,45 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     @Transactional
     @Override
     public BillDetail save(HDBillDetailRequest hdBillDetailRequest) {
+
         Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
         ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getProductDetailId()).get();
-        BillDetail billDetail = BillDetail.builder()
-                .bill(bill)
-                .productDetail(productDetail)
-                .price(hdBillDetailRequest.getPrice())
-                .quantity(hdBillDetailRequest.getQuantity())
-                .status(StatusBillDetail.values()[hdBillDetailRequest.getStatus()])
-                .build();
-        return hdBillDetailRepository.save(billDetail);
+
+        BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
+        if (billDetail == null) {
+
+            BillDetail newBillDetail = BillDetail.builder()
+                    .bill(bill)
+                    .productDetail(productDetail)
+                    .price(hdBillDetailRequest.getPrice())
+                    .quantity(hdBillDetailRequest.getQuantity())
+                    .status(StatusBillDetail.values()[hdBillDetailRequest.getStatus()])
+                    .build();
+
+            if (bill.getStatus() == 2 || bill.getStatus() == 6) {
+                productDetail.setAmount(productDetail.getAmount() - hdBillDetailRequest.getQuantity());
+                productDetailRepository.save(productDetail);
+            }
+
+            return hdBillDetailRepository.save(newBillDetail);
+
+        } else {
+
+            if (bill.getStatus() == 2 || bill.getStatus() == 6) {
+                int differenceQuantity = billDetail.getQuantity() - hdBillDetailRequest.getQuantity();
+                productDetail.setAmount(productDetail.getAmount() + differenceQuantity);
+                productDetailRepository.save(productDetail);
+            }
+
+            billDetail.setQuantity(hdBillDetailRequest.getQuantity());
+            billDetail.setStatus(hdBillDetailRequest.getStatus());
+            billDetail.setPrice(hdBillDetailRequest.getPrice());
+
+
+            return hdBillDetailRepository.save(billDetail);
+
+        }
+
     }
 
     @Override
@@ -81,6 +112,13 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     public BillDetail decrementQuantity(String idBillDetail) {
         BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
         Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
+        if (bill.getMoneyReduced() != null) {
+            BigDecimal moneyAfter = bill.getTotalMoney().subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
+            bill.setMoneyAfter(moneyAfter);
+        } else {
+            BigDecimal moneyAfter = bill.getTotalMoney().add(bill.getMoneyShip());
+            bill.setMoneyAfter(moneyAfter);
+        }
         if (bill.getStatus() == 1) {
             billDetail.setQuantity(billDetail.getQuantity() - 1);
             return hdBillDetailRepository.save(billDetail);
@@ -91,12 +129,20 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             productDetailRepository.save(productDetail);
             return hdBillDetailRepository.save(billDetail);
         }
+
     }
 
     @Override
     public BillDetail incrementQuantity(String idBillDetail) {
         BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
         Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
+        if (bill.getMoneyReduced() != null) {
+            BigDecimal moneyAfter = bill.getTotalMoney().subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
+            bill.setMoneyAfter(moneyAfter);
+        } else {
+            BigDecimal moneyAfter = bill.getTotalMoney().add(bill.getMoneyShip());
+            bill.setMoneyAfter(moneyAfter);
+        }
         if (bill.getStatus() == 1) {
             billDetail.setQuantity(billDetail.getQuantity() + 1);
             return hdBillDetailRepository.save(billDetail);
@@ -114,11 +160,18 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
         ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
         Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
+        if (bill.getMoneyReduced() != null) {
+            BigDecimal moneyAfter = bill.getTotalMoney().subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
+            bill.setMoneyAfter(moneyAfter);
+        } else {
+            BigDecimal moneyAfter = bill.getTotalMoney().add(bill.getMoneyShip());
+            bill.setMoneyAfter(moneyAfter);
+        }
         if (bill.getStatus() == 1) {
             billDetail.setQuantity(quantity);
             return hdBillDetailRepository.save(billDetail);
         } else {
-            if (!(billDetail.getQuantity() == quantity)) {
+            if (!(Objects.equals(billDetail.getQuantity(), quantity))) {
                 if (billDetail.getQuantity() > quantity) {
                     Integer differenceQuantity = billDetail.getQuantity() - quantity;
                     productDetail.setAmount(productDetail.getAmount() + differenceQuantity);
@@ -138,5 +191,26 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         }
         return billDetail;
     }
+
+    @Transactional
+    @Override
+    public Boolean delete(HDBillDetailRequest hdBillDetailRequest) {
+        try {
+            Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
+            if (bill.getStatus() == 1 || bill.getStatus() == 2 || bill.getStatus() == 6) {
+                BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
+                billDetail.setStatus(1);
+                hdBillDetailRepository.save(billDetail);
+                System.out.println(billDetail);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }
