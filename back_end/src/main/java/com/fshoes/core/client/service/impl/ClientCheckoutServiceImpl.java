@@ -16,24 +16,19 @@ import com.fshoes.repository.BillRepository;
 import com.fshoes.util.DateUtil;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.List;
-
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-
-import java.io.FileOutputStream;
 import java.util.List;
 
 @Service
@@ -69,7 +64,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 .append(request.getTinh())
                 .toString());
         newBill.setTotalMoney(new BigDecimal(request.getTotalMoney()));
-        newBill.setMoneyAfter(new BigDecimal(request.getTotalMoney()));
+        newBill.setMoneyAfter(new BigDecimal(request.getTotalMoney()).add(new BigDecimal(request.getShipMoney())));
         Long dateNow = Calendar.getInstance().getTimeInMillis();
         newBill.setCode("HD" + dateNow);
         newBill.setType(1);
@@ -161,7 +156,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         newEmail.setToEmail(toMail);
         newEmail.setSubject("Đơn hàng F-Shoes của bạn " + codeBill);
         newEmail.setTitleEmail("<h1 style=\"text-align: center; color: #333;\">Cảm ơn bạn đã đặt hàng tại F-Shoes</h1>");
-        emailSender.sendEmailWithAttachment(newEmail, generateInvoicePDF(request, codeBill, dateNow), codeBill+".pdf");
+        emailSender.sendEmailWithAttachment(newEmail, generateInvoicePDF(request, codeBill, dateNow), codeBill + ".pdf");
     }
 
     private String formatCurrency(String amount) {

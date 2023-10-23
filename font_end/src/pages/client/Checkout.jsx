@@ -164,15 +164,26 @@ export default function Checkout() {
             }
           }),
         }
-        clientCheckoutApi.datHang(preRequest).then((response) => {
-          if (response.data.success) {
-            arrData.forEach((e) => {
-              dispatch(removeCart(e))
+        if (selectedValue === 0) {
+          clientCheckoutApi.datHang(preRequest).then((response) => {
+            if (response.data.success) {
+              arrData.forEach((e) => {
+                dispatch(removeCart(e))
+              })
+              toast.success('Đặt hàng thành công')
+              navigate('/home')
+            }
+          })
+        } else {
+          clientCheckoutApi
+            .submitOrder(
+              preRequest.totalMoney + preRequest.shipMoney,
+              'Thanh toan don hang F-Shoes',
+            )
+            .then((response) => {
+              console.log(response.data)
             })
-            toast.success('Đặt hàng thành công')
-            navigate('/home')
-          }
-        })
+        }
       }
     })
   }
@@ -315,17 +326,12 @@ export default function Checkout() {
             <h3>Phương thức thanh toán</h3>
             <FormControl sx={{ width: '100%' }}>
               <RadioGroup
+                value={selectedValue}
                 aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="Thanh toán khi nhận hàng."
                 name="radio-buttons-group">
                 <div className="ck-pttt">
                   <label style={{ display: 'flex', alignItems: 'center' }}>
-                    <Radio
-                      size="small"
-                      checked={selectedValue === 0}
-                      onChange={handleRadioChange}
-                      value={0}
-                    />
+                    <Radio size="small" onChange={handleRadioChange} value={0} />
                     <img
                       alt="error"
                       src={require('../../assets/image/vnpay.jpg')}
@@ -340,12 +346,7 @@ export default function Checkout() {
                 </div>
                 <div className="ck-pttt">
                   <label style={{ display: 'flex', alignItems: 'center' }}>
-                    <Radio
-                      size="small"
-                      checked={selectedValue === 1}
-                      onChange={handleRadioChange}
-                      value={1}
-                    />
+                    <Radio size="small" onChange={handleRadioChange} value={1} />
                     <img
                       alt="error"
                       src={require('../../assets/image/thanhtoan.jpg')}
