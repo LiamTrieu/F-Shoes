@@ -4,6 +4,10 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState: JSON.parse(localStorage.getItem('cart')) || [],
   reducers: {
+    setCart(state, action) {
+      localStorage.setItem('cart', JSON.stringify(action.payload))
+      return action.payload
+    },
     addCart(state, action) {
       const index = state.findIndex((e) => e.id === action.payload.id)
       if (index !== -1) {
@@ -32,5 +36,5 @@ const cartSlice = createSlice({
 
 const { actions, reducer } = cartSlice
 export const GetCart = (state) => state.cart
-export const { addCart, removeCart, updateCart } = actions
+export const { addCart, removeCart, updateCart, setCart } = actions
 export default reducer

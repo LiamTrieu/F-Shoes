@@ -21,6 +21,8 @@ import sizeReducer from './slices/sizeSlice'
 import soleReducer from './slices/soleSlice'
 import transactionReducer from './slices/transactionSlice'
 import voucherReducer from './slices/voucherSlice'
+import checkoutReducer from './slices/checkoutSlice'
+import loadingReducer from './slices/loadingSlice'
 
 const store = configureStore({
   reducer: {
@@ -46,6 +48,7 @@ const store = configureStore({
     sole: soleReducer,
     transaction: transactionReducer,
     voucher: voucherReducer,
+    checkout: checkoutReducer,
   },
 })
 export default store

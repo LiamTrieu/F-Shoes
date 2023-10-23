@@ -43,6 +43,7 @@ import ModalAddProduct from './ModalAddProduct'
 import { toast } from 'react-toastify'
 import AdModalDetailProductDetail from './AdModalDetailProductDetail'
 import confirmSatus from '../../../components/comfirmSwal'
+import Carousel from 'react-material-ui-carousel'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 function AirbnbThumbComponent(props) {
@@ -393,12 +394,20 @@ export default function AdProductPageDetail() {
                     <TableRow key={product.id}>
                       <TableCell align="center">{product.stt}</TableCell>
                       <TableCell align="center">
-                        <img
-                          width={'50px'}
-                          height={'50px'}
-                          src={product.image.split(',')[0]}
-                          alt="anh"
-                        />
+                        <Carousel
+                          indicators={false}
+                          sx={{ width: '100%', height: '100%' }}
+                          navButtonsAlwaysInvisible>
+                          {product.image.split(',').map((item, i) => (
+                            <img
+                              width={'50px'}
+                              height={'50px'}
+                              key={'anh' + i}
+                              src={item}
+                              alt="anh"
+                            />
+                          ))}
+                        </Carousel>
                       </TableCell>
                       <TableCell sx={{ maxWidth: '0px' }}>{product?.code}</TableCell>
                       <TableCell>{product?.brand}</TableCell>

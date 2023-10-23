@@ -32,55 +32,44 @@ import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import './Cart.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { GetCart, removeCart, updateCart } from '../../services/slices/cartSlice'
+import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
+import { setCheckout } from '../../services/slices/checkoutSlice'
+import Carousel from 'react-material-ui-carousel'
 
 export default function Cart() {
-  const product = useSelector(GetCart)
-  const [arrData2, setArrData2] = useState([])
-  const [isChk, setisChk] = useState(false)
-  const dispath = useDispatch()
+  const [productSelect, setProductSelect] = useState([])
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    setArrData2(
-      product
-        .filter((product) => product.checked)
-        .map((product) => {
-          return { ...product, gia: product.gia * product.soLuong }
-        }),
-    )
-  }, [isChk, product])
-
-  const onChangeCheck = (id) => {
-    setisChk(true)
-    const updatedProduct = product.map((cart) => {
-      if (cart.id === id) {
-        if (cart.checked) {
-          setisChk(false)
-        }
-        return {
-          ...cart,
-          checked: !cart.checked,
-        }
-      }
-      if (cart.id !== id && !cart.checked) {
-        setisChk(false)
-      }
-      return cart
-    })
-    // setProduct(updatedProduct)
-  }
   const onChangeSL = (cart, num) => {
     const soluong = cart.soLuong + num
+    const preProductSelect = [...productSelect]
+    const index = preProductSelect.findIndex((e) => e.id === cart.id)
     if (soluong <= 0) {
-      dispath(removeCart(cart))
+      dispatch(removeCart(cart))
     } else {
       const updatedProduct = {
         ...cart,
         soLuong: soluong,
       }
-      console.log(updatedProduct)
-      dispath(updateCart(updatedProduct))
+      if (index !== -1) {
+        preProductSelect[index] = updatedProduct
+        setProductSelect(preProductSelect)
+      }
+      dispatch(updateCart(updatedProduct))
     }
+  }
+
+  const product = useSelector(GetCart)
+
+  const onChangeCheck = (cart, checked) => {
+    const preProductSelect = [...productSelect]
+    if (checked) {
+      preProductSelect.push(cart)
+    } else {
+      const index = preProductSelect.findIndex((e) => e.id === cart.id)
+      preProductSelect.splice(index, 1)
+    }
+    setProductSelect(preProductSelect)
   }
 
   const RowDataCustom = ({ cartDatas }) => {
@@ -88,22 +77,31 @@ export default function Cart() {
       return (
         <TableRow sx={{ border: 0 }} key={cart.id}>
           <TableCell sx={{ px: 0 }}>
-            <Checkbox checked={cart.checked} size="small" onClick={() => onChangeCheck(cart.id)} />
+            <Checkbox
+              checked={productSelect.findIndex((e) => e.id === cart.id) >= 0}
+              size="small"
+              onClick={(e) => onChangeCheck(cart, e.target.checked)}
+            />
           </TableCell>
-          <TableCell
-            component={Link}
-            to={`/product/${cart.id}`}
-            style={{ verticalAlign: 'middle' }}
-            sx={{ px: 0 }}>
-            <Box component="span" display={{ lg: 'inline', xs: 'none' }}>
-              <img
-                alt="error"
-                src={cart.image}
-                style={{
-                  maxWidth: '20%',
-                  maxHeight: '20%',
-                  verticalAlign: 'middle',
-                }}></img>
+          <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
+            <Box component={Link} to={`/product/${cart.id}`} display={{ lg: 'inline', xs: 'none' }}>
+              <Carousel
+                indicators={false}
+                sx={{ width: '100%', height: '100%' }}
+                navButtonsAlwaysInvisible>
+                {cart.image.map((item, i) => (
+                  <img
+                    style={{
+                      maxWidth: '20%',
+                      maxHeight: '20%',
+                      verticalAlign: 'middle',
+                    }}
+                    key={'anh' + i}
+                    src={item}
+                    alt="anh"
+                  />
+                ))}
+              </Carousel>
             </Box>
             <span
               style={{
@@ -112,13 +110,13 @@ export default function Cart() {
                 marginLeft: '10px',
                 maxWidth: '80%',
               }}>
-              <p style={{ margin: 0 }}>
-                <b>{cart.name}</b>
-              </p>
-              <p style={{ color: 'red', margin: '5px 0' }}>
-                <b>{cart.gia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</b>
-              </p>
-              <p style={{ margin: 0 }}>size:{cart.size}</p>
+              <p style={{ margin: 0 }}>{cart.name}</p>
+              <b style={{ margin: 0 }}>
+                size:
+                {parseFloat(cart.size) % 1 === 0
+                  ? parseFloat(cart.size).toFixed(0)
+                  : parseFloat(cart.size).toFixed(1)}
+              </b>
             </span>
           </TableCell>
           <TableCell
@@ -147,9 +145,9 @@ export default function Cart() {
               </IconButton>
               <TextField
                 onChange={(e) => {
-                  dispath(updateCart({ ...cart, soLuong: e.target.value }))
+                  dispatch(updateCart({ ...cart, soLuong: e.target.value }))
                 }}
-                defaultValue={cart.soLuong}
+                value={cart.soLuong}
                 inputProps={{ min: 1 }}
                 size="small"
                 sx={{
@@ -182,7 +180,7 @@ export default function Cart() {
             <Button
               onClick={() => {
                 const updatedProduct = product.filter((item) => item.id !== cart.id)
-                // setProduct(updatedProduct)
+                dispatch(setCart(updatedProduct))
               }}
               sx={{
                 minHeight: 0,
@@ -198,12 +196,12 @@ export default function Cart() {
     })
   }
 
-  const chageChk = () => {
-    const tempPrd = product.map((p) => {
-      return { ...p, checked: !isChk }
-    })
-    setisChk(!isChk)
-    // setProduct(tempPrd)
+  function checkAll(checked) {
+    if (checked) {
+      setProductSelect([...product])
+    } else {
+      setProductSelect([])
+    }
   }
 
   return (
@@ -215,7 +213,13 @@ export default function Cart() {
               <TableHead>
                 <TableRow sx={{ display: { md: 'table-row', xs: 'none' } }}>
                   <TableCell sx={{ px: 0 }} width={'1%'}>
-                    <Checkbox checked={isChk} size="small" onClick={() => chageChk()} />
+                    <Checkbox
+                      size="small"
+                      checked={productSelect.length === product.length}
+                      onClick={(e) => {
+                        checkAll(e.target.checked)
+                      }}
+                    />
                   </TableCell>
                   <TableCellCustom
                     className="table-custom"
@@ -225,7 +229,7 @@ export default function Cart() {
                 </TableRow>
                 <TableRow sx={{ display: { md: 'none', xs: 'table-row' } }}>
                   <TableCell sx={{ width: '1%', px: 0 }}>
-                    <Checkbox checked={isChk} size="small" onClick={() => chageChk()} />
+                    <Checkbox size="small" />
                   </TableCell>
                   <TableCellCustom labels={['Sản phẩm', 'Số lượng', '']} isCart={true} />
                 </TableRow>
@@ -239,7 +243,7 @@ export default function Cart() {
           </Button>
         </Grid2>
         <Grid2 lg={4} xs={12}>
-          {arrData2.length !== 0 && (
+          {productSelect.length !== 0 && (
             <Paper component={Container} variant="outlined" sx={{ minHeight: '74vh' }}>
               <Typography variant="h6" sx={{ fontFamily: 'monospace', fontWeight: '900' }}>
                 Cộng giỏ hàng
@@ -247,13 +251,13 @@ export default function Cart() {
               <Table>
                 <OrderCartHeading />
                 <TableBody sx={BoderDotted}>
-                  <OrderCartBody orders={arrData2} />
+                  <OrderCartBody orders={productSelect} />
                 </TableBody>
                 <TableFooter sx={NoBoder}>
                   <OrderCartFotter
                     label="Tạm tính"
-                    value={arrData2
-                      .reduce((tong, e) => tong + e.gia, 0)
+                    value={productSelect
+                      .reduce((tong, e) => tong + e.gia * e.soLuong, 0)
                       .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
                   />
                 </TableFooter>
@@ -262,7 +266,7 @@ export default function Cart() {
                 component={Link}
                 to="/checkout"
                 onClick={() => {
-                  localStorage.setItem('checkout', JSON.stringify(arrData2))
+                  dispatch(setCheckout(productSelect))
                 }}
                 size="sm"
                 variant="contained"

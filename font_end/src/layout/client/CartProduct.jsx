@@ -2,6 +2,7 @@ import React from 'react'
 import { Grid, Card, CardMedia, CardContent, Typography, Box, Button } from '@mui/material'
 import { Link } from 'react-router-dom'
 import './productHome.css'
+import Carousel from 'react-material-ui-carousel'
 
 export default function CartProduct({ products, colmd, collg }) {
   return (
@@ -32,16 +33,23 @@ export default function CartProduct({ products, colmd, collg }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                    <CardMedia
-                      component="img"
-                      alt="Product"
-                      image={product.image[0]}
-                      sx={{
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                        objectFit: 'contain',
-                      }}
-                    />
+                    <Carousel
+                      indicators={false}
+                      sx={{ width: '100%', height: '100%' }}
+                      navButtonsAlwaysInvisible>
+                      {product.image.map((item, i) => (
+                        <CardMedia
+                          component="img"
+                          alt="Product"
+                          image={item}
+                          sx={{
+                            minWidth: '100%',
+                            minHeight: '100%',
+                            objectFit: 'contain',
+                          }}
+                        />
+                      ))}
+                    </Carousel>
                   </Box>
                 </Box>
                 <CardContent>
