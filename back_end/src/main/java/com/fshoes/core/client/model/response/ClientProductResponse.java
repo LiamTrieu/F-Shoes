@@ -10,7 +10,7 @@ public interface ClientProductResponse extends IsIdentified {
 
     String getName();
 
-    String getSize();
+    Float getSize();
 
     String getAmount();
 
@@ -19,6 +19,8 @@ public interface ClientProductResponse extends IsIdentified {
     BigDecimal getPrice();
 
     String getImage();
+
+    String getWeight();
 
     @Value("#{target.id_product}")
     String getIdProduct();
@@ -36,6 +38,7 @@ public interface ClientProductResponse extends IsIdentified {
 
     @Value("#{target.id_brand}")
     String getIdBrand();
+
 
 
 

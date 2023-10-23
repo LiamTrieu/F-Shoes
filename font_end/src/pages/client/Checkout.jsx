@@ -19,17 +19,42 @@ import React, { useEffect, useState } from 'react'
 import LabelTitle from '../../layout/client/checkoutpage/LabelTitle'
 import ghnAPI from '../../api/admin/ghn/ghnApi'
 import './Checkout.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { GetCheckout } from '../../services/slices/checkoutSlice'
+import { useNavigate } from 'react-router-dom'
+import dayjs from 'dayjs'
+import clientCheckoutApi from '../../api/client/clientCheckoutApi'
+import { toast } from 'react-toastify'
+import confirmSatus from '../../components/comfirmSwal'
+import { removeCart } from '../../services/slices/cartSlice'
 
 export default function Checkout() {
+  const [request, setRequest] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    tinh: '',
+    huyen: '',
+    xa: '',
+    address: '',
+    note: '',
+    typePayment: '',
+    idVoucher: '',
+    shipMoney: '',
+    totalMoney: '',
+    duKien: '',
+    billDetail: [],
+  })
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
+  const navigate = useNavigate()
 
-  const [arrData, setArrData] = useState([])
+  const arrData = useSelector(GetCheckout)
   useEffect(() => {
+    if (arrData.length === 0) navigate('/cart')
     loadTinh()
-    setArrData(JSON.parse(localStorage.getItem('checkout')))
-  }, [])
+  }, [navigate, arrData])
 
   const loadTinh = () => {
     ghnAPI.getProvince().then((response) => {
@@ -52,12 +77,15 @@ export default function Checkout() {
   const [selectedTinh, setSelectedTinh] = useState(null)
   const [selectedHuyen, setSelectedHuyen] = useState(null)
   const [selectedXa, setSelectedXa] = useState(null)
-  const [phiShip, setPhiShip] = useState(20000)
   const [giamGia, setGiamGia] = useState(0)
+  const [timeShip, setTimeShip] = useState('')
+  const [phiShip, setPhiShip] = useState('')
+  const dispatch = useDispatch()
 
   const handleTinhChange = (_, newValue) => {
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
+    setRequest({ ...request, tinh: newValue.label })
     if (newValue) {
       loadHuyen(newValue.id)
     } else {
@@ -68,6 +96,7 @@ export default function Checkout() {
   const handleHuyenChange = (_, newValue) => {
     setSelectedHuyen(newValue)
     setSelectedXa(null)
+    setRequest({ ...request, huyen: newValue.label })
     if (newValue) {
       loadXa(newValue.id)
     } else {
@@ -76,12 +105,76 @@ export default function Checkout() {
   }
   const handleXaChange = (_, newValue) => {
     setSelectedXa(newValue)
+    setRequest({ ...request, xa: newValue.label })
+    const filtelService = {
+      shop_id: '3911708',
+      from_district: '3440',
+      to_district: selectedHuyen.id,
+    }
+
+    ghnAPI.getServiceId(filtelService).then((response) => {
+      const serviceId = response.data.body.serviceId
+      const filterTotal = {
+        from_district_id: '3440',
+        service_id: serviceId,
+        to_district_id: selectedHuyen.id,
+        to_ward_code: newValue.id,
+        weight: arrData.reduce((totalWeight, e) => totalWeight + parseInt(e.weight), 0),
+        insurance_value: '10000',
+      }
+
+      ghnAPI.getTotal(filterTotal).then((response) => {
+        setPhiShip(response.data.body.total)
+
+        const filtelTime = {
+          from_district_id: '3440',
+          from_ward_code: '13010',
+          to_district_id: selectedHuyen.id,
+          to_ward_code: newValue.id,
+          service_id: serviceId,
+        }
+        ghnAPI.getime(filtelTime).then((response) => {
+          setTimeShip(response.data.body.leadtime * 1000)
+        })
+      })
+    })
   }
 
-  const [selectedValue, setSelectedValue] = useState(null)
+  const [selectedValue, setSelectedValue] = useState(0)
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value)
+  }
+
+  function finishCheckout() {
+    const title = 'Xác nhận đặt hàng?'
+    confirmSatus(title, '').then((result) => {
+      if (result.isConfirmed) {
+        const preRequest = {
+          ...request,
+          shipMoney: phiShip,
+          duKien: timeShip,
+          totalMoney: arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0),
+          billDetail: arrData.map((product) => {
+            return {
+              nameProduct: product.name + ' - ' + product.size,
+              idProduct: product.id,
+              quantity: product.soLuong,
+              price: product.gia,
+            }
+          }),
+        }
+        clientCheckoutApi.datHang(preRequest).then((response) => {
+          if (response.data.success) {
+            arrData.forEach((e) => {
+              dispatch(removeCart(e))
+            })
+            toast.success('Đặt hàng thành công')
+            navigate('/home')
+          }
+        })
+      }
+    })
   }
 
   return (
@@ -100,19 +193,40 @@ export default function Checkout() {
             <Typography>
               <span className="required"> *</span>Họ và tên
             </Typography>
-            <TextField size="small" fullWidth id="dia-chi" />
+            <TextField
+              onChange={(e) => {
+                setRequest({ ...request, fullName: e.target.value })
+              }}
+              size="small"
+              fullWidth
+              id="fullname"
+            />
             <Grid container mt={0} spacing={3}>
               <Grid item xs={12} lg={7}>
                 <Typography>
                   <span className="required"> *</span>Email
                 </Typography>
-                <TextField size="small" fullWidth id="dia-chi" />
+                <TextField
+                  onChange={(e) => {
+                    setRequest({ ...request, email: e.target.value })
+                  }}
+                  size="small"
+                  fullWidth
+                  id="email"
+                />
               </Grid>
               <Grid item xs={12} lg={5}>
                 <Typography>
                   <span className="required"> *</span>Số điện thoại
                 </Typography>
-                <TextField size="small" fullWidth id="dia-chi" />
+                <TextField
+                  onChange={(e) => {
+                    setRequest({ ...request, phone: e.target.value })
+                  }}
+                  size="small"
+                  fullWidth
+                  id="phone"
+                />
               </Grid>
             </Grid>
             <Grid container mt={0} spacing={3}>
@@ -178,11 +292,25 @@ export default function Checkout() {
               <Typography>
                 <span className="required"> *</span>Địa chỉ cụ thể
               </Typography>
-              <TextField size="small" fullWidth id="dia-chi" />
+              <TextField
+                onChange={(e) => {
+                  setRequest({ ...request, address: e.target.value })
+                }}
+                size="small"
+                fullWidth
+                id="dia-chi"
+              />
             </Grid>
             <Grid sx={{ mt: 2 }}>
               <Typography>Ghi chú</Typography>
-              <TextField size="small" fullWidth id="dia-chi" />
+              <TextField
+                onChange={(e) => {
+                  setRequest({ ...request, note: e.target.value })
+                }}
+                size="small"
+                fullWidth
+                id="dia-chi"
+              />
             </Grid>
             <h3>Phương thức thanh toán</h3>
             <FormControl sx={{ width: '100%' }}>
@@ -194,9 +322,9 @@ export default function Checkout() {
                   <label style={{ display: 'flex', alignItems: 'center' }}>
                     <Radio
                       size="small"
-                      checked={selectedValue === 'Thanh toán khi nhận hàng.'}
+                      checked={selectedValue === 0}
                       onChange={handleRadioChange}
-                      value="Thanh toán khi nhận hàng."
+                      value={0}
                     />
                     <img
                       alt="error"
@@ -214,9 +342,9 @@ export default function Checkout() {
                   <label style={{ display: 'flex', alignItems: 'center' }}>
                     <Radio
                       size="small"
-                      checked={selectedValue === 'Thanh toán ngay.'}
+                      checked={selectedValue === 1}
                       onChange={handleRadioChange}
-                      value="Thanh toán ngay."
+                      value={1}
                     />
                     <img
                       alt="error"
@@ -243,39 +371,33 @@ export default function Checkout() {
                       to={`/product/${cart.id}`}
                       style={{ verticalAlign: 'middle' }}
                       sx={{ px: 0 }}>
-                      <Box component="span" display={{ lg: 'inline', xs: 'none' }}>
-                        <img
-                          alt="error"
-                          src={cart.image}
-                          style={{
-                            maxWidth: '20%',
-                            maxHeight: '20%',
-                            verticalAlign: 'middle',
-                          }}
-                        />
-                      </Box>
                       <span
                         style={{
                           display: 'inline-block',
                           verticalAlign: 'middle',
                           marginLeft: '10px',
                         }}>
-                        <p style={{ margin: 0 }}>
-                          <b>{cart.name}</b>
-                        </p>
-                        <p style={{ margin: 0 }}>size: {cart.size}</p>
-                        <p style={{ margin: 0 }}>SL: {cart.soLuong}</p>
+                        <p style={{ margin: 0 }}>{cart.name}</p>
+                        <b style={{ margin: 0 }}>
+                          size:{' '}
+                          {parseFloat(cart.size) % 1 === 0
+                            ? parseFloat(cart.size).toFixed(0)
+                            : parseFloat(cart.size).toFixed(1)}
+                        </b>
+                        <p style={{ margin: 0, fontWeight: 'bold' }}>Số Lượng: {cart.soLuong}</p>
                       </span>
                     </TableCell>
                     <TableCell
                       sx={{
-                        maxWidth: '100px',
                         display: { md: 'table-cell', xs: 'none' },
                         color: 'red',
                         fontWeight: 'bold',
                         textAlign: 'left',
                       }}>
-                      {cart.gia}&#8363;
+                      {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })}
                     </TableCell>
                   </TableBody>
                 ))}
@@ -308,13 +430,19 @@ export default function Checkout() {
                   </Typography>
                 </Stack>
                 <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                  <Typography>Ngày nhận dự kiến: </Typography>
+                  <Typography color={'red'}>
+                    <b className="ck-phi">{dayjs(timeShip).format('DD-MM-YYYY')}</b>
+                  </Typography>
+                </Stack>
+                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                   <Typography>
                     <b className="ck-tong-tien">Tổng số tiền</b>
                   </Typography>
                   <Typography color={'red'}>
                     <b className="ck-tong-tien">
                       {(
-                        arrData.reduce((tong, e) => tong + e.gia, 0) +
+                        arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0) +
                         phiShip -
                         giamGia
                       ).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
@@ -323,11 +451,14 @@ export default function Checkout() {
                 </Stack>
               </Box>
               <Button
+                onClick={() => {
+                  finishCheckout()
+                }}
                 size="sm"
                 variant="contained"
                 color="success"
                 sx={{ float: 'right', my: 2, mr: 2 }}>
-                <b>thanh toán</b>
+                <b>Đặt hàng</b>
               </Button>
             </Paper>
           </Grid>
