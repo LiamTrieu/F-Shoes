@@ -23,6 +23,8 @@ import clientProductApi from '../../api/client/clientProductApi'
 import { Link, useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { addCart } from '../../services/slices/cartSlice'
+import ReactImageGallery from 'react-image-gallery'
+import 'react-image-gallery/styles/css/image-gallery.css'
 
 export default function DetailProduct() {
   const [soLuong, setSoluong] = useState(1)
@@ -85,18 +87,34 @@ export default function DetailProduct() {
       id: param.id,
       name: product.name,
       gia: product.price,
-      image: product.image[0],
+      weight: product.weight,
+      image: product.image,
       soLuong: soLuong,
       size: sizeSelect,
     }
     dispatch(addCart(newItem))
   }
 
+  function convert(images) {
+    return images.map((image) => {
+      return {
+        original: image,
+        thumbnail: image,
+      }
+    })
+  }
+
   return (
     <Container maxWidth="lg">
       <Grid2 container rowSpacing={1} columnSpacing={3}>
         <Grid2 md={6} textAlign={'center'} width={'100%'}>
-          <Box component={'img'} src={product.image[0]} width={'100%'} alt="error"></Box>
+          <ReactImageGallery
+            showBullets={false}
+            showPlayButton={false}
+            showNav={false}
+            autoPlay={true}
+            items={convert(product.image)}
+          />
         </Grid2>
         <Grid2 md={6} width={'100%'}>
           <Box borderBottom={'1px dotted gray'} py={2}>

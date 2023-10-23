@@ -22,4 +22,5 @@ public class ClientProductController {
     public ObjectRespone getProductBySize(ClientProductDetailRequest request) {
         return new ObjectRespone(clientProductService.getProductBySize(request));
     }
+
 }

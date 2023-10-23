@@ -53,7 +53,6 @@ export function OrderCartHeading() {
 }
 
 export function OrderCartBody({ orders }) {
-  console.log(orders)
   return (
     <Fragment>
       {orders.length !== 0 &&
@@ -65,7 +64,10 @@ export function OrderCartBody({ orders }) {
               </TableCell>
               <TableCell align="right">
                 <b style={{ color: 'red' }}>
-                  {order.gia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                  {(order.gia * order.soLuong).toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                  })}
                 </b>
               </TableCell>
             </TableRow>

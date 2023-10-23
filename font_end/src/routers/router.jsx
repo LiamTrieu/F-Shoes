@@ -1,5 +1,6 @@
 import { Navigate, Outlet, createBrowserRouter } from 'react-router-dom'
 import adBillRoute from './adminroute/adbillroute'
+import ScrollToTop from '../components/ScrollToTop'
 import adCustomerRoute from './adminroute/adcustomerroute'
 import adProductRoute from './adminroute/adproductroute'
 import adPromotionRoute from './adminroute/adpromotionroute'
@@ -7,7 +8,6 @@ import adStaffRoute from './adminroute/adstaffroute'
 import adVoucherRoute from './adminroute/advoucherroute'
 import clientRoute from './clientroute'
 import AppBarAdmin from '../layout/AppBarAdmin'
-import Toast from '../components/Toast'
 import adSizeRoute from './adminroute/adsizeroute'
 import adSoleRoute from './adminroute/adsoleroute'
 import adColorRoute from './adminroute/adcolorroute'
@@ -25,6 +25,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <HeadingClient />
+        <ScrollToTop />
         <Outlet />
         <FooterClient />
       </>
@@ -35,7 +36,6 @@ const router = createBrowserRouter([
     path: '/admin',
     element: (
       <AppBarAdmin>
-        <Toast />
         <Outlet />
       </AppBarAdmin>
     ),
