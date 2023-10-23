@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -23,10 +24,10 @@ public class EmailSender {
     @Async
     public void sendEmail(Email email) {
         String htmlBody = MailConstant.BODY_STARTS +
-                email.getTitleEmail() +
-                MailConstant.BODY_BODY +
-                email.getBody() +
-                MailConstant.BODY_END;
+                          email.getTitleEmail() +
+                          MailConstant.BODY_BODY +
+                          email.getBody() +
+                          MailConstant.BODY_END;
         sendSimpleMail(email.getToEmail(), htmlBody, email.getSubject());
     }
 
@@ -43,6 +44,36 @@ public class EmailSender {
             javaMailSender.send(mimeMessage);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Async
+    public void sendEmailWithAttachment(Email email, FileSystemResource file, String attachmentName) {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
+            ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
+            mimeMessageHelper.setFrom(sender);
+            mimeMessageHelper.setBcc(email.getToEmail());
+            mimeMessageHelper.setText(email.getBody(), true);
+            mimeMessageHelper.setSubject(email.getSubject());
+
+            mimeMessageHelper.addAttachment(attachmentName, file);
+
+            // Add inline logo
+            mimeMessageHelper.addInline("logoImage", resource);
+
+            javaMailSender.send(mimeMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (file != null) {
+                try {
+                    file.getFile().delete(); // Xóa tệp sau khi gửi email
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

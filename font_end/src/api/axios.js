@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { setLoading } from '../services/slices/loadingSlice'
+import store from '../services/store'
 
 const axiosClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -10,7 +11,7 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use(
   (config) => {
-    setLoading(true)
+    store.dispatch(setLoading(true))
     return config
   },
   (error) => {
@@ -20,11 +21,11 @@ axiosClient.interceptors.request.use(
 
 axiosClient.interceptors.response.use(
   (response) => {
-    setLoading(false)
+    store.dispatch(setLoading(false))
     return response
   },
   (error) => {
-    setLoading(false)
+    store.dispatch(setLoading(false))
     return Promise.reject(error)
   },
 )
