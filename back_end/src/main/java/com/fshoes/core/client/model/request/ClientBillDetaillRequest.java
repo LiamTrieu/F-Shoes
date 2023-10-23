@@ -8,6 +8,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ClientBillDetaillRequest {
+    private String nameProduct;
     private String idProduct;
     private Integer quantity;
     private String price;

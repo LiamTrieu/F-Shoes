@@ -154,9 +154,10 @@ export default function Checkout() {
           ...request,
           shipMoney: phiShip,
           duKien: timeShip,
-          totalMoney: arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0) + phiShip - giamGia,
+          totalMoney: arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0),
           billDetail: arrData.map((product) => {
             return {
+              nameProduct: product.name + ' - ' + product.size,
               idProduct: product.id,
               quantity: product.soLuong,
               price: product.gia,
