@@ -75,6 +75,7 @@ public interface AdVoucherRepository extends VoucherRepository {
             LEFT JOIN customer_voucher cv ON v.id = cv.id_voucher
             WHERE
             v.status = 1
+            AND v.quantity > 0
             AND (:#{#adCallVoucherOfSell.condition} IS NULL OR v.minimum_amount <= :#{#adCallVoucherOfSell.condition})
             AND 
             ((cv.id_account IS NULL AND v.type = 0)

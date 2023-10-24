@@ -27,6 +27,7 @@ import clientCheckoutApi from '../../api/client/clientCheckoutApi'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../components/comfirmSwal'
 import { removeCart } from '../../services/slices/cartSlice'
+import ModalVoucher from './ModalVoucher'
 
 export default function Checkout() {
   const [request, setRequest] = useState({
@@ -48,6 +49,11 @@ export default function Checkout() {
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
+
+  const [openModalVoucher, setOpenModalVoucher] = useState(false)
+
+  const [voucher, setVoucher] = useState({ id: '', value: 0, name: '' })
+
   const navigate = useNavigate()
 
   const arrData = useSelector(GetCheckout)
@@ -406,12 +412,24 @@ export default function Checkout() {
               <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
                 <TextField
                   sx={{ flex: 1, minWidth: '100px', width: '80%' }}
-                  label="Mã giảm giá"
+                  value={voucher.name === '' ? 'Chọn mã giảm giá' : voucher.name}
                   size="small"
+                  disabled
                 />
-                <Button sx={{ ml: 2, mr: 1, width: 'auto' }} variant="outlined">
+                <Button
+                  sx={{ ml: 2, mr: 1, width: 'auto' }}
+                  variant="outlined"
+                  onClick={() => setOpenModalVoucher(true)}>
                   <b>Chọn mã</b>
                 </Button>
+                <ModalVoucher
+                  open={openModalVoucher}
+                  setOpen={setOpenModalVoucher}
+                  setVoucher={setVoucher}
+                  voucher={voucher}
+                  arrData={arrData}
+                  setGiamGia={setGiamGia}
+                />
               </Grid>
               <Box sx={{ m: 1, ml: 2, mr: 2 }}>
                 <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>

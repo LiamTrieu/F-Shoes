@@ -108,161 +108,134 @@ export default function Product() {
             }}
           />
         </ListItem>
-        {/* --------------------------------------------- CATEGORY --------------------------------------------- */}
-        <ListItemButton onClick={() => setOpenCategory(!openCategory)} className="list-item-button">
-          <BiCategoryAlt className="icon-portfolio" />
-          <ListItemText primary="Loại giày" />
-          {openCategory ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openCategory} timeout="auto" unmountOnExit className="collapse-portfolio">
-          <List component="div" disablePadding>
-            {listFake.map((lf) => (
-              <ListItemButton key={lf.id}>
-                <Checkbox key={lf.id} />
-                <ListItemText primary={lf.title} />
-              </ListItemButton>
-            ))}
-          </List>
-        </Collapse>
-        {/* --------------------------------------------- BRAND --------------------------------------------- */}
-        <ListItemButton onClick={() => setOpenBrand(!openBrand)} className="list-item-button">
-          <GiBrandyBottle className="icon-portfolio" />
-          <ListItemText primary="Thương hiệu" />
-          {openBrand ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openBrand} timeout="auto" unmountOnExit className="collapse-portfolio">
-          <List component="div" disablePadding>
-            {listFake.map((lf) => (
-              <ListItemButton key={lf.id}>
-                <Checkbox key={lf.id} />
-                <ListItemText primary={lf.title} />
-              </ListItemButton>
-            ))}
-          </List>
-        </Collapse>
-        {/* --------------------------------------------- MATERIAL --------------------------------------------- */}
-        <ListItemButton onClick={() => setOpenMaterial(!openMaterial)} className="list-item-button">
-          <GiMaterialsScience className="icon-portfolio" />
-          <ListItemText primary="Chất liệu" />
-          {openMaterial ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openMaterial} timeout="auto" unmountOnExit className="collapse-portfolio">
-          <List component="div" disablePadding>
-            {listFake.map((lf) => (
-              <ListItemButton key={lf.id}>
-                <Checkbox key={lf.id} />
-                <ListItemText primary={lf.title} />
-              </ListItemButton>
-            ))}
-          </List>
-        </Collapse>
-        {/* --------------------------------------------- SOLE --------------------------------------------- */}
-        <ListItemButton onClick={() => setOpenSole(!openSole)} className="list-item-button">
-          <GiBootPrints className="icon-portfolio" />
-          <ListItemText primary="Đế giày" />
-          {openSole ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openSole} timeout="auto" unmountOnExit className="collapse-portfolio">
-          <List component="div" disablePadding>
-            {listFake.map((lf) => (
-              <ListItemButton key={lf.id}>
-                <Checkbox key={lf.id} />
-                <ListItemText primary={lf.title} />
-              </ListItemButton>
-            ))}
-          </List>
-        </Collapse>
-        {/* --------------------------------------------- SIZE --------------------------------------------- */}
-        <ListItemButton onClick={() => setOpenSize(!openSize)} className="list-item-button">
-          <BiFontSize className="icon-portfolio" />
-          <ListItemText primary="Kích cỡ" />
-          {openSize ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openSize} timeout="auto" unmountOnExit className="collapse-portfolio">
-          <List component="div" disablePadding>
-            {listFake.map((lf) => (
-              <ListItemButton key={lf.id}>
-                <Checkbox key={lf.id} />
-                <ListItemText primary={lf.title} />
-              </ListItemButton>
-            ))}
-          </List>
-        </Collapse>
-        {/* --------------------------------------------- COLOR --------------------------------------------- */}
-        <ListItemButton onClick={() => setOpenColor(!openColor)} className="list-item-button">
-          <BiSolidColorFill className="icon-portfolio" />
-          <ListItemText primary="Màu sắc" />
-          {openColor ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openColor} timeout="auto" unmountOnExit className="collapse-portfolio">
-          <List component="div" disablePadding>
-            <Grid container>
+        <div className="menubar-portfolio">
+          {/* --------------------------------------------- CATEGORY --------------------------------------------- */}
+          <ListItemButton
+            onClick={() => setOpenCategory(!openCategory)}
+            className="list-item-button">
+            <BiCategoryAlt className="icon-portfolio" />
+            <ListItemText primary="Loại giày" />
+            {openCategory ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openCategory} timeout="auto" unmountOnExit className="collapse-portfolio">
+            <List component="div" disablePadding>
               {listFake.map((lf) => (
-                <Grid items xs={4}>
-                  <ListItemButton>
-                    <FormControl>
-                      <RadioGroup>
-                        <FormControlLabel
-                          value={lf.id}
-                          control={<Radio style={{ color: `${lf.code}` }} />}
-                        />
-
-                        {lf.title}
-                      </RadioGroup>
-                    </FormControl>
-                  </ListItemButton>
-                </Grid>
+                <ListItemButton key={lf.id}>
+                  <Checkbox key={lf.id} />
+                  <ListItemText primary={lf.title} />
+                </ListItemButton>
               ))}
-            </Grid>
-          </List>
-        </Collapse>
-        {/* --------------------------------------------- PRICE --------------------------------------------- */}
-        <ListItemButton className="list-item-button">
-          <GrMoney className="icon-portfolio" />
-          <ListItemText primary="Giá tiền" />
-        </ListItemButton>
-        <ListItem>
-          <Slider
-            value={value1}
-            onChange={handleChange1}
-            valueLabelDisplay="auto"
-            getAriaValueText={valuetext}
-            className="slider-portfolio"
-          />
-        </ListItem>
-        {/* <ListItem>
-          <ListItemText
-            primary="Danh mục"
-            primaryTypographyProps={{
-              fontSize: 24,
-              fontWeight: '700',
-              fontFamily: 'monospace',
-            }}
-          />
-        </ListItem>
-        {['Tất cả sản phẩm', 'Giày nam', 'Giày nữ'].map((text, index) => (
-          <ListItem
-            disablePadding
-            key={index}
-            onClick={() => {
-              setOpenDrawer(false)
-            }}>
-            <ListItemButton sx={{ paddingLeft: 1 }}>
-              <ListItemText
-                primaryTypographyProps={{
-                  fontWeight: '500',
-                }}
-                primary={text}
-                sx={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  maxWidth: '200px', // Giới hạn độ dài tại đây
-                }}
-              />
-            </ListItemButton>
+            </List>
+          </Collapse>
+          {/* --------------------------------------------- BRAND --------------------------------------------- */}
+          <ListItemButton onClick={() => setOpenBrand(!openBrand)} className="list-item-button">
+            <GiBrandyBottle className="icon-portfolio" />
+            <ListItemText primary="Thương hiệu" />
+            {openBrand ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openBrand} timeout="auto" unmountOnExit className="collapse-portfolio">
+            <List component="div" disablePadding>
+              {listFake.map((lf) => (
+                <ListItemButton key={lf.id}>
+                  <Checkbox key={lf.id} />
+                  <ListItemText primary={lf.title} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Collapse>
+          {/* --------------------------------------------- MATERIAL --------------------------------------------- */}
+          <ListItemButton
+            onClick={() => setOpenMaterial(!openMaterial)}
+            className="list-item-button">
+            <GiMaterialsScience className="icon-portfolio" />
+            <ListItemText primary="Chất liệu" />
+            {openMaterial ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openMaterial} timeout="auto" unmountOnExit className="collapse-portfolio">
+            <List component="div" disablePadding>
+              {listFake.map((lf) => (
+                <ListItemButton key={lf.id}>
+                  <Checkbox key={lf.id} />
+                  <ListItemText primary={lf.title} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Collapse>
+          {/* --------------------------------------------- SOLE --------------------------------------------- */}
+          <ListItemButton onClick={() => setOpenSole(!openSole)} className="list-item-button">
+            <GiBootPrints className="icon-portfolio" />
+            <ListItemText primary="Đế giày" />
+            {openSole ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openSole} timeout="auto" unmountOnExit className="collapse-portfolio">
+            <List component="div" disablePadding>
+              {listFake.map((lf) => (
+                <ListItemButton key={lf.id}>
+                  <Checkbox key={lf.id} />
+                  <ListItemText primary={lf.title} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Collapse>
+          {/* --------------------------------------------- SIZE --------------------------------------------- */}
+          <ListItemButton onClick={() => setOpenSize(!openSize)} className="list-item-button">
+            <BiFontSize className="icon-portfolio" />
+            <ListItemText primary="Kích cỡ" />
+            {openSize ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openSize} timeout="auto" unmountOnExit className="collapse-portfolio">
+            <List component="div" disablePadding>
+              {listFake.map((lf) => (
+                <ListItemButton key={lf.id}>
+                  <Checkbox key={lf.id} />
+                  <ListItemText primary={lf.title} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Collapse>
+          {/* --------------------------------------------- COLOR --------------------------------------------- */}
+          <ListItemButton onClick={() => setOpenColor(!openColor)} className="list-item-button">
+            <BiSolidColorFill className="icon-portfolio" />
+            <ListItemText primary="Màu sắc" />
+            {openColor ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openColor} timeout="auto" unmountOnExit className="collapse-portfolio">
+            <List component="div" disablePadding>
+              <Grid container>
+                {listFake.map((lf) => (
+                  <Grid items xs={4}>
+                    <ListItemButton>
+                      <FormControl>
+                        <RadioGroup>
+                          <FormControlLabel
+                            value={lf.id}
+                            control={<Radio style={{ color: `${lf.code}` }} />}
+                          />
+
+                          {lf.title}
+                        </RadioGroup>
+                      </FormControl>
+                    </ListItemButton>
+                  </Grid>
+                ))}
+              </Grid>
+            </List>
+          </Collapse>
+          {/* --------------------------------------------- PRICE --------------------------------------------- */}
+          <ListItemButton className="list-item-button">
+            <GrMoney className="icon-portfolio" />
+            <ListItemText primary="Giá tiền" />
+          </ListItemButton>
+          <ListItem>
+            <Slider
+              value={value1}
+              onChange={handleChange1}
+              valueLabelDisplay="auto"
+              getAriaValueText={valuetext}
+              className="slider-portfolio"
+            />
           </ListItem>
-        ))} */}
+        </div>
       </List>
     )
   }
@@ -293,6 +266,7 @@ export default function Product() {
             <MenuBar />
           </Drawer>
         </Grid>
+
         <Grid item xs={9.5}>
           <Box sx={{ width: '100%' }}>
             <Stack className="stack-filter-portfolio" direction="row">
@@ -320,8 +294,10 @@ export default function Product() {
                 </Select>
               </Typography>
             </Stack>
-            {/* <LabelTitle text="Tất cả sản phẩm" /> */}
-            <CartProduct products={products} colmd={4} collg={3} />
+            <div className="cart-product-portfolio">
+              {/* <LabelTitle text="Tất cả sản phẩm" /> */}
+              <CartProduct products={products} colmd={4} collg={3} />
+            </div>
             <Stack className="stack-product-portfolio" direction="row">
               <Typography className="stack-typography-portfolio" component="span" variant={'body2'}>
                 <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
