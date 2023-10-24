@@ -13,3 +13,12 @@
   color: red;
   font-weight: 700;
 }
+.discount-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #66cc00;
+  color: white;
+  padding: 6px 5px;
+  border-radius: 0 0 0 10px;
+}

@@ -5,9 +5,16 @@ import './productHome.css'
 import Carousel from 'react-material-ui-carousel'
 
 export default function CartProduct({ products, colmd, collg }) {
+  const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
+    const discountAmount = (discountPercentage / 100) * originalPrice
+    const discountedPrice = originalPrice - discountAmount
+    return discountedPrice
+  }
   return (
     <Grid container rowSpacing={1} columnSpacing={3}>
       {products.map((product, i) => {
+        const hasPromotion = product.promotion !== null
+        const discountValue = product.value || 0
         return (
           <Grid key={i} item xs={6} sm={6} md={colmd} lg={collg} width={'100%'}>
             <Button
@@ -50,6 +57,11 @@ export default function CartProduct({ products, colmd, collg }) {
                         />
                       ))}
                     </Carousel>
+                    {hasPromotion && (
+                      <div className="discount-badge">{`${
+                        discountValue ? discountValue : ''
+                      }%`}</div>
+                    )}
                   </Box>
                 </Box>
                 <CardContent>
@@ -57,8 +69,33 @@ export default function CartProduct({ products, colmd, collg }) {
                     {product.title}
                   </Typography>
                   <Typography gutterBottom component="div">
-                    <span className="price"> {product.price} </span>
-                    <span className="price-discount"> {product.priceAfter}đ</span>
+                    <span>
+                      {' '}
+                      {product.promotion ? (
+                        <div>
+                          <div className="promotion-price">{`${product.priceBefort.toLocaleString(
+                            'it-IT',
+                            { style: 'currency', currency: 'VND' },
+                          )} `}</div>{' '}
+                          <div>
+                            <span style={{ color: 'red', fontWeight: 'bold' }}>
+                              {`${calculateDiscountedPrice(
+                                product.priceBefort,
+                                product.value,
+                              ).toLocaleString('it-IT', {
+                                style: 'currency',
+                                currency: 'VND',
+                              })} `}
+                            </span>{' '}
+                          </div>
+                        </div>
+                      ) : (
+                        <span>{`${product.priceBefort.toLocaleString('it-IT', {
+                          style: 'currency',
+                          currency: 'VND',
+                        })} `}</span>
+                      )}
+                    </span>
                   </Typography>
                 </CardContent>
               </Card>

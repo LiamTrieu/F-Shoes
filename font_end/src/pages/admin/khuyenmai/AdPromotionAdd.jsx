@@ -123,8 +123,6 @@ export default function AdPromotionAdd() {
       setGetProductDetailByProduct([])
       setTotalPagesDetailByProduct(0)
     }
-
-    console.log('ID của sản phẩm đã chọn:', selectedProductIds)
   }
   useEffect(() => {
     getProductDetailById(filterDetailByProduct, selectedProductIds)

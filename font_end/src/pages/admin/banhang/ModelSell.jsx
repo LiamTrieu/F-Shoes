@@ -7,8 +7,6 @@ import {
   MenuItem,
   Modal,
   Select,
-  Slider,
-  SliderThumb,
   Stack,
   Table,
   TableBody,
@@ -16,7 +14,6 @@ import {
   TextField,
   Toolbar,
   Typography,
-  styled,
 } from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
@@ -31,9 +28,7 @@ import colorApi from '../../../api/admin/sanpham/colorApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
-import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import PropTypes from 'prop-types'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -72,16 +67,12 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     size: null,
     nameProductDetail: '',
   })
-  const { id } = useParams()
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
   const [listColor, setListColor] = useState([])
   const [listSole, setListSole] = useState([])
   const [listCategory, setListCategory] = useState([])
   const [listSize, setListSize] = useState([])
-  const [priceMax, setPriceMax] = useState(999999999)
-  const [getListSizeByProduct, setGetListSizeByProduct] = useState([])
-  const [getListColorByProduct, setGetListColorByProduct] = useState([])
   const [getAmountProduct, setGetAmountProduct] = useState([])
 
   const [addAmount, setAddAmount] = useState(1)
@@ -127,12 +118,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     })
     sizeApi.findAll().then((response) => {
       setListSize(response.data.data)
-    })
-    sellApi.getSize().then((response) => {
-      setGetListSizeByProduct(response.data.data)
-    })
-    sellApi.getColor().then((response) => {
-      setGetListColorByProduct(response.data.data)
     })
   }, [])
 
@@ -181,40 +166,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     })
   }
 
-  function AirbnbThumbComponent(props) {
-    const { children, ...other } = props
-    return <SliderThumb {...other}>{children}</SliderThumb>
-  }
-  const AirbnbSlider = styled(Slider)(() => ({
-    color: '#fc7c27',
-    height: 1,
-    padding: '13px 0',
-    '& .MuiSlider-thumb': {
-      height: 20,
-      width: 20,
-      backgroundColor: '#fff',
-      border: '1px solid currentColor',
-      '&:hover': {
-        boxShadow: '0 0 0 8px rgba(58, 133, 137, 0.16)',
-      },
-      '& .airbnb-bar': {
-        height: 1,
-        width: 1,
-        backgroundColor: '#fc7c27',
-        marginLeft: 1,
-        marginRight: 1,
-      },
-      '& .MuiSlider-valueLabel': {
-        lineHeight: 1.2,
-        fontSize: 12,
-        backgroundColor: '#fc7c27',
-      },
-    },
-  }))
-
-  AirbnbThumbComponent.propTypes = {
-    children: PropTypes.node,
-  }
   return (
     <div className="scrollbar-modal-add">
       <Modal
@@ -233,30 +184,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                 Tìm kiếm sản phẩm
               </Typography>
             </Box>
-            {/* <Box sx={{ width: '250px' }}>
-              <b>0 VND</b>
-              <b style={{ float: 'right' }}>{`${parseInt(listProduct.price).toLocaleString(
-                'it-IT',
-                {
-                  style: 'currency',
-                  currency: 'VND',
-                },
-              )}`}</b>
-              <AirbnbSlider
-                onChangeCommitted={(_, value) => {
-                  setFilter({ ...filter, priceMin: value[0] })
-                  setPriceMax(value[1])
-                }}
-                min={0}
-                max={listProduct.price}
-                valueLabelDisplay="auto"
-                slots={{ thumb: AirbnbThumbComponent }}
-                defaultValue={[filter.priceMin, priceMax]}
-                valueLabelFormat={(value) =>
-                  `${value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}`
-                }
-              />
-            </Box> */}
             <IconButton
               onClick={() => {
                 setOPen(false)

@@ -14,6 +14,7 @@ import java.util.List;
 public interface ClientProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
                 SELECT MAX(pd.id) as id,
+                MAX( pr.id) as promotion ,MAX(pr.value) as value,
                        CONCAT(p.name, ' - ', c.name, ' - ', m.name, ' - ', s.name, ' - ', ca.name, ' - ', b.name) AS name,
                        MAX(pd.price) as price,
                        MAX(pd.weight) as weight,
@@ -41,6 +42,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      material m ON m.id = pd.id_material
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
+                     LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
+                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion
                 WHERE (:id is null or pd.id = :id)
                 GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
@@ -72,4 +75,43 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                  AND pd.id_material = :#{#request.idMaterial}
             """, nativeQuery = true)
     List<ClientProductDetailResponse> getAllSize(ClientProductDetailRequest request);
+
+
+    @Query(value = """
+                SELECT MAX(pd.id) as id,
+                        pr.id as promotion , pr.value,
+                       CONCAT(p.name, ' - ', c.name, ' - ', m.name, ' - ', s.name, ' - ', ca.name, ' - ', b.name) AS name,
+                       MAX(pd.price) as price,
+                       MAX(pd.weight) as weight,
+                       MAX(pd.amount) as amount,
+                       MAX(pd.description) as description,
+                       GROUP_CONCAT(DISTINCT i.url) as image,
+                       pd.id_product,
+                       pd.id_color,
+                       pd.id_material,
+                       pd.id_sole,
+                       pd.id_category,
+                       pd.id_brand
+                FROM product_detail pd
+                         JOIN
+                     product p ON p.id = pd.id_product
+                         JOIN
+                     color c ON c.id = pd.id_color
+                         JOIN
+                     category ca ON ca.id = pd.id_category
+                         JOIN
+                     brand b ON b.id = pd.id_brand
+                         JOIN
+                     sole s ON s.id = pd.id_sole
+                         JOIN
+                     material m ON m.id = pd.id_material
+                         LEFT JOIN
+                     image i ON pd.id = i.id_product_detail
+                        left join product_promotion pp on pp.id_product_detail = pd.id
+                        left join promotion pr on pr.id = pp.id_promotion
+                        
+                WHERE (:id is null or pd.id = :id)
+                GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand, pp.id, pr.id
+            """, nativeQuery = true)
+    List<ClientProductResponse> getProductsPromotion(String id);
 }
