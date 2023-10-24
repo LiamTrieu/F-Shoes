@@ -86,3 +86,12 @@
   height: 25px;
   margin-left: 0.5rem;
 }
+
+.container-portfolio .menubar-portfolio {
+  overflow: auto;
+  overflow-y: auto;
+  scrollbar-width: 0px;
+  -ms-overflow-style: none;
+  padding-left: 10px;
+  max-height: 40rem !important;
+}

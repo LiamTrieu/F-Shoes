@@ -184,8 +184,8 @@ export default function AdVoucherDetail() {
       errors.quantity = 'Số lượng không được để trống'
     } else if (!Number.isInteger(voucherDetail.quantity)) {
       errors.quantity = 'Số lượng chỉ được nhập số nguyên'
-    } else if (voucherDetail.quantity < 0) {
-      errors.quantity = 'Số lượng tối thiểu 0 (vnđ)'
+    } else if (voucherDetail.quantity < 1) {
+      errors.quantity = 'Số lượng tối thiểu 1'
     }
 
     if (voucherDetail.minimumAmount === null) {
