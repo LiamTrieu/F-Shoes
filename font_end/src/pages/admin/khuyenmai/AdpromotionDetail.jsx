@@ -87,7 +87,7 @@ export default function AdPromotionDetail() {
     setSelectAllProduct(event.target.checked)
   }
 
-  const handleRowCheckboxChange1 = (event, ProductId) => {
+  const handleRowCheckboxChange1 = (ProductId) => {
     const selectedIndex = selectedRowsProduct.indexOf(ProductId)
     let newSelected = []
 
@@ -123,9 +123,11 @@ export default function AdPromotionDetail() {
       setTotalPagesDetailByProduct(0)
     }
   }
+
   useEffect(() => {
     getProductDetailById(filterDetailByProduct, selectedProductIds)
-  }, [filterDetailByProduct, selectedProductIds])
+    // handleRowCheckboxChange1(id)
+  }, [filterDetailByProduct, selectedProductIds, id])
 
   const validate = () => {
     const timeStart = dayjs(updatePromotion.timeStart, 'DD/MM/YYYY')
@@ -214,7 +216,6 @@ export default function AdPromotionDetail() {
         timeEnd: formattedEndDate,
         status: convertStatus,
       })
-      console.log(response.data)
     })
   }
   const getLisProduct = (id) => {

@@ -127,8 +127,6 @@ export default function AdPromotionPage() {
 
       setListKhuyenMai(response.data.data)
       setTotalPages(response.data.totalPages)
-
-      console.log(filter)
     })
   }
 
@@ -141,6 +139,7 @@ export default function AdPromotionPage() {
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <TextField
                 sx={{ width: '48%' }}
+                value={filter.name}
                 placeholder="Tìm kiếm theo tên khuyến mại"
                 className="text-field-css"
                 size="small"
@@ -158,9 +157,6 @@ export default function AdPromotionPage() {
                   ),
                 }}
               />
-
-              {/* </Grid> */}
-
               <Button
                 sx={{ borderRadius: '8px' }}
                 color="cam"

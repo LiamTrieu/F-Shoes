@@ -80,11 +80,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [isShowVoucher, setIsShowVoucher] = useState(false)
   const [isShowDiaChi, setIsShowDiaChi] = useState(false)
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false)
-  const [selectAll, setSelectAll] = useState(false)
   const [selectedRows, setSelectedRows] = useState([])
-  const [quantityBillDetail, setQuantityBillDetail] = useState({
-    quantity: 0,
-  })
+
   const [isShowAddDiaChi, setIsShowAddDiaChi] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [initPage, setInitPage] = useState(1)
@@ -146,7 +143,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       ? listProductDetailBill.map((row) => row.productDetail)
       : []
     setSelectedRows(selectedIds)
-    setSelectAll(event.target.checked)
   }
 
   const handleRowCheckboxChange = (event, ProductDetailId) => {
@@ -163,7 +159,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     }
 
     setSelectedRows(newSelected)
-    setSelectAll(newSelected.length === listProductDetailBill.length)
 
     const selectedProductIds = listProductDetailBill
       .filter((row) => newSelected.includes(row.id))
@@ -1421,27 +1416,34 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         </Box>
         <Box p={2}>
           <Box display={'inline'}>
-            <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
-              <b>Tên Khách hàng </b>
-              <span
-                style={{
-                  padding: '5px 10px',
-                  borderRadius: '50px',
-                  marginLeft: '20px',
-                  backgroundColor: 'rgb(240,240,240)',
-                }}>
-                {nameCustomer !== '' ? nameCustomer : 'khách lẻ'}
-              </span>
-              <Button
-                sx={{ py: '6.7px', ml: 1 }}
-                color="cam"
-                size="small"
-                variant="outlined"
-                onClick={() => setIsShowDiaChi(true)}>
-                <b>Chọn Địa chỉ</b>
-              </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                width={'57%'}
+                alignItems="center"
+                spacing={2}>
+                <b>Tên Khách hàng </b>
+                <span
+                  style={{
+                    padding: '5px 10px',
+                    borderRadius: '50px',
+                    marginLeft: '20px',
+                    backgroundColor: 'rgb(240,240,240)',
+                  }}>
+                  {nameCustomer !== '' ? nameCustomer : 'khách lẻ'}
+                </span>
+                <Button
+                  sx={{ py: '6.7px', ml: 1 }}
+                  color="cam"
+                  size="small"
+                  variant="outlined"
+                  onClick={() => setIsShowDiaChi(true)}>
+                  <b>Chọn Địa chỉ</b>
+                </Button>
+              </Stack>
 
-              <Box display={'inline'} sx={{ float: 'right' }}>
+              <Box display={'inline'} sx={{ marginLeft: '350px' }}>
                 <b>Giao hàng</b>
                 <Switch
                   onChange={() => {
@@ -1452,7 +1454,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   size="small"
                 />
               </Box>
-            </Stack>
+            </Box>
             <Modal
               open={isShowDiaChi}
               onClose={() => {

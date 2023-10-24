@@ -3,13 +3,10 @@ package com.fshoes.core.client.model.response;
 import com.fshoes.entity.base.IsIdentified;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.lang.annotation.Target;
 import java.math.BigDecimal;
 
-public interface ClientProductResponse extends IsIdentified {
+public interface ClientProductPromotionResponse extends IsIdentified {
 
-    String getPromotion();
-    Integer getValue();
     String getName();
 
     Float getSize();

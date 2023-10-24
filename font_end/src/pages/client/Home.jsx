@@ -19,6 +19,8 @@ export default function Home() {
             title: e.name,
             priceBefort: e.price,
             priceAfter: e.price,
+            value: e.value,
+            promotion: e.promotion,
             image: e.image.split(','),
             idProduct: e.idProduct,
             idColor: e.idColor,
@@ -122,12 +124,11 @@ export default function Home() {
           </Container>
           <Container maxWidth="lg">
             <Box className="new-product">
-              <LabelTitle text="Sản phẩm mới" />
-              <CartProduct products={products} colsm={6} colmd={4} collg={3} />
-            </Box>
+              {/* <LabelTitle text="Sản phẩm mới" /> */}
 
-            <Box className="selling-product">
-              <CartProduct products={products} colmd={4} collg={3} />
+              <Button className="product">NEW PRODUCT</Button>
+
+              <CartProduct products={products} colsm={6} colmd={4} collg={3} />
             </Box>
 
             <Box className="about-us">
