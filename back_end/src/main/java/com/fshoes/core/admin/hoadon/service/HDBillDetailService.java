@@ -23,5 +23,6 @@ public interface HDBillDetailService {
 
     BillDetail changeQuantity(String idBillDetail, Integer quantity);
 
+    Boolean delete(HDBillDetailRequest hdBillDetailRequest);
 
 }

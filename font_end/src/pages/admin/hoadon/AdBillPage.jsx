@@ -282,7 +282,7 @@ export default function AdBillPage() {
                     {row.totalProduct !== null ? row.totalProduct : 0}
                   </TableCell>
                   <TableCell align="center">
-                    {row.totalMoney !== null ? formatCurrency(row.totalMoney) : 0}
+                    {row.moneyAfter !== null ? formatCurrency(row.moneyAfter) : 0}
                   </TableCell>
                   <TableCell align="center">
                     {row.fullName !== null ? (

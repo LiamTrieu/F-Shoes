@@ -21,6 +21,14 @@ const hoaDonChiTietApi = {
     const url = `/billDetail/changeQuantity/${idBillDetail}`
     return axiosClient.put(url, quantity)
   },
+  saveBillDetail: (billDetailReq) => {
+    const url = `/billDetail/save`
+    return axiosClient.post(url, billDetailReq)
+  },
+  delete: (billDetailReq) => {
+    const url = `/billDetail/delete`
+    return axiosClient.put(url, billDetailReq)
+  },
 }
 
 export default hoaDonChiTietApi
