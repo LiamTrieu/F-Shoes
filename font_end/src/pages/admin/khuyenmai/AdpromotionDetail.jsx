@@ -87,7 +87,7 @@ export default function AdPromotionDetail() {
     setSelectAllProduct(event.target.checked)
   }
 
-  const handleRowCheckboxChange1 = (ProductId) => {
+  const handleRowCheckboxChange1 = (event, ProductId) => {
     const selectedIndex = selectedRowsProduct.indexOf(ProductId)
     let newSelected = []
 
@@ -127,7 +127,7 @@ export default function AdPromotionDetail() {
   useEffect(() => {
     getProductDetailById(filterDetailByProduct, selectedProductIds)
     // handleRowCheckboxChange1(id)
-  }, [filterDetailByProduct, selectedProductIds, id])
+  }, [filterDetailByProduct, selectedProductIds])
 
   const validate = () => {
     const timeStart = dayjs(updatePromotion.timeStart, 'DD/MM/YYYY')
