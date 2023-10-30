@@ -17,8 +17,11 @@
   position: absolute;
   top: 0;
   right: 0;
-  background-color: #66cc00;
+  background-color: #b22323;
   color: white;
-  padding: 6px 5px;
+  padding: 4px 30px;
   border-radius: 0 0 0 10px;
+}
+.promotion-price {
+  margin-right: 5px !important;
 }

@@ -5,6 +5,7 @@ import CartProduct from '../../layout/client/CartProduct'
 import LabelTitle from '../../layout/client/LabelTitle'
 import './Home.css'
 import clientProductApi from '../../api/client/clientProductApi'
+import Carousel from 'react-material-ui-carousel'
 
 export default function Home() {
   const [products, setProducts] = useState([])
@@ -127,7 +128,6 @@ export default function Home() {
               {/* <LabelTitle text="Sản phẩm mới" /> */}
 
               <Button className="product">NEW PRODUCT</Button>
-
               <CartProduct products={products} colsm={6} colmd={4} collg={3} />
             </Box>
 

@@ -21,7 +21,10 @@ export default function CartProduct({ products, colmd, collg }) {
               component={Link}
               to={`/product/${product.id}`}
               sx={{ width: '100%', p: 0, my: 1 }}>
-              <Card sx={{ width: '100%' }}>
+              <Card sx={{ width: '100%', height: '450px' }}>
+                {hasPromotion && (
+                  <div className="discount-badge">{`${discountValue ? discountValue : ''}%`}</div>
+                )}
                 <Box
                   sx={{
                     position: 'relative',
@@ -57,13 +60,9 @@ export default function CartProduct({ products, colmd, collg }) {
                         />
                       ))}
                     </Carousel>
-                    {hasPromotion && (
-                      <div className="discount-badge">{`${
-                        discountValue ? discountValue : ''
-                      }%`}</div>
-                    )}
                   </Box>
                 </Box>
+
                 <CardContent>
                   <Typography className="title" gutterBottom component="div">
                     {product.title}
@@ -72,7 +71,7 @@ export default function CartProduct({ products, colmd, collg }) {
                     <span>
                       {' '}
                       {product.promotion ? (
-                        <div>
+                        <div style={{ display: 'flex' }}>
                           <div className="promotion-price">{`${product.priceBefort.toLocaleString(
                             'it-IT',
                             { style: 'currency', currency: 'VND' },

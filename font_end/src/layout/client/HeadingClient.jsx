@@ -77,7 +77,7 @@ export default function HeadingClient() {
             textDecoration: 'none',
           }}
           component={Link}
-          to="/products"
+          to="/about-us"
           color="inherit">
           Giới thiệu
         </Typography>
@@ -94,9 +94,26 @@ export default function HeadingClient() {
             textDecoration: 'none',
           }}
           component={Link}
-          to="/products"
+          to="/contact"
           color="inherit">
           Liên hệ
+        </Typography>
+        <Typography
+          onClick={() => {
+            setOpenDrawer(false)
+          }}
+          className="link-with-underline"
+          sx={{
+            marginLeft: { md: 4 },
+            fontFamily: 'monospace',
+            fontSize: '17px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+          component={Link}
+          to="/news"
+          color="inherit">
+          Tin tức
         </Typography>
       </Box>
     )
