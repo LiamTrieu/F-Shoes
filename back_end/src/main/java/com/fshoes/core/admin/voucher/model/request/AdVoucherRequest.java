@@ -23,6 +23,8 @@ public class AdVoucherRequest {
 
     private Integer type;
 
+    private Integer typeValue;
+
     private BigDecimal minimumAmount;
 
     private Integer quantity;
@@ -41,6 +43,7 @@ public class AdVoucherRequest {
         voucher.setValue(this.getValue());
         voucher.setMaximumValue(this.getMaximumValue());
         voucher.setType(this.getType());
+        voucher.setTypeValue(this.getTypeValue());
         voucher.setMinimumAmount(this.getMinimumAmount());
         voucher.setQuantity(this.getQuantity());
         voucher.setStartDate(DateUtil.parseDateTimeLong(this.getStartDate()));

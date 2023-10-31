@@ -3,6 +3,7 @@ package com.fshoes.entity;
 import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
 import com.fshoes.infrastructure.constant.StatusVoucher;
+import com.fshoes.infrastructure.constant.TypeValue;
 import com.fshoes.infrastructure.constant.TypeVoucher;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +33,8 @@ public class Voucher extends PrimaryEntity {
 
     private TypeVoucher type;
 
+    private TypeValue typeValue;
+
     private BigDecimal minimumAmount;
 
     private Integer quantity;
@@ -56,5 +59,13 @@ public class Voucher extends PrimaryEntity {
 
     public void setStatus(Integer status) {
         this.status = StatusVoucher.values()[status];
+    }
+
+    public Integer getTypeValue() {
+        return typeValue.ordinal();
+    }
+
+    public void setTypeValue(Integer typeValue) {
+        this.typeValue = TypeValue.values()[typeValue];
     }
 }

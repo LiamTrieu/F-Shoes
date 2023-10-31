@@ -1,12 +1,11 @@
 package com.fshoes.core.client.service.impl;
 
+import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
+import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.client.model.request.ClientBillDetaillRequest;
 import com.fshoes.core.client.model.request.ClientCheckoutRequest;
 import com.fshoes.core.client.service.ClientCheckoutService;
-import com.fshoes.entity.Bill;
-import com.fshoes.entity.BillDetail;
-import com.fshoes.entity.BillHistory;
-import com.fshoes.entity.ProductDetail;
+import com.fshoes.entity.*;
 import com.fshoes.infrastructure.constant.MailConstant;
 import com.fshoes.infrastructure.email.Email;
 import com.fshoes.infrastructure.email.EmailSender;
@@ -44,12 +43,31 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
     private BillHistoryRepository billHistoryRepository;
 
     @Autowired
+    private AdVoucherRepository voucherRepository;
+
+    @Autowired
+    private AdCustomerVoucherRepository customerVoucherRepository;
+
+    @Autowired
     private EmailSender emailSender;
 
     @Override
     @Transactional
     public Bill thanhToan(ClientCheckoutRequest request) {
         Bill newBill = new Bill();
+        if (request.getIdVoucher() == null) {
+            newBill.setVoucher(null);
+        } else {
+            Voucher voucher = voucherRepository.findById(request.getIdVoucher()).orElse(null);
+            assert voucher != null;
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+            newBill.setVoucher(voucher);
+//            AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), request.getIdCustomer());
+//            if (adCustomerVoucherRespone != null) {
+//                customerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+//            }
+        }
         newBill.setStatus(1);
         newBill.setNote(request.getNote());
         newBill.setFullName(request.getFullName());
@@ -68,7 +86,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         Long dateNow = Calendar.getInstance().getTimeInMillis();
         newBill.setCode("HD" + dateNow);
         newBill.setType(1);
-        newBill.setMoneyReduced(BigDecimal.ZERO);
+        newBill.setMoneyReduced(new BigDecimal(request.getMoneyReduced()));
         newBill.setMoneyShip(new BigDecimal(request.getShipMoney()));
         newBill.setDesiredReceiptDate(request.getDuKien());
         billRepository.save(newBill);
@@ -96,10 +114,8 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
     private void sendMail(ClientCheckoutRequest request, String codeBill, Long dateNow) {
         Email newEmail = new Email();
         String[] toMail = {request.getEmail()};
-        StringBuilder htmlTable = new StringBuilder("<table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px;\">");
-        htmlTable.append("<tr><th style=\"border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; text-align: left;\">Tên sản phẩm</th>" +
-                         "<th style=\"border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; text-align: left;\">Số lượng</th>" +
-                         "<th style=\"border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; text-align: left;\">Giá tiền</th></tr>");
+
+        StringBuilder htmlTable = new StringBuilder("<table><tr><th>Tên sản phẩm</th><th>Số lượng</th><th>Giá tiền</th>");
 
         for (ClientBillDetaillRequest detail : request.getBillDetail()) {
             int totalPrice = Integer.parseInt(detail.getPrice()) * detail.getQuantity();
@@ -114,45 +130,124 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     .append("</td></tr>");
         }
 
+        String valueType = request.getTypePayment().equals("0") ? "Tại quầy" : "Đặt hàng";
+
         htmlTable.append("</table>");
-        newEmail.setBody("<div style=\"font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f8f8f8;\">\n" +
-                         "\n" +
-                         "        <div style=\"background-color: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);\">\n" +
-                         "\n" +
-                         "            " + htmlTable + "\n" +
-                         "\n" +
-                         "<div>" +
-                         "<div style=\"text-align: left; float:right;\">\n" +
-                         "    <p>Thành tiền: <strong>" + formatCurrency(request.getTotalMoney()) + " VNĐ</strong></p>\n" +
-                         "    <p>Phí vận chuyển: <strong>" + formatCurrency(request.getShipMoney()) + " VNĐ</strong></p>\n" +
-                         "    <p>Giảm giá: <strong>" + formatCurrency("0") + " VNĐ</strong></p>\n" +
-                         "    <p>Tổng cộng: <strong>" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VNĐ</strong></p>\n" +
-                         "</div>"
-                         +
-                         "</div>\n" +
-                         "<div>" +
-                         "            <p style=\"margin-bottom: 10px;\"><b>THÔNG TIN ĐƠN HÀNG:</b></p>\n" +
-                         "\n" +
-                         "            <ul style=\"list-style-type: none; padding: 0;\">\n" +
-                         "                <li style=\"margin-bottom: 5px;\">Mã đơn hàng: <strong>" + codeBill + "</strong></li>\n" +
-                         "                <li style=\"margin-bottom: 5px;\">Ngày đặt hàng: <strong>" + DateUtil.converDateTimeString(dateNow) + "</strong></li>\n" +
-                         "                <li style=\"margin-bottom: 5px;\">Ngày nhận dự kiến: <strong>" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>\n" +
-                         "                <li style=\"margin-bottom: 5px;\">Hình thức thanh toán: <strong>Thanh toán khi nhận hàng</strong></li>\n" +
-                         "            </ul>\n" +
-                         "\n" + "            <p style=\"margin-bottom: 10px;\"><b>ĐỊA CHỈ GIAO HÀNG:</b></p>\n" +
-                         "\n" +
-                         "            <ul style=\"list-style-type: none; padding: 0;\">\n" +
-                         "                <li style=\"margin-bottom: 5px;\">Họ và tên: <strong>" + request.getFullName() + "</strong></li>\n" +
-                         "                <li style=\"margin-bottom: 5px;\">Số điện thoại: <strong>" + request.getPhone() + "</strong></li>\n" +
-                         "                <li style=\"margin-bottom: 5px;\">Địa chỉ: <strong>" + request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh() + "</strong></li>\n" +
-                         "            </ul>\n" +
-                         "\n" +
-                         "</div>" +
-                         "            <p>Cảm ơn bạn đã tin tưởng và mua hàng tại cửa hàng của chúng tôi. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.</p>\n" +
-                         "\n" +
-                         "        </div>\n" +
-                         "\n" +
-                         "    </div>");
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "<style>" +
+                "body {" +
+                "font-family: Arial, sans-serif;" +
+                "background-color: #f5f5f5;" +
+                "}" +
+                ".container {" +
+                "background-color: #fff;" +
+                "max-width: 800px;" +
+                "margin: 0 auto;" +
+                "padding: 20px;" +
+                "border: 1px solid #ccc;" +
+                "border-radius: 5px;" +
+                "box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);" +
+                "}" +
+                "h1 {" +
+                "color: #333;" +
+                "text-align: center;" +
+                "}" +
+                ".email-container {" +
+                "background-color: #fff;" +
+                "border: 1px solid #ddd;" +
+                "padding: 20px;" +
+                "border-radius: 5px;" +
+                "box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" +
+                "}" +
+                "table {" +
+                "width: 100%;" +
+                "border-collapse: collapse;" +
+                "margin-bottom: 20px;" +
+                "}" +
+                "th {" +
+                "border: 1px solid #ddd;" +
+                "padding: 8px;" +
+                "background-color: #F2741F;" +
+                "color: #fff;" +
+                "text-align: left;" +
+                "}" +
+                "td {" +
+                "border: 1px solid #ddd;" +
+                "padding: 8px;" +
+                "}" +
+                ".total-section {" +
+                "text-align: left;" +
+                "float: right;" +
+                "}" +
+                "p {" +
+                "margin-bottom: 10px;" +
+                "}" +
+                "strong {" +
+                "font-weight: bold;" +
+                "}" +
+                "ul {" +
+                "list-style-type: none;" +
+                "padding: 0;" +
+                "margin: 0;" +
+                "}" +
+                "li {" +
+                "margin-bottom: 5px;" +
+                "}" +
+                "button {" +
+                "background-color: #333;" +
+                "color: #fff;" +
+                "padding: 10px 20px;" +
+                "border: none;" +
+                "border-radius: 5px;" +
+                "font-size: 16px;" +
+                "cursor: pointer;" +
+                "display: block;" +
+                "margin: 20px auto;" +
+                "}" +
+                "button:hover {" +
+                "background-color: #555;" +
+                "}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class=\"container\">" +
+                "<h1>Thông Tin Đơn Hàng</h1>" +
+                "<div class=\"email-container\">" +
+                htmlTable.toString() +
+                "        <div class=\"total-section\">" +
+                "            <p>Thành tiền: <strong>" + formatCurrency(request.getTotalMoney()) + " VNĐ</strong></p>" +
+                "            <p>Phí vận chuyển: <strong>" + formatCurrency(request.getShipMoney()) + " VNĐ</strong></p>" +
+                "            <p>Giảm giá: <strong>" + formatCurrency(request.getMoneyReduced()) + " VNĐ</strong></p>" +
+                "            <p>Tổng cộng: <strong>" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VNĐ</strong></p>" +
+                "        </div>" +
+                "<div>" +
+                "<p><b>THÔNG TIN ĐƠN HÀNG:</b></p>" +
+                "<ul>" +
+                "<li>Mã đơn hàng: <strong>" + codeBill + "</strong></li>" +
+                "<li>Ngày đặt hàng: <strong>" + DateUtil.converDateTimeString(dateNow) + "</strong></li>" +
+                "<li>Ngày nhận dự kiến: <strong>" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>" +
+                "<li>Hình thức thanh toán: <strong>" + valueType + "</strong></li>" +
+                "</ul>" +
+                "<p><b>ĐỊA CHỈ GIAO HÀNG:</b></p>" +
+                "<ul>" +
+                "<li>Họ và tên: <strong>" + request.getFullName() + "</strong></li>" +
+                "<li>Số điện thoại: <strong>" + request.getPhone() + "</strong></li>" +
+                "<li>Địa chỉ: <strong>" + request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh() + "</strong></li>" +
+                "</ul>" +
+                "</div>" +
+                "<p>" +
+                "Cảm ơn bạn đã tin tưởng và mua hàng tại cửa hàng của chúng tôi. " +
+                "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
+                "</p>" +
+                "</div>" +
+                "<a href='http://localhost:3000/home'><button>Xem Chi Tiết</button></a>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+
+        newEmail.setBody(htmlContent);
         newEmail.setToEmail(toMail);
         newEmail.setSubject("Đơn hàng F-Shoes của bạn " + codeBill);
         newEmail.setTitleEmail("<h1 style=\"text-align: center; color: #333;\">Cảm ơn bạn đã đặt hàng tại F-Shoes</h1>");

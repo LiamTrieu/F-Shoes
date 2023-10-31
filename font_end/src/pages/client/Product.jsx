@@ -100,14 +100,14 @@ export default function Product() {
   const MenuBar = () => {
     return (
       <List className="list-product-portfolio">
-        <ListItem className="text-portfolio">
+        {/* <ListItem className="text-portfolio">
           <ListItemText
             primary="Danh mục sản phẩm"
             primaryTypographyProps={{
               className: 'custom-primary',
             }}
           />
-        </ListItem>
+        </ListItem> */}
         <div className="menubar-portfolio">
           {/* --------------------------------------------- CATEGORY --------------------------------------------- */}
           <ListItemButton
@@ -243,7 +243,7 @@ export default function Product() {
   return (
     <Container maxWidth="xl" className="container-portfolio">
       <Grid container spacing={1}>
-        <Grid item xs={2.5}>
+        <Grid item xs={2.5} className="grid-drawer-portfolio">
           <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
             <MenuBar />
           </Box>

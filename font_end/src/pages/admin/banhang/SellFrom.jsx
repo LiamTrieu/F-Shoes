@@ -10,11 +10,13 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
+  MenuItem,
   Modal,
   Pagination,
   Paper,
   Radio,
   RadioGroup,
+  Select,
   Stack,
   Switch,
   Table,
@@ -92,7 +94,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [listProductDetailBill, setListProductDetailBill] = useState([])
   const [listDiaChiDetail, setListDiaChiDetail] = useState([])
 
-  const [codeVoucher, setCodeVoucher] = useState('')
   const [totalPagesVoucher, setTotalPagesVoucher] = useState(0)
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
@@ -103,6 +104,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     idCustomer: null,
     condition: 0,
     textSearch: '',
+    typeSearch: null,
+    typeValueSearch: null,
     page: 1,
     size: 5,
   })
@@ -166,10 +169,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setSelectedProductIds(selectedProductIds)
   }
 
-  console.log(selectedProductIds + '==================== id product')
-
   const deleteProductDetail = (idBill, idPrDetail) => {
-    console.log(idBill + '===================' + idPrDetail)
     sellApi
       .deleteProductDetail(idBill, idPrDetail)
       .then((response) => {
@@ -232,7 +232,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         position: toast.POSITION.TOP_CENTER,
       })
       fectchProductBillSell(idBill)
-      console.log(quantity)
     })
   }
 
@@ -635,7 +634,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
               service_id: serviceId,
             }
             ghnAPI.getime(filtelTime).then((response) => {
-              console.log(response.data.body.leadtime)
               setTimeShip(response.data.body.leadtime * 1000)
             })
           })
@@ -768,6 +766,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     maximumValue: '',
     minimumAmount: '',
     type: '',
+    typeValue: '',
     startDate: '',
     endDate: '',
   })
@@ -778,7 +777,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       .getOneVoucherById(idVoucher)
       .then((response) => {
         setVoucher(response.data.data)
-        setCodeVoucher(response.data.data.code)
+        // setCodeVoucher(response.data.data.code)
       })
       .catch(() => {
         toast.error(`Không tồn tại khuyến mãi với id : ${idVoucher}`, {
@@ -801,7 +800,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       type: giaoHang === true ? 1 : 0,
     }
 
-    console.log(data)
     const title = 'Xác nhận đặt hàng ?'
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
@@ -826,7 +824,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const ShipingFree = giaoHang ? shipTotal : 0
   // const moneyReducedVoucher = 0
 
-  const totalMoneyReduce = (voucher.value * totalPriceCart) / 100
+  const moneyVoucher =
+    voucher.typeValue === 0 ? (voucher.value * totalPriceCart) / 100 : voucher.value
+  const totalMoneyReduce = moneyVoucher > voucher.maximumValue ? voucher.maximumValue : moneyVoucher
 
   const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce
   return (
@@ -1909,13 +1909,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   setIsShowVoucher(true)
                   setAdCallVoucherOfSell({
                     ...adCallVoucherOfSell,
-                    condition: parseFloat(totalSum),
+                    condition: totalSum,
                   })
-                  console.log('adCallVoucherOfSell:', adCallVoucherOfSell)
                 }}>
                 <b>Chọn mã giảm giá</b>
               </Button>
               <Modal
+                className="modal-voucher"
                 open={isShowVoucher}
                 onClose={() => {
                   setIsShowVoucher(false)
@@ -1948,27 +1948,70 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                       <CloseIcon />
                     </IconButton>
                   </Toolbar>
-                  <Container>
+                  <Container className="modal-voucher-container-filter">
                     <Box>
-                      <TextField
-                        sx={{
-                          width: '50%',
-                          '.MuiInputBase-input': { py: '7.5px' },
-                        }}
-                        size="small"
-                        variant="outlined"
-                        placeholder="Tìm khuyến mãi"
-                        onChange={(e) =>
-                          setAdCallVoucherOfSell({
-                            ...adCallVoucherOfSell,
-                            textSearch: e.target.value,
-                            page: 1,
-                          })
-                        }
-                      />
-                      <Button sx={{ ml: 2 }} variant="contained">
-                        Tìm kiếm
-                      </Button>
+                      <Grid container sx={{ mt: 1 }} spacing={2}>
+                        <Grid item xs={6}>
+                          <TextField
+                            fullWidth
+                            sx={{
+                              '.MuiInputBase-input': { py: '7.5px' },
+                            }}
+                            size="small"
+                            variant="outlined"
+                            placeholder="Tìm khuyến mãi"
+                            onChange={(e) =>
+                              setAdCallVoucherOfSell({
+                                ...adCallVoucherOfSell,
+                                textSearch: e.target.value,
+                                page: 1,
+                              })
+                            }
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Stack
+                            direction="row"
+                            justifyContent="start"
+                            alignItems="center"
+                            spacing={1}>
+                            <div className="filter-voucher">
+                              <b>Kiểu</b>
+                              <Select
+                                displayEmpty
+                                size="small"
+                                value={adCallVoucherOfSell.typeSearch}
+                                onChange={(e) =>
+                                  setAdCallVoucherOfSell({
+                                    ...adCallVoucherOfSell,
+                                    typeSearch: e.target.value,
+                                    page: 1,
+                                  })
+                                }>
+                                <MenuItem value={null}>Kiểu</MenuItem>
+                                <MenuItem value={0}>Công khai</MenuItem>
+                                <MenuItem value={1}>Cá nhân</MenuItem>
+                              </Select>
+                              <b>Loại</b>
+                              <Select
+                                displayEmpty
+                                size="small"
+                                value={adCallVoucherOfSell.typeValueSearch}
+                                onChange={(e) =>
+                                  setAdCallVoucherOfSell({
+                                    ...adCallVoucherOfSell,
+                                    typeValueSearch: e.target.value,
+                                    page: 1,
+                                  })
+                                }>
+                                <MenuItem value={null}>Loại</MenuItem>
+                                <MenuItem value={0}>Phần trăm</MenuItem>
+                                <MenuItem value={1}>Giá tiền</MenuItem>
+                              </Select>
+                            </div>
+                          </Stack>
+                        </Grid>
+                      </Grid>
                     </Box>
                     <Box
                       sx={{
@@ -1981,13 +2024,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                     <Table className="tableCss mt-5">
                       <TableHead>
                         <TableRow>
-                          <TableCell align="center" width={'5%'}>
+                          <TableCell align="center" width={'6%'}>
                             STT
                           </TableCell>
-                          <TableCell align="center" width={'25%'}>
+                          <TableCell align="center" width={'10%'}>
                             Mã
                           </TableCell>
-                          <TableCell align="center" width={'12%'}>
+                          <TableCell align="center" width={'10%'}>
                             Tên
                           </TableCell>
                           <TableCell align="center" width={'15%'}>
@@ -1999,13 +2042,16 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                           <TableCell align="center" width={'15%'}>
                             Điều kiện
                           </TableCell>
-                          <TableCell align="center" width={'10%'}>
+                          <TableCell align="center" width={'15%'}>
                             Kiểu
                           </TableCell>
                           <TableCell align="center" width={'15%'}>
+                            Loại
+                          </TableCell>
+                          <TableCell align="center" width={'12%'}>
                             Ngày bắt đầu
                           </TableCell>
-                          <TableCell align="center" width={'10%'}>
+                          <TableCell align="center" width={'12%'}>
                             Ngày kết thúc
                           </TableCell>
                           <TableCell align="center" width={'10%'}>
@@ -2021,14 +2067,23 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                             <TableCell align="center">{row.stt}</TableCell>
                             <TableCell align="center">{row.code}</TableCell>
                             <TableCell align="center">{row.name}</TableCell>
-                            <TableCell align="center">{row.value}%</TableCell>
-                            <TableCell align="center">{row.maximumValue}</TableCell>
-                            <TableCell align="center">{row.minimumAmount}</TableCell>
+                            <TableCell align="center">
+                              {row.typeValue === 0 ? row.value + '%' : row.value + ' VNĐ'}
+                            </TableCell>
+                            <TableCell align="center">{row.maximumValue + ' VNĐ'}</TableCell>
+                            <TableCell align="center">{row.minimumAmount + ' VNĐ'}</TableCell>
                             <TableCell align="center">
                               {row.type === 0 ? (
                                 <Chip className="chip-tat-ca" size="small" label="Công khai" />
                               ) : (
                                 <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
+                              )}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.typeValue === 0 ? (
+                                <Chip className="chip-tat-ca" size="small" label="Phần trăm" />
+                              ) : (
+                                <Chip className="chip-gioi-han" size="small" label="Giá tiền" />
                               )}
                             </TableCell>
                             <TableCell align="center">

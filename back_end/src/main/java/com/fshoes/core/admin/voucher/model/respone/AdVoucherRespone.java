@@ -18,6 +18,8 @@ public interface AdVoucherRespone extends IsIdentified {
 
     Integer getType();
 
+    Integer getTypeValue();
+
     BigDecimal getMinimumAmount();
 
     Integer getQuantity();

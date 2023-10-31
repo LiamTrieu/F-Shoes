@@ -32,9 +32,15 @@
   color: #f2741f;
 }
 
-.container-portfolio {
+/* .container-portfolio {
   padding-left: 4.5rem !important;
   padding-right: 4.5rem !important;
+} */
+
+.container-portfolio .grid-drawer-portfolio {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0;
 }
 
 .container-portfolio .drawer-portfolio {
@@ -47,6 +53,9 @@
   align-items: flex-start;
   gap: 0;
   margin-top: 1rem;
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0;
 }
 
 .container-portfolio .stack-filter-portfolio .stack-input-filter {

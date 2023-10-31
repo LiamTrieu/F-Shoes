@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public interface ClientVoucherRepository extends VoucherRepository {
     @Query(value = """
-            SELECT row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            SELECT DISTINCT row_number()  OVER(ORDER BY v.created_at DESC) as stt,
             v.id, v.code, v.name, v.value, v.maximum_value AS maximumValue,
-            v.type, v.minimum_amount AS minimumAmount, v.quantity,
+            v.type, v.type_value as typeValue, v.minimum_amount AS minimumAmount, v.quantity,
             v.start_date AS startDate, v.end_date AS endDate, v.status
             FROM voucher v
             LEFT JOIN customer_voucher cv ON v.id = cv.id_voucher
@@ -28,11 +28,17 @@ public interface ClientVoucherRepository extends VoucherRepository {
             ((cv.id_account IS NULL AND v.type = 0)
             OR (cv.id_account = :#{#request.idCustomer} AND v.type = 1)
             )
-            AND
-            (:#{#request.textSearch} IS NULL 
-            OR v.code like %:#{#request.textSearch}% 
-            OR v.name like %:#{#request.textSearch}%
-            )
+            GROUP BY v.id
             """, nativeQuery = true)
     List<ClientVoucherResponse> getAllVoucherByIdCustomer(ClientVoucherRequest request);
+
+    @Query(value = """
+            SELECT DISTINCT row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value AS maximumValue,
+            v.type, v.type_value as typeValue, v.minimum_amount AS minimumAmount, v.quantity,
+            v.start_date AS startDate, v.end_date AS endDate, v.status
+            FROM voucher v
+            WHERE v.code = :#{#codeVoucher}
+            """, nativeQuery = true)
+    ClientVoucherResponse getVoucherByCode(String codeVoucher);
 }

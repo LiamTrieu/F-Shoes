@@ -41,6 +41,7 @@ const initialVoucher = {
   value: null,
   maximumValue: null,
   type: 0,
+  typeValue: 0,
   minimumAmount: null,
   quantity: null,
   startDate: '',
@@ -67,6 +68,7 @@ export default function AdVoucherAdd() {
   const [errorQuantity, setErrorQuantity] = useState('')
   const [errorStartDate, setErrorStartDate] = useState('')
   const [errorEndDate, setErrorEndDate] = useState('')
+  // const [errorListIdCustomer, setErrorListIdCustomer] = useState('')
   const [allCodeVoucher, setAllCodeVoucher] = useState([])
   const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
 
@@ -99,6 +101,7 @@ export default function AdVoucherAdd() {
       minimumAmount: '',
       startDate: '',
       endDate: '',
+      // listIdCustomer: '',
     }
 
     if (voucherAdd.code.trim() === '') {
@@ -115,14 +118,24 @@ export default function AdVoucherAdd() {
       errors.name = 'Tên không được dài hơn 100 ký tự'
     }
 
-    if (voucherAdd.value === null) {
-      errors.value = 'Giá trị không được để trống'
-    } else if (!Number.isInteger(voucherAdd.value)) {
-      errors.value = 'giá trị chỉ được nhập số nguyên'
-    } else if (voucherAdd.value < 0) {
-      errors.value = 'giá trị tối thiểu 0%'
-    } else if (voucherAdd.value > 100) {
-      errors.value = 'giá trị tối đa 100%'
+    if (voucherAdd.typeValue === 0) {
+      if (voucherAdd.value === null) {
+        errors.value = 'Giá trị không được để trống'
+      } else if (!Number.isInteger(voucherAdd.value)) {
+        errors.value = 'giá trị chỉ được nhập số nguyên'
+      } else if (voucherAdd.value < 0) {
+        errors.value = 'giá trị tối thiểu 0%'
+      } else if (voucherAdd.value > 100) {
+        errors.value = 'giá trị tối đa 100%'
+      }
+    } else {
+      if (voucherAdd.value === null) {
+        errors.value = 'Giá trị không được để trống'
+      } else if (!Number.isInteger(voucherAdd.value)) {
+        errors.value = 'giá trị chỉ được nhập số nguyên'
+      } else if (voucherAdd.value < 0) {
+        errors.value = 'giá trị tối thiểu 0 VNĐ'
+      }
     }
 
     if (voucherAdd.maximumValue === null) {
@@ -163,6 +176,10 @@ export default function AdVoucherAdd() {
       errors.endDate = 'Ngày kết thúc không được để trống'
     }
 
+    // if (voucherAdd.type === 1 && selectedCustomerIds.length > Number(voucherAdd.quantity)) {
+    //   errors.listIdCustomer = 'Số lượng khách hàng không được lớn hơn số lượng mã giảm giá'
+    // }
+
     for (const key in errors) {
       if (errors[key]) {
         check++
@@ -177,7 +194,7 @@ export default function AdVoucherAdd() {
     setErrorQuantity(errors.quantity)
     setErrorStartDate(errors.startDate)
     setErrorEndDate(errors.endDate)
-
+    // setErrorListIdCustomer(errors.listIdCustomer)
     return check
   }
 
@@ -302,7 +319,14 @@ export default function AdVoucherAdd() {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <AiOutlinePercentage className="icons-css" />
+                        <AiOutlinePercentage
+                          className="icons-css"
+                          onClick={() => setVoucherAdd({ ...voucherAdd, typeValue: 0 })}
+                        />
+                        <AiOutlineDollar
+                          className="icons-css"
+                          onClick={() => setVoucherAdd({ ...voucherAdd, typeValue: 1 })}
+                        />
                       </InputAdornment>
                     ),
                   }}
@@ -473,6 +497,7 @@ export default function AdVoucherAdd() {
             </div>
           </Grid>
           <Grid item xs={7}>
+            {/* <span className="error">{errorListIdCustomer}</span> */}
             {dataFetched && (
               <Table className="tableCss" aria-label="simple table">
                 <TableHead>

@@ -17,6 +17,8 @@ public interface ClientVoucherResponse extends IsIdentified {
 
     Integer getType();
 
+    Integer getTypeValue();
+
     BigDecimal getMinimumAmount();
 
     Integer getQuantity();

@@ -21,6 +21,7 @@ public class ClientCheckoutRequest {
     private String typePayment;
     private String shipMoney;
     private String idVoucher;
+    private String moneyReduced;
     private String totalMoney;
     private Long duKien;
     private List<ClientBillDetaillRequest> billDetail;

@@ -120,7 +120,7 @@ public class DBGenerator implements CommandLineRunner {
         //Staff
 
         //Voucher
-        Voucher voucher1 = Voucher.builder().code("VC12345").name("Voucher 1").value(BigDecimal.valueOf(25)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.CA_NHAN).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
+        Voucher voucher1 = Voucher.builder().code("VC12345").name("Voucher 1").value(BigDecimal.valueOf(25)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.CA_NHAN).typeValue(TypeValue.PHAN_TRAM).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
         voucher1.setId(voucherRepository.save(voucher1).getId());
 
         //CustomerVoucher
