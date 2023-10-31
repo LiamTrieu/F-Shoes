@@ -162,14 +162,24 @@ export default function AdVoucherDetail() {
       errors.name = 'Tên không được dài hơn 100 ký tự'
     }
 
-    if (voucherDetail.value === null) {
-      errors.value = 'Giá trị không được để trống'
-    } else if (!Number.isInteger(voucherDetail.value)) {
-      errors.value = 'giá trị chỉ được nhập số nguyên'
-    } else if (voucherDetail.value < 0) {
-      errors.value = 'giá trị tối thiểu 0%'
-    } else if (voucherDetail.value > 100) {
-      errors.value = 'giá trị tối đa 100%'
+    if (voucherDetail.typeValue === 0) {
+      if (voucherDetail.value === null) {
+        errors.value = 'Giá trị không được để trống'
+      } else if (!Number.isInteger(voucherDetail.value)) {
+        errors.value = 'giá trị chỉ được nhập số nguyên'
+      } else if (voucherDetail.value < 0) {
+        errors.value = 'giá trị tối thiểu 0%'
+      } else if (voucherDetail.value > 100) {
+        errors.value = 'giá trị tối đa 100%'
+      }
+    } else {
+      if (voucherDetail.value === null) {
+        errors.value = 'Giá trị không được để trống'
+      } else if (!Number.isInteger(voucherDetail.value)) {
+        errors.value = 'giá trị chỉ được nhập số nguyên'
+      } else if (voucherDetail.value < 0) {
+        errors.value = 'giá trị tối thiểu 0 VNĐ'
+      }
     }
 
     if (voucherDetail.maximumValue === null) {
@@ -368,7 +378,14 @@ export default function AdVoucherDetail() {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <AiOutlinePercentage className="icons-css" />
+                        <AiOutlinePercentage
+                          className="icons-css"
+                          onClick={() => setVoucherDetail({ ...voucherDetail, typeValue: 0 })}
+                        />
+                        <AiOutlineDollar
+                          className="icons-css"
+                          onClick={() => setVoucherDetail({ ...voucherDetail, typeValue: 1 })}
+                        />
                       </InputAdornment>
                     ),
                   }}

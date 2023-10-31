@@ -7,29 +7,14 @@ import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
 import com.fshoes.core.admin.sell.model.request.AddBillRequest;
 import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
-import com.fshoes.core.admin.sell.model.response.CartDetailResponse;
-import com.fshoes.core.admin.sell.model.response.GetALlCustomerResponse;
-import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
-import com.fshoes.core.admin.sell.model.response.GetAmountProductResponse;
-import com.fshoes.core.admin.sell.model.response.GetColorResponse;
-import com.fshoes.core.admin.sell.model.response.GetProductDetailBillSellResponse;
-import com.fshoes.core.admin.sell.model.response.GetSizeResponse;
-import com.fshoes.core.admin.sell.repository.AdminBillDetailRepositoty;
-import com.fshoes.core.admin.sell.repository.AdminBillRepository;
-import com.fshoes.core.admin.sell.repository.AdminCreateCartRepository;
-import com.fshoes.core.admin.sell.repository.AdminProductDetailRepository;
-import com.fshoes.core.admin.sell.repository.AdminSellGetCustomerRepository;
-import com.fshoes.core.admin.sell.repository.AdminSellGetProductRepository;
+import com.fshoes.core.admin.sell.model.response.*;
+import com.fshoes.core.admin.sell.repository.*;
 import com.fshoes.core.admin.sell.service.AdminSellService;
+import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
+import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.common.PageReponse;
-import com.fshoes.entity.Account;
-import com.fshoes.entity.Bill;
-import com.fshoes.entity.BillDetail;
-import com.fshoes.entity.BillHistory;
-import com.fshoes.entity.Cart;
-import com.fshoes.entity.ProductDetail;
-import com.fshoes.entity.Voucher;
+import com.fshoes.entity.*;
 import com.fshoes.repository.ProductDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -50,6 +35,7 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Autowired
     private AdminSellGetCustomerRepository getCustomerRepository;
+
     @Autowired
     private AdminCreateCartRepository cartRepository;
 
@@ -64,6 +50,9 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Autowired
     private AdVoucherRepository voucherRepository;
+
+    @Autowired
+    private AdCustomerVoucherRepository customerVoucherRepository;
 
     @Autowired
     private KhachHangRepository khachHangRepository;
@@ -142,6 +131,10 @@ public class AdminSellServiceImpl implements AdminSellService {
             voucher.setQuantity(voucher.getQuantity() - 1);
             voucherRepository.save(voucher);
             bill.setVoucher(voucher);
+            AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), request.getIdCustomer());
+            if (adCustomerVoucherRespone != null) {
+                customerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+            }
         }
 
         if (request.getIdCustomer() == null) {

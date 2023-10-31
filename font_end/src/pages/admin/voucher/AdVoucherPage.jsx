@@ -47,6 +47,7 @@ export default function AdVoucherPage() {
     startDateSearch: '',
     endDateSearch: '',
     typeSearch: '',
+    typeValueSearch: '',
     statusSearch: '',
     page: 1,
     size: 5,
@@ -227,8 +228,7 @@ export default function AdVoucherPage() {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={0.5}></Grid>
-          <Grid item xs={5.5}>
+          <Grid item xs={6}>
             <Stack direction="row" justifyContent="start" alignItems="center" spacing={1}>
               <div className="filter">
                 <b>Kiểu</b>
@@ -242,6 +242,18 @@ export default function AdVoucherPage() {
                   <MenuItem value={''}>Kiểu</MenuItem>
                   <MenuItem value={0}>Công khai</MenuItem>
                   <MenuItem value={1}>Cá nhân</MenuItem>
+                </Select>
+                <b>Loại</b>
+                <Select
+                  displayEmpty
+                  size="small"
+                  value={searchVoucher.typeValueSearch}
+                  onChange={(e) =>
+                    setSearchVoucher({ ...searchVoucher, typeValueSearch: e.target.value })
+                  }>
+                  <MenuItem value={''}>Loại</MenuItem>
+                  <MenuItem value={0}>Phần trăm</MenuItem>
+                  <MenuItem value={1}>Giá tiền</MenuItem>
                 </Select>
                 <b>Trạng thái</b>
                 <Select
@@ -277,6 +289,9 @@ export default function AdVoucherPage() {
                   <TableCell align="center" width={'15%'}>
                     Kiểu
                   </TableCell>
+                  <TableCell align="center" width={'15%'}>
+                    Loại
+                  </TableCell>
                   <TableCell align="center" width={'17.5%'}>
                     Ngày bắt đầu
                   </TableCell>
@@ -302,6 +317,13 @@ export default function AdVoucherPage() {
                         <Chip className="chip-tat-ca" size="small" label="Công khai" />
                       ) : (
                         <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
+                      )}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.typeValue === 0 ? (
+                        <Chip className="chip-tat-ca" size="small" label="Phần trăm" />
+                      ) : (
+                        <Chip className="chip-gioi-han" size="small" label="Giá tiền" />
                       )}
                     </TableCell>
                     <TableCell align="center">

@@ -41,6 +41,7 @@ export default function Checkout() {
     note: '',
     typePayment: '',
     idVoucher: '',
+    moneyReduced: '',
     shipMoney: '',
     totalMoney: '',
     duKien: '',
@@ -52,7 +53,13 @@ export default function Checkout() {
 
   const [openModalVoucher, setOpenModalVoucher] = useState(false)
 
-  const [voucher, setVoucher] = useState({ id: '', value: 0, name: '' })
+  const [voucher, setVoucher] = useState(null)
+  const [voucherFilter, setVoucherFilter] = useState({
+    idCustomer: null,
+    condition: 0,
+    page: 1,
+    size: 5,
+  })
 
   const navigate = useNavigate()
 
@@ -83,7 +90,7 @@ export default function Checkout() {
   const [selectedTinh, setSelectedTinh] = useState(null)
   const [selectedHuyen, setSelectedHuyen] = useState(null)
   const [selectedXa, setSelectedXa] = useState(null)
-  const [giamGia, setGiamGia] = useState(0)
+  const [giamGia, setGiamGia] = useState('')
   const [timeShip, setTimeShip] = useState('')
   const [phiShip, setPhiShip] = useState('')
   const dispatch = useDispatch()
@@ -146,7 +153,7 @@ export default function Checkout() {
     })
   }
 
-  const [selectedValue, setSelectedValue] = useState(0)
+  const [selectedValue, setSelectedValue] = useState('0')
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value)
@@ -169,6 +176,9 @@ export default function Checkout() {
               price: product.gia,
             }
           }),
+          idVoucher: voucher === null ? null : voucher.id,
+          moneyReduced: giamGia ? giamGia : '0',
+          typePayment: selectedValue,
         }
         if (selectedValue === 0) {
           clientCheckoutApi.datHang(preRequest).then((response) => {
@@ -192,6 +202,14 @@ export default function Checkout() {
         }
       }
     })
+  }
+
+  const handleFilterVoucher = () => {
+    setVoucherFilter({
+      ...voucherFilter,
+      condition: arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0),
+    })
+    setOpenModalVoucher(true)
   }
 
   return (
@@ -337,7 +355,7 @@ export default function Checkout() {
                 name="radio-buttons-group">
                 <div className="ck-pttt">
                   <label style={{ display: 'flex', alignItems: 'center' }}>
-                    <Radio size="small" onChange={handleRadioChange} value={0} />
+                    <Radio size="small" onChange={handleRadioChange} value={'0'} />
                     <img
                       alt="error"
                       src={require('../../assets/image/vnpay.jpg')}
@@ -352,7 +370,7 @@ export default function Checkout() {
                 </div>
                 <div className="ck-pttt">
                   <label style={{ display: 'flex', alignItems: 'center' }}>
-                    <Radio size="small" onChange={handleRadioChange} value={1} />
+                    <Radio size="small" onChange={handleRadioChange} value={'1'} />
                     <img
                       alt="error"
                       src={require('../../assets/image/thanhtoan.jpg')}
@@ -412,23 +430,23 @@ export default function Checkout() {
               <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
                 <TextField
                   sx={{ flex: 1, minWidth: '100px', width: '80%' }}
-                  value={voucher.name === '' ? 'Chọn mã giảm giá' : voucher.name}
+                  value={voucher === null ? 'Mã khuyễn mãi' : voucher.name}
                   size="small"
                   disabled
                 />
                 <Button
                   sx={{ ml: 2, mr: 1, width: 'auto' }}
                   variant="outlined"
-                  onClick={() => setOpenModalVoucher(true)}>
+                  onClick={() => handleFilterVoucher()}>
                   <b>Chọn mã</b>
                 </Button>
                 <ModalVoucher
                   open={openModalVoucher}
                   setOpen={setOpenModalVoucher}
                   setVoucher={setVoucher}
-                  voucher={voucher}
                   arrData={arrData}
                   setGiamGia={setGiamGia}
+                  voucherFilter={voucherFilter}
                 />
               </Grid>
               <Box sx={{ m: 1, ml: 2, mr: 2 }}>
@@ -444,7 +462,9 @@ export default function Checkout() {
                   <Typography>Giảm giá</Typography>
                   <Typography color={'red'}>
                     <b className="ck-phi">
-                      {giamGia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                      {giamGia
+                        ? giamGia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+                        : 0}
                     </b>
                   </Typography>
                 </Stack>

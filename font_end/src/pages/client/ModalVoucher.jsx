@@ -3,7 +3,6 @@ import {
   Button,
   Grid,
   IconButton,
-  List,
   ListItem,
   Modal,
   Radio,
@@ -18,6 +17,7 @@ import React, { useEffect, useState } from 'react'
 import ClientVoucherApi from '../../api/client/ClientVoucherApi'
 import { toast } from 'react-toastify'
 import Empty from '../../components/Empty'
+import './ModalVoucher.css'
 
 const styleModalVoucher = {
   position: 'absolute',
@@ -31,46 +31,62 @@ const styleModalVoucher = {
   boxShadow: 24,
 }
 
-export default function ModalVoucher({ open, setOpen, setVoucher, voucher, arrData, setGiamGia }) {
-  const [request, setRequest] = useState({
-    idCustomer: null,
-    condition: 100,
-    textSearch: null,
-    page: 1,
-    size: 5,
-  })
-
-  const [dataVoucher, setDataVoucher] = useState([])
+export default function ModalVoucher({
+  open,
+  setOpen,
+  setVoucher,
+  arrData,
+  setGiamGia,
+  voucherFilter,
+}) {
+  const [listVoucher, setListVoucher] = useState([])
+  const [dataVoucher, setDataVoucher] = useState(null)
+  const [codeVoucher, setCodeVoucher] = useState('')
 
   const fetchVoucher = (request) => {
     ClientVoucherApi.fetchVoucher(request)
       .then((response) => {
-        setDataVoucher(response.data.data)
+        setListVoucher(response.data.data)
       })
-      .catch((err) => {
-        toast.error('Vui Lòng f5 tải lại trang' + err, {
+      .catch(() => {
+        toast.error('Vui lòng tải lại trang: ', {
           position: toast.POSITION.TOP_CENTER,
         })
       })
   }
 
+  const voucherByCode = (code) => {
+    ClientVoucherApi.voucherByCode(code)
+      .then((response) => {
+        setDataVoucher(response.data.data)
+      })
+      .catch(() => {})
+  }
+
+  const totalMoney = arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0)
+  const totalVoucher = dataVoucher
+    ? dataVoucher.typeValue === 0
+      ? (totalMoney * dataVoucher.value) / 100
+      : dataVoucher.value
+    : 0
+
   const handleGiamGia = () => {
-    setGiamGia(
-      arrData
-        .reduce((tong, e) => tong + e.gia * e.soLuong - e.gia * e.soluong * (voucher.value/100), 0)
-        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }),
-    )
+    dataVoucher != null ? setVoucher(dataVoucher) : setVoucher(null)
+    setGiamGia(totalVoucher)
     setOpen(false)
   }
 
   useEffect(() => {
-    fetchVoucher(request)
-  }, [request])
+    fetchVoucher(voucherFilter)
+    if (codeVoucher.trim() !== '') {
+      voucherByCode(codeVoucher)
+    }
+  }, [voucherFilter, codeVoucher])
 
   return (
-    <div className="scrollbar-modal-add">
+    <div className="client-modal-voucher">
       <Modal open={open} onClose={() => setOpen(false)}>
-        <Box sx={styleModalVoucher}>
+        <Box className="box-modal-voucher" sx={styleModalVoucher}>
           <Toolbar>
             <Box
               sx={{
@@ -78,91 +94,70 @@ export default function ModalVoucher({ open, setOpen, setVoucher, voucher, arrDa
                 flexGrow: 1,
               }}>
               <Typography variant="h6" component="div">
-                Chọn mã khuyễn mãi
+                Chọn mã khuyến mãi
               </Typography>
             </Box>
             <IconButton
+              className="icon-button-close"
               onClick={() => {
                 setOpen(false)
               }}
               aria-label="close"
-              color="error"
-              style={{
-                boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
-              }}>
+              color="error">
               <CloseIcon />
             </IconButton>
           </Toolbar>
-          <Grid
-            sx={{
-              mt: 2,
-              ml: 2,
-              mr: 2,
-              display: 'flex',
-              alignItems: 'center',
-            }}>
+          <Grid className="grid-apply-modal-voucher">
             <TextField
-              sx={{ flex: 1, minWidth: '100px', width: '80%' }}
-              onChange={(e) => setRequest({ ...request, textSearch: e.target.value })}
+              className="text-field-apply-modal-voucher"
               placeholder="Mã giảm giá"
               size="small"
+              value={codeVoucher}
+              onChange={(e) => setCodeVoucher(e.target.value)}
             />
             <Button
-              sx={{ ml: 2, mr: 1, width: 'auto' }}
+              className="button-apply-modal-voucher"
               variant="outlined"
               onClick={() => handleGiamGia()}>
               <b>Áp dụng</b>
             </Button>
           </Grid>
-          <RadioGroup name="voucher" value={voucher.id}>
-            {dataVoucher &&
-              dataVoucher.map((v) => (
-                <ListItem key={v.id} variant="outlined" sx={{ boxShadow: 'sm' }}>
-                  <Grid
-                    sx={{
-                      mt: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      height: '100px',
-                      width: '100%',
-                      border: '1px solid gray',
-                    }}>
-                    <Grid
-                      item
-                      xs={4}
-                      sx={{
-                        textAlign: 'center',
-                      }}>
-                      {v.name}
+          <div className="data-radio-group-modal-voucher">
+            <RadioGroup
+              className="radio-group-modal-voucher"
+              name="voucher"
+              // value={codeVoucher ? codeVoucher : ''}
+            >
+              {listVoucher &&
+                listVoucher.map((v) => (
+                  <ListItem key={v.id} variant="outlined" sx={{ boxShadow: 'sm' }}>
+                    <Grid className="grid-radio-group-modal-voucher">
+                      <Grid item xs={4} className="grid-name-voucher">
+                        {v.name}
+                      </Grid>
+                      <Grid item xs={8} className="grid-information-voucher">
+                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                          <div>
+                            Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
+                            <br />
+                            Giá trị tối đa: {v.maximumValue} VNĐ
+                            <br />
+                            Kiểu: {v.type === 0 ? 'Công khai' : 'Cá nhân'}
+                          </div>
+                          <Radio
+                            name="radioVoucher"
+                            value={v.id}
+                            onClick={() => setCodeVoucher(v.code)}
+                            checked={codeVoucher ? codeVoucher === v.code : false}
+                          />
+                        </Stack>
+                      </Grid>
                     </Grid>
-                    <Grid
-                      item
-                      xs={8}
-                      sx={{
-                        height: '100%',
-                        borderLeft: '1px solid gray',
-                        padding: '16px',
-                      }}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <div>
-                          giá trị: {v.value} %<br />
-                          giá trị tối đa: {v.maximumValue} VNĐ
-                          <br />
-                          {/* Điều kiện: {v.minimumAmount} VNĐ */}
-                        </div>
-                        <Radio
-                          name="radioVoucher"
-                          value={v.id}
-                          onClick={() => setVoucher({ id: v.id, value: v.value, name: v.name })}
-                          checked={voucher.id === v.id}
-                        />
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                </ListItem>
-              ))}
-          </RadioGroup>
-          {!dataVoucher && <Empty />}
+                  </ListItem>
+                ))}
+            </RadioGroup>
+            {!listVoucher && <Empty />}
+          </div>
         </Box>
       </Modal>
     </div>

@@ -17,12 +17,20 @@ public class ClientVoucherServiceImpl implements ClientVoucherService {
     @Override
     public List<ClientVoucherResponse> getAllVoucherByIdCustomer(ClientVoucherRequest request) {
         try {
-            List<ClientVoucherResponse> list = clientVoucherRepository.getAllVoucherByIdCustomer(request);
-            System.out.println("==========================" + list);
-            return list;
+            return clientVoucherRepository.getAllVoucherByIdCustomer(request);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public ClientVoucherResponse getVoucherByCode(String codeVoucher) {
+        ClientVoucherResponse voucherResponse = clientVoucherRepository.getVoucherByCode(codeVoucher);
+        if (voucherResponse == null) {
+            return null;
+        } else {
+            return voucherResponse;
         }
     }
 }

@@ -11,5 +11,4 @@ import java.math.BigDecimal;
 public class ClientVoucherRequest extends PageableRequest {
     private String idCustomer;
     private BigDecimal condition;
-    private String textSearch;
 }
