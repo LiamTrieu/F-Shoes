@@ -383,10 +383,13 @@ export default function Checkout() {
           </Grid>
           <Grid item lg={5} width={'100%'}>
             <Paper sx={{ height: '100%' }} variant="outlined">
-              <LabelTitle title="Đơn hàng của bạn" />
               <Table>
                 {arrData.map((cart) => (
                   <TableBody>
+                    <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
+                      <img src={cart.image} alt={cart.name} className="image-ck" />
+                      <div className="quantity-badge">{cart.soLuong}</div>
+                    </TableCell>
                     <TableCell
                       to={`/product/${cart.id}`}
                       style={{ verticalAlign: 'middle' }}
@@ -404,7 +407,6 @@ export default function Checkout() {
                             ? parseFloat(cart.size).toFixed(0)
                             : parseFloat(cart.size).toFixed(1)}
                         </b>
-                        <p style={{ margin: 0, fontWeight: 'bold' }}>Số Lượng: {cart.soLuong}</p>
                       </span>
                     </TableCell>
                     <TableCell
