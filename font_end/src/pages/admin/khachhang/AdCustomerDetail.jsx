@@ -34,6 +34,7 @@ import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 import StarIcon from '@mui/icons-material/Star'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import AddIcon from '@mui/icons-material/Add'
 import Toast from '../../../components/Toast'
 import './AdCustomerAdd.css'
 import './AdCustomerDetail.css'
@@ -55,6 +56,8 @@ export default function AdCustomerDetail() {
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
   const [loading, setLoading] = useState(false)
+  const [list, setList] = useState([])
+  const [isAddingDiaChi, setIsAddingDiaChi] = useState(false)
 
   const [khachHang, setKhachHang] = useState({
     fullName: '',
@@ -81,9 +84,16 @@ export default function AdCustomerDetail() {
     loadData(id)
     loadDiaChi(initPage - 1, id)
     loadTinh()
+    loadList()
   }, [id, idCustomer, initPage])
   const handleOnChangePage = (page) => {
     setInitPage(page)
+  }
+
+  const loadList = () => {
+    khachHangApi.getAll().then((response) => {
+      setList(response.data)
+    })
   }
   const loadTinh = () => {
     ghnAPI.getProvince().then((response) => {
@@ -152,6 +162,14 @@ export default function AdCustomerDetail() {
     setKhachHang(updatedKhachHang)
   }
 
+  const isPhoneNumberDuplicate = (phoneNumber, currentId) => {
+    return list.some(
+      (customer) => customer.phoneNumber === phoneNumber && customer.id !== currentId,
+    )
+  }
+  const isEmailDuplicate = (email, currentId) => {
+    return list.some((customer) => customer.email === email && customer.id !== currentId)
+  }
   const onSubmit = (id, khachHang) => {
     const newErrors = {}
     const currentDate = dayjs()
@@ -176,9 +194,9 @@ export default function AdCustomerDetail() {
       if (!emailRegex.test(khachHang.email.trim())) {
         newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
         check++
-        // } else if (isEmailDuplicate(khachHang.email)) {
-        //   newErrors.email = 'Email đã tồn tại trong danh sách.'
-        //   check++
+      } else if (isEmailDuplicate(khachHang.email, khachHang.id)) {
+        newErrors.email = 'Email đã tồn tại trong danh sách.'
+        check++
       } else if (khachHang.email.trim().length > 50) {
         newErrors.email = 'Email không được quá 50 kí tự.'
         check++
@@ -195,9 +213,9 @@ export default function AdCustomerDetail() {
       if (!phoneNumberRegex.test(khachHang.phoneNumber.trim())) {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
         check++
-        // } else if (isPhoneNumberDuplicate(khachHang.phoneNumber)) {
-        //   newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
-        //   check++
+      } else if (isPhoneNumberDuplicate(khachHang.phoneNumber, khachHang.id)) {
+        newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
+        check++
       } else {
         newErrors.phoneNumber = ''
       }
@@ -329,13 +347,14 @@ export default function AdCustomerDetail() {
       districtId: null,
       wardId: null,
       specificAddress: '',
-      type: 0,
+      type: null,
       idCustomer: id,
     }
 
-    const updatedDiaChiList = [...diaChi, newDiaChi]
+    const updatedDiaChiList = [newDiaChi, ...diaChi]
 
     setDiaChi(updatedDiaChiList)
+    setIsAddingDiaChi(true)
   }
 
   const [errorsAU, setErrorsAU] = useState({
@@ -401,15 +420,15 @@ export default function AdCustomerDetail() {
       name: diaChi.name,
       phoneNumber: diaChi.phoneNumber,
       email: diaChi.email,
-      provinceId: selectedProvince ? selectedProvince.id : null,
-      districtId: selectedDistrict ? selectedDistrict.id : null,
-      wardId: selectedWard ? selectedWard.id : null,
+      provinceId: selectedProvince ? selectedProvince.id : diaChi.provinceId,
+      districtId: selectedDistrict ? selectedDistrict.id : diaChi.districtId,
+      wardId: selectedWard ? selectedWard.id : diaChi.wardId,
       specificAddress:
         diaChi.specificAddress +
         (selectedWard ? `, ${selectedWard.label}` : '') +
         (selectedDistrict ? `, ${selectedDistrict.label}` : '') +
         (selectedProvince ? `, ${selectedProvince.label}` : ''),
-      type: 0,
+      type: diaChi.type === null ? 0 : diaChi.type,
       idCustomer: id,
     }
 
@@ -612,7 +631,7 @@ export default function AdCustomerDetail() {
               {diaChi.map((item, index) => {
                 return (
                   <div key={index} className="custom-accordion">
-                    <Accordion>
+                    <Accordion expanded={true}>
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls={`panel${index}-content`}
@@ -800,29 +819,51 @@ export default function AdCustomerDetail() {
                             />
                           </Grid>
                         </Grid>
+                        {console.log(item.type)}
                         <IconButton
                           color="cam"
                           aria-label="favorite"
                           size="small"
-                          onClick={() => handleUpdateType(item.id)}>
+                          onClick={() => handleUpdateType(item.id)}
+                          style={{ display: item.type !== null ? 'block' : 'none' }}>
                           {item.type === true ? <StarIcon /> : <StarBorderPurple500SharpIcon />}
                         </IconButton>
-                        <IconButton
-                          onClick={() => deleteDiaChi(item.id)}
-                          size="small"
-                          color="error"
-                          sx={{ float: 'right' }}>
-                          <DeleteIcon />
-                        </IconButton>
-                        <Tooltip title="chỉnh sửa">
+
+                        <Tooltip title="Xóa">
                           <IconButton
-                            onClick={() => onUpdateDiaChi(item)}
+                            onClick={() => deleteDiaChi(item.id)}
                             size="small"
-                            color="cam"
-                            sx={{ float: 'right' }}>
-                            <EditIcon />
+                            color="error"
+                            sx={{
+                              float: 'right',
+                              display: item.type !== null ? 'block' : 'none',
+                            }}
+                            disabled={item.type === true}>
+                            <DeleteIcon />
                           </IconButton>
                         </Tooltip>
+
+                        {item.type === null ? (
+                          <Tooltip title="Thêm">
+                            <IconButton
+                              onClick={() => onUpdateDiaChi(item)}
+                              size="small"
+                              color="cam"
+                              sx={{ float: 'right' }}>
+                              <AddIcon />
+                            </IconButton>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="Chỉnh sửa">
+                            <IconButton
+                              onClick={() => onUpdateDiaChi(item)}
+                              size="small"
+                              color="cam"
+                              sx={{ float: 'right' }}>
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                       </AccordionDetails>
                     </Accordion>
                   </div>
@@ -830,15 +871,11 @@ export default function AdCustomerDetail() {
               })}
               <Grid container item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
                 <Grid item xs={12} md={4}>
-                  <Button
-                    onClick={() => {
-                      createDiaChi()
-                    }}
-                    variant="outlined"
-                    color="cam"
-                    size="small">
-                    Thêm địa chỉ
-                  </Button>
+                  {!isAddingDiaChi && (
+                    <Button onClick={createDiaChi} variant="outlined" color="cam" size="small">
+                      Thêm địa chỉ
+                    </Button>
+                  )}
                 </Grid>
                 <Grid item xs={12} md={2}></Grid>
                 <Grid item xs={12} md={1}></Grid>

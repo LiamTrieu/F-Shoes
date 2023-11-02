@@ -28,6 +28,7 @@ import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
+import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 
 const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
 
@@ -42,12 +43,14 @@ export default function AdStaffDetail() {
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
+  const [list, setList] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
     loadData(id)
     loadDiaChi(initPage - 1, id)
     loadTinh()
+    loadList()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, initPage])
 
@@ -71,6 +74,11 @@ export default function AdStaffDetail() {
       })
   }
 
+  const loadList = () => {
+    khachHangApi.getAll().then((response) => {
+      setList(response.data)
+    })
+  }
   const handleRoleRadioChange = (event) => {
     setStaffDetail({
       ...staffDetail,
@@ -109,6 +117,17 @@ export default function AdStaffDetail() {
     specificAddress: '',
   })
 
+  const isPhoneNumberDuplicate = (phoneNumber, currentId) => {
+    return list.some(
+      (customer) => customer.phoneNumber === phoneNumber && customer.id !== currentId,
+    )
+  }
+  const isEmailDuplicate = (email, currentId) => {
+    return list.some((customer) => customer.email === email && customer.id !== currentId)
+  }
+  const isCitizenIdDuplicate = (citizenId, currentId) => {
+    return list.some((customer) => customer.citizenId === citizenId && customer.id !== currentId)
+  }
   const handleButtonUpdateStaff = () => {
     const newErrors = {}
     const currentDate = dayjs()
@@ -136,6 +155,9 @@ export default function AdStaffDetail() {
       } else if (staffDetail.email.trim().length > 50) {
         newErrors.email = 'Email không được quá 50 kí tự.'
         check++
+      } else if (isEmailDuplicate(staffDetail.email, staffDetail.id)) {
+        newErrors.email = 'Email đã tồn tại trong danh sách.'
+        check++
       } else {
         newErrors.email = ''
       }
@@ -149,6 +171,9 @@ export default function AdStaffDetail() {
       if (!citizenIdRegex.test(staffDetail.citizenId.trim())) {
         newErrors.citizenId = 'Số CCCD không hợp lệ.'
         check++
+      } else if (isCitizenIdDuplicate(staffDetail.citizenId, staffDetail.id)) {
+        newErrors.citizenId = 'CCCD đã tồn tại trong danh sách.'
+        check++
       } else {
         newErrors.citizenId = ''
       }
@@ -161,6 +186,9 @@ export default function AdStaffDetail() {
       const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
       if (!phoneNumberRegex.test(staffDetail.phoneNumber.trim())) {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        check++
+      } else if (isPhoneNumberDuplicate(staffDetail.phoneNumber, staffDetail.id)) {
+        newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
         check++
       } else {
         newErrors.phoneNumber = ''
