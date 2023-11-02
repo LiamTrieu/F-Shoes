@@ -181,7 +181,7 @@ export default function Checkout() {
           typePayment: selectedValue,
         }
         if (selectedValue === 0) {
-          clientCheckoutApi.datHang(preRequest).then((response) => {
+          clientCheckoutApi.datHang({ ...preRequest, status: 1 }).then((response) => {
             if (response.data.success) {
               arrData.forEach((e) => {
                 dispatch(removeCart(e))
@@ -191,14 +191,9 @@ export default function Checkout() {
             }
           })
         } else {
-          clientCheckoutApi
-            .submitOrder(
-              preRequest.totalMoney + preRequest.shipMoney,
-              'Thanh toan don hang F-Shoes',
-            )
-            .then((response) => {
-              console.log(response.data)
-            })
+          clientCheckoutApi.submitOrder({ ...preRequest, status: 8 }).then((response) => {
+            window.location.href = response.data
+          })
         }
       }
     })

@@ -67,6 +67,9 @@ public class Bill extends PrimaryEntity {
 
     private StatusBill status;
 
+    @Column(length = EntityProperties.LENGTH_EMAIL)
+    private String email;
+
     @ManyToOne
     @JoinColumn(name = "id_customer", referencedColumnName = "id")
     private Account customer;

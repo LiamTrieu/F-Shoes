@@ -79,7 +79,7 @@ export default function DetailProduct() {
         }),
       )
     })
-  }, [])
+  }, [sizeSelect])
 
   const dispatch = useDispatch()
   const addProductToCart = () => {

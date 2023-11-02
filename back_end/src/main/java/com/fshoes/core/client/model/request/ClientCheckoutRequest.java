@@ -1,6 +1,8 @@
 package com.fshoes.core.client.model.request;
 
+import com.fshoes.entity.Bill;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -24,5 +26,6 @@ public class ClientCheckoutRequest {
     private String moneyReduced;
     private String totalMoney;
     private Long duKien;
+    private Integer status;
     private List<ClientBillDetaillRequest> billDetail;
 }
