@@ -49,7 +49,7 @@ public class DiaChiServiceImpl implements DiaChiService {
 
     @Override
     public Page<DiaChiRespone> getAllAddressByIdCustomer(int p, String idCustomer) {
-        Pageable pageable = PageRequest.of(p, 5);
+        Pageable pageable = PageRequest.of(p, 2);
         return diaChiRepository.getPageAddressByIdCustomer(pageable, idCustomer);
     }
 
@@ -60,7 +60,7 @@ public class DiaChiServiceImpl implements DiaChiService {
 
     @Override
     public Page<Address> getPage(int p) {
-        Pageable pageable = PageRequest.of(p, 3);
+        Pageable pageable = PageRequest.of(p, 2);
         return diaChiRepository.findAll(pageable);
     }
 
