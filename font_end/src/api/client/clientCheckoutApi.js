@@ -5,13 +5,13 @@ const clientCheckoutApi = {
     const url = `/client/checkout`
     return axiosClient.post(url, request)
   },
-  submitOrder: (amount, orderInfo) => {
-    const url = `/client/checkout/submitOrder?amount=${amount}&orderInfo=${orderInfo}`
-    return axiosClient.post(url)
+  submitOrder: (request) => {
+    const url = `/client/checkout/submitOrder`
+    return axiosClient.post(url, request)
   },
   payment: (request) => {
     const url = `/client/checkout/payment`
-    return axiosClient.post(url, request)
+    return axiosClient.get(url, { params: request })
   },
 }
 export default clientCheckoutApi

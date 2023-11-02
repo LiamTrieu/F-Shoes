@@ -1,4 +1,5 @@
 package com.fshoes.infrastructure.vnpay;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,6 @@ public class VNPayConfig {
     public static String vnp_Returnurl = "/vnpay-payment";
     public static String vnp_TmnCode = "EVVKK18Z";
     public static String vnp_HashSecret = "GCZAYVYOCIIDTCBZEJTTUTTTCOOPQLAK";
-    public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     public static String hashAllFields(Map fields) {
         List fieldNames = new ArrayList(fields.keySet());
@@ -35,7 +35,7 @@ public class VNPayConfig {
                 sb.append("&");
             }
         }
-        return hmacSHA512(vnp_HashSecret,sb.toString());
+        return hmacSHA512(vnp_HashSecret, sb.toString());
     }
 
     public static String hmacSHA512(final String key, final String data) {
@@ -59,16 +59,5 @@ public class VNPayConfig {
         } catch (Exception ex) {
             return "";
         }
-    }
-
-
-    public static String getRandomNumber(int len) {
-        Random rnd = new Random();
-        String chars = "0123456789";
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            sb.append(chars.charAt(rnd.nextInt(chars.length())));
-        }
-        return sb.toString();
     }
 }
