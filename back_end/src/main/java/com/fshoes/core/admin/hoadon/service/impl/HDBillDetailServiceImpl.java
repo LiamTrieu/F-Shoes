@@ -22,7 +22,7 @@ import java.util.Objects;
 public class HDBillDetailServiceImpl implements HDBillDetailService {
 
     @Autowired
-    private HDBillDetailRepository hdBillDetailRepository;
+    private HDBillDetailRepository  hdBillDetailRepository;
 
     @Autowired
     private ProductDetailRepository productDetailRepository;

@@ -44,6 +44,7 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import TimeLine from './TimeLine'
 import AdBillModalThemSP from './AdBillModalThemSP'
 import confirmSatus from '../../../components/comfirmSwal'
+import ModalAdBillUpdateAddress from './AdBillModalUpdateAddress'
 
 const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
 
@@ -69,6 +70,8 @@ export default function AdBillDetail() {
   const [isUpdateBill, setIsUpdateBill] = useState(false)
   const [isShowBtnConfirmPayment, setIsShowBtnConfirmPayment] = useState(false)
   const [openModalThemSP, setOpenModalThemSP] = useState(false)
+
+  const [openModalUpdateAdd, setopenModalUpdateAdd] = useState(false)
 
   const totalProductsCost = listBillDetail.reduce((total, row) => {
     return total + row.quantity * row.price
@@ -720,6 +723,7 @@ export default function AdBillDetail() {
       .then((response) => {
         setBillDetail(response.data.data)
         setMoneyAfter(response.data.data.moneyAfter)
+        console.log(response.data.data)
         setLoading(false)
       })
       .catch((error) => {
@@ -863,7 +867,13 @@ export default function AdBillDetail() {
       <AdBillModalThemSP
         open={openModalThemSP}
         setOPen={setOpenModalThemSP}
-        idBill={billDetail ? billDetail.id : null}
+        billDetail={billDetail ? billDetail : null}
+      />
+      <ModalAdBillUpdateAddress
+        open={openModalUpdateAdd}
+        setOPen={setopenModalUpdateAdd}
+        billDetail={billDetail}
+        listBillDetail={listBillDetail}
       />
       <BreadcrumbsCustom listLink={listHis} nameHere={'Chi tiết hoá đơn'} />
       <Paper className="time-line" elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
@@ -903,7 +913,8 @@ export default function AdBillDetail() {
               variant="outlined"
               className="them-moi"
               color="cam"
-              style={{ marginRight: '5px' }}>
+              style={{ marginRight: '5px' }}
+              onClick={() => setopenModalUpdateAdd(true)}>
               Cập nhật
             </Button>
           )}

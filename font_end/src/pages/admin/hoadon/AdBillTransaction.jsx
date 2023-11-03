@@ -45,8 +45,8 @@ const AdBillTransaction = (props) => {
                 </TableCell>
                 <TableCell align="center">
                   <Chip
-                    className={row.type ? 'chip-thanh-toan' : 'chip-hoan-tien'}
-                    label={row.type ? 'Thanh toán' : 'Hoàn tiền'}
+                    className={row.type ? 'chip-hoan-tien' : 'chip-thanh-toan'}
+                    label={row.type ? 'Hoàn tiền' : 'Thanh toán'}
                     size="small"
                   />
                 </TableCell>
