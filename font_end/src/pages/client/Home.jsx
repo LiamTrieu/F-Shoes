@@ -2,10 +2,9 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import { Button, Container, Grid, Typography } from '@mui/material'
 import CartProduct from '../../layout/client/CartProduct'
-import LabelTitle from '../../layout/client/LabelTitle'
 import './Home.css'
 import clientProductApi from '../../api/client/clientProductApi'
-import Carousel from 'react-material-ui-carousel'
+import CartProductHome from '../../layout/client/CartProductHome'
 
 export default function Home() {
   const [products, setProducts] = useState([])
@@ -123,50 +122,52 @@ export default function Home() {
               <Button className="btn-product">Shop Apparel</Button>
             </div>
           </Container>
-          <Container maxWidth="lg">
-            <Box className="new-product">
-              {/* <LabelTitle text="Sản phẩm mới" /> */}
+          <div className="product-home">
+            <Container maxWidth="xl">
+              <Box className="new-product">
+                <Button className="product">NEW PRODUCT</Button>
+                <div className="cart-product-home">
+                  <CartProductHome products={products} colsm={6} colmd={4} collg={3} />
+                </div>
+              </Box>
 
-              <Button className="product">NEW PRODUCT</Button>
-              <CartProduct products={products} colsm={6} colmd={4} collg={3} />
-            </Box>
-
-            <Box className="about-us">
-              <Grid container spacing={12}>
-                <Grid item xs={6}>
-                  <Typography className="text-about-us">VỀ CHÚNG TÔI</Typography>
-                  <Typography>
-                    {' '}
-                    <span className="fShoes">F_Shoes</span> -{' '}
-                    <span className="fshoes-shop"> Shop Giày F-Shoes</span>
-                  </Typography>
-                  <span>
-                    Cung cấp hơn 500 đôi giày replica 1:1, sneaker nam, nữ của các thương hiệu như
-                    Adidas, Nike, Jordan, Yeezy, Balenciaga, Gucci, MLB,… Hàng chuẩn, Like Auth,
-                    Giày rep 1:1 với chất lượng tốt nhất, giá rẻ nhất thị trường hiện nay. Giao hàng
-                    nhanh toàn quốc, chính sách đổi trả và chính sách bảo hành linh hoạt.
-                    <br />
-                    <br /> Nếu bạn không đủ tài chính để mua một đôi giày chính hãng hoặc gặp khó
-                    khăn về việc đặt hàng và size giày, Tyhi Sneaker sẽ giúp bạn chọn một đôi giày
-                    rep 1:1 hợp với đôi chân của bạn. Chúng tôi cung cấp các mẫu giày sneaker
-                    replica chất lượng với chi tiết chuẩn hàng Auth. Chúng tôi đa dạng về mẫu mã và
-                    luôn có sẵn hàng.
-                    <br />
-                    <br /> Hãy đến với Tyhi Sneaker -Shop Giày Replica để trải nghiệm sự khác biệt
-                    về chất lượng và dịch vụ. Chúng tôi sẵn lòng phục vụ bạn và đem đến cho bạn
-                    những đôi giày sneaker tuyệt vời mà bạn đang tìm kiếm.
-                  </span>
+              <Box className="about-us">
+                <Grid container spacing={12}>
+                  <Grid item xs={6}>
+                    <Typography className="text-about-us">VỀ CHÚNG TÔI</Typography>
+                    <Typography>
+                      {' '}
+                      <span className="fShoes">F_Shoes</span> -{' '}
+                      <span className="fshoes-shop"> Shop Giày F-Shoes</span>
+                    </Typography>
+                    <span>
+                      Cung cấp hơn 500 đôi giày replica 1:1, sneaker nam, nữ của các thương hiệu như
+                      Adidas, Nike, Jordan, Yeezy, Balenciaga, Gucci, MLB,… Hàng chuẩn, Like Auth,
+                      Giày rep 1:1 với chất lượng tốt nhất, giá rẻ nhất thị trường hiện nay. Giao
+                      hàng nhanh toàn quốc, chính sách đổi trả và chính sách bảo hành linh hoạt.
+                      <br />
+                      <br /> Nếu bạn không đủ tài chính để mua một đôi giày chính hãng hoặc gặp khó
+                      khăn về việc đặt hàng và size giày, Tyhi Sneaker sẽ giúp bạn chọn một đôi giày
+                      rep 1:1 hợp với đôi chân của bạn. Chúng tôi cung cấp các mẫu giày sneaker
+                      replica chất lượng với chi tiết chuẩn hàng Auth. Chúng tôi đa dạng về mẫu mã
+                      và luôn có sẵn hàng.
+                      <br />
+                      <br /> Hãy đến với Tyhi Sneaker -Shop Giày Replica để trải nghiệm sự khác biệt
+                      về chất lượng và dịch vụ. Chúng tôi sẵn lòng phục vụ bạn và đem đến cho bạn
+                      những đôi giày sneaker tuyệt vời mà bạn đang tìm kiếm.
+                    </span>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <img
+                      src={require('../../assets/image/banner.jpg')}
+                      alt=""
+                      style={{ width: '100%' }}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <img
-                    src={require('../../assets/image/banner.jpg')}
-                    alt=""
-                    style={{ width: '100%' }}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </Container>
+              </Box>
+            </Container>
+          </div>
         </Fragment>
       </div>
     </>

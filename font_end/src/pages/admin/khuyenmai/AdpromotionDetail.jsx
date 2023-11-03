@@ -126,8 +126,7 @@ export default function AdPromotionDetail() {
 
   useEffect(() => {
     getProductDetailById(filterDetailByProduct, selectedProductIds)
-    // handleRowCheckboxChange1(id)
-  }, [filterDetailByProduct, selectedProductIds, id])
+  }, [filterDetailByProduct, selectedProductIds])
 
   const validate = () => {
     const timeStart = dayjs(updatePromotion.timeStart, 'DD/MM/YYYY')
@@ -239,6 +238,7 @@ export default function AdPromotionDetail() {
         console.log(error)
       })
   }
+
   useEffect(() => {
     detail(id)
   }, [id])

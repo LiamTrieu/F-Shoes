@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface AdminProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
-                   SELECT bd.id as idBillDetail ,pd.id, pr.id as promotion,pr.value, bd.quantity,
+                   SELECT bd.id as idBillDetail ,pd.id, pr.id as promotion,pr.status as statusPromotion ,pr.value, bd.quantity,
                    p.name as nameProduct, pd.price, s.size, MAX(i.url) as image   
                    FROM product_detail pd 
                    left join bill_detail bd on bd.id_product_detail = pd.id 
@@ -41,8 +41,23 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
     List<GetColorResponse> getlistColor();
 
 
-    @Query(value = """
-            SELECT id, amount  FROM product_detail where id = ?
+    @Query(value = """   
+               SELECT  pd.id, pr.id as promotion,pr.status as statusPromotion ,pr.value, p.name as nameProduct,
+                                                pd.price,pd.weight, s.size, 
+                                                pd.amount,pd.id as productDetailId,
+                                                m.name as material, sl.name as sole,b.name as brand,c.name as color ,
+                                                cate.name as category
+             									FROM product_detail pd left join product p
+                                                  on  pd.id_product = p.id left join size s
+                                                  on s.id = pd.id_size
+                                                  left join material m on m.id = pd.id_material
+                                                  left join category cate on cate.id = pd.id_category
+                                                  left join sole sl on sl.id = pd.id_sole
+                                                  left join brand b on b.id  = pd.id_brand
+                                                  left join color c on c.id = pd.id_color
+                                                  left join product_promotion pp on pd.id = pp.id_product_detail
+                                                  left join promotion pr on pr.id = pp.id_promotion
+                                                  where pd.id = ?
             """, nativeQuery = true)
     GetAmountProductResponse getAmount(String id);
 

@@ -40,7 +40,8 @@
 .container-portfolio .grid-drawer-portfolio {
   position: -webkit-sticky !important;
   position: sticky !important;
-  top: 0;
+  /* top: 0; */
+  margin-top: 40px;
 }
 
 .container-portfolio .drawer-portfolio {
@@ -62,9 +63,9 @@
   width: 50% !important;
 }
 
-.container-portfolio .stack-filter-portfolio .stack-input-filter fieldset {
+/* .container-portfolio .stack-filter-portfolio .stack-input-filter fieldset {
   border-radius: 8px !important;
-}
+} */
 
 .container-portfolio .stack-filter-portfolio .stack-input-filter:hover fieldset {
   border-color: #fc7c27 !important;
@@ -103,4 +104,8 @@
   -ms-overflow-style: none;
   padding-left: 10px;
   max-height: 40rem !important;
+}
+.cart-product-portfolio {
+  overflow: auto;
+  max-height: 1000px;
 }

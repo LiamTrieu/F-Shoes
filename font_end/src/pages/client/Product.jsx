@@ -14,11 +14,8 @@ import {
   FormControl,
   FormControlLabel,
   InputAdornment,
-  MenuItem,
-  Pagination,
   Radio,
   RadioGroup,
-  Select,
   Slider,
   Stack,
   TextField,
@@ -33,6 +30,8 @@ import { GrMoney } from 'react-icons/gr'
 import SearchIcon from '@mui/icons-material/Search'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import clientProductApi from '../../api/client/clientProductApi'
+import FilterAltIcon from '@mui/icons-material/FilterAlt'
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
 
 const listFake = [
   { id: 1, title: 'fake 1', code: '#0294D7' },
@@ -55,6 +54,8 @@ export default function Product() {
   const [openColor, setOpenColor] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false)
   const [products, setProducts] = useState([])
+  const [showMenuBar, setShowMenuBar] = useState(true)
+  const [isMenuBarVisible, setIsMenuBarVisible] = useState(true)
 
   useEffect(() => {
     clientProductApi.get().then((result) => {
@@ -66,6 +67,8 @@ export default function Product() {
             title: e.name,
             priceBefort: e.price,
             priceAfter: e.price,
+            value: e.value,
+            promotion: e.promotion,
             image: e.image.split(','),
             idProduct: e.idProduct,
             idColor: e.idColor,
@@ -95,6 +98,12 @@ export default function Product() {
     } else {
       setValue1([value1[0], Math.max(newValue[1], value1[0] + 10)])
     }
+  }
+
+  const toggleMenuBar = () => {
+    setShowMenuBar(!showMenuBar)
+
+    setIsMenuBarVisible(!isMenuBarVisible)
   }
 
   const MenuBar = () => {
@@ -243,31 +252,31 @@ export default function Product() {
   return (
     <Container maxWidth="xl" className="container-portfolio">
       <Grid container spacing={1}>
-        <Grid item xs={2.5} className="grid-drawer-portfolio">
-          <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
-            <MenuBar />
-          </Box>
-          <IconButton
-            color="inherit"
-            aria-label="menu"
-            onClick={handleDrawerToggle}
-            edge="start"
-            sx={{ display: { sm: 'block', md: 'none' } }} // Chỉ hiển thị icon menu trên màn hình sm
-          >
-            <MenuIcon />
-          </IconButton>
-          <Drawer
-            PaperProps={{
-              className: 'drawer-portfolio',
-            }}
-            anchor="left"
-            open={openDrawer}
-            onClose={handleDrawerToggle}>
-            <MenuBar />
-          </Drawer>
-        </Grid>
-
-        <Grid item xs={9.5}>
+        {isMenuBarVisible && (
+          <Grid item xs={2.5} className="grid-drawer-portfolio">
+            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+              <MenuBar />
+            </Box>
+            <IconButton
+              color="inherit"
+              aria-label="menu"
+              onClick={handleDrawerToggle}
+              edge="start"
+              sx={{ display: { sm: 'block', md: 'none' } }}>
+              <MenuIcon />
+            </IconButton>
+            <Drawer
+              PaperProps={{
+                className: 'drawer-portfolio',
+              }}
+              anchor="left"
+              open={openDrawer}
+              onClose={handleDrawerToggle}>
+              <MenuBar />
+            </Drawer>
+          </Grid>
+        )}
+        <Grid item xs={isMenuBarVisible ? 9.5 : 12}>
           <Box sx={{ width: '100%' }}>
             <Stack className="stack-filter-portfolio" direction="row">
               <TextField
@@ -284,36 +293,17 @@ export default function Product() {
                 }}
               />
               <Typography className="stack-typography-portfolio" component="span" variant={'body2'}>
-                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
-                  Sắp xếp
+                <Typography
+                  onClick={toggleMenuBar}
+                  sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                  {showMenuBar ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
+                  {showMenuBar ? <FilterAltIcon /> : <FilterAltOffIcon />}
                 </Typography>
-                <Select className="stack-sort-portfolio" value={1}>
-                  <MenuItem value={1}>Tùy chọn</MenuItem>
-                  <MenuItem value={5}>Tăng dần</MenuItem>
-                  <MenuItem value={10}>Giảm dần</MenuItem>
-                </Select>
               </Typography>
             </Stack>
             <div className="cart-product-portfolio">
-              {/* <LabelTitle text="Tất cả sản phẩm" /> */}
-              <CartProduct products={products} colmd={4} collg={3} />
+              <CartProduct products={products} colmd={6} collg={4} />
             </div>
-            <Stack className="stack-product-portfolio" direction="row">
-              <Typography className="stack-typography-portfolio" component="span" variant={'body2'}>
-                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
-                <Select className="stack-select-portfolio" value={1}>
-                  <MenuItem value={1}>1</MenuItem>
-                  <MenuItem value={5}>5</MenuItem>
-                  <MenuItem value={10}>10</MenuItem>
-                  <MenuItem value={15}>15</MenuItem>
-                  <MenuItem value={20}>20</MenuItem>
-                </Select>
-                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
-                  sản phẩm
-                </Typography>
-              </Typography>
-              <Pagination count={10} variant="outlined" shape="rounded" />
-            </Stack>
           </Box>
         </Grid>
       </Grid>

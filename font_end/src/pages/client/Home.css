@@ -81,3 +81,32 @@
   color: white !important;
   font-weight: 700 !important;
 }
+.product-home .MuiContainer-root {
+  padding-left: 120px !important;
+  padding-right: 120px !important;
+}
+.cart-product-home {
+  max-width: 100%; /* Đảm bảo chiều rộng tối thiểu bằng 100% */
+  overflow-x: auto; /* Bật cuộn ngang khi nội dung vượt quá chiều rộng */
+  white-space: nowrap; /* Ngăn text bị ngắt dòng */
+}
+
+.cart-product-home::-webkit-scrollbar {
+  width: 1px;
+  height: 7px; /* Độ rộng thanh cuộn */
+}
+
+.cart-product-home::-webkit-scrollbar-thumb {
+  background: orange; /* Màu của nút cuộn */
+}
+
+.cart-product-home::-webkit-scrollbar-thumb:hover {
+  background: rgb(234, 186, 97); /* Màu của nút cuộn khi di chuột qua */
+}
+.cart-product-home .MuiButtonBase-root {
+  width: 25%;
+  padding: 9px;
+}
+.cart-product-home .MuiPaper-root {
+  width: 100%;
+}
