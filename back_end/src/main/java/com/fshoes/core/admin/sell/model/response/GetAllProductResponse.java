@@ -32,4 +32,6 @@ public interface GetAllProductResponse extends IsIdentified {
     String getBrand();
 
     String getCode();
+
+    Integer getStatusPromotion();
 }

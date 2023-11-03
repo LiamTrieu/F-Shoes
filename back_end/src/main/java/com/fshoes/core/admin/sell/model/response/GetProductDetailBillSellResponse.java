@@ -19,6 +19,7 @@ public interface GetProductDetailBillSellResponse extends IsIdentified {
     String getPromotion();
 
     String getValue();
+    Integer getStatusPromotion();
 
 
 }

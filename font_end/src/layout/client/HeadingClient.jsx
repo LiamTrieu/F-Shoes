@@ -64,7 +64,7 @@ export default function HeadingClient() {
           color="inherit">
           Sản phẩm
         </Typography>
-        <Typography
+        {/* <Typography
           onClick={() => {
             setOpenDrawer(false)
           }}
@@ -97,7 +97,7 @@ export default function HeadingClient() {
           to="/contact"
           color="inherit">
           Liên hệ
-        </Typography>
+        </Typography> */}
         <Typography
           onClick={() => {
             setOpenDrawer(false)

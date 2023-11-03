@@ -46,8 +46,8 @@ const styleModalProductDetail = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: { xs: '40vw', md: '28vw' },
-  height: '180px',
+  width: { xs: '100vw', md: '38vw' },
+  height: '300px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
@@ -57,6 +57,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
   const [isShowProductDetail, setIsShowProductDetail] = useState(false)
   const [listProduct, setListProduct] = useState([])
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [errorQuantity, setErrorQuantity] = useState('')
 
   const [filter, setFilter] = useState({
     brand: null,
@@ -94,10 +95,12 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
   }
 
   const updateQuantityProductDetail = (id, quantity) => {
-    sellApi
-      .updateQuantityProductDetail(id, quantity)
-      .then((response) => {})
-      .catch((error) => {})
+    if (addAmount <= getAmountProduct.amount) {
+      sellApi
+        .updateQuantityProductDetail(id, quantity)
+        .then((response) => {})
+        .catch((error) => {})
+    }
   }
 
   useEffect(() => {
@@ -126,10 +129,8 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
       setListProduct(response.data.data)
     })
   }
-  // const [, forceUpdate] = useState()
   useEffect(() => {
     fecthData(filter)
-    // forceUpdate({})
   }, [filter])
 
   const onSubmitAddBillDetail = (id, idBill) => {
@@ -137,22 +138,27 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     if (selectedProduct.value) {
       priceToAdd = (selectedProduct.price * (100 - selectedProduct.value)) / 100
     }
-    const BillDetail = {
-      billId: idBill,
-      productDetailId: id,
-      quantity: addAmount,
-      price: priceToAdd,
-    }
-    console.log(BillDetail)
+    if (addAmount > getAmountProduct.amount) {
+      setErrorQuantity('Số lượng không còn đủ')
+      return
+    } else {
+      setErrorQuantity('')
+      const BillDetail = {
+        billId: idBill,
+        productDetailId: id,
+        quantity: addAmount,
+        price: priceToAdd,
+      }
 
-    sellApi.addBillDetail(BillDetail, idBill).then(() => {
-      toast.success('Thêm sản phẩm thành công', {
-        position: toast.POSITION.TOP_CENTER,
+      sellApi.addBillDetail(BillDetail, idBill).then(() => {
+        toast.success('Thêm sản phẩm thành công', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+        setAddAmount(1)
+        setIsShowProductDetail(false)
+        load(idBill)
       })
-      setAddAmount(1)
-      setIsShowProductDetail(false)
-      load(idBill)
-    })
+    }
   }
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
@@ -409,7 +415,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       <TableCell width={'15%'} align="center">
                         <div style={{ position: 'relative' }}>
                           <img width={'100%'} alt="error" src={cart.url} />
-                          {cart.value && (
+                          {cart.value && cart.statusPromotion === 1 && (
                             <div
                               style={{
                                 position: 'absolute',
@@ -439,7 +445,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       <TableCell align="center">{cart.color}</TableCell>
                       <TableCell align="center">{cart.material}</TableCell>
                       <TableCell align="center">{cart.size}</TableCell>
-
                       <TableCell
                         align="center"
                         sx={{
@@ -447,8 +452,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                           fontWeight: 'bold',
                         }}>
                         <p style={{ color: 'red', margin: '5px 0' }}>
-                          {/* <b>{cart.price}.000&#8363;</b> */}
-                          {cart.promotion ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
+                          {cart.promotion && cart.statusPromotion === 1 ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
                             <div>
                               <div className="promotion-price">{`${formatPrice(cart.price)}`}</div>{' '}
                               {/* Hiển thị giá gốc */}
@@ -500,10 +504,48 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       color: 'black',
                       flexGrow: 1,
                     }}>
-                    <Typography variant="h6" component="div">
-                      Air Jordan 1 Mid - Neutral Grey
+                    <Typography
+                      style={{
+                        fontSize: '25px',
+                        fontWeight: 'bold',
+                        marginBottom: '30px',
+                        marginTop: '30px',
+                      }}
+                      component="div">
+                      {getAmountProduct.nameProduct +
+                        '-' +
+                        getAmountProduct.material +
+                        '-' +
+                        getAmountProduct.category +
+                        '-' +
+                        getAmountProduct.sole +
+                        '-' +
+                        getAmountProduct.brand +
+                        '-' +
+                        getAmountProduct.color}
                     </Typography>
+                    <p style={{ color: 'red', margin: '5px 0' }}>
+                      {getAmountProduct.promotion && getAmountProduct.statusPromotion === 1 ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
+                        <div style={{ display: 'flex' }}>
+                          <div className="promotion-price">{`${getAmountProduct.price}đ`}</div>{' '}
+                          <div>
+                            <span style={{ color: 'red', fontWeight: 'bold' }}>
+                              {`${formatPrice(
+                                calculateDiscountedPrice(
+                                  getAmountProduct.price,
+                                  getAmountProduct.value,
+                                ) * addAmount,
+                              )}`}
+                            </span>{' '}
+                          </div>
+                        </div>
+                      ) : (
+                        <span>{`${getAmountProduct.price * addAmount}đ`}</span>
+                      )}
+                    </p>
+                    {'size:' + getAmountProduct.size}
                   </Box>
+
                   <IconButton
                     onClick={() => {
                       setIsShowProductDetail(false)
@@ -556,6 +598,9 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                         <AddIcon fontSize="1px" />
                       </IconButton>
                     </Box>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: 'red' }}>
+                      {errorQuantity}
+                    </div>
                   </Box>
                   <Stack
                     direction="row"

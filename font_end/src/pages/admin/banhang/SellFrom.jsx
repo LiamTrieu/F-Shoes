@@ -170,15 +170,21 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   }
 
   const deleteProductDetail = (idBill, idPrDetail) => {
-    sellApi
-      .deleteProductDetail(idBill, idPrDetail)
-      .then((response) => {
-        toast.success('Bạn đã bỏ sản phẩm ra thành công', { position: toast.POSITION.TOP_CENTER })
-        fectchProductBillSell(idBill)
+    if (idPrDetail.length <= 0) {
+      toast.error('Bạn chưa chọn sản phẩm để xóa hoặc không có sản phẩm trong giỏ hàng', {
+        position: toast.POSITION.TOP_RIGHT,
       })
-      .catch((error) => {
-        toast.error('Bạn đã bỏ sản phẩm ra thất bại', { position: toast.POSITION.TOP_CENTER })
-      })
+    } else {
+      sellApi
+        .deleteProductDetail(idBill, idPrDetail)
+        .then((response) => {
+          toast.success('Bạn đã bỏ sản phẩm ra thành công', { position: toast.POSITION.TOP_CENTER })
+          fectchProductBillSell(idBill)
+        })
+        .catch((error) => {
+          toast.error('Bạn đã bỏ sản phẩm ra thất bại', { position: toast.POSITION.TOP_CENTER })
+        })
+    }
   }
 
   const openAddProductModal = () => {
@@ -832,13 +838,18 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
-        <Box p={2} sx={{ borderBottom: '1px dotted gray' }}>
-          {/* <Checkbox checked={selectAll} onChange={handleSelectAllChange} /> */}
-          <DeleteForeverIcon onClick={() => deleteProductDetail(idBill, selectedProductIds)} />
+        <Box
+          p={2}
+          sx={{
+            borderBottom: '1px dotted gray',
+          }}>
+          <DeleteForeverIcon
+            style={{ paddingTop: '8px', color: 'red' }}
+            onClick={() => deleteProductDetail(idBill, selectedProductIds)}
+          />
           <Typography fontWeight={'bold'} variant="h6" display={'inline'}>
             Sản phẩm
           </Typography>
-
           <Button
             onClick={openAddProductModal}
             sx={{ float: 'right', borderRadius: '8px' }}
@@ -891,7 +902,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                             verticalAlign: 'middle',
                           }}
                         />
-                        {cart.value && (
+                        {cart.value && cart.statusPromotion === 1 && (
                           <div
                             style={{
                               position: 'absolute',
@@ -923,8 +934,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                           <b>{cart.nameProduct}</b>
                         </p>
                         <p style={{ color: 'red', margin: '5px 0' }}>
-                          {/* <b>{cart.price}.000&#8363;</b> */}
-                          {cart.promotion ? (
+                          {cart.promotion && cart.statusPromotion === 1 ? (
                             <div>
                               <div className="promotion-price">{`${formatPrice(cart.price)}đ`}</div>{' '}
                               <div>
@@ -936,7 +946,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                               </div>
                             </div>
                           ) : (
-                            <span>{`${cart.price}₫`}</span>
+                            <span>{`${formatPrice(cart.price)}đ`}</span>
                           )}
                         </p>
                         <p style={{ margin: 0 }}>size:{cart.size}</p>
@@ -988,8 +998,12 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                       }}
                       width={'20%'}
                       align="right">
-                      {formatPrice(
-                        calculateDiscountedPrice(cart.price, cart.value) * cart.quantity,
+                      {cart.statusPromotion === 1 ? (
+                        formatPrice(
+                          calculateDiscountedPrice(cart.price, cart.value) * cart.quantity,
+                        )
+                      ) : (
+                        <span>{`${formatPrice(cart.price * cart.quantity)}`}</span>
                       )}
                     </TableCell>
                   </TableRow>

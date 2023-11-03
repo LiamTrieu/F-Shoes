@@ -1,6 +1,7 @@
 import { Box, Container, Grid, Typography } from '@mui/material'
 import React from 'react'
 import './HeadingClient.css'
+import { Link } from 'react-router-dom'
 
 export default function FooterClient() {
   return (
@@ -43,8 +44,13 @@ export default function FooterClient() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <Typography className="footerTitle">Hỗ trợ khách hàng</Typography>
-              <Typography className="text-footer">Giới thiệu</Typography>
-              <Typography className="text-footer">Liên hệ</Typography>
+              <Typography className="text-footer" component={Link} to="/about-us">
+                Giới thiệu
+              </Typography>
+              <br />
+              <Typography className="text-footer" component={Link} to="/contact">
+                Liên hệ
+              </Typography>
               <Typography className="text-footer">Tác giả</Typography>
               <Typography className="text-footer">
                 Mua hàng:<span className="phoneNumber"> 0763104018</span>{' '}

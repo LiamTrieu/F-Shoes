@@ -26,6 +26,8 @@
 .text-footer {
   margin-top: 6px !important;
   font-size: 14px !important;
+  text-decoration: none;
+  color: black;
 }
 
 .img-contact {

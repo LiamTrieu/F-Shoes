@@ -13,7 +13,7 @@ import java.util.List;
 public interface AdminSellGetProductRepository extends ProductRepository {
 
     @Query(value = """
-                                                SELECT  p.id, pr.id as promotion,pr.value, p.name,
+                                                SELECT  p.id, pr.id as promotion,pr.status as statusPromotion ,pr.value, p.name,
                                                 pd.price,pd.weight, s.size, MAX(i.url) as url, 
                                                 pd.amount,pd.id as productDetailId,
                                                 m.name as material, sl.name as sole,b.name as brand,c.name as color ,
@@ -37,6 +37,7 @@ public interface AdminSellGetProductRepository extends ProductRepository {
                                                   AND (:#{#req.sole} IS NULL OR sl.id = :#{#req.sole}) 
                                                   AND (:#{#req.codeProductDetail} IS NULL OR pd.code = :#{#req.codeProductDetail}) 
                                                   AND (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) 
+                                                  AND p.deleted = 0
                                                   group by p.id, pr.id, pd.id;
             """, nativeQuery = true)
     List<GetAllProductResponse> getAllProduct(@Param("req") FilterProductDetailRequest req);
