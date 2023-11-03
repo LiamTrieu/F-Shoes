@@ -180,7 +180,7 @@ export default function Checkout() {
           moneyReduced: giamGia ? giamGia : '0',
           typePayment: selectedValue,
         }
-        if (selectedValue === 0) {
+        if (selectedValue === '0') {
           clientCheckoutApi.datHang({ ...preRequest, status: 1 }).then((response) => {
             if (response.data.success) {
               arrData.forEach((e) => {
