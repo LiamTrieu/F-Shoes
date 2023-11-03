@@ -52,7 +52,8 @@ public interface HDBillRepository extends BillRepository {
 
     @Query(value = """
             SELECT b.id, b.code, c.full_name as fullName,
-                  c.phone_number as phoneNumber, b.address,
+                  c.phone_number as phoneNumber,
+                  c.id as idCustomer, b.address,
                   b.total_money as totalMoney, b.money_reduced as moneyReduced,
                   b.money_after as moneyAfter, b.money_ship as moneyShip,
                   b.type, b.note, b.created_at as createdAt,
@@ -66,5 +67,5 @@ public interface HDBillRepository extends BillRepository {
                    
             """, nativeQuery = true)
     HDBillResponse getBillResponse(@Param("id") String id);
-
+ 
 }

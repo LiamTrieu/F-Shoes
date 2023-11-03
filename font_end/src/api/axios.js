@@ -21,11 +21,15 @@ axiosClient.interceptors.request.use(
 
 axiosClient.interceptors.response.use(
   (response) => {
-    store.dispatch(setLoading(false))
+    setTimeout(() => {
+      store.dispatch(setLoading(false))
+    }, 400)
     return response
   },
   (error) => {
-    store.dispatch(setLoading(false))
+    setTimeout(() => {
+      store.dispatch(setLoading(false))
+    }, 400)
     return Promise.reject(error)
   },
 )

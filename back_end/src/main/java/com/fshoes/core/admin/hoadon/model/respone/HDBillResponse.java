@@ -42,4 +42,6 @@ public interface HDBillResponse extends IsIdentified {
 
     String getEmailCustomer();
 
+    String getIdCustomer();
+
 }
