@@ -14,8 +14,10 @@ import {
   FormControl,
   FormControlLabel,
   InputAdornment,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   Slider,
   Stack,
   TextField,
@@ -33,14 +35,6 @@ import clientProductApi from '../../api/client/clientProductApi'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
 
-const listFake = [
-  { id: 1, title: 'fake 1', code: '#0294D7' },
-  { id: 2, title: 'fake 2', code: '#F6D716 ' },
-  { id: 3, title: 'fake 3', code: '#3B3434' },
-  { id: 4, title: 'fake 4', code: '#0DCF89' },
-  { id: 5, title: 'fake 5', code: '#ED3123' },
-]
-
 function valuetext(value) {
   return `${value}°C`
 }
@@ -56,9 +50,64 @@ export default function Product() {
   const [products, setProducts] = useState([])
   const [showMenuBar, setShowMenuBar] = useState(true)
   const [isMenuBarVisible, setIsMenuBarVisible] = useState(true)
+  const [selectedFilter, setselectedFilter] = useState([])
+  const [filter, setFilter] = useState({
+    brand: [],
+    material: [],
+    color: [],
+    sole: [],
+    category: [],
+    size: [],
+    nameProductDetail: null,
+  })
+
+  const handleRowCheckboxChange = (event, customerId) => {
+    const selectedIndex = selectedFilter.indexOf(customerId)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectedFilter, customerId]
+    } else {
+      newSelectedIds = [
+        ...selectedFilter.slice(0, selectedIndex),
+        ...selectedFilter.slice(selectedIndex + 1),
+      ]
+    }
+
+    setselectedFilter(newSelectedIds)
+  }
+  // -------------------------------------- Filter ----------------------------------
+
+  const [listBrand, setListBrand] = useState([])
+  const [listMaterial, setListMaterial] = useState([])
+  const [listColor, setListColor] = useState([])
+  const [listSole, setListSole] = useState([])
+  const [listCategory, setListCategory] = useState([])
+  const [listSize, setListSize] = useState([])
 
   useEffect(() => {
-    clientProductApi.get().then((result) => {
+    clientProductApi.getBrand().then((response) => {
+      setListBrand(response.data.data)
+    })
+    clientProductApi.getMaterial().then((response) => {
+      setListMaterial(response.data.data)
+    })
+    clientProductApi.getColor().then((response) => {
+      setListColor(response.data.data)
+    })
+    clientProductApi.getSole().then((response) => {
+      setListSole(response.data.data)
+    })
+    clientProductApi.getCategory().then((response) => {
+      setListCategory(response.data.data)
+    })
+    clientProductApi.getSize().then((response) => {
+      setListSize(response.data.data)
+    })
+  }, [])
+
+  useEffect(() => {
+    clientProductApi.get(filter).then((result) => {
       const data = result.data.data
       setProducts(
         data.map((e) => {
@@ -80,7 +129,7 @@ export default function Product() {
         }),
       )
     })
-  }, [])
+  }, [filter])
 
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer)
@@ -109,14 +158,6 @@ export default function Product() {
   const MenuBar = () => {
     return (
       <List className="list-product-portfolio">
-        {/* <ListItem className="text-portfolio">
-          <ListItemText
-            primary="Danh mục sản phẩm"
-            primaryTypographyProps={{
-              className: 'custom-primary',
-            }}
-          />
-        </ListItem> */}
         <div className="menubar-portfolio">
           {/* --------------------------------------------- CATEGORY --------------------------------------------- */}
           <ListItemButton
@@ -128,10 +169,16 @@ export default function Product() {
           </ListItemButton>
           <Collapse in={openCategory} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
-              {listFake.map((lf) => (
+              {listCategory.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox key={lf.id} />
-                  <ListItemText primary={lf.title} />
+                  <Checkbox
+                    key={lf.id}
+                    value={lf.id}
+                    checked={selectedFilter.includes(lf.id)}
+                    onClick={(e) => setFilter({ ...filter, category: e.target.value })}
+                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                  />
+                  <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
             </List>
@@ -144,10 +191,16 @@ export default function Product() {
           </ListItemButton>
           <Collapse in={openBrand} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
-              {listFake.map((lf) => (
+              {listBrand.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox key={lf.id} />
-                  <ListItemText primary={lf.title} />
+                  <Checkbox
+                    key={lf.id}
+                    value={lf.id}
+                    checked={selectedFilter.includes(lf.id)}
+                    onClick={(e) => setFilter({ ...filter, brand: e.target.value })}
+                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                  />
+                  <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
             </List>
@@ -162,10 +215,16 @@ export default function Product() {
           </ListItemButton>
           <Collapse in={openMaterial} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
-              {listFake.map((lf) => (
+              {listMaterial.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox key={lf.id} />
-                  <ListItemText primary={lf.title} />
+                  <Checkbox
+                    key={lf.id}
+                    value={lf.id}
+                    checked={selectedFilter.includes(lf.id)}
+                    onClick={(e) => setFilter({ ...filter, material: e.target.value })}
+                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                  />
+                  <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
             </List>
@@ -178,30 +237,42 @@ export default function Product() {
           </ListItemButton>
           <Collapse in={openSole} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
-              {listFake.map((lf) => (
+              {listSole.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox key={lf.id} />
-                  <ListItemText primary={lf.title} />
+                  <Checkbox
+                    key={lf.id}
+                    value={lf.id}
+                    checked={selectedFilter.includes(lf.id)}
+                    onClick={(e) => setFilter({ ...filter, sole: e.target.value })}
+                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                  />
+                  <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
             </List>
           </Collapse>
           {/* --------------------------------------------- SIZE --------------------------------------------- */}
-          <ListItemButton onClick={() => setOpenSize(!openSize)} className="list-item-button">
+          {/* <ListItemButton onClick={() => setOpenSize(!openSize)} className="list-item-button">
             <BiFontSize className="icon-portfolio" />
             <ListItemText primary="Kích cỡ" />
             {openSize ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
           <Collapse in={openSize} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
-              {listFake.map((lf) => (
+              {listSize.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox key={lf.id} />
-                  <ListItemText primary={lf.title} />
+                  <Checkbox
+                    key={lf.id}
+                    value={lf.id}
+                    checked={selectedFilter.includes(lf.id)}
+                    onClick={(e) => setFilter({ ...filter, size: e.target.value })}
+                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                  />
+                  <ListItemText primary={lf.size} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
             </List>
-          </Collapse>
+          </Collapse> */}
           {/* --------------------------------------------- COLOR --------------------------------------------- */}
           <ListItemButton onClick={() => setOpenColor(!openColor)} className="list-item-button">
             <BiSolidColorFill className="icon-portfolio" />
@@ -211,7 +282,7 @@ export default function Product() {
           <Collapse in={openColor} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               <Grid container>
-                {listFake.map((lf) => (
+                {listColor.map((lf) => (
                   <Grid items xs={4}>
                     <ListItemButton>
                       <FormControl>
@@ -219,9 +290,11 @@ export default function Product() {
                           <FormControlLabel
                             value={lf.id}
                             control={<Radio style={{ color: `${lf.code}` }} />}
+                            checked={filter.color.includes(lf.id)}
+                            onClick={(e) => setFilter({ ...filter, color: e.target.value })}
                           />
 
-                          {lf.title}
+                          {lf.name}
                         </RadioGroup>
                       </FormControl>
                     </ListItemButton>
@@ -284,6 +357,7 @@ export default function Product() {
                 placeholder="Tìm sản phẩm"
                 type="text"
                 size="small"
+                onChange={(e) => setFilter({ ...filter, nameProductDetail: e.target.value })}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
