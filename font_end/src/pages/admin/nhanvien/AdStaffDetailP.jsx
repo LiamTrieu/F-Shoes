@@ -87,6 +87,7 @@ export default function AdStaffDetail() {
   }
 
   const handleGenderRadioChange = (event) => {
+    setErrors({ ...errors, gender: '' })
     setStaffDetail({
       ...staffDetail,
       gender: event.target.value,
@@ -435,6 +436,7 @@ export default function AdStaffDetail() {
                     ...staffDetail,
                     fullName: e.target.value,
                   })
+                  setErrors({ ...errors, fullName: '' })
                 }}
                 fullWidth
                 InputLabelProps={{
@@ -458,6 +460,7 @@ export default function AdStaffDetail() {
                     ...staffDetail,
                     citizenId: e.target.value,
                   })
+                  setErrors({ ...errors, citizenId: '' })
                 }}
                 fullWidth
                 InputLabelProps={{
@@ -481,6 +484,7 @@ export default function AdStaffDetail() {
                     ...staffDetail,
                     email: e.target.value,
                   })
+                  setErrors({ ...errors, email: '' })
                 }}
                 fullWidth
                 InputLabelProps={{
@@ -504,6 +508,7 @@ export default function AdStaffDetail() {
                     ...staffDetail,
                     phoneNumber: e.target.value,
                   })
+                  setErrors({ ...errors, phoneNumber: '' })
                 }}
                 fullWidth
                 InputLabelProps={{
@@ -528,6 +533,7 @@ export default function AdStaffDetail() {
                     ...staffDetail,
                     dateBirth: dayjs(e).format('DD-MM-YYYY'),
                   })
+                  setErrors({ ...errors, dateBirth: '' })
                 }}
               />
             </LocalizationProvider>
@@ -717,6 +723,7 @@ export default function AdStaffDetail() {
                             const updatedDetailDiaChi = { ...detailDiaChi }
                             updatedDetailDiaChi.specificAddress = e.target.value
                             setDetailDiaChi(updatedDetailDiaChi)
+                            setErrors({ ...errors, specificAddress: '' })
                           }}
                         />
                       </Grid>

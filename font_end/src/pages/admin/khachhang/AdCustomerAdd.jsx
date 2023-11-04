@@ -102,8 +102,10 @@ export default function AdCustomerAdd() {
 
   const [selectedTinh, setSelectedTinh] = useState(null)
   const handleTinhChange = (_, newValue) => {
+    setErrors({ ...errors, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
+    setSelectedXa(null)
     if (newValue) {
       loadHuyen(newValue.id)
       setDiaChi({ ...diaChi, provinceId: newValue.id })
@@ -118,6 +120,7 @@ export default function AdCustomerAdd() {
   const [selectedHuyen, setSelectedHuyen] = useState(null)
   const [selectedXa, setSelectedXa] = useState(null)
   const handleHuyenChange = (_, newValue) => {
+    setErrors({ ...errors, districtId: '' })
     setSelectedHuyen(newValue)
     setSelectedXa(null)
     if (newValue) {
@@ -131,6 +134,7 @@ export default function AdCustomerAdd() {
     }
   }
   const handleXaChange = (_, newValue) => {
+    setErrors({ ...errors, wardId: '' })
     setSelectedXa(newValue)
     setDiaChi({ ...diaChi, wardId: newValue?.id })
     setErrors({ ...errors, wardId: '' })
