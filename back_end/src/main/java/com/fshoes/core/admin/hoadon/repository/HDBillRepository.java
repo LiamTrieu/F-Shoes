@@ -59,7 +59,8 @@ public interface HDBillRepository extends BillRepository {
                   b.type, b.note, b.created_at as createdAt,
                   b.created_by as creatdeBy, sum(bt.quantity) as totalProduct, b.status,
                   b.full_name as recipientName, b.phone_number as recipientPhoneNumber,
-                  c.email as emailCustomer
+                  c.email as emailCustomer,
+                  b.desired_receipt_date as desiredReceiptDate, b.customer_amount as customerAmount
             FROM bill b
                   LEFT JOIN bill_detail bt ON b.id = bt.id_bill
                   LEFT JOIN Account c ON b.id_customer= c.id

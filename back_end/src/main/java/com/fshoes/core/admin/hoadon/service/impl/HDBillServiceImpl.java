@@ -123,12 +123,6 @@ public class HDBillServiceImpl implements HDBillService {
     public Bill updateBill(String idBill, HDBillRequest hdBillRequest) {
         try {
             Bill bill = hdBillRepository.findById(idBill).orElseThrow(() -> new RuntimeException("khong tim thay bill co id: " + idBill));
-            if (hdBillRequest.getIdVoucher() == null || !voucherRepository.existsById(hdBillRequest.getIdVoucher())) {
-                bill.setVoucher(null);
-            } else {
-                Voucher voucher = voucherRepository.findById(hdBillRequest.getIdVoucher()).orElse(null);
-                bill.setVoucher(voucher);
-            }
             if (hdBillRequest.getIdCustomer() == null) {
                 bill.setCustomer(null);
             } else {
@@ -139,6 +133,12 @@ public class HDBillServiceImpl implements HDBillService {
             bill.setPhoneNumber(hdBillRequest.getPhoneNumber());
             bill.setAddress(hdBillRequest.getAddress());
             bill.setNote(hdBillRequest.getNote());
+            bill.setMoneyShip(hdBillRequest.getMoneyShip());
+            if (bill.getMoneyReduced() != null) {
+                bill.setMoneyAfter((bill.getTotalMoney().add(hdBillRequest.getMoneyShip())).subtract(bill.getMoneyReduced()));
+            } else {
+                bill.setMoneyAfter(bill.getTotalMoney().add(hdBillRequest.getMoneyShip()));
+            }
             bill.setStatus(hdBillRequest.getStatus());
             //thêm history:
             HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
@@ -149,7 +149,8 @@ public class HDBillServiceImpl implements HDBillService {
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
             billHistory.setNote(hdBillHistoryRequest.getNote());
-            billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
+//            billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
+            billHistory.setAccount(accFake());
             hdBillHistoryRepository.save(billHistory);
             return hdBillRepository.save(bill);
         } catch (Exception e) {
@@ -234,10 +235,10 @@ public class HDBillServiceImpl implements HDBillService {
                 totalMoney = totalMoney.add(detail.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
             }
 
-          if(bill.getMoneyReduced() != null){
-              BigDecimal moneyAfter = totalMoney.subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
-              bill.setMoneyAfter(moneyAfter);
-          }
+            if (bill.getMoneyReduced() != null) {
+                BigDecimal moneyAfter = totalMoney.subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
+                bill.setMoneyAfter(moneyAfter);
+            }
 
             // Lưu danh sách chi tiết hóa đơn mới vào cơ sở dữ liệu
             hdBillDetailRepository.saveAll(newBillDetails);
@@ -308,20 +309,31 @@ public class HDBillServiceImpl implements HDBillService {
         transaction.setBill(bill);
         transaction.setStatus(hdConfirmPaymentRequest.getStatus());
         transaction.setNote(hdConfirmPaymentRequest.getNoteBillHistory());
-        transaction.setTotalMoney(hdConfirmPaymentRequest.getPaymentAmount());
-        transaction.setAccount(null);
+        transaction.setTotalMoney(bill.getMoneyAfter());
+        transaction.setAccount(accFake());
         transaction.setTransactionCode(hdConfirmPaymentRequest.getTransactionCode());
         transactionRepository.save(transaction);
-        bill.setStatus(5);
-        hdBillRepository.save(bill);
-        HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
-                .note(hdConfirmPaymentRequest.getNoteBillHistory())
-                .idStaff(hdConfirmPaymentRequest.getIdStaff())
-                .bill(bill)
-                .build();
-        hdBillHistoryService.save(hdBillHistoryRequest);
-        bill.setStatus(5);
-        return bill;
+        if (hdConfirmPaymentRequest.getType() == 0) {
+            bill.setCustomerAmount(hdConfirmPaymentRequest.getPaymentAmount());
+            bill.setStatus(5);
+            hdBillRepository.save(bill);
+            HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
+                    .note(hdConfirmPaymentRequest.getNoteBillHistory())
+                    .idStaff(hdConfirmPaymentRequest.getIdStaff())
+                    .bill(bill)
+                    .build();
+            hdBillHistoryService.save(hdBillHistoryRequest);
+            return bill;
+        } else {
+            BillHistory hdBillHistory = BillHistory.builder()
+                    .note(hdConfirmPaymentRequest.getNoteBillHistory())
+                    .statusBill(null)
+                    .bill(bill)
+                    .account(accFake())
+                    .build();
+            hdBillHistoryRepository.save(hdBillHistory);
+            return bill;
+        }
     }
 
     @Transactional

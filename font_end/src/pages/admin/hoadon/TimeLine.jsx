@@ -11,9 +11,11 @@ const { Timeline } = require('@mailtop/horizontal-timeline')
 const TimeLine = (props) => {
   const { orderTimeLine } = props
 
+  const filteredTimeLine = orderTimeLine.filter((item) => item.statusBill !== null)
+
   return (
     <Timeline>
-      {orderTimeLine.map((item, index) => {
+      {filteredTimeLine.map((item, index) => {
         let color
         let icon
 

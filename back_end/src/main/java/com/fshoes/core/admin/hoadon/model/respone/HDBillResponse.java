@@ -44,4 +44,9 @@ public interface HDBillResponse extends IsIdentified {
 
     String getIdCustomer();
 
+    Long getDesiredReceiptDate();
+
+    BigDecimal getCustomerAmount();
+
+
 }
