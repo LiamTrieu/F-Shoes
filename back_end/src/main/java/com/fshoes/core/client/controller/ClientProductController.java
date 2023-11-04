@@ -1,6 +1,7 @@
 package com.fshoes.core.client.controller;
 
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
+import com.fshoes.core.client.model.request.ClientProductRequest;
 import com.fshoes.core.client.service.ClientProductService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,40 @@ public class ClientProductController {
     private ClientProductService clientProductService;
 
     @GetMapping("/product")
-    public ObjectRespone getProduct(String id) {
-        return new ObjectRespone((clientProductService.getProducts(id)));
+    public ObjectRespone getProduct(ClientProductRequest request) {
+        return new ObjectRespone((clientProductService.getProducts(request)));
     }
 
     @GetMapping("/product/size")
     public ObjectRespone getProductBySize(ClientProductDetailRequest request) {
         return new ObjectRespone(clientProductService.getProductBySize(request));
     }
+
+    @GetMapping("/brand")
+    public ObjectRespone getBrand(){
+        return new ObjectRespone(clientProductService.getAllBrand());
+    }
+    @GetMapping("/category")
+    public ObjectRespone getcategory(){
+        return new ObjectRespone(clientProductService.getAllCategory());
+    }
+    @GetMapping("/material")
+    public ObjectRespone getMaterial(){
+        return new ObjectRespone(clientProductService.getAllMaterial());
+    }
+    @GetMapping("/sole")
+    public ObjectRespone getSole(){
+        return new ObjectRespone(clientProductService.getAllSole());
+    }
+    @GetMapping("/size")
+    public ObjectRespone getSize(){
+        return new ObjectRespone(clientProductService.getAllSize());
+    }
+    @GetMapping("/solor")
+    public ObjectRespone getColor(){
+        return new ObjectRespone(clientProductService.getAllColor());
+    }
+
+
 
 }

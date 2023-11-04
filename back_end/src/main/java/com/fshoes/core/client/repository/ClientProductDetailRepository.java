@@ -1,6 +1,7 @@
 package com.fshoes.core.client.repository;
 
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
+import com.fshoes.core.client.model.request.ClientProductRequest;
 import com.fshoes.core.client.model.response.ClientProductDetailResponse;
 import com.fshoes.core.client.model.response.ClientProductResponse;
 import com.fshoes.repository.ProductDetailRepository;
@@ -44,10 +45,20 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      image i ON pd.id = i.id_product_detail
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
-                WHERE (:id is null or pd.id = :id)
+                WHERE (:#{#request.id} is null or pd.id = :#{#request.id}) 
+                AND (:#{#request.category} IS NULL OR ca.id = :#{#request.category}) 
+                AND (:#{#request.color} IS NULL OR c.id = :#{#request.color}) 
+                AND (:#{#request.material} IS NULL OR m.id = :#{#request.material}) 
+                AND (:#{#request.brand} IS NULL OR b.id = :#{#request.brand}) 
+                AND (:#{#request.sole} IS NULL OR s.id = :#{#request.sole}) 
+                AND( (:#{#request.nameProductDetail} IS NULL OR p.name like %:#{#request.nameProductDetail}%) 
+                OR (:#{#request.nameProductDetail} IS NULL OR ca.name like %:#{#request.nameProductDetail}%) 
+                OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%) 
+                OR (:#{#request.nameProductDetail} IS NULL OR s.name like %:#{#request.nameProductDetail}%) 
+                OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
                 GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
-    List<ClientProductResponse> getProducts(String id);
+    List<ClientProductResponse> getProducts( @Param("request") ClientProductRequest request);
 
     @Query(value = """
                 SELECT pd.id as id,
