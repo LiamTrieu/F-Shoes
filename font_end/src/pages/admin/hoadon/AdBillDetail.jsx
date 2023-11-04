@@ -21,6 +21,7 @@ import {
   FormControl,
   Divider,
   Tooltip,
+  Switch,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -186,7 +187,7 @@ export default function AdBillDetail() {
           if (billDetail.status === 1 || listTransaction.length === 0) {
             setIsShowBtnConfirmPayment(true)
           } else {
-            setIsShowBtnConfirmPayment(false)
+            setIsShowBtnConfirmPayment(true)
           }
         }
       }
@@ -415,9 +416,14 @@ export default function AdBillDetail() {
     )
   }
 
-  function ModalConfirmPayment({ open, setOpen, billDetail }) {
+  function ModalConfirmPayment({ open, setOpen, billDetail, listTransaction }) {
+    const totalMoneyTrans = listTransaction.reduce(
+      (total, transaction) => total + transaction.totalMoney,
+      0,
+    )
+    let tienCanHoanTra = 0
+    billDetail ? (tienCanHoanTra = totalMoneyTrans - billDetail.moneyAfter) : (tienCanHoanTra = 0)
     const [ghiChu, setGhiChu] = useState('')
-    const [transactionType, setTransactionType] = useState('0')
     const [paymentMethod, setPaymentMethod] = useState('0')
     const [paymentAmount, setPaymentAmount] = useState(0)
     const [transactionCode, setTransactionCode] = useState('')
@@ -426,11 +432,25 @@ export default function AdBillDetail() {
       const confirmPaymentRequest = {
         idStaff: '099b241f-f2cf-448f-909d-55f288dfea5b',
         noteBillHistory: ghiChu,
-        type: transactionType,
+        type: isRefundMode ? 1 : 0,
         status: 0,
         paymentMethod: paymentMethod,
         paymentAmount: paymentAmount,
         transactionCode: transactionCode,
+      }
+      if (!isRefundMode) {
+        if (cashReceived < billDetail.totalMoney) {
+          toast.error('Không đủ tiền để xác nhận thanh toán', {
+            position: toast.POSITION.TOP_CENTER,
+          })
+          return
+        }
+        if (paymentMethod === '0' && transactionCode.trim() === '') {
+          toast.error('Vui lòng nhập mã giao dịch', {
+            position: toast.POSITION.TOP_CENTER,
+          })
+          return
+        }
       }
       hoaDonApi
         .confirmPayment(billDetail.id, confirmPaymentRequest)
@@ -439,12 +459,16 @@ export default function AdBillDetail() {
             position: toast.POSITION.TOP_RIGHT,
           })
           setIsUpdateBill(true)
+          console.log(listTransaction)
           setOpen(false)
         })
         .catch((error) => {
           console.error('Lỗi xác nhận thanh toán', error)
         })
     }
+    const [cashReceived, setCashReceived] = useState(0)
+    const [changeAmount, setChangeAmount] = useState(0)
+    const [isRefundMode, setIsRefundMode] = useState(false)
 
     return (
       <DialogAddUpdate
@@ -469,76 +493,177 @@ export default function AdBillDetail() {
           </Button>
         }>
         <div>
-          <TextField
-            style={{ marginBottom: '10px' }}
-            color="cam"
-            value={(billDetail && formatCurrency(billDetail.totalMoney)) || '0'}
-            className="search-field"
-            size="small"
-            fullWidth
-            label="Tổng tiền"
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <TextField
-            style={{ marginBottom: '10px' }}
-            color="cam"
-            value={paymentAmount}
-            onChange={(e) => setPaymentAmount(e.target.value)}
-            className="search-field"
-            size="small"
-            fullWidth
-            label="Số tiền"
-          />
-          <TextField
-            color="cam"
-            className="search-field"
-            size="small"
-            fullWidth
-            label="Ghi chú"
-            multiline
-            rows={4}
-            value={ghiChu}
-            onChange={(e) => setGhiChu(e.target.value)}
-            style={{ marginBottom: '10px' }}
-          />
-          <FormControl component="fieldset">
-            <FormLabel component="legend">Loại giao dịch:</FormLabel>
-            <RadioGroup
-              row
-              aria-label="transaction-type"
-              name="transaction-type"
-              style={{ marginBottom: '15px' }}
-              value={transactionType}
-              onChange={(e) => setTransactionType(e.target.value)}>
-              <FormControlLabel value="0" control={<Radio />} label="Thanh toán" />
-              <FormControlLabel value="1" control={<Radio />} label="Hoàn tiền" />
-            </RadioGroup>
+          <Box display={'inline'} sx={{ float: 'right', marginRight: 5 }}>
+            <b>Hoàn tiền</b>
+            <Switch
+              color="warning"
+              size="small"
+              checked={isRefundMode}
+              onChange={(e) => setIsRefundMode(e.target.checked)}
+              disabled={tienCanHoanTra <= 0}
+            />
+          </Box>
 
-            <FormLabel component="legend">Phương thức thanh toán:</FormLabel>
-            <RadioGroup
-              row
-              aria-label="payment-method"
-              name="payment-method"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}>
-              <FormControlLabel value="0" control={<Radio />} label="Chuyển khoản" />
-              <FormControlLabel value="1" control={<Radio />} label="Tiền mặt" />
-            </RadioGroup>
-          </FormControl>
-          <TextField
-            color="cam"
-            className="search-field"
-            size="small"
-            fullWidth
-            label="Mã giao dịch"
-            value={transactionCode}
-            onChange={(e) => setTransactionCode(e.target.value)}
-            style={{ marginBottom: '10px' }}
-            disabled={paymentMethod !== '0'}
-            required={paymentMethod === '0'}
-          />
+          {isRefundMode ? (
+            <>
+              <TextField
+                style={{ marginBottom: '10px' }}
+                color="cam"
+                value={formatCurrency(tienCanHoanTra)}
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Số tiền cần hoàn trả"
+              />
+
+              <TextField
+                style={{ marginBottom: '10px' }}
+                color="cam"
+                value={paymentAmount}
+                onChange={(e) => setPaymentAmount(e.target.value)}
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Tiền hoàn trả"
+              />
+              <TextField
+                color="cam"
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Ghi chú"
+                multiline
+                rows={4}
+                value={ghiChu}
+                onChange={(e) => setGhiChu(e.target.value)}
+                style={{ marginBottom: '10px' }}
+              />
+              <FormControl component="fieldset">
+                <FormLabel component="legend">Phương thức thanh toán:</FormLabel>
+                <RadioGroup
+                  row
+                  aria-label="payment-method"
+                  name="payment-method"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}>
+                  <FormControlLabel value="0" control={<Radio />} label="Chuyển khoản" />
+                  <FormControlLabel value="1" control={<Radio />} label="Tiền mặt" />
+                </RadioGroup>
+              </FormControl>
+              <TextField
+                color="cam"
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Mã giao dịch"
+                value={transactionCode}
+                onChange={(e) => setTransactionCode(e.target.value)}
+                style={{ marginBottom: '10px' }}
+                disabled={paymentMethod !== '0'}
+                required={paymentMethod === '0'}
+              />
+
+              {paymentMethod === '0' && transactionCode.trim() === '' && (
+                <span style={{ color: 'red', marginBottom: '5px' }}>
+                  Vui lòng nhập mã giao dịch
+                </span>
+              )}
+            </>
+          ) : (
+            <>
+              <TextField
+                style={{ marginBottom: '10px' }}
+                color="cam"
+                value={(billDetail && formatCurrency(billDetail.totalMoney)) || '0'}
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Tổng tiền"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+
+              <TextField
+                style={{ marginBottom: '10px' }}
+                color="cam"
+                value={cashReceived}
+                onChange={(e) => {
+                  const cashReceivedValue = parseFloat(e.target.value)
+
+                  const validCashReceived = isNaN(cashReceivedValue) ? 0 : cashReceivedValue
+                  setCashReceived(validCashReceived)
+
+                  const totalAmount = parseFloat(billDetail ? billDetail.totalMoney : 0)
+                  setChangeAmount(validCashReceived - totalAmount)
+                  setPaymentAmount(validCashReceived)
+                }}
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Tiền khách đưa"
+              />
+
+              <TextField
+                style={{ marginBottom: '10px' }}
+                color="cam"
+                value={formatCurrency(changeAmount)}
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Tiền thừa"
+                InputProps={{
+                  readOnly: true,
+                  style: {
+                    color: changeAmount < 0 ? 'red' : 'black',
+                  },
+                }}
+              />
+
+              <TextField
+                color="cam"
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Ghi chú"
+                multiline
+                rows={4}
+                value={ghiChu}
+                onChange={(e) => setGhiChu(e.target.value)}
+                style={{ marginBottom: '10px' }}
+              />
+              <FormControl component="fieldset">
+                <FormLabel component="legend">Phương thức thanh toán:</FormLabel>
+                <RadioGroup
+                  row
+                  aria-label="payment-method"
+                  name="payment-method"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}>
+                  <FormControlLabel value="0" control={<Radio />} label="Chuyển khoản" />
+                  <FormControlLabel value="1" control={<Radio />} label="Tiền mặt" />
+                </RadioGroup>
+              </FormControl>
+              <TextField
+                color="cam"
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Mã giao dịch"
+                value={transactionCode}
+                onChange={(e) => setTransactionCode(e.target.value)}
+                style={{ marginBottom: '10px' }}
+                disabled={paymentMethod !== '0'}
+                required={paymentMethod === '0'}
+              />
+
+              {paymentMethod === '0' && transactionCode.trim() === '' && (
+                <span style={{ color: 'red', marginBottom: '5px' }}>
+                  Vui lòng nhập mã giao dịch
+                </span>
+              )}
+            </>
+          )}
         </div>
       </DialogAddUpdate>
     )
@@ -848,6 +973,7 @@ export default function AdBillDetail() {
         setOpen={setOpenModalConfirmPayment}
         open={openModalConfirmPayment}
         billDetail={billDetail}
+        listTransaction={listTransaction}
       />
       <ModalConfirmComplete
         setOpen={setOpenModalConfirmComplete}
@@ -868,6 +994,7 @@ export default function AdBillDetail() {
         open={openModalThemSP}
         setOPen={setOpenModalThemSP}
         billDetail={billDetail ? billDetail : null}
+        idBill={billDetail ? billDetail.id : null}
       />
       <ModalAdBillUpdateAddress
         open={openModalUpdateAdd}
@@ -980,10 +1107,9 @@ export default function AdBillDetail() {
           </div>
         )}
       </Paper>
-      {/* Lịch sử thanh toán */}
       {loadingTransaction ? (
         <div>Loading...</div>
-      ) : isShowBtnConfirmPayment ? (
+      ) : (
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
             <h3>Lịch sửa thanh toán</h3>
@@ -996,18 +1122,17 @@ export default function AdBillDetail() {
               Xác nhận thanh toán
             </Button>
           </Stack>
-          <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
-          <Empty />
-        </Paper>
-      ) : (
-        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
-            <h3>Lịch sửa thanh toán</h3>
-          </Stack>
-          <hr />
-          <AdBillTransaction listTransaction={listTransaction} />
+          {listTransaction.length > 0 ? (
+            <>
+              <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
+              <AdBillTransaction listTransaction={listTransaction} />
+            </>
+          ) : (
+            <Empty />
+          )}
         </Paper>
       )}
+
       {/* Hoá đơn chi tiết */}
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <div>

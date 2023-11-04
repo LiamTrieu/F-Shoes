@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,5 +40,9 @@ public class HDBillRequest {
     private String confirmationDate;
 
     private String shipDate;
+
+    private BigDecimal moneyShip;
+
+    private Long desiredReceiptDate;
 
 }

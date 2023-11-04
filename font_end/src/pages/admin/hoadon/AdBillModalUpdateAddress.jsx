@@ -18,6 +18,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import dayjs from 'dayjs'
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
+import { toast } from 'react-toastify'
 
 const styleAdBillModalUpdateAdd = {
   position: 'absolute',
@@ -31,28 +33,26 @@ const styleAdBillModalUpdateAdd = {
 }
 
 export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, listBillDetail }) {
-  const [diaChi, setDiaChi] = useState({
-    name: '',
-    phoneNumber: '',
-    specificAddress: '',
-    type: true,
-    provinceId: null,
-    districtId: null,
-    wardId: null,
-    idCustomer: '',
-  })
   const [giaoHang, setGiaoHang] = useState()
-  const [list, setList] = useState([])
   const [selectedTinh, setSelectedTinh] = useState(null)
   const [selectedHuyen, setSelectedHuyen] = useState(null)
   const [selectedXa, setSelectedXa] = useState(null)
   const [selectedTinhValue, setSelectedTinhValue] = useState(null)
   const [timeShip, setTimeShip] = useState('')
-  const [phiShip, setPhiShip] = useState('')
+  const [phiShip, setPhiShip] = useState()
+  const [diaChiCuThe, setDiaChiCuThe] = useState('')
+
+  const [hdBillReq, setHdBillReq] = useState({
+    fullName: billDetail ? billDetail.fullName : '',
+    phoneNumber: billDetail ? billDetail.phoneNumber : '',
+    address: billDetail ? billDetail.address : '',
+    note: billDetail ? billDetail.note : '',
+    noteBillHistory: 'Thay đổi  thông tin đơn hàng',
+    desiredReceiptDate: new Date(),
+    moneyShip: 0,
+  })
 
   useEffect(() => {
-    console.log('hello')
-    console.log(listBillDetail)
     loadTinh()
     if (billDetail && billDetail.address) {
       const addressParts = billDetail.address.split(', ')
@@ -61,6 +61,7 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
         setXaName(xaDetail)
         setHuyenName(huyenDetail)
         setTinhName(tinhDetail)
+        setDiaChiCuThe(address)
 
         const tinhValue = tinh.find((item) => item.provinceName === tinhDetail)
         const huyenValue = huyen.find((item) => item.districtName === huyenDetail)
@@ -73,14 +74,8 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
         setSelectedTinh(tinhValue)
         setSelectedHuyen(huyenValue)
         setSelectedXa(xaValue)
-
-        setDiaChi({
-          ...diaChi,
-          provinceId: tinhValue ? tinhValue.id : null,
-          districtId: huyenValue ? huyenValue.id : null,
-          wardId: xaValue ? xaValue.id : null,
-        })
-
+        console.log('tỉnh value:')
+        console.log(tinhValue)
         setDetailDiaChi({
           ...detailDiaChi,
           specificAddress: address,
@@ -91,11 +86,22 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
 
         if (selectedTinhValue) {
           loadHuyen(selectedTinhValue.id)
-
           setSelectedTinh(selectedTinhValue)
         }
       }
     }
+    billDetail ? setGiaoHang(billDetail.type === 1) : setGiaoHang(false)
+    billDetail ? setPhiShip(billDetail.moneyShip) : setPhiShip(0)
+    billDetail ? setTimeShip(billDetail.desiredReceiptDate) : setTimeShip(null)
+    setHdBillReq({
+      fullName: billDetail ? billDetail.recipientName : '',
+      phoneNumber: billDetail ? billDetail.recipientPhoneNumber : '',
+      address: billDetail ? billDetail.address : '',
+      note: billDetail ? billDetail.note : '',
+      noteBillHistory: 'Thay đổi  thông tin đơn hàng',
+      desiredReceiptDate: billDetail ? billDetail.desiredReceiptDate : null,
+      moneyShip: billDetail ? billDetail.moneyShip : 0,
+    })
   }, [open, billDetail])
 
   const [tinh, setTinh] = useState([])
@@ -127,11 +133,9 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
     if (newValue) {
       loadHuyen(newValue.id)
       setTinhName(newValue.label)
-      setDiaChi({ ...diaChi, provinceId: newValue.id })
       setDetailDiaChi({ ...detailDiaChi, provinceId: newValue.id })
     } else {
       setHuyen([])
-      setDiaChi({ ...diaChi, provinceId: null })
       setDetailDiaChi({ ...detailDiaChi, provinceId: '' })
     }
   }
@@ -141,7 +145,6 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
     setSelectedXa(null)
     if (newValue) {
       loadXa(newValue.id)
-      setDiaChi({ ...diaChi, districtId: newValue.id })
       setHuyenName(newValue.label)
       setDetailDiaChi({ ...detailDiaChi, districtId: newValue.id })
     } else {
@@ -153,7 +156,6 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
   const handleXaChange = (_, newValue) => {
     if (newValue) {
       setSelectedXa(newValue)
-      setDiaChi({ ...diaChi, wardId: newValue?.id })
       setXaName(newValue.label)
       setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
       const filtelService = {
@@ -175,7 +177,12 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
         }
         ghnAPI.getTotal(filterTotal).then((response) => {
           setPhiShip(response.data.body.total)
+          const moneyShip = response.data.body.total
 
+          setHdBillReq((hdBillReq) => ({
+            ...hdBillReq,
+            moneyShip: moneyShip,
+          }))
           const filtelTime = {
             from_district_id: '3440',
             from_ward_code: '13010',
@@ -185,6 +192,11 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
           }
           ghnAPI.getime(filtelTime).then((response) => {
             setTimeShip(response.data.body.leadtime * 1000)
+            const desiredReceiptDate = response.data.body.leadtime * 1000
+            setHdBillReq((hdBillReq) => ({
+              ...hdBillReq,
+              desiredReceiptDate: desiredReceiptDate,
+            }))
           })
         })
       })
@@ -193,13 +205,25 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
     }
   }
 
-  const [detailDiaChi, setDetailDiaChi] = useState({
-    name: '',
-    phoneNumber: '',
-    email: '',
-    specificAddress: '',
-    type: 0,
-  })
+  const confirmUpdateBill = () => {
+    const diaChi =
+      diaChiCuThe + ', ' + selectedXa.label + ', ' + selectedHuyen.label + ', ' + selectedTinh.label
+    hdBillReq.address = diaChi
+    console.log(hdBillReq)
+    hoaDonApi
+      .update(billDetail.id, hdBillReq)
+      .then(() => {
+        toast.success('Đã cập nhật thông tin đơn hàng', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        setOPen(false)
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API cập nhật thông tin đơn hàng: ', error)
+      })
+  }
+
+  const [detailDiaChi, setDetailDiaChi] = useState({})
   const [xaName, setXaName] = useState('')
   const [huyenName, setHuyenName] = useState('')
   const [tinhName, setTinhName] = useState('')
@@ -237,15 +261,18 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
           <Stack>
             <Box p={3} pt={0} pb={2}>
               <TextField
+                id="bill_full_name"
+                sx={{ mt: 1, width: '48%', marginTop: 2 }}
                 color="cam"
-                variant="outlined"
                 label="Tên người nhận"
-                type="text"
                 size="small"
-                sx={{ mt: 1, width: '48%' }}
-                name="name"
-                value={billDetail ? billDetail.recipientName : ''}
+                value={hdBillReq.fullName}
+                onChange={(event) => {
+                  const newFullName = event.target.value
+                  setHdBillReq({ ...hdBillReq, fullName: newFullName })
+                }}
               />
+
               <TextField
                 color="cam"
                 variant="outlined"
@@ -258,7 +285,11 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
                   float: 'right',
                 }}
                 name="phoneNumber"
-                value={billDetail ? billDetail.recipientPhoneNumber : ''}
+                value={hdBillReq.phoneNumber}
+                onChange={(event) => {
+                  const newPhoneNum = event.target.value
+                  setHdBillReq({ ...hdBillReq, phoneNumber: newPhoneNum })
+                }}
               />
 
               <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -344,15 +375,21 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
                 size="small"
                 sx={{ mt: 1, width: '48%', marginTop: 2 }}
                 name="specificAddress"
-                value={detailDiaChi.specificAddress}
+                value={diaChiCuThe}
+                onChange={(event) => setDiaChiCuThe(event.target.value)}
               />
+
               <TextField
                 id="bill_note"
                 sx={{ mt: 1, width: '48%', float: 'right', marginTop: 2 }}
                 color="cam"
                 label="Ghi chú"
                 size="small"
-                value={billDetail ? billDetail.note : ''}
+                value={hdBillReq.note}
+                onChange={(event) => {
+                  const newNote = event.target.value
+                  setHdBillReq({ ...hdBillReq, note: newNote })
+                }}
               />
             </Box>
             <Box display={'inline'} sx={{ marginLeft: 5 }}>
@@ -361,18 +398,33 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
                 onChange={() => {
                   setGiaoHang(!giaoHang)
                 }}
-                color="secondary"
+                color="warning"
                 checked={giaoHang}
                 size="small"
               />
             </Box>
           </Stack>
-          <Stack>
-            <p>Thời gian giao hàng dự kiến: {dayjs(timeShip).format('DD-MM-YYYY')} </p>
-            <p>Phí giao hàng: {formatCurrency(phiShip)}</p>
+          <Stack sx={{ padding: 6 }}>
+            {giaoHang ? (
+              <>
+                <p>Thời gian giao hàng dự kiến: {dayjs(timeShip).format('DD-MM-YYYY')}</p>
+                <p>Phí giao hàng: {formatCurrency(phiShip)}</p>
+              </>
+            ) : (
+              <>
+                <p style={{ color: '#999', fontStyle: 'italic' }}>
+                  Thời gian giao hàng dự kiến: N/A
+                </p>
+                <p style={{ color: '#999', fontStyle: 'italic' }}>Phí giao hàng: N/A</p>
+              </>
+            )}
           </Stack>
           <Stack sx={{ margin: 2 }}>
-            <Button variant="outlined" className="them-moi" color="cam">
+            <Button
+              variant="outlined"
+              className="them-moi"
+              color="cam"
+              onClick={() => confirmUpdateBill()}>
               Xác nhận
             </Button>
           </Stack>
