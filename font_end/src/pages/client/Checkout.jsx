@@ -16,7 +16,6 @@ import {
   Typography,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import LabelTitle from '../../layout/client/checkoutpage/LabelTitle'
 import ghnAPI from '../../api/admin/ghn/ghnApi'
 import './Checkout.css'
 import { useDispatch, useSelector } from 'react-redux'
@@ -96,6 +95,7 @@ export default function Checkout() {
   const dispatch = useDispatch()
 
   const handleTinhChange = (_, newValue) => {
+    setErrors({ ...errors, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
     setRequest({ ...request, tinh: newValue.label })
@@ -107,6 +107,7 @@ export default function Checkout() {
   }
 
   const handleHuyenChange = (_, newValue) => {
+    setErrors({ ...errors, districtId: '' })
     setSelectedHuyen(newValue)
     setSelectedXa(null)
     setRequest({ ...request, huyen: newValue.label })
@@ -117,6 +118,7 @@ export default function Checkout() {
     }
   }
   const handleXaChange = (_, newValue) => {
+    setErrors({ ...errors, wardId: '' })
     setSelectedXa(newValue)
     setRequest({ ...request, xa: newValue.label })
     const filtelService = {
@@ -158,8 +160,90 @@ export default function Checkout() {
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value)
   }
+  const [errors, setErrors] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    address: '',
+  })
 
   function finishCheckout() {
+    const newErrors = {}
+    let check = 0
+    if (!request.fullName) {
+      newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
+      check++
+    } else if (request.fullName.length > 100) {
+      newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
+      check++
+    } else {
+      newErrors.fullName = ''
+    }
+
+    if (!request.email) {
+      newErrors.email = 'Vui lòng nhập Email.'
+      check++
+    } else {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+      if (!emailRegex.test(request.email)) {
+        newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
+        check++
+      } else if (request.email.length > 50) {
+        newErrors.email = 'Email không được quá 50 kí tự.'
+        check++
+      } else {
+        newErrors.email = ''
+      }
+    }
+    if (!request.phone) {
+      newErrors.phone = 'Vui lòng nhập Số điện thoại.'
+      check++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(request.phone)) {
+        newErrors.phone = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        check++
+      } else {
+        newErrors.phone = ''
+      }
+    }
+
+    if (!request.address) {
+      newErrors.address = 'Vui lòng nhập địa chỉ.'
+      check++
+    } else if (request.address.length > 255) {
+      newErrors.address = 'Địa chỉ không được quá 255 kí tự.'
+      check++
+    } else {
+      newErrors.address = ''
+    }
+    if (!selectedTinh) {
+      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
+      check++
+    } else {
+      newErrors.provinceId = ''
+    }
+
+    if (!selectedHuyen) {
+      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
+      check++
+    } else {
+      newErrors.districtId = ''
+    }
+
+    if (!selectedXa) {
+      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+      check++
+    } else {
+      newErrors.wardId = ''
+    }
+    if (check > 0) {
+      setErrors(newErrors)
+      return
+    }
     const title = 'Xác nhận đặt hàng?'
     confirmSatus(title, '').then((result) => {
       if (result.isConfirmed) {
@@ -226,11 +310,15 @@ export default function Checkout() {
             <TextField
               onChange={(e) => {
                 setRequest({ ...request, fullName: e.target.value })
+                setErrors({ ...errors, fullName: '' })
               }}
               size="small"
               fullWidth
               id="fullname"
             />
+            <Typography variant="body2" color="error">
+              {errors.fullName}
+            </Typography>
             <Grid container mt={0} spacing={3}>
               <Grid item xs={12} lg={7}>
                 <Typography>
@@ -239,11 +327,15 @@ export default function Checkout() {
                 <TextField
                   onChange={(e) => {
                     setRequest({ ...request, email: e.target.value })
+                    setErrors({ ...errors, email: '' })
                   }}
                   size="small"
                   fullWidth
                   id="email"
                 />
+                <Typography variant="body2" color="error">
+                  {errors.email}
+                </Typography>
               </Grid>
               <Grid item xs={12} lg={5}>
                 <Typography>
@@ -252,11 +344,15 @@ export default function Checkout() {
                 <TextField
                   onChange={(e) => {
                     setRequest({ ...request, phone: e.target.value })
+                    setErrors({ ...errors, phone: '' })
                   }}
                   size="small"
                   fullWidth
                   id="phone"
                 />
+                <Typography variant="body2" color="error">
+                  {errors.phone}
+                </Typography>
               </Grid>
             </Grid>
             <Grid container mt={0} spacing={3}>
@@ -279,6 +375,9 @@ export default function Checkout() {
                   getOptionLabel={(options) => options.label}
                   renderInput={(params) => <TextField {...params} />}
                 />
+                <Typography variant="body2" color="error">
+                  {errors.provinceId}
+                </Typography>
               </Grid>
               <Grid item xs={12} lg={4}>
                 <Typography>
@@ -299,6 +398,9 @@ export default function Checkout() {
                   getOptionLabel={(options) => options.label}
                   renderInput={(params) => <TextField {...params} />}
                 />
+                <Typography variant="body2" color="error">
+                  {errors.districtId}
+                </Typography>
               </Grid>
               <Grid item xs={12} lg={4}>
                 <Typography>
@@ -316,6 +418,9 @@ export default function Checkout() {
                   getOptionLabel={(options) => options.label}
                   renderInput={(params) => <TextField {...params} />}
                 />
+                <Typography variant="body2" color="error">
+                  {errors.wardId}
+                </Typography>
               </Grid>
             </Grid>
             <Grid sx={{ mt: 2 }}>
@@ -325,11 +430,15 @@ export default function Checkout() {
               <TextField
                 onChange={(e) => {
                   setRequest({ ...request, address: e.target.value })
+                  setErrors({ ...errors, address: '' })
                 }}
                 size="small"
                 fullWidth
                 id="dia-chi"
               />
+              <Typography variant="body2" color="error">
+                {errors.address}
+              </Typography>
             </Grid>
             <Grid sx={{ mt: 2 }}>
               <Typography>Ghi chú</Typography>
@@ -387,8 +496,10 @@ export default function Checkout() {
                 {arrData.map((cart) => (
                   <TableBody>
                     <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
-                      <img src={cart.image} alt={cart.name} className="image-ck" />
-                      <div className="quantity-badge">{cart.soLuong}</div>
+                      <div>
+                        <img src={cart.image} alt={cart.name} className="image-ck" />
+                        <div className="quantity-badge">{cart.soLuong}</div>
+                      </div>
                     </TableCell>
                     <TableCell
                       to={`/product/${cart.id}`}
@@ -468,7 +579,7 @@ export default function Checkout() {
                 <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                   <Typography>Ngày nhận dự kiến: </Typography>
                   <Typography color={'red'}>
-                    <b className="ck-phi">{dayjs(timeShip).format('DD-MM-YYYY')}</b>
+                    <b className="ck-phi">{timeShip ? dayjs(timeShip).format('DD-MM-YYYY') : ''}</b>
                   </Typography>
                 </Stack>
                 <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>

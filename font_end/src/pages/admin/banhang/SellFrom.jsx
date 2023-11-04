@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
+  InputAdornment,
   MenuItem,
   Modal,
   Pagination,
@@ -36,6 +37,7 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { LocalShipping } from '@mui/icons-material'
 import sellApi from '../../../api/admin/sell/SellApi'
+import SearchIcon from '@mui/icons-material/Search'
 import dayjs from 'dayjs'
 import './sell.css'
 import ModelSell from './ModelSell'
@@ -69,7 +71,7 @@ const styleModalAddCustomer = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: { xs: '85vw', sm: '65vw', md: '55vw', lg: '45vw' },
-  height: '500px',
+  height: '650px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
@@ -99,6 +101,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [timeShip, setTimeShip] = useState('')
   const [list, setList] = useState([])
   const [nameCustomer, setNameCustomer] = useState('')
+  const [searchKhachHang, setSearchKhachHang] = useState({
+    nameSearch: '',
+    gender: '',
+    statusSearch: 0,
+    size: 5,
+    page: 1,
+  })
 
   const [adCallVoucherOfSell, setAdCallVoucherOfSell] = useState({
     idCustomer: null,
@@ -201,8 +210,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   }
 
   const fecthDataCustomer = () => {
-    sellApi.getAllCustomer().then((response) => {
-      setlistKhachHang(response.data.data.data)
+    khachHangApi.get(searchKhachHang).then((response) => {
+      setlistKhachHang(response.data.data.content)
+      setTotalPages(response.data.data.totalPages)
+      if (searchKhachHang.page > response.data.data.totalPages)
+        if (response.data.data.totalPages > 0) {
+          setSearchKhachHang({ ...searchKhachHang, page: response.data.data.totalPages })
+        }
     })
   }
 
@@ -261,11 +275,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   }
 
   useEffect(() => {
-    fecthDataCustomer()
+    fecthDataCustomer(searchKhachHang)
     fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
     loadTinh()
     loadList()
-  }, [adCallVoucherOfSell])
+  }, [adCallVoucherOfSell, searchKhachHang])
 
   const loadDiaChi = (initPage, idCustomer) => {
     DiaChiApi.getAll(initPage - 1, idCustomer).then((response) => {
@@ -319,6 +333,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [selectedHuyen, setSelectedHuyen] = useState(null)
   const [selectedXa, setSelectedXa] = useState(null)
   const handleTinhChange = (_, newValue) => {
+    setErrorAddBill({ ...errorAddBill, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
     if (newValue) {
@@ -336,6 +351,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   }
 
   const handleHuyenChange = (_, newValue) => {
+    setErrorAddBill({ ...errorAddBill, districtId: '' })
     setSelectedHuyen(newValue)
     setSelectedXa(null)
     if (newValue) {
@@ -352,6 +368,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   }
 
   const handleXaChange = (_, newValue) => {
+    setErrorAddBill({ ...errorAddBill, wardId: '' })
     if (newValue) {
       setSelectedXa(newValue)
       setDiaChi({ ...diaChi, wardId: newValue?.id })
@@ -387,6 +404,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     phoneNumber: '',
     email: '',
     specificAddress: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
     type: 0,
   })
   const [xaName, setXaName] = useState('')
@@ -668,7 +688,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     specificAddress: '',
   })
 
+  const [btnad, setBtnad] = useState(false)
   const handleDiaChi = (idCustomer) => {
+    setBtnad(true)
     setIsShowCustomer(false)
     loadDiaChi(initPage, idCustomer)
     fillDetailDiaChi(idCustomer)
@@ -791,7 +813,78 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         })
       })
   }
+
+  const [errorAddBill, setErrorAddBill] = useState({
+    name: '',
+    email: '',
+    phoneNumber: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    specificAddress: '',
+  })
+
   const addBill = (id) => {
+    const newErrors = {}
+    let checkAA = 0
+
+    if (!detailDiaChi.name.trim()) {
+      newErrors.name = 'Tên người nhận không được để trống'
+      checkAA++
+    } else if (detailDiaChi.name.trim().length > 100) {
+      newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
+      checkAA++
+    } else {
+      newErrors.name = ''
+    }
+
+    if (!detailDiaChi.specificAddress.trim()) {
+      newErrors.specificAddress = 'Địa chỉ cụ thể không được để trống'
+      checkAA++
+    } else if (detailDiaChi.name.trim().length > 225) {
+      newErrors.specificAddress = 'Địa chỉ cụ thể không được quá 225 kí tự.'
+      checkAA++
+    } else {
+      newErrors.specificAddress = ''
+    }
+
+    if (!detailDiaChi.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      checkAA++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        checkAA++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+
+    if (!detailDiaChi.provinceId) {
+      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
+      checkAA++
+    } else {
+      newErrors.provinceId = ''
+    }
+
+    if (!detailDiaChi.districtId) {
+      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
+      checkAA++
+    } else {
+      newErrors.districtId = ''
+    }
+
+    if (!detailDiaChi.wardId) {
+      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+      checkAA++
+    } else {
+      newErrors.wardId = ''
+    }
+    if (checkAA > 0) {
+      setErrorAddBill(newErrors)
+      return
+    }
     const data = {
       fullName: detailDiaChi.name ? detailDiaChi.name : '',
       phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
@@ -1077,17 +1170,23 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
               <Container>
                 <Box>
                   <TextField
-                    sx={{
-                      width: '50%',
-                      '.MuiInputBase-input': { py: '7.5px' },
-                    }}
+                    sx={{ width: '40%' }}
+                    className="search-field"
                     size="small"
-                    variant="outlined"
-                    placeholder="Tìm khách hàng"
+                    color="cam"
+                    value={searchKhachHang.nameSearch || ''}
+                    placeholder="Tìm kiếm tên hoặc sđt hoặc email"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon color="cam" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      setSearchKhachHang({ ...searchKhachHang, nameSearch: e.target.value })
+                    }}
                   />
-                  <Button sx={{ ml: 2 }} variant="contained">
-                    Tìm kiếm
-                  </Button>
                   <Button
                     onClick={() => {
                       setIsShowAddCustomer(true)
@@ -1424,6 +1523,44 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                     ))}
                   </TableBody>
                 </Table>
+                <Stack
+                  mt={2}
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  spacing={0}>
+                  <Typography component="span" variant={'body2'} mt={0.5}>
+                    <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                      Xem
+                    </Typography>
+                    <Select
+                      color="cam"
+                      onChange={(e) => {
+                        setSearchKhachHang({ ...searchKhachHang, size: e.target.value })
+                      }}
+                      sx={{ height: '25px', mx: 0.5 }}
+                      size="small"
+                      value={searchKhachHang.size}>
+                      <MenuItem value={5}>5</MenuItem>
+                      <MenuItem value={10}>10</MenuItem>
+                      <MenuItem value={15}>15</MenuItem>
+                      <MenuItem value={20}>20</MenuItem>
+                    </Select>
+                    <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                      Khách hàng
+                    </Typography>
+                  </Typography>
+                  <Pagination
+                    page={searchKhachHang.page}
+                    onChange={(e, value) => {
+                      e.preventDefault()
+                      setSearchKhachHang({ ...searchKhachHang, page: value })
+                    }}
+                    count={totalPages}
+                    color="cam"
+                    variant="outlined"
+                  />
+                </Stack>
               </Container>
             </Box>
           </Modal>
@@ -1447,11 +1584,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   }}>
                   {nameCustomer !== '' ? nameCustomer : 'khách lẻ'}
                 </span>
+                {console.log(btnad)}
                 <Button
                   sx={{ py: '6.7px', ml: 1 }}
                   color="cam"
                   size="small"
                   variant="outlined"
+                  style={{ display: btnad ? 'block' : 'none' }}
                   onClick={() => setIsShowDiaChi(true)}>
                   <b>Chọn Địa chỉ</b>
                 </Button>
@@ -1523,7 +1662,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         <TableRow
                           key={row.id}
                           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                          <TableCell align="center">{}</TableCell>
+                          <TableCell align="center">{row.stt}</TableCell>
                           <TableCell align="center">{row.name}</TableCell>
                           <TableCell align="center">{row.phoneNumber}</TableCell>
                           <TableCell align="center">{row.specificAddress}</TableCell>
@@ -1573,6 +1712,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         <IconButton
                           onClick={() => {
                             setIsShowAddDiaChi(false)
+                            setErrorsAA({
+                              name: '',
+                              email: '',
+                              phoneNumber: '',
+                              provinceId: '',
+                              districtId: '',
+                              wardId: '',
+                              specificAddress: '',
+                            })
                           }}
                           aria-label="close"
                           color="error"
@@ -1757,32 +1905,46 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         <Grid2 container spacing={2}>
           <Grid2 md={7} xs={12} p={0}>
             <Box p={3} pt={0} pb={2}>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                label="Tên người nhận"
-                type="text"
-                size="small"
-                sx={{ mt: 1, width: '48%' }}
-                name="name"
-                value={detailDiaChi.name}
-                onChange={(e) => {
-                  setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
-                }}
-              />
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                label="Số điện thoại"
-                type="text"
-                size="small"
-                sx={{ mt: 1, width: '48%', float: 'right' }}
-                name="phoneNumber"
-                value={detailDiaChi.phoneNumber}
-                onChange={(e) => {
-                  setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
-                }}
-              />
+              <Grid container spacing={2} sx={{ mb: 3, mt: 1 }}>
+                <Grid item xs={6}>
+                  <TextField
+                    id="outlined-basic"
+                    variant="outlined"
+                    label="Tên người nhận"
+                    type="text"
+                    fullWidth
+                    size="small"
+                    name="name"
+                    value={detailDiaChi.name}
+                    onChange={(e) => {
+                      setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
+                      setErrorAddBill({ ...errorAddBill, name: '' })
+                    }}
+                  />
+                  <Typography variant="body2" color="error">
+                    {errorAddBill.name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    id="outlined-basic"
+                    variant="outlined"
+                    label="Số điện thoại"
+                    type="text"
+                    size="small"
+                    fullWidth
+                    name="phoneNumber"
+                    value={detailDiaChi.phoneNumber}
+                    onChange={(e) => {
+                      setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
+                      setErrorAddBill({ ...errorAddBill, phoneNumber: '' })
+                    }}
+                  />
+                  <Typography variant="body2" color="error">
+                    {errorAddBill.phoneNumber}
+                  </Typography>
+                </Grid>
+              </Grid>
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={4}>
                   <Autocomplete
@@ -1810,6 +1972,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                       />
                     )}
                   />
+                  <Typography variant="body2" color="error">
+                    {errorAddBill.provinceId}
+                  </Typography>
                 </Grid>
                 <Grid item xs={4}>
                   <Autocomplete
@@ -1836,6 +2001,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                       />
                     )}
                   />
+                  <Typography variant="body2" color="error">
+                    {errorAddBill.districtId}
+                  </Typography>
                 </Grid>
                 <Grid item xs={4}>
                   <Autocomplete
@@ -1856,30 +2024,43 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                       />
                     )}
                   />
+                  <Typography variant="body2" color="error">
+                    {errorAddBill.wardId}
+                  </Typography>
                 </Grid>
               </Grid>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                label="Địa chỉ cụ thể"
-                type="text"
-                size="small"
-                sx={{ mt: 1, width: '48%' }}
-                name="specificAddress"
-                value={detailDiaChi.specificAddress}
-                onChange={(e) => {
-                  const updatedDetailDiaChi = { ...detailDiaChi }
-                  updatedDetailDiaChi.specificAddress = e.target.value
-                  setDetailDiaChi(updatedDetailDiaChi)
-                }}
-              />
-              <TextField
-                disabled={!giaoHang}
-                sx={{ mt: 1, width: '48%', float: 'right' }}
-                label="Ghi chú"
-                size="small"
-                onChange={(e) => setKhachHang({ ...khachHang, note: e.target.value })}
-              />
+              <Grid container spacing={2} sx={{ mb: 3, mt: 1 }}>
+                <Grid item xs={6}>
+                  <TextField
+                    id="outlined-basic"
+                    variant="outlined"
+                    label="Địa chỉ cụ thể"
+                    type="text"
+                    fullWidth
+                    size="small"
+                    name="specificAddress"
+                    value={detailDiaChi.specificAddress}
+                    onChange={(e) => {
+                      const updatedDetailDiaChi = { ...detailDiaChi }
+                      updatedDetailDiaChi.specificAddress = e.target.value
+                      setDetailDiaChi(updatedDetailDiaChi)
+                      setErrorAddBill({ ...errorAddBill, specificAddress: '' })
+                    }}
+                  />
+                  <Typography variant="body2" color="error">
+                    {errorAddBill.specificAddress}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    disabled={!giaoHang}
+                    label="Ghi chú"
+                    size="small"
+                    fullWidth
+                    onChange={(e) => setKhachHang({ ...khachHang, note: e.target.value })}
+                  />
+                </Grid>
+              </Grid>
             </Box>
             <Grid container>
               <Grid item xs={6}>

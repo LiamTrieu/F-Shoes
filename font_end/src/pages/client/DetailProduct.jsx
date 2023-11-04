@@ -11,7 +11,6 @@ import {
   Typography,
 } from '@mui/material'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
-import CancelIcon from '@mui/icons-material/Cancel'
 import React, { useState } from 'react'
 import { ColorCustom } from '../../styles/ColorCustom'
 import CartProduct from '../../layout/client/CartProduct'
@@ -23,7 +22,7 @@ import { useEffect } from 'react'
 import clientProductApi from '../../api/client/clientProductApi'
 import { Link, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { GetCart, addCart, removeCart, updateCart } from '../../services/slices/cartSlice'
+import { GetCart, addCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
 import ReactImageGallery from 'react-image-gallery'
 import { Drawer } from '@mui/material'
 import 'react-image-gallery/styles/css/image-gallery.css'
@@ -122,10 +121,6 @@ export default function DetailProduct() {
     } else {
       dispatch(updateCart({ ...cart, soLuong: soluong }))
     }
-  }
-
-  const removeFromCart = (cart) => {
-    dispatch(removeCart(cart.id))
   }
 
   function convert(images) {
@@ -280,7 +275,12 @@ export default function DetailProduct() {
               {productCart.map((cart) => (
                 <div key={cart.id} className="cart-item">
                   <div className="cart-item-content">
-                    <div className="remove-item" onClick={() => removeFromCart(cart.id)}>
+                    <div
+                      className="remove-item"
+                      onClick={() => {
+                        const updatedProduct = productCart.filter((item) => item.id !== cart.id)
+                        dispatch(setCart(updatedProduct))
+                      }}>
                       X
                     </div>
                     <img src={cart.image} alt={cart.name} className="cart-item-image" />

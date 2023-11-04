@@ -124,8 +124,10 @@ const AddStaff = () => {
   }
 
   const handleTinhChange = (_, newValue) => {
+    setErrors({ ...errors, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
+    setSelectedXa(null)
     if (newValue) {
       loadHuyen(newValue.id)
       setDiaChi({ ...diaChi, provinceId: newValue.id })
@@ -136,6 +138,7 @@ const AddStaff = () => {
   }
 
   const handleHuyenChange = (_, newValue) => {
+    setErrors({ ...errors, districtId: '' })
     setSelectedHuyen(newValue)
     setSelectedXa(null)
     if (newValue) {
@@ -147,6 +150,7 @@ const AddStaff = () => {
     }
   }
   const handleXaChange = (_, newValue) => {
+    setErrors({ ...errors, wardId: '' })
     setSelectedXa(newValue)
     setDiaChi({ ...diaChi, wardId: newValue.id })
   }
@@ -264,6 +268,16 @@ const AddStaff = () => {
       check++
     } else {
       newErrors.fullName = ''
+    }
+
+    if (!diaChi.specificAddress) {
+      newErrors.specificAddress = 'Vui lòng nhập địa chỉ cụ thể.'
+      check++
+    } else if (diaChi.specificAddress.length > 225) {
+      newErrors.specificAddress = 'Địa chỉ không được quá 225 kí tự.'
+      check++
+    } else {
+      newErrors.specificAddress = ''
     }
 
     if (!staffAdd.email) {
@@ -467,6 +481,7 @@ const AddStaff = () => {
               onChange={(e) => {
                 setStaffAdd({ ...staffAdd, fullName: e.target.value.trim() })
                 updateDiaChi()
+                setErrors({ ...errors, fullName: '' })
               }}
             />
             <Typography variant="body2" color="error">
@@ -487,7 +502,10 @@ const AddStaff = () => {
                   size="small"
                   value={staffAdd?.citizenId}
                   fullWidth
-                  onChange={(e) => setStaffAdd({ ...staffAdd, citizenId: e.target.value.trim() })}
+                  onChange={(e) => {
+                    setStaffAdd({ ...staffAdd, citizenId: e.target.value.trim() })
+                    setErrors({ ...errors, citizenId: '' })
+                  }}
                 />
                 <Typography variant="body2" color="error">
                   {errors.citizenId}
@@ -501,7 +519,10 @@ const AddStaff = () => {
                   <RadioGroup
                     row
                     value={staffAdd.gender}
-                    onChange={(e) => setStaffAdd({ ...staffAdd, gender: e.target.value })}>
+                    onChange={(e) => {
+                      setStaffAdd({ ...staffAdd, gender: e.target.value })
+                      setErrors({ ...errors, gender: '' })
+                    }}>
                     <FormControlLabel
                       name="gioiTinh"
                       value="true"
@@ -531,9 +552,10 @@ const AddStaff = () => {
                     sx={{ width: '100%' }}
                     value={staffAdd.dateBirth ? dayjs(staffAdd.dateBirth, 'DD-MM-YYYY') : null}
                     className="small-datepicker"
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setStaffAdd({ ...staffAdd, dateBirth: dayjs(e).format('DD-MM-YYYY') })
-                    }
+                      setErrors({ ...errors, dateBirth: '' })
+                    }}
                   />
                 </LocalizationProvider>
                 <Typography variant="body2" color="error">
@@ -549,7 +571,10 @@ const AddStaff = () => {
                   size="small"
                   variant="outlined"
                   fullWidth
-                  onChange={(e) => setStaffAdd({ ...staffAdd, email: e.target.value.trim() })}
+                  onChange={(e) => {
+                    setStaffAdd({ ...staffAdd, email: e.target.value.trim() })
+                    setErrors({ ...errors, email: '' })
+                  }}
                 />
                 <Typography variant="body2" color="error">
                   {errors.email}
@@ -666,14 +691,18 @@ const AddStaff = () => {
                   size="small"
                   fullWidth
                   value={diaChi.specificAddress}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setDiaChi({
                       ...diaChi,
                       specificAddress: e.target.value,
                     })
-                  }
+                    setErrors({ ...errors, specificAddress: '' })
+                  }}
                   disabled={!selectedXa}
                 />
+                <Typography variant="body2" color="error">
+                  {errors.specificAddress}
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
