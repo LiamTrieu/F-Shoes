@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/transaction")
+@RequestMapping("/api/admin/transaction")
 public class HDTransactionController {
 
     @Autowired

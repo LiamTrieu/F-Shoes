@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/customerVoucher")
+@RequestMapping("/api/admin/customerVoucher")
 public class AdCustomerVoucherController {
     @Autowired
     private AdCustomerVoucherService adCustomerVoucherService;

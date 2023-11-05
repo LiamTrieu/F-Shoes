@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 
 @RestController
-@RequestMapping("/api/voucher")
+@RequestMapping("/api/admin/voucher")
 public class AdVoucherController {
 
     @Autowired

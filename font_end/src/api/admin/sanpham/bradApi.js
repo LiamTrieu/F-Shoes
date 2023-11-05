@@ -1,33 +1,33 @@
-import axiosClient from '../../axios'
+import axiosAdmin from '../../axios'
 
 const bradApi = {
   findAll: () => {
     const url = `/brand/find-all`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getList: () => {
     const url = `/brand/get-list`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getBrand: (filter) => {
     const url = `/brand`
-    return axiosClient.get(url, { params: filter })
+    return axiosAdmin.get(url, { params: filter })
   },
   addBrand: (brand) => {
     const url = `/brand/add`
-    return axiosClient.post(url, brand)
+    return axiosAdmin.post(url, brand)
   },
   updateBrand: (id, brand) => {
     const url = `/brand/update/${id}`
-    return axiosClient.put(url, brand)
+    return axiosAdmin.put(url, brand)
   },
   swapBrand: (id) => {
     const url = `/brand/swap/${id}`
-    return axiosClient.delete(url)
+    return axiosAdmin.delete(url)
   },
   getAllNameBrand: () => {
     const url = `/brand/get-all-name`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
 }
 export default bradApi

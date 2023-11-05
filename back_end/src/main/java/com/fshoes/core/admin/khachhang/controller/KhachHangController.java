@@ -5,7 +5,6 @@ import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
 import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.service.impl.KhachHangServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
-import com.fshoes.entity.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +12,7 @@ import java.text.ParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/khach-hang")
+@RequestMapping("/api/admin/khach-hang")
 public class KhachHangController {
     @Autowired
     private KhachHangServiceImpl khachHangService;

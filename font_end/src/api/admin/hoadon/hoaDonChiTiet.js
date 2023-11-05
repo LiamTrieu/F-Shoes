@@ -1,33 +1,33 @@
-import axiosClient from '../../axios'
+import axiosAdmin from '../../axios'
 
 const hoaDonChiTietApi = {
   getByIdBillAndStt: (idBill, status) => {
     const urlGetByIdBill = `/billDetail/get-by-idBill-and-status/${idBill}`
-    return axiosClient.get(urlGetByIdBill, { params: { status } })
+    return axiosAdmin.get(urlGetByIdBill, { params: { status } })
   },
   getByIdBill: (idBill) => {
     const urlGetByIdBill = `/billDetail/get-by-idBill-and-status/${idBill}`
-    return axiosClient.get(urlGetByIdBill)
+    return axiosAdmin.get(urlGetByIdBill)
   },
   decrementQuantity: (idBillDetail) => {
     const url = `/billDetail/decrementQuantity/${idBillDetail}`
-    return axiosClient.put(url)
+    return axiosAdmin.put(url)
   },
   incrementQuantity: (idBillDetail) => {
     const url = `/billDetail/incrementQuantity/${idBillDetail}`
-    return axiosClient.put(url)
+    return axiosAdmin.put(url)
   },
   changeQuantity: (idBillDetail, quantity) => {
     const url = `/billDetail/changeQuantity/${idBillDetail}`
-    return axiosClient.put(url, quantity)
+    return axiosAdmin.put(url, quantity)
   },
   saveBillDetail: (billDetailReq) => {
     const url = `/billDetail/save`
-    return axiosClient.post(url, billDetailReq)
+    return axiosAdmin.post(url, billDetailReq)
   },
   delete: (billDetailReq) => {
     const url = `/billDetail/delete`
-    return axiosClient.put(url, billDetailReq)
+    return axiosAdmin.put(url, billDetailReq)
   },
 }
 

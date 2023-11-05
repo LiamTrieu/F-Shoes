@@ -21,10 +21,15 @@ import Google from '../../assets/image/google.svg'
 import LockIcon from '@mui/icons-material/Lock'
 import EmailIcon from '@mui/icons-material/Email'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { ColorCustom } from '../../styles/ColorCustom'
+import authenticationAPi from '../../api/authentication/authenticationAPi'
+import { toast } from 'react-toastify'
+import { getCookie, setCookie } from '../../services/cookie'
+import { useDispatch } from 'react-redux'
+import { addUser } from '../../services/slices/userSlice'
 
-const InputForm = ({ label, Icon, id, isPass }) => {
+const InputForm = ({ label, Icon, id, isPass, defaultValue, chagneValue }) => {
   const [showPass, setShowPass] = useState(false)
   return (
     <FormControl variant="standard" sx={{ width: '100%', marginBottom: '25px' }}>
@@ -32,6 +37,10 @@ const InputForm = ({ label, Icon, id, isPass }) => {
         {label}
       </InputLabel>
       <Input
+        onChange={(e) => {
+          chagneValue(e.target.value)
+        }}
+        defaultValue={defaultValue}
         sx={{ fontFamily: 'monospace' }}
         id={id}
         type={isPass && !showPass ? 'password' : 'text'}
@@ -79,21 +88,69 @@ const RegisterPanel = () => {
 }
 
 const LoginPanel = () => {
+  const [user, setUser] = useState({
+    email: 'nguyenthithuyduong948@gmail.com',
+    password: 'thuyduongxih',
+  })
+  const [error, SetError] = useState(null)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const submit = (e) => {
+    e.preventDefault()
+    return authenticationAPi.login(user.email, user.password).then(
+      (response) => {
+        if (response.data.success) {
+          setCookie('ClientToken', response.data.data, 7)
+          toast.success('Đăng nhập thành công!')
+          SetError(null)
+          authenticationAPi.getClient().then((response) => {
+            dispatch(addUser(response.data.data))
+          })
+          navigate('/home')
+        } else {
+          toast.error('Đăng nhập thất bại!')
+          SetError('Tài khoản hoặc mật khẩu không chính xác')
+        }
+      },
+      (err) => {
+        toast.error('Lỗi hệ thống vui lòng thử lại!')
+      },
+    )
+  }
   return (
     <Box>
       <InputForm
-        label="Tên tài khoản hoặc địa chỉ email *"
+        chagneValue={(e) => {
+          setUser({ email: e })
+        }}
+        label="Địa chỉ email của bạn *"
         Icon={AccountCircle}
         id="login-input-user"
+        defaultValue={user.email}
       />
-      <InputForm label="Mật khẩu *" Icon={LockIcon} id="login-input-password" isPass={true} />
-      <FormControlLabel
+      <InputForm
+        chagneValue={(e) => {
+          setUser({ password: e })
+        }}
+        defaultValue={user.password}
+        label="Mật khẩu *"
+        Icon={LockIcon}
+        id="login-input-password"
+        isPass={true}
+      />
+      {/* <FormControlLabel
         control={<Checkbox size="small" color="primary" />}
         label="Ghi nhớ mật khẩu"
-      />
+      /> */}
+      {error && <Typography color={'red'}>{error}</Typography>}
       <Box my={1}>
         <ThemeProvider theme={ColorCustom}>
-          <Button type="submit" variant="contained" color="neutral" sx={{ marginRight: '15px' }}>
+          <Button
+            onClick={submit}
+            type="submit"
+            variant="contained"
+            color="neutral"
+            sx={{ marginRight: '15px' }}>
             Đăng nhập
           </Button>
           <Button
@@ -115,10 +172,13 @@ const LoginPanel = () => {
 export default function Login() {
   const [value, setValue] = React.useState(0)
 
+  const token = getCookie('ClientToken')
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
-  return (
+  return token ? (
+    <Navigate to={'/home'} />
+  ) : (
     <Container maxWidth={'sm'} sx={{ my: 6 }}>
       <Paper elevation={3} sx={{ padding: '20px', my: 10 }}>
         <Tabs

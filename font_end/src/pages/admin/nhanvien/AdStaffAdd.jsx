@@ -170,7 +170,6 @@ const AddStaff = () => {
         handleScan(result)
         setQrScannerVisible(false)
       },
-      paused: !qrScannerVisible,
     })
     return <video ref={ref} width="100%" />
   }
@@ -446,11 +445,11 @@ const AddStaff = () => {
           onClick={handleOpenQRScanner}>
           Quét QR
         </Button>
+
         <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
-          <Box sx={styleModal}>
-            <RenderVideo />
-          </Box>
+          <Box sx={styleModal}>{qrScannerVisible && <RenderVideo />}</Box>
         </Modal>
+
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={4}>
             <h3>Thông tin nhân viên</h3>

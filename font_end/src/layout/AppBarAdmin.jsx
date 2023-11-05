@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import AppBar from '@mui/material/AppBar'
@@ -9,11 +9,24 @@ import { AiOutlineMenuFold } from 'react-icons/ai'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
 import '../assets/styles/admin.css'
+import { getCookie, removeCookie } from '../services/cookie'
+import { Navigate, useNavigate } from 'react-router-dom'
+import authenticationAPi from '../api/authentication/authenticationAPi'
 
 const drawerWidth = '17vw'
 
 export default function AppBarAdmin({ children }) {
-  return (
+  const navigate = useNavigate()
+  const [user, setUser] = useState(null)
+  const token = getCookie('AdminToken')
+  useEffect(() => {
+    if (token) {
+      authenticationAPi.getAdmin().then((response) => {
+        setUser(response.data.data)
+      })
+    }
+  }, [token])
+  return token ? (
     <Box
       sx={{ display: 'flex', backgroundColor: '#F0F2F5', minHeight: '100vh', maxWidth: '100vw' }}>
       <ThemeAdmin>
@@ -43,9 +56,14 @@ export default function AppBarAdmin({ children }) {
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Tooltip title="Tài khoản">
-              <IconButton size="small">
-                <Avatar src={require('../assets/image/image.png')} sx={{ width: 35, height: 35 }} />
+            <Tooltip title={user ? user.name : 'Tài khoản'}>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  removeCookie('AdminToken')
+                  navigate('/admin/login')
+                }}>
+                <Avatar src={user && user.avatar} sx={{ width: 35, height: 35 }} />
               </IconButton>
             </Tooltip>
           </Toolbar>
@@ -90,5 +108,7 @@ export default function AppBarAdmin({ children }) {
         </Box>
       </ThemeAdmin>
     </Box>
+  ) : (
+    <Navigate to={'/admin/login'} />
   )
 }

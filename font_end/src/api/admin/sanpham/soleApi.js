@@ -1,33 +1,33 @@
-import axiosClient from '../../axios'
+import axiosAdmin from '../../axios'
 
 const soleApi = {
   findAll: () => {
     const url = `/sole/find-all`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getList: () => {
     const url = `/sole/get-list`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getSole: (filter) => {
     const url = `/sole`
-    return axiosClient.get(url, { params: filter })
+    return axiosAdmin.get(url, { params: filter })
   },
   addSole: (sole) => {
     const url = `/sole/add`
-    return axiosClient.post(url, sole)
+    return axiosAdmin.post(url, sole)
   },
   updateSole: (id, sole) => {
     const url = `/sole/update/${id}`
-    return axiosClient.put(url, sole)
+    return axiosAdmin.put(url, sole)
   },
   swapSole: (id) => {
     const url = `/sole/swap/${id}`
-    return axiosClient.delete(url)
+    return axiosAdmin.delete(url)
   },
   getAllNameSole: () => {
     const url = `/sole/get-all-name`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
 }
 export default soleApi

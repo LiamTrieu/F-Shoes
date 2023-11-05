@@ -4,7 +4,6 @@ package com.fshoes.core.admin.khuyenmai.controller;
 import com.fshoes.core.admin.khuyenmai.model.request.GetProductDetailByIdProduct;
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionAddRequest;
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionSearch;
-import com.fshoes.core.admin.khuyenmai.model.request.PromotionRequestAdd;
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionSearch;
 import com.fshoes.core.admin.khuyenmai.model.respone.PromotionRespone;
 import com.fshoes.core.admin.khuyenmai.service.ProductPromotionAddService;
@@ -13,20 +12,13 @@ import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/promotion")
+@RequestMapping("/api/admin/promotion")
 public class PromotionController {
 
     @Autowired

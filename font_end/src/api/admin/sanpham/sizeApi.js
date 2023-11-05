@@ -1,33 +1,33 @@
-import axiosClient from '../../axios'
+import axiosAdmin from '../../axios'
 
 const sizeApi = {
   findAll: () => {
     const url = `/size/find-all`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getList: () => {
     const url = `/size/get-list`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getSize: (filter) => {
     const url = `/size`
-    return axiosClient.get(url, { params: filter })
+    return axiosAdmin.get(url, { params: filter })
   },
   addSize: (size) => {
     const url = `/size/add`
-    return axiosClient.post(url, size)
+    return axiosAdmin.post(url, size)
   },
   updateSize: (id, size) => {
     const url = `/size/update/${id}`
-    return axiosClient.put(url, size)
+    return axiosAdmin.put(url, size)
   },
   swapSize: (id) => {
     const url = `/size/swap/${id}`
-    return axiosClient.delete(url)
+    return axiosAdmin.delete(url)
   },
   getAllNameSize: () => {
     const url = `/size/get-all-name`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
 }
 export default sizeApi

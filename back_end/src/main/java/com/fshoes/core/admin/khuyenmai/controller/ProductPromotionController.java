@@ -2,20 +2,12 @@ package com.fshoes.core.admin.khuyenmai.controller;
 
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionRequest;
 import com.fshoes.core.admin.khuyenmai.service.ProductPromotionService;
-import com.fshoes.core.admin.khuyenmai.service.impl.ProductPromotionServiceImpl;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/product-promotion")
+@RequestMapping("/api/admin/product-promotion")
 public class ProductPromotionController {
 
     @Autowired

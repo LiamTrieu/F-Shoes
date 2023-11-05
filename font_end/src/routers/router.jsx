@@ -19,29 +19,35 @@ import HeadingClient from '../layout/client/HeadingClient'
 import FooterClient from '../layout/client/FooterClient'
 import Dashboard from '../pages/admin/thongke/Dashboard'
 import Payment from '../pages/client/Payment'
+import AutGuard from '../layout/AutGuard'
+import AutGuardClient from '../layout/AutGuardClient'
+import AdminLogin from '../pages/admin/AdminLogin'
+import Forbidden403 from '../pages/httpstatus/Forbidden403'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <>
+      <AutGuardClient>
         <HeadingClient />
         <ScrollToTop />
         <Outlet />
         <FooterClient />
-      </>
+      </AutGuardClient>
     ),
     children: [{ index: true, element: <Navigate to={'/home'} /> }, ...clientRoute],
   },
   {
     path: '/admin',
     element: (
-      <AppBarAdmin>
-        <Outlet />
-      </AppBarAdmin>
+      <AutGuard>
+        <AppBarAdmin>
+          <Outlet />
+        </AppBarAdmin>
+      </AutGuard>
     ),
     children: [
-      { index: true, element: <Navigate to={'/admin/product'} /> },
+      { index: true, element: <Navigate to={'/admin/dashboard'} /> },
       ...adBillRoute,
       ...adCustomerRoute,
       ...adProductRoute,
@@ -59,6 +65,8 @@ const router = createBrowserRouter([
     ],
   },
   { path: '/vnpay-payment', element: <Payment /> },
+  { path: '/admin/login', element: <AdminLogin /> },
+  { path: '/not-authorization', element: <Forbidden403 /> },
 ])
 
 export default router

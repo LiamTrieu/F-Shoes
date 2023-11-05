@@ -1,28 +1,17 @@
 package com.fshoes.core.admin.hoadon.controller;
 
-import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
-import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
+import com.fshoes.core.admin.hoadon.model.request.*;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bill")
+@RequestMapping("/api/admin/bill")
 public class HDBillController {
 
     @Autowired
