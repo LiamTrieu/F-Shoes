@@ -1,19 +1,18 @@
-import axios from 'axios'
-import axiosClient from '../../axios'
+import axiosAdmin from '../../axios'
 const khachHangApi = {
   getOne: (id) => {
     const url = `/khach-hang/get-one/${id}`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
 
   get: (searchKhachHang) => {
     const url = `/khach-hang/search`
-    return axiosClient.get(url, { params: searchKhachHang })
+    return axiosAdmin.get(url, { params: searchKhachHang })
   },
 
   getAll: () => {
     const url = `/khach-hang/get-all`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
 
   addKhachHang: (khachhang) => {
@@ -25,17 +24,13 @@ const khachHangApi = {
     formData.append('gender', khachhang.gender)
     if (khachhang.avatar !== null) formData.append('avatar', khachhang.avatar)
     formData.append('role', khachhang.role)
-
-    return axios.post(`http://localhost:8080/api/khach-hang/create`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+    const url = `/khach-hang/create`
+    return axiosAdmin.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
 
   delete: (id) => {
     const url = `/khach-hang/delete/${id}`
-    return axiosClient.delete(url)
+    return axiosAdmin.delete(url)
   },
   updateKhachHang: (id, khachhang) => {
     const formData = new FormData()
@@ -49,11 +44,8 @@ const khachHangApi = {
     }
     formData.append('role', khachhang.role)
     formData.append('status', khachhang.status)
-    return axios.put(`http://localhost:8080/api/khach-hang/update/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+    const url = `/khach-hang/update/${id}`
+    return axiosAdmin.put(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
 }
 export default khachHangApi

@@ -1,49 +1,49 @@
-import axiosClient from '../../axios'
+import axiosAdmin from '../../axios'
 
 const voucherApi = {
   getAllVoucher: () => {
     const urlGetAll = `/voucher/view/all`
-    return axiosClient.get(urlGetAll)
+    return axiosAdmin.get(urlGetAll)
   },
   getOneVoucherById: (id) => {
     const urlOneVoucherById = `/voucher/view/one/${id}`
-    return axiosClient.get(urlOneVoucherById)
+    return axiosAdmin.get(urlOneVoucherById)
   },
   getPageVoucher: (numberPage) => {
     const urlPageVoucher = `/voucher/view/page?numberPage=${numberPage}`
-    return axiosClient.get(urlPageVoucher)
+    return axiosAdmin.get(urlPageVoucher)
   },
   addVoucher: (adVoucherRequest) => {
     const urlAddVoucher = `/voucher/add`
-    return axiosClient.post(urlAddVoucher, adVoucherRequest)
+    return axiosAdmin.post(urlAddVoucher, adVoucherRequest)
   },
   updateVoucher: (id, adVoucherRequest) => {
     const urlUpdateVoucher = `/voucher/update/${id}`
-    return axiosClient.put(urlUpdateVoucher, adVoucherRequest)
+    return axiosAdmin.put(urlUpdateVoucher, adVoucherRequest)
   },
   deleteVoucher: (id) => {
     const urlDeleteVoucher = `/voucher/delete/${id}`
-    return axiosClient.delete(urlDeleteVoucher)
+    return axiosAdmin.delete(urlDeleteVoucher)
   },
   searchVoucher: (adVoucherSearch) => {
     const urlSearchVoucher = `/voucher/search`
-    return axiosClient.get(urlSearchVoucher, { params: adVoucherSearch })
+    return axiosAdmin.get(urlSearchVoucher, { params: adVoucherSearch })
   },
   getPageCustomer: (p) => {
     const url = `/voucher/view/all/customer?numberPage=${p}`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getListIdCustomerByIdVoucher: (idVoucher) => {
     const urlListIdCustomerByIdVoucher = `/customerVoucher/view/list-id-customer/${idVoucher}`
-    return axiosClient.get(urlListIdCustomerByIdVoucher)
+    return axiosAdmin.get(urlListIdCustomerByIdVoucher)
   },
   getAllCodeVoucher: () => {
     const url = `/voucher/view/code-voucher`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getAllVoucherByIdCustomer: (adCallVoucherOfSell) => {
     const url = `/voucher/view/voucher-by-customer`
-    return axiosClient.get(url, { params: adCallVoucherOfSell })
+    return axiosAdmin.get(url, { params: adCallVoucherOfSell })
   },
 }
 

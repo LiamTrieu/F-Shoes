@@ -23,6 +23,7 @@ import transactionReducer from './slices/transactionSlice'
 import voucherReducer from './slices/voucherSlice'
 import checkoutReducer from './slices/checkoutSlice'
 import loadingReducer from './slices/loadingSlice'
+import userSlice from './slices/userSlice'
 
 const store = configureStore({
   reducer: {
@@ -50,6 +51,7 @@ const store = configureStore({
     voucher: voucherReducer,
     checkout: checkoutReducer,
     loading: loadingReducer,
+    user: userSlice,
   },
 })
 export default store

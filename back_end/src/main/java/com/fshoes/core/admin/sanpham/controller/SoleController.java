@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/sole")
+@RequestMapping("/api/admin/sole")
 public class SoleController {
 
     @Autowired

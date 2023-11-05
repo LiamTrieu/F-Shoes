@@ -3,6 +3,7 @@ package com.fshoestool;
 import com.fshoes.entity.*;
 import com.fshoes.infrastructure.constant.*;
 import com.fshoes.repository.*;
+import com.fshoes.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -944,6 +945,29 @@ public class DBGenerator implements CommandLineRunner {
 
         CartDetail cartDetail25 = CartDetail.builder().quantity(25).cart(cart5).productDetail(productDetail25).build();
         cartDetail25.setId(cartDetailRepository.save(cartDetail25).getId());
-
+        Account accountAdmin = Account.builder().role(RoleAccount.QUAN_LY)
+                .fullName("Nguyễn Văn Nhật")
+                .dateBirth(System.currentTimeMillis())
+                .CitizenId("1234999890123456")
+                .phoneNumber("0987656412")
+                .email("admin@gmail.com")
+                .gender(true)
+                .password(MD5Util.getMD5("admin"))
+                .avatar("https://res.cloudinary.com/dioxktgsm/image/upload/v1699145685/hz5f5miaqvpxyewazije.png")
+                .status(Status.HOAT_DONG)
+                .build();
+        Account accountClient = Account.builder().role(RoleAccount.KHACH_HANG)
+                .fullName("Nguyễn Thị Thùy Dương")
+                .dateBirth(System.currentTimeMillis())
+                .CitizenId("077564778753")
+                .phoneNumber("0647536475")
+                .email("nguyenthithuyduong948@gmail.com")
+                .gender(true)
+                .password(MD5Util.getMD5("thuyduongxih"))
+                .avatar("https://res.cloudinary.com/dioxktgsm/image/upload/v1699145591/vfitrqzsyeueqpiioguz.jpg")
+                .status(Status.HOAT_DONG)
+                .build();
+        accountRepository.save(accountAdmin);
+        accountRepository.save(accountClient);
     }
 }

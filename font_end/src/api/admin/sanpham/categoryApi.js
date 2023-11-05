@@ -1,33 +1,33 @@
-import axiosClient from '../../axios'
+import axiosAdmin from '../../axios'
 
 const categoryApi = {
   findAll: () => {
     const url = `/category/find-all`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getList: () => {
     const url = `/category/get-list`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getCategory: (filter) => {
     const url = `/category`
-    return axiosClient.get(url, { params: filter })
+    return axiosAdmin.get(url, { params: filter })
   },
   addCategory: (category) => {
     const url = `/category/add`
-    return axiosClient.post(url, category)
+    return axiosAdmin.post(url, category)
   },
   updateCategory: (id, category) => {
     const url = `/category/update/${id}`
-    return axiosClient.put(url, category)
+    return axiosAdmin.put(url, category)
   },
   swapCategory: (id) => {
     const url = `/category/swap/${id}`
-    return axiosClient.delete(url)
+    return axiosAdmin.delete(url)
   },
   getAllNameCategory: () => {
     const url = `/category/get-all-name`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
 }
 export default categoryApi

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/dia-chi")
+@RequestMapping("/api/admin/dia-chi")
 public class DiaChiController {
     @Autowired
     private DiaChiService diaChiService;

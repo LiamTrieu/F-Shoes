@@ -1,33 +1,33 @@
-import axiosClient from '../../axios'
+import axiosAdmin from '../../axios'
 
 const materialApi = {
   findAll: () => {
     const url = `/material/find-all`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getList: () => {
     const url = `/material/get-list`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
   getMaterial: (filter) => {
     const url = `/material`
-    return axiosClient.get(url, { params: filter })
+    return axiosAdmin.get(url, { params: filter })
   },
   addMaterial: (material) => {
     const url = `/material/add`
-    return axiosClient.post(url, material)
+    return axiosAdmin.post(url, material)
   },
   updateMaterial: (id, material) => {
     const url = `/material/update/${id}`
-    return axiosClient.put(url, material)
+    return axiosAdmin.put(url, material)
   },
   swapMaterial: (id) => {
     const url = `/material/swap/${id}`
-    return axiosClient.delete(url)
+    return axiosAdmin.delete(url)
   },
   getAllNameMaterial: () => {
     const url = `/material/get-all-name`
-    return axiosClient.get(url)
+    return axiosAdmin.get(url)
   },
 }
 export default materialApi

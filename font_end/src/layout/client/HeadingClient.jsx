@@ -1,13 +1,18 @@
-import { AppBar, Badge, Box, Button, Drawer, Toolbar, Typography } from '@mui/material'
+import { AppBar, Avatar, Badge, Box, Button, Drawer, Toolbar, Typography } from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import './HeadingClient.css'
-import { useSelector } from 'react-redux'
-import { GetCart } from '../../services/slices/cartSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { GetCart, setCart } from '../../services/slices/cartSlice'
+import { useEffect } from 'react'
+import authenticationAPi from '../../api/authentication/authenticationAPi'
+import { getCookie, removeCookie } from '../../services/cookie'
+import confirmSatus from '../../components/comfirmSwal'
+import { GetUser, addUser, removeUser } from '../../services/slices/userSlice'
 
 export default function HeadingClient() {
   const [openDrawer, setOpenDrawer] = useState(false)
@@ -118,7 +123,31 @@ export default function HeadingClient() {
       </Box>
     )
   }
+  const user = useSelector(GetUser)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (getCookie('ClientToken')) {
+      authenticationAPi.getClient().then((response) => {
+        dispatch(addUser(response.data.data))
+      })
+    }
+  }, [dispatch])
 
+  function handleAccount() {
+    const title = 'Xác nhận đăng xuất tài khoản?'
+    if (user) {
+      confirmSatus(title, '').then((result) => {
+        if (result.isConfirmed) {
+          removeCookie('ClientToken')
+          dispatch(setCart([]))
+          dispatch(removeUser())
+        }
+      })
+    } else {
+      navigate('/login')
+    }
+  }
   return (
     <AppBar position="sticky" sx={{ backgroundColor: 'white', color: 'black', mb: 2 }}>
       <Toolbar>
@@ -163,15 +192,15 @@ export default function HeadingClient() {
             <ShoppingCartIcon />
           </Badge>
         </Button>
-        <Button component={Link} to="/login" color="inherit">
-          <AccountCircleIcon sx={{ mr: 1 }} />
+        <Button onClick={handleAccount} color="inherit">
+          <Avatar src={user && user.avatar} sx={{ width: 35, height: 35, mr: 1 }} />
           <Typography
             variant="subtitle2"
             sx={{
               textTransform: 'none',
               display: { md: 'block', xs: 'none' },
             }}>
-            Đăng nhập
+            {user ? user.name : 'Đăng nhập'}
           </Typography>
         </Button>
       </Toolbar>

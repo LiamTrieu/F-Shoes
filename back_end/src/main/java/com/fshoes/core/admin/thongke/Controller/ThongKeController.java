@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.ParseException;
 
 @RestController
-@RequestMapping("/api/statistical")
+@RequestMapping("/api/admin/statistical")
 public class ThongKeController {
 
     @Autowired
