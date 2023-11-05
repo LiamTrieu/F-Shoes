@@ -78,7 +78,11 @@ export default function CartProductHome({ products, colmd, collg }) {
               </Box>
 
               <CardContent>
-                <Typography className="title" gutterBottom component="div">
+                <Typography
+                  className="title"
+                  gutterBottom
+                  component="div"
+                  sx={{ textTransform: 'none' }}>
                   {product.title}
                 </Typography>
                 <Typography gutterBottom component="div">

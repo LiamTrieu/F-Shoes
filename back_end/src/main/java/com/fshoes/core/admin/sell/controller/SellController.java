@@ -69,16 +69,6 @@ public class SellController {
         return new ObjectRespone(getSell.getAllCustomer(request));
     }
 
-    @GetMapping("/get-cart")
-    public ObjectRespone getAllCart() {
-        return new ObjectRespone(getSell.getAllCart());
-    }
-
-    @GetMapping("/get-cart-detail/{idCart}")
-    public ObjectRespone getCartDetail(@PathVariable String idCart) {
-        return new ObjectRespone(getSell.getCartDetail());
-    }
-
     @PostMapping("/add-product-sell/{id}")
     public ObjectRespone addProductSell(@RequestBody CreateBillRequest request, @PathVariable String id) {
         return new ObjectRespone(getSell.addBillDetail(request, id));

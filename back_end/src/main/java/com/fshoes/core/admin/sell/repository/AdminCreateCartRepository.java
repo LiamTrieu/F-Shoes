@@ -1,14 +1,14 @@
 package com.fshoes.core.admin.sell.repository;
 
 import com.fshoes.entity.Cart;
-import com.fshoes.repository.CartRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface AdminCreateCartRepository extends CartRepository {
+public interface AdminCreateCartRepository extends JpaRepository<Cart, String> {
 //    @Modifying
 //    @Query(value = """
 //            INSERT INTO bills (code, full_name as fullName, phone_number as phoneNumber, address, total_money as totalMoney,

@@ -11,6 +11,8 @@ public interface ClientProductResponse extends IsIdentified {
     String getPromotion();
     Integer getValue();
     String getName();
+    String getNameCate();
+    String getNameBrand();
 
     Float getSize();
 

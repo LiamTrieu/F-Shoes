@@ -27,6 +27,7 @@ import { toast } from 'react-toastify'
 import confirmSatus from '../../components/comfirmSwal'
 import { removeCart } from '../../services/slices/cartSlice'
 import ModalVoucher from './ModalVoucher'
+import { setLoading } from '../../services/slices/loadingSlice'
 
 export default function Checkout() {
   const [request, setRequest] = useState({
@@ -265,19 +266,31 @@ export default function Checkout() {
           typePayment: selectedValue,
         }
         if (selectedValue === '0') {
-          clientCheckoutApi.datHang({ ...preRequest, status: 1 }).then((response) => {
-            if (response.data.success) {
-              arrData.forEach((e) => {
-                dispatch(removeCart(e))
-              })
-              toast.success('Đặt hàng thành công')
-              navigate('/home')
-            }
-          })
+          dispatch(setLoading(true))
+          clientCheckoutApi
+            .datHang({ ...preRequest, status: 1 })
+            .then((response) => {
+              if (response.data.success) {
+                arrData.forEach((e) => {
+                  dispatch(removeCart(e))
+                })
+                toast.success('Đặt hàng thành công')
+                navigate('/home')
+              }
+            })
+            .finally(() => {
+              dispatch(setLoading(false))
+            })
         } else {
-          clientCheckoutApi.submitOrder({ ...preRequest, status: 8 }).then((response) => {
-            window.location.href = response.data
-          })
+          dispatch(setLoading(true))
+          clientCheckoutApi
+            .submitOrder({ ...preRequest, status: 8 })
+            .then((response) => {
+              window.location.href = response.data
+            })
+            .finally(() => {
+              dispatch(setLoading(false))
+            })
         }
       }
     })
@@ -497,7 +510,7 @@ export default function Checkout() {
                   <TableBody>
                     <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
                       <div>
-                        <img src={cart.image} alt={cart.name} className="image-ck" />
+                        <img src={cart.image[0]} alt={cart.name} className="image-ck" />
                         <div className="quantity-badge">{cart.soLuong}</div>
                       </div>
                     </TableCell>

@@ -150,6 +150,13 @@ export default function DetailProduct() {
               <Typography variant="h4" fontFamily={'monospace'} fontWeight={'bolder'}>
                 {product.name}
               </Typography>
+              <div style={{ marginTop: '5px', marginBottom: '10px' }}>
+                <b>Loại giày: </b>
+                {product.nameCate}
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <b>Thương hiệu: </b>
+                {product.nameBrand}
+              </div>
               <Typography variant="h5" fontFamily={'monospace'} fontWeight={'900'} color={'red'}>
                 {product.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
               </Typography>
@@ -283,7 +290,7 @@ export default function DetailProduct() {
                       }}>
                       X
                     </div>
-                    <img src={cart.image} alt={cart.name} className="cart-item-image" />
+                    <img src={cart.image[0]} alt={cart.name} className="cart-item-image" />
                     <div className="cart-item-details">
                       <Typography className="product-name-detail-gh" variant="body1">
                         {cart.name}
