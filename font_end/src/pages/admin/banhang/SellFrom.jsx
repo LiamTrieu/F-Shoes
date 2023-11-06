@@ -925,8 +925,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   }
 
   const totalSum = listProductDetailBill.reduce((sum, cart) => {
-    const productTotalPrice = calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
-    return sum + productTotalPrice
+    if (cart.statusPromotion === 1) {
+      return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
+    } else {
+      return sum + cart.price * cart.quantity
+    }
   }, 0)
 
   const totalPriceCart = totalSum
