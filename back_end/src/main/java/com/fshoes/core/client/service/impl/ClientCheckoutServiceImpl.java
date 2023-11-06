@@ -1,7 +1,6 @@
 package com.fshoes.core.client.service.impl;
 
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
-import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.client.model.request.ClientBillDetaillRequest;
@@ -25,8 +24,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -55,9 +54,6 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
     @Autowired
     private AdVoucherRepository voucherRepository;
-
-    @Autowired
-    private AdCustomerVoucherRepository customerVoucherRepository;
 
     @Autowired
     private EmailSender emailSender;
