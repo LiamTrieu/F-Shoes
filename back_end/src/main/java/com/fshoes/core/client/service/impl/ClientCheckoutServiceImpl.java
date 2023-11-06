@@ -1,5 +1,6 @@
 package com.fshoes.core.client.service.impl;
 
+import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.client.model.request.ClientBillDetaillRequest;
@@ -23,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -56,23 +58,21 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
     @Autowired
     private EmailSender emailSender;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private HDBillRepository hdBillRepository;
 
     @Override
-    @Transactional
     public Bill thanhToan(ClientCheckoutRequest request) {
         Bill newBill = new Bill();
-        if (request.getIdVoucher() == null) {
-            newBill.setVoucher(null);
-        } else {
+        if (request.getIdVoucher() != null) {
             Voucher voucher = voucherRepository.findById(request.getIdVoucher()).orElse(null);
-            assert voucher != null;
-            voucher.setQuantity(voucher.getQuantity() - 1);
-            voucherRepository.save(voucher);
-            newBill.setVoucher(voucher);
-//            AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), request.getIdCustomer());
-//            if (adCustomerVoucherRespone != null) {
-//                customerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
-//            }
+            if (voucher != null) {
+                voucher.setQuantity(voucher.getQuantity() - 1);
+                voucherRepository.save(voucher);
+                newBill.setVoucher(voucher);
+            }
         }
         newBill.setStatus(request.getStatus());
         newBill.setNote(request.getNote());
@@ -116,6 +116,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             billHistory.setNote(request.getNote());
             billHistoryRepository.save(billHistory);
             sendMail(request, newBill.getCode(), dateNow);
+            messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(newBill.getId()));
         }
         return newBill;
     }
@@ -268,6 +269,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     billHistory.setNote(bill.getNote());
                     billHistoryRepository.save(billHistory);
                     sendMail(newRequest, bill.getCode(), Calendar.getInstance().getTimeInMillis());
+                    messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
                     return listBillDetails.stream().map(BillDetail::getProductDetail).toList();
                 }
             }

@@ -31,7 +31,7 @@ public class SpringSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> {
-                    req.requestMatchers("/api/admin/**").hasAuthority(RoleAccount.QUAN_LY.name())
+                    req.requestMatchers("/api/admin/**").hasAnyAuthority(RoleAccount.QUAN_LY.name(), RoleAccount.NHAN_VIEN.name())
                             .anyRequest().permitAll();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

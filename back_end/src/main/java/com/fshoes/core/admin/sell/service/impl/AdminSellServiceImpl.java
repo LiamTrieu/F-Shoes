@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.sell.service.impl;
 
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
+import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
@@ -15,10 +16,13 @@ import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.*;
+import com.fshoes.infrastructure.constant.Message;
+import com.fshoes.infrastructure.exception.RestApiException;
 import com.fshoes.repository.ProductDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,6 +63,10 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Autowired
     private HDBillHistoryRepository billHistoryRepository;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private HDBillRepository hdBillRepository;
 
     @Override
     public PageReponse<GetALlCustomerResponse> getAllCustomer(AdCustomerRequest request) {
@@ -122,7 +130,9 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Override
     public Bill addBill(AddBillRequest request, String id) {
-        Bill bill = new Bill();
+        Bill bill = billRepository.findById(id).orElseThrow(() -> {
+            throw new RestApiException(Message.API_ERROR);
+        });
         if (request.getIdVourcher() == null) {
             bill.setVoucher(null);
         } else {
@@ -144,12 +154,6 @@ public class AdminSellServiceImpl implements AdminSellService {
             assert account != null;
             bill.setCustomer(account);
         }
-
-
-        Bill bill1 = billRepository.findById(id).orElse(null);
-
-        bill.setId(id);
-        bill.setCode(bill1.getCode());
         bill.setNote(request.getNote());
         bill.setAddress(request.getAddress());
         bill.setPhoneNumber(request.getPhoneNumber());
@@ -165,6 +169,7 @@ public class AdminSellServiceImpl implements AdminSellService {
         billHistory.setBill(bill);
         billHistory.setStatusBill(2);
         billHistoryRepository.save(billHistory);
+        messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
         return bill;
     }
 

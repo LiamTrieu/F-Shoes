@@ -44,7 +44,7 @@ export default function AdminLogin() {
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    return authenticationAPi.login(staffLogin.email, staffLogin.password).then(
+    return authenticationAPi.loginAdmin(staffLogin.email, staffLogin.password).then(
       (response) => {
         if (response.data.success) {
           toast.success('Đăng nhập thành công!')

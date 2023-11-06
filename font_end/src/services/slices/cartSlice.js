@@ -35,7 +35,7 @@ const cartSlice = createSlice({
         state.splice(index, 1)
         localStorage.setItem('cart', JSON.stringify(state))
         if (token) {
-          clientCartApi.add({ ...action.payload, soLuong: 0 })
+          clientCartApi.set(state)
         }
       }
     },
@@ -45,7 +45,7 @@ const cartSlice = createSlice({
         state[itemIndex] = action.payload
         localStorage.setItem('cart', JSON.stringify(state))
         if (token) {
-          clientCartApi.add(action.payload)
+          clientCartApi.set(state)
         }
       }
     },

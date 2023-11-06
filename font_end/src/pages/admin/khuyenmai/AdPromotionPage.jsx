@@ -53,11 +53,13 @@ export default function AdPromotionPage() {
     type: null,
     sortOrder: null,
   })
+  var client = Stomp.over(function () {
+    return new WebSocket('ws://localhost:15674/ws')
+  })
 
   useEffect(() => {
     const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
     stompClient = Stomp.over(socket)
-    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
