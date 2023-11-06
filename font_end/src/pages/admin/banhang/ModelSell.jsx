@@ -47,7 +47,7 @@ const styleModalProductDetail = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: { xs: '100vw', md: '38vw' },
-  height: '300px',
+  height: '250px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
@@ -503,6 +503,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                     sx={{
                       color: 'black',
                       flexGrow: 1,
+                      marginTop: '10px',
                     }}>
                     <Typography variant="h5" fontFamily={'monospace'} fontWeight={'bolder'}>
                       {getAmountProduct.nameProduct +
