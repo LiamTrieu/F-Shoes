@@ -84,6 +84,8 @@ export default function DetailProduct() {
             title: e.name,
             priceBefort: e.price,
             priceAfter: e.price,
+            promotion: e.promotion,
+            value: e.value,
             image: e.image.split(','),
             idProduct: e.idProduct,
             idColor: e.idColor,
@@ -96,6 +98,12 @@ export default function DetailProduct() {
       )
     })
   }, [sizeSelect])
+
+  const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
+    const discountAmount = (discountPercentage / 100) * originalPrice
+    const discountedPrice = originalPrice - discountAmount
+    return discountedPrice
+  }
 
   const dispatch = useDispatch()
   const addProductToCart = () => {
@@ -158,7 +166,34 @@ export default function DetailProduct() {
                 {product.nameBrand}
               </div>
               <Typography variant="h5" fontFamily={'monospace'} fontWeight={'900'} color={'red'}>
-                {product.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                {/* {product.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })} */}
+                <span>
+                  {' '}
+                  {product.promotion ? (
+                    <div style={{ display: 'flex' }}>
+                      <div className="promotion-price">{`${product.price.toLocaleString('it-IT', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })} `}</div>{' '}
+                      <div>
+                        <span style={{ color: 'red', fontWeight: 'bold' }}>
+                          {`${calculateDiscountedPrice(product.price, product.value).toLocaleString(
+                            'it-IT',
+                            {
+                              style: 'currency',
+                              currency: 'VND',
+                            },
+                          )} `}
+                        </span>{' '}
+                      </div>
+                    </div>
+                  ) : (
+                    <span>{`${product.price.toLocaleString('it-IT', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })} `}</span>
+                  )}
+                </span>
               </Typography>
             </Box>
             <Box borderBottom={'1px dotted gray'} py={2} mb={2}>

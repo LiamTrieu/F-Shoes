@@ -36,12 +36,28 @@ public interface ProductPromotionAddRepository extends ProductRepository {
     Page<AddProductPromotionResponse> getAllProduct(@Param("req") ProductPromotionSearch req, Pageable pageable);
 
     @Query(value = """
-        SELECT c.name AS category, b.name AS brand, p.name, pd.id as productDetail , p.id 
-        FROM product_detail pd 
-        JOIN product p ON pd.id_product = p.id 
-        JOIN category c ON pd.id_category = c.id 
-        JOIN brand b ON pd.id_brand = b.id 
-        WHERE p.id In :id ;
-        """, nativeQuery = true)
-    Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") List<String> id, Pageable pageable);
+            SELECT cate.name AS category, b.name AS brand, p.name, pd.id as productDetail , p.id , MAX(i.url) as url,
+            sl.name as sole , c.name as color, m.name as material 
+            FROM product_detail pd 
+            left JOIN product p ON pd.id_product = p.id 
+            left join material m on m.id = pd.id_material
+            left join category cate on cate.id = pd.id_category
+            left join sole sl on sl.id = pd.id_sole
+            left join brand b on b.id  = pd.id_brand
+            left join color c on c.id = pd.id_color
+            left join image i on i.id_product_detail = pd.id
+            WHERE p.id In :id
+            AND  (:#{#req.category} IS NULL OR cate.id = :#{#req.category}) 
+            AND (:#{#req.color} IS NULL OR c.id = :#{#req.color}) 
+            AND (:#{#req.material} IS NULL OR m.id = :#{#req.material}) 
+            AND (:#{#req.brand} IS NULL OR b.id = :#{#req.brand}) 
+            AND (:#{#req.sole} IS NULL OR sl.id = :#{#req.sole})  
+            AND( (:#{#req.nameProduct} IS NULL OR p.name like %:#{#req.nameProduct}%) 
+                OR (:#{#req.nameProduct} IS NULL OR cate.name like %:#{#req.nameProduct}%) 
+                OR (:#{#req.nameProduct} IS NULL OR c.name like %:#{#req.nameProduct}%) 
+                OR (:#{#req.nameProduct} IS NULL OR sl.name like %:#{#req.nameProduct}%) 
+                OR (:#{#req.nameProduct} IS NULL OR m.name like %:#{#req.nameProduct}%))   
+            group by p.id,  pd.id;;
+            """, nativeQuery = true)
+    Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") List<String> id, Pageable pageable,@Param("req") GetProductDetailByIdProduct req);
 }

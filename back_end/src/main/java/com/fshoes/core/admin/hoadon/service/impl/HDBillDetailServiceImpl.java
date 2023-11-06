@@ -3,10 +3,12 @@ package com.fshoes.core.admin.hoadon.service.impl;
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
+import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.BillHistory;
 import com.fshoes.entity.ProductDetail;
 import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.repository.ProductDetailRepository;
@@ -22,13 +24,16 @@ import java.util.Objects;
 public class HDBillDetailServiceImpl implements HDBillDetailService {
 
     @Autowired
-    private HDBillDetailRepository  hdBillDetailRepository;
+    private HDBillDetailRepository hdBillDetailRepository;
 
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
     @Autowired
     private HDBillRepository hdBillRepositpory;
+
+    @Autowired
+    private HDBillHistoryRepository hdBillHistoryRepository;
 
     @Transactional
     @Override
@@ -38,6 +43,9 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getProductDetailId()).get();
 
         BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill);
+
         if (billDetail == null) {
 
             BillDetail newBillDetail = BillDetail.builder()
@@ -52,7 +60,8 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                 productDetail.setAmount(productDetail.getAmount() - hdBillDetailRequest.getQuantity());
                 productDetailRepository.save(productDetail);
             }
-
+            billHistory.setNote("Đã thêm " + hdBillDetailRequest.getQuantity() + " sản phẩm" + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+            hdBillHistoryRepository.save(billHistory);
             return hdBillDetailRepository.save(newBillDetail);
 
         } else {
@@ -61,13 +70,18 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                 int differenceQuantity = billDetail.getQuantity() - hdBillDetailRequest.getQuantity();
                 productDetail.setAmount(productDetail.getAmount() + differenceQuantity);
                 productDetailRepository.save(productDetail);
+                if (differenceQuantity > 0) {
+                    billHistory.setNote("Đã xoá " + differenceQuantity + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+                } else if (differenceQuantity < 0) {
+                    billHistory.setNote("Đã thêm " + differenceQuantity + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+                }
             }
 
             billDetail.setQuantity(hdBillDetailRequest.getQuantity());
             billDetail.setStatus(hdBillDetailRequest.getStatus());
             billDetail.setPrice(hdBillDetailRequest.getPrice());
 
-
+            hdBillHistoryRepository.save(billHistory);
             return hdBillDetailRepository.save(billDetail);
 
         }
@@ -200,8 +214,13 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             if (bill.getStatus() == 1 || bill.getStatus() == 2 || bill.getStatus() == 6) {
                 BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
                 billDetail.setStatus(1);
+                ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
+                BillHistory billHistory = BillHistory.builder()
+                        .bill(bill)
+                        .note("Đã xoá sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize())
+                        .build();
+                hdBillHistoryRepository.save(billHistory);
                 hdBillDetailRepository.save(billDetail);
-                System.out.println(billDetail);
                 return true;
             } else {
                 return false;

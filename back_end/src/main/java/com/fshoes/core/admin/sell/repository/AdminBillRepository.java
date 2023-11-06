@@ -13,7 +13,7 @@ public interface AdminBillRepository extends BillRepository {
     Boolean existsByCode(String code);
 
     @Query(value = """
-            select * from bill where status = 8
+            select * from bill where status = 8 
             """, nativeQuery = true)
     List<Bill> getAllBillTaoDonHang();
 

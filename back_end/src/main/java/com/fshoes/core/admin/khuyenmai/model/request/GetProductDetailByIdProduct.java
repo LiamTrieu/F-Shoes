@@ -9,5 +9,11 @@ import java.util.List;
 @Getter
 @Setter
 public class GetProductDetailByIdProduct extends PageableRequest {
-
+    private String id;
+    private String color;
+    private String material;
+    private String sole;
+    private String category;
+    private String brand;
+    private String nameProduct;
 }
