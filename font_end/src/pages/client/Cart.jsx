@@ -34,7 +34,8 @@ import './Cart.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
 import { setCheckout } from '../../services/slices/checkoutSlice'
-import Carousel from 'react-material-ui-carousel'
+
+import clientProductApi from '../../api/client/clientProductApi'
 
 export default function Cart() {
   const [productSelect, setProductSelect] = useState([])
@@ -73,6 +74,43 @@ export default function Cart() {
   }
 
   const RowDataCustom = ({ cartDatas }) => {
+    const dispatch = useDispatch()
+    const [sizes, setSizes] = useState([])
+    function getListSize(id) {
+      let data
+      clientProductApi
+        .get({ id: id })
+        .then((result) => {
+          data = result.data.data[0]
+        })
+        .finally(() => {
+          clientProductApi
+            .getSizes({
+              idProduct: data.idProduct,
+              idColor: data.idColor,
+              idCategory: data.idCategory,
+              idBrand: data.idBrand,
+              idSole: data.idSole,
+              idMaterial: data.idMaterial,
+            })
+            .then((result) => {
+              setSizes(result.data.data)
+            })
+        })
+    }
+    function chageSize(id, cart) {
+      const size = sizes.find((s) => s.id === id)
+      const carts = [...cartDatas]
+      const index = cartDatas.findIndex((c) => c.id === cart)
+      carts[index] = { ...carts[index], id: size.id, size: size.size }
+      dispatch(setCart(carts))
+      const preProductSelect = [...productSelect]
+      const indexSelect = preProductSelect.findIndex((e) => e.id === cart)
+      if (indexSelect !== -1) {
+        preProductSelect.splice(indexSelect, 1)
+        setProductSelect(preProductSelect)
+      }
+    }
     return cartDatas.map((cart) => {
       return (
         <TableRow sx={{ border: 0 }} key={cart.id}>
@@ -85,23 +123,16 @@ export default function Cart() {
           </TableCell>
           <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
             <Box component={Link} to={`/product/${cart.id}`} display={{ lg: 'inline', xs: 'none' }}>
-              <Carousel
-                indicators={false}
-                sx={{ width: '100%', height: '100%' }}
-                navButtonsAlwaysInvisible>
-                {cart.image.map((item, i) => (
-                  <img
-                    style={{
-                      maxWidth: '20%',
-                      maxHeight: '20%',
-                      verticalAlign: 'middle',
-                    }}
-                    key={'anh' + i}
-                    src={item}
-                    alt="anh"
-                  />
-                ))}
-              </Carousel>
+              <img
+                style={{
+                  maxWidth: '20%',
+                  maxHeight: '20%',
+                  verticalAlign: 'middle',
+                }}
+                key={'anh'}
+                src={cart.image[0]}
+                alt="anh"
+              />
             </Box>
             <span
               style={{
@@ -112,10 +143,37 @@ export default function Cart() {
               }}>
               <p style={{ margin: 0 }}>{cart.name}</p>
               <b style={{ margin: 0 }}>
-                size:
-                {parseFloat(cart.size) % 1 === 0
-                  ? parseFloat(cart.size).toFixed(0)
-                  : parseFloat(cart.size).toFixed(1)}
+                size:&nbsp;
+                <select
+                  onChange={(e) => {
+                    chageSize(e.target.value, cart.id)
+                  }}
+                  onClick={() => {
+                    getListSize(cart.id)
+                  }}
+                  value={
+                    parseFloat(cart.size) % 1 === 0
+                      ? parseFloat(cart.size).toFixed(0)
+                      : parseFloat(cart.size).toFixed(1)
+                  }>
+                  <option value={cart.id}>
+                    {parseFloat(cart.size) % 1 === 0
+                      ? parseFloat(cart.size).toFixed(0)
+                      : parseFloat(cart.size).toFixed(1)}
+                  </option>
+                  {sizes &&
+                    sizes.map((size) => {
+                      if (size.size !== cart.size) {
+                        return (
+                          <option value={size.id} key={`size${size.id}`}>
+                            {parseFloat(size.size) % 1 === 0
+                              ? parseFloat(size.size).toFixed(0)
+                              : parseFloat(size.size).toFixed(1)}
+                          </option>
+                        )
+                      }
+                    })}
+                </select>
               </b>
             </span>
           </TableCell>

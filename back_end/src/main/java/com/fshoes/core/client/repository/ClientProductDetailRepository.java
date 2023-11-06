@@ -16,7 +16,9 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
                 SELECT MAX(pd.id) as id,
                 MAX( pr.id) as promotion ,MAX(pr.value) as value,
-                       CONCAT(p.name, ' - ', c.name, ' - ', m.name, ' - ', s.name, ' - ', ca.name, ' - ', b.name) AS name,
+                       CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
+                       ca.name as nameCate,
+                       b.name as nameBrand,
                        MAX(pd.price) as price,
                        MAX(pd.weight) as weight,
                        MAX(pd.amount) as amount,

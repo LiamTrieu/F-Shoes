@@ -6,6 +6,7 @@ import { Typography } from '@mui/material'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import { removeCart } from '../../services/slices/cartSlice'
+import { setLoading } from '../../services/slices/loadingSlice'
 
 export default function Payment() {
   const [data, setData] = useState(null)
@@ -16,6 +17,7 @@ export default function Payment() {
     for (const [key, value] of new URLSearchParams(window.location.search)) {
       requestData[key] = value
     }
+    dispatch(setLoading(true))
     clientCheckoutApi
       .payment(requestData)
       .then((response) => {
@@ -31,6 +33,9 @@ export default function Payment() {
       })
       .catch((error) => {
         console.error('Error:', error)
+      })
+      .finally(() => {
+        dispatch(setLoading(false))
       })
   }, [navigate, dispatch])
 

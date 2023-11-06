@@ -26,8 +26,10 @@ import { ColorCustom } from '../../styles/ColorCustom'
 import authenticationAPi from '../../api/authentication/authenticationAPi'
 import { toast } from 'react-toastify'
 import { getCookie, setCookie } from '../../services/cookie'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addUser } from '../../services/slices/userSlice'
+import clientCartApi from '../../api/client/clientCartApi'
+import { GetCart, setCart } from '../../services/slices/cartSlice'
 
 const InputForm = ({ label, Icon, id, isPass, defaultValue, chagneValue }) => {
   const [showPass, setShowPass] = useState(false)
@@ -106,6 +108,7 @@ const LoginPanel = () => {
           authenticationAPi.getClient().then((response) => {
             dispatch(addUser(response.data.data))
           })
+          fetchCart()
           navigate('/home')
         } else {
           toast.error('Đăng nhập thất bại!')
@@ -117,6 +120,40 @@ const LoginPanel = () => {
       },
     )
   }
+
+  const cartLocal = useSelector(GetCart)
+
+  function fetchCart() {
+    if (getCookie('ClientToken')) {
+      clientCartApi.get().then(
+        (result) => {
+          if (result.data.success) {
+            const cartDB = result.data.data.map((cart) => {
+              return { ...cart, image: cart.image.split(',') }
+            })
+
+            const newCart = cartLocal.map((cart) => ({ ...cart })) // Tạo bản sao của cartLocal
+
+            cartDB.forEach((cartDBItem) => {
+              const existingCartItem = newCart.find(
+                (cartLocalItem) => cartLocalItem.id === cartDBItem.id,
+              )
+
+              if (existingCartItem) {
+                existingCartItem.soLuong += cartDBItem.soLuong
+              } else {
+                newCart.push(cartDBItem)
+              }
+            })
+
+            dispatch(setCart(newCart))
+          }
+        },
+        () => {},
+      )
+    }
+  }
+
   return (
     <Box>
       <InputForm

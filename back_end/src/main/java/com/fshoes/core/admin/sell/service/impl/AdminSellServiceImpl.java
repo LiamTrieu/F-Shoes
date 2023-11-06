@@ -198,10 +198,6 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     }
 
-    @Override
-    public List<Cart> getAllCart() {
-        return cartRepository.getAllCarrt();
-    }
 
     @Override
     public List<CartDetailResponse> getCartDetail() {

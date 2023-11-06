@@ -1,5 +1,4 @@
 import { AppBar, Avatar, Badge, Box, Button, Drawer, Toolbar, Typography } from '@mui/material'
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -7,12 +6,14 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import './HeadingClient.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { GetCart, setCart } from '../../services/slices/cartSlice'
+import { GetCart, setCart, setCartLogout } from '../../services/slices/cartSlice'
 import { useEffect } from 'react'
 import authenticationAPi from '../../api/authentication/authenticationAPi'
 import { getCookie, removeCookie } from '../../services/cookie'
 import confirmSatus from '../../components/comfirmSwal'
 import { GetUser, addUser, removeUser } from '../../services/slices/userSlice'
+import clientCartApi from '../../api/client/clientCartApi'
+import { toast } from 'react-toastify'
 
 export default function HeadingClient() {
   const [openDrawer, setOpenDrawer] = useState(false)
@@ -20,6 +21,25 @@ export default function HeadingClient() {
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer)
   }
+  useEffect(() => {
+    if (getCookie('ClientToken')) {
+      dispatch(setCart([]))
+      clientCartApi.get().then(
+        (result) => {
+          if (result.data.success) {
+            dispatch(
+              setCart(
+                result.data.data.map((cart) => {
+                  return { ...cart, image: cart.image.split(',') }
+                }),
+              ),
+            )
+          }
+        },
+        () => {},
+      )
+    }
+  }, [])
 
   const amountProduct = useSelector(GetCart).length
 
@@ -140,7 +160,7 @@ export default function HeadingClient() {
       confirmSatus(title, '').then((result) => {
         if (result.isConfirmed) {
           removeCookie('ClientToken')
-          dispatch(setCart([]))
+          dispatch(setCartLogout([]))
           dispatch(removeUser())
         }
       })

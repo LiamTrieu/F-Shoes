@@ -1,11 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit'
-
+import clientCartApi from '../../api/client/clientCartApi'
+import { getCookie } from '../cookie'
+const token = getCookie('ClientToken')
 const cartSlice = createSlice({
   name: 'cart',
   initialState: JSON.parse(localStorage.getItem('cart')) || [],
   reducers: {
+    setCartLogout(state, action) {
+      localStorage.removeItem('cart')
+      return action.payload
+    },
     setCart(state, action) {
       localStorage.setItem('cart', JSON.stringify(action.payload))
+      if (token) {
+        clientCartApi.set(action.payload)
+      }
       return action.payload
     },
     addCart(state, action) {
@@ -15,6 +24,9 @@ const cartSlice = createSlice({
       } else {
         state.push(action.payload)
       }
+      if (token) {
+        clientCartApi.set(state)
+      }
       localStorage.setItem('cart', JSON.stringify(state))
     },
     removeCart(state, action) {
@@ -22,6 +34,9 @@ const cartSlice = createSlice({
       if (index !== -1) {
         state.splice(index, 1)
         localStorage.setItem('cart', JSON.stringify(state))
+        if (token) {
+          clientCartApi.add({ ...action.payload, soLuong: 0 })
+        }
       }
     },
     updateCart(state, action) {
@@ -29,6 +44,9 @@ const cartSlice = createSlice({
       if (itemIndex !== -1) {
         state[itemIndex] = action.payload
         localStorage.setItem('cart', JSON.stringify(state))
+        if (token) {
+          clientCartApi.add(action.payload)
+        }
       }
     },
   },
@@ -36,5 +54,5 @@ const cartSlice = createSlice({
 
 const { actions, reducer } = cartSlice
 export const GetCart = (state) => state.cart
-export const { addCart, removeCart, updateCart, setCart } = actions
+export const { addCart, removeCart, updateCart, setCart, setCartLogout } = actions
 export default reducer
