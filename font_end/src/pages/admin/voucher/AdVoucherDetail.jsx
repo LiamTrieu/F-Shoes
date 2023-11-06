@@ -379,10 +379,12 @@ export default function AdVoucherDetail() {
                     endAdornment: (
                       <InputAdornment position="end">
                         <AiOutlinePercentage
+                          color={voucherDetail.typeValue === 0 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => setVoucherDetail({ ...voucherDetail, typeValue: 0 })}
                         />
                         <AiOutlineDollar
+                          color={voucherDetail.typeValue === 1 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => setVoucherDetail({ ...voucherDetail, typeValue: 1 })}
                         />

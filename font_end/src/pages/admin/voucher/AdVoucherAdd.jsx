@@ -320,10 +320,12 @@ export default function AdVoucherAdd() {
                     endAdornment: (
                       <InputAdornment position="end">
                         <AiOutlinePercentage
+                          color={voucherAdd.typeValue === 0 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => setVoucherAdd({ ...voucherAdd, typeValue: 0 })}
                         />
                         <AiOutlineDollar
+                          color={voucherAdd.typeValue === 1 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => setVoucherAdd({ ...voucherAdd, typeValue: 1 })}
                         />
