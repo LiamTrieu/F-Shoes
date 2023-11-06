@@ -5,11 +5,16 @@ import com.fshoes.core.admin.sell.model.request.AddBillRequest;
 import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.service.AdminSellService;
+import com.fshoes.core.authentication.UserLoginResponse;
 import com.fshoes.core.common.ObjectRespone;
+import com.fshoes.core.common.UserLogin;
+import com.fshoes.entity.Account;
+import com.fshoes.entity.Bill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/sell")
@@ -18,9 +23,22 @@ public class SellController {
     @Autowired
     private AdminSellService getSell;
 
+    @Autowired
+    private UserLogin userLogin;
+
     @GetMapping("/get-all-bill-tao-don-hang")
     public ObjectRespone getAllBillTaoDonHang() {
-        return new ObjectRespone(getSell.getAllBillTaoDonHang());
+        Account account = userLogin.getUserLogin();
+        if (account != null) {
+            String email = account.getEmail();
+            List<Bill> allBills = getSell.getAllBillTaoDonHang();
+            List<Bill> filteredBills = allBills.stream()
+                    .filter(bill -> bill.getCreatedBy().equals(email))
+                    .collect(Collectors.toList());
+            return new ObjectRespone(filteredBills);
+        } else {
+            return new ObjectRespone("Không có người dùng đăng nhập hoặc không tìm thấy tài khoản.");
+        }
     }
 
     @GetMapping("/getProduct")
@@ -113,5 +131,18 @@ public class SellController {
     @GetMapping("/max-price")
     public ObjectRespone nameById() {
         return new ObjectRespone(getSell.getMaxPriceProductId());
+    }
+
+    @GetMapping
+    public ObjectRespone getUserLogin() {
+        Account account = userLogin.getUserLogin();
+        UserLoginResponse response = null;
+        if (account != null) {
+            response = new UserLoginResponse();
+            response.setEmail(account.getEmail());
+            response.setName(account.getFullName());
+            response.setAvatar(account.getAvatar());
+        }
+        return new ObjectRespone(response);
     }
 }

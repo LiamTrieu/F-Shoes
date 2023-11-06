@@ -33,7 +33,7 @@ public class ProductPromotionAddServiceImpl implements ProductPromotionAddServic
     @Override
     public PageReponse<AddProductPromotionResponse> getProductDetailByProduct(GetProductDetailByIdProduct req, List<String> id) {
        Pageable pageable = PageRequest.of(req.getPage() - 1, req.getSize());
-        return new PageReponse<>(promotionAddRepository.getProductDetailByIdProduct(id,pageable));
+        return new PageReponse<>(promotionAddRepository.getProductDetailByIdProduct(id,pageable,req));
     }
 
     @Override

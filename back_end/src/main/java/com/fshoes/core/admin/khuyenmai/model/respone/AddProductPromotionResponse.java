@@ -11,4 +11,12 @@ public interface AddProductPromotionResponse extends IsIdentified {
     String getCategory();
 
     String getBrand();
+
+    String getMaterial();
+
+    String getColor();
+
+    String getSole();
+
+    String getUrl();
 }
