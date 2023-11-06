@@ -34,9 +34,13 @@ import { getStatusStyle } from './getStatusStyle'
 import { TbEyeEdit } from 'react-icons/tb'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
 import Empty from '../../../components/Empty'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function AdBillPage() {
   const [listHoaDon, setListHoaDon] = useState([])
+  const [hoaDonUpdate, setHoaDonUpdate] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [inputSearch, setInputSearch] = useState('')
@@ -108,6 +112,36 @@ export default function AdBillPage() {
         console.error('Lỗi khi gửi yêu cầu API get filter: ', error)
       })
   }
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/bill-update', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        setHoaDonUpdate(data)
+      }
+    })
+  }
+  useEffect(() => {
+    const preListHoaDon = [...listHoaDon]
+    setListHoaDon([
+      { ...hoaDonUpdate },
+      ...preListHoaDon
+        .slice(0, preListHoaDon.length === 5 ? preListHoaDon.length - 1 : preListHoaDon.length)
+        .map((hd) => {
+          hd.stt = hd.stt + 1
+          return hd
+        }),
+    ])
+  }, [hoaDonUpdate])
 
   return (
     <div className="hoa-don">

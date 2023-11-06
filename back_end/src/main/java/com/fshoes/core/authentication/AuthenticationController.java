@@ -19,6 +19,15 @@ public class AuthenticationController {
     @Autowired
     private UserLogin userLogin;
 
+    @PostMapping("/login-admin")
+    public ObjectRespone loginAdmin(@RequestBody LoginRequest request) {
+        String passwordEncode = MD5Util.getMD5(request.getPassword());
+        Account account = accountRepository.findByEmailAndPassword(request.getEmail(), passwordEncode).orElse(null);
+        if (account != null && account.getRole() != 2)
+            return new ObjectRespone(jwtUtilities.generateToken(account.getEmail()));
+        return new ObjectRespone(null);
+    }
+
     @PostMapping("/login")
     public ObjectRespone login(@RequestBody LoginRequest request) {
         String passwordEncode = MD5Util.getMD5(request.getPassword());

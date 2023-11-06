@@ -49,6 +49,25 @@ public interface HDBillRepository extends BillRepository {
             @Param("type") Boolean type,
             @Param("inputSearch") String inputSearch
     );
+    @Query(value = """
+            SELECT 1 as stt,
+            b.id, b.code, c.full_name as fullName,
+            c.phone_number as phoneNumber, b.address,
+            b.total_money as totalMoney, b.money_reduced as moneyReduced,
+            b.money_after as moneyAfter, b.money_ship as moneyShip,
+            b.type, b.note, b.created_at as createdAt,
+            b.created_by as creatdeBy, sum(bt.quantity) as totalProduct, b.status
+            FROM bill b
+            LEFT JOIN bill_detail bt ON b.id = bt.id_bill
+            LEFT JOIN account c ON b.id_customer = c.id
+            WHERE b.id = :idBill
+            AND b.status <> 8
+            GROUP BY b.id, b.code, c.full_name, c.phone_number, b.address,
+            b.total_money, b.money_reduced, b.money_after, b.money_ship,
+            b.type,b.note, b.created_at,b.created_by,b.status
+            ORDER BY b.created_at DESC
+            """, nativeQuery = true)
+    HDBillResponse findBill(@Param("idBill") String id);
 
     @Query(value = """
             SELECT b.id, b.code, c.full_name as fullName,

@@ -1,6 +1,6 @@
 package com.fshoes.core.client.service.impl;
 
-import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
+import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.client.model.request.ClientBillDetaillRequest;
@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -55,26 +56,21 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
     private AdVoucherRepository voucherRepository;
 
     @Autowired
-    private AdCustomerVoucherRepository customerVoucherRepository;
-
-    @Autowired
     private EmailSender emailSender;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private HDBillRepository hdBillRepository;
     @Override
-    @Transactional
     public Bill thanhToan(ClientCheckoutRequest request, UserLogin userLogin) {
         Bill newBill = new Bill();
-        if (request.getIdVoucher() == null) {
-            newBill.setVoucher(null);
-        } else {
+        if (request.getIdVoucher() != null) {
             Voucher voucher = voucherRepository.findById(request.getIdVoucher()).orElse(null);
-            assert voucher != null;
-            voucher.setQuantity(voucher.getQuantity() - 1);
-            voucherRepository.save(voucher);
-            newBill.setVoucher(voucher);
-            AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), userLogin.getUserLogin().getId());
-            if (adCustomerVoucherRespone != null) {
-                customerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+            if (voucher != null) {
+                voucher.setQuantity(voucher.getQuantity() - 1);
+                voucherRepository.save(voucher);
+                newBill.setVoucher(voucher);
             }
         }
         newBill.setStatus(request.getStatus());
@@ -119,6 +115,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             billHistory.setNote(request.getNote());
             billHistoryRepository.save(billHistory);
             sendMail(request, newBill.getCode(), dateNow);
+            messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(newBill.getId()));
         }
         return newBill;
     }
@@ -257,11 +254,11 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     newRequest.setBillDetail(listBillDetails.stream().map(billDetail ->
                             new ClientBillDetaillRequest(
                                     billDetail.getProductDetail().getProduct().getName() + "" +
-                                            billDetail.getProductDetail().getColor().getName() + "" +
-                                            billDetail.getProductDetail().getMaterial().getName() + "" +
-                                            billDetail.getProductDetail().getSole().getName() + "" +
-                                            billDetail.getProductDetail().getCategory().getName() + "" +
-                                            billDetail.getProductDetail().getBrand().getName(),
+                                    billDetail.getProductDetail().getColor().getName() + "" +
+                                    billDetail.getProductDetail().getMaterial().getName() + "" +
+                                    billDetail.getProductDetail().getSole().getName() + "" +
+                                    billDetail.getProductDetail().getCategory().getName() + "" +
+                                    billDetail.getProductDetail().getBrand().getName(),
                                     billDetail.getProductDetail().getId(),
                                     billDetail.getQuantity(), String.valueOf(billDetail.getPrice().intValue()))
                     ).toList());
@@ -271,6 +268,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     billHistory.setNote(bill.getNote());
                     billHistoryRepository.save(billHistory);
                     sendMail(newRequest, bill.getCode(), Calendar.getInstance().getTimeInMillis());
+                    messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
                     return listBillDetails.stream().map(BillDetail::getProductDetail).toList();
                 }
             }
@@ -301,118 +299,118 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
         htmlTable.append("</table>");
         String htmlContent = "<!DOCTYPE html>" +
-                "<html>" +
-                "<head>" +
-                "<style>" +
-                "body {" +
-                "font-family: Arial, sans-serif;" +
-                "background-color: #f5f5f5;" +
-                "}" +
-                ".container {" +
-                "background-color: #fff;" +
-                "max-width: 800px;" +
-                "margin: 0 auto;" +
-                "padding: 20px;" +
-                "border: 1px solid #ccc;" +
-                "border-radius: 5px;" +
-                "box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);" +
-                "}" +
-                "h1 {" +
-                "color: #333;" +
-                "text-align: center;" +
-                "}" +
-                ".email-container {" +
-                "background-color: #fff;" +
-                "border: 1px solid #ddd;" +
-                "padding: 20px;" +
-                "border-radius: 5px;" +
-                "box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" +
-                "}" +
-                "table {" +
-                "width: 100%;" +
-                "border-collapse: collapse;" +
-                "margin-bottom: 20px;" +
-                "}" +
-                "th {" +
-                "border: 1px solid #ddd;" +
-                "padding: 8px;" +
-                "background-color: #F2741F;" +
-                "color: #fff;" +
-                "text-align: left;" +
-                "}" +
-                "td {" +
-                "border: 1px solid #ddd;" +
-                "padding: 8px;" +
-                "}" +
-                ".total-section {" +
-                "text-align: left;" +
-                "float: right;" +
-                "}" +
-                "p {" +
-                "margin-bottom: 10px;" +
-                "}" +
-                "strong {" +
-                "font-weight: bold;" +
-                "}" +
-                "ul {" +
-                "list-style-type: none;" +
-                "padding: 0;" +
-                "margin: 0;" +
-                "}" +
-                "li {" +
-                "margin-bottom: 5px;" +
-                "}" +
-                "button {" +
-                "background-color: #333;" +
-                "color: #fff;" +
-                "padding: 10px 20px;" +
-                "border: none;" +
-                "border-radius: 5px;" +
-                "font-size: 16px;" +
-                "cursor: pointer;" +
-                "display: block;" +
-                "margin: 20px auto;" +
-                "}" +
-                "button:hover {" +
-                "background-color: #555;" +
-                "}" +
-                "</style>" +
-                "</head>" +
-                "<body>" +
-                "<div class=\"container\">" +
-                "<h1>Thông Tin Đơn Hàng</h1>" +
-                "<div class=\"email-container\">" +
-                htmlTable.toString() +
-                "        <div class=\"total-section\">" +
-                "            <p>Thành tiền: <strong>" + formatCurrency(request.getTotalMoney()) + " VNĐ</strong></p>" +
-                "            <p>Phí vận chuyển: <strong>" + formatCurrency(request.getShipMoney()) + " VNĐ</strong></p>" +
-                "            <p>Giảm giá: <strong>" + formatCurrency(request.getMoneyReduced()) + " VNĐ</strong></p>" +
-                "            <p>Tổng cộng: <strong>" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VNĐ</strong></p>" +
-                "        </div>" +
-                "<div>" +
-                "<p><b>THÔNG TIN ĐƠN HÀNG:</b></p>" +
-                "<ul>" +
-                "<li>Mã đơn hàng: <strong>" + codeBill + "</strong></li>" +
-                "<li>Ngày đặt hàng: <strong>" + DateUtil.converDateTimeString(dateNow) + "</strong></li>" +
-                "<li>Ngày nhận dự kiến: <strong>" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>" +
-                "<li>Hình thức thanh toán: <strong>" + valueType + "</strong></li>" +
-                "</ul>" +
-                "<p><b>ĐỊA CHỈ GIAO HÀNG:</b></p>" +
-                "<ul>" +
-                "<li>Họ và tên: <strong>" + request.getFullName() + "</strong></li>" +
-                "<li>Số điện thoại: <strong>" + request.getPhone() + "</strong></li>" +
-                "<li>Địa chỉ: <strong>" + request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh() + "</strong></li>" +
-                "</ul>" +
-                "</div>" +
-                "<p>" +
-                "Cảm ơn bạn đã tin tưởng và mua hàng tại cửa hàng của chúng tôi. " +
-                "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
-                "</p>" +
-                "</div>" +
-                "<a href='http://localhost:3000/home'><button>Xem Chi Tiết</button></a>" +
-                "</div>" +
-                "</body>" +
-                "</html>";
+                             "<html>" +
+                             "<head>" +
+                             "<style>" +
+                             "body {" +
+                             "font-family: Arial, sans-serif;" +
+                             "background-color: #f5f5f5;" +
+                             "}" +
+                             ".container {" +
+                             "background-color: #fff;" +
+                             "max-width: 800px;" +
+                             "margin: 0 auto;" +
+                             "padding: 20px;" +
+                             "border: 1px solid #ccc;" +
+                             "border-radius: 5px;" +
+                             "box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);" +
+                             "}" +
+                             "h1 {" +
+                             "color: #333;" +
+                             "text-align: center;" +
+                             "}" +
+                             ".email-container {" +
+                             "background-color: #fff;" +
+                             "border: 1px solid #ddd;" +
+                             "padding: 20px;" +
+                             "border-radius: 5px;" +
+                             "box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" +
+                             "}" +
+                             "table {" +
+                             "width: 100%;" +
+                             "border-collapse: collapse;" +
+                             "margin-bottom: 20px;" +
+                             "}" +
+                             "th {" +
+                             "border: 1px solid #ddd;" +
+                             "padding: 8px;" +
+                             "background-color: #F2741F;" +
+                             "color: #fff;" +
+                             "text-align: left;" +
+                             "}" +
+                             "td {" +
+                             "border: 1px solid #ddd;" +
+                             "padding: 8px;" +
+                             "}" +
+                             ".total-section {" +
+                             "text-align: left;" +
+                             "float: right;" +
+                             "}" +
+                             "p {" +
+                             "margin-bottom: 10px;" +
+                             "}" +
+                             "strong {" +
+                             "font-weight: bold;" +
+                             "}" +
+                             "ul {" +
+                             "list-style-type: none;" +
+                             "padding: 0;" +
+                             "margin: 0;" +
+                             "}" +
+                             "li {" +
+                             "margin-bottom: 5px;" +
+                             "}" +
+                             "button {" +
+                             "background-color: #333;" +
+                             "color: #fff;" +
+                             "padding: 10px 20px;" +
+                             "border: none;" +
+                             "border-radius: 5px;" +
+                             "font-size: 16px;" +
+                             "cursor: pointer;" +
+                             "display: block;" +
+                             "margin: 20px auto;" +
+                             "}" +
+                             "button:hover {" +
+                             "background-color: #555;" +
+                             "}" +
+                             "</style>" +
+                             "</head>" +
+                             "<body>" +
+                             "<div class=\"container\">" +
+                             "<h1>Thông Tin Đơn Hàng</h1>" +
+                             "<div class=\"email-container\">" +
+                             htmlTable.toString() +
+                             "        <div class=\"total-section\">" +
+                             "            <p>Thành tiền: <strong>" + formatCurrency(request.getTotalMoney()) + " VNĐ</strong></p>" +
+                             "            <p>Phí vận chuyển: <strong>" + formatCurrency(request.getShipMoney()) + " VNĐ</strong></p>" +
+                             "            <p>Giảm giá: <strong>" + formatCurrency(request.getMoneyReduced()) + " VNĐ</strong></p>" +
+                             "            <p>Tổng cộng: <strong>" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VNĐ</strong></p>" +
+                             "        </div>" +
+                             "<div>" +
+                             "<p><b>THÔNG TIN ĐƠN HÀNG:</b></p>" +
+                             "<ul>" +
+                             "<li>Mã đơn hàng: <strong>" + codeBill + "</strong></li>" +
+                             "<li>Ngày đặt hàng: <strong>" + DateUtil.converDateTimeString(dateNow) + "</strong></li>" +
+                             "<li>Ngày nhận dự kiến: <strong>" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>" +
+                             "<li>Hình thức thanh toán: <strong>" + valueType + "</strong></li>" +
+                             "</ul>" +
+                             "<p><b>ĐỊA CHỈ GIAO HÀNG:</b></p>" +
+                             "<ul>" +
+                             "<li>Họ và tên: <strong>" + request.getFullName() + "</strong></li>" +
+                             "<li>Số điện thoại: <strong>" + request.getPhone() + "</strong></li>" +
+                             "<li>Địa chỉ: <strong>" + request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh() + "</strong></li>" +
+                             "</ul>" +
+                             "</div>" +
+                             "<p>" +
+                             "Cảm ơn bạn đã tin tưởng và mua hàng tại cửa hàng của chúng tôi. " +
+                             "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
+                             "</p>" +
+                             "</div>" +
+                             "<a href='http://localhost:3000/home'><button>Xem Chi Tiết</button></a>" +
+                             "</div>" +
+                             "</body>" +
+                             "</html>";
 
         newEmail.setBody(htmlContent);
         newEmail.setToEmail(toMail);
@@ -434,63 +432,63 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
     public FileSystemResource generateInvoicePDF(ClientCheckoutRequest request, String code, Long dateNow) {
         String htmlContent = "<html lang=\"en\">"
-                + "<head>"
-                + "<meta charset=\"UTF-8\">"
-                + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
-                + "</head>"
-                + "<body style=\"font-family: 'Arial Unicode MS', Arial, sans-serif; background-color: #f5f5f5\">"
-                + "<div style=\"background-color: #fff; max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">"
-                + "<h1 style=\"color: #333; text-align: center;\">THONG TIN DON HANG</h1>"
-                + "<div style=\"background-color: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\">"
-                + "<table border=\"1\" style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px;\">"
-                + "<tr>" +
-                "<th style=\"width: 70%\">Ten san pham</th>" +
-                "<th style=\"width: 10%\">So luong</th>" +
-                "<th style=\"width: 20%\">Gia tien</th>";
+                             + "<head>"
+                             + "<meta charset=\"UTF-8\">"
+                             + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+                             + "</head>"
+                             + "<body style=\"font-family: 'Arial Unicode MS', Arial, sans-serif; background-color: #f5f5f5\">"
+                             + "<div style=\"background-color: #fff; max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">"
+                             + "<h1 style=\"color: #333; text-align: center;\">THONG TIN DON HANG</h1>"
+                             + "<div style=\"background-color: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\">"
+                             + "<table border=\"1\" style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px;\">"
+                             + "<tr>" +
+                             "<th style=\"width: 70%\">Ten san pham</th>" +
+                             "<th style=\"width: 10%\">So luong</th>" +
+                             "<th style=\"width: 20%\">Gia tien</th>";
 
         for (ClientBillDetaillRequest detail : request.getBillDetail()) {
             int totalPrice = Integer.parseInt(detail.getPrice()) * detail.getQuantity();
             String formattedPrice = String.format("%,d VND", totalPrice);
 
             htmlContent += "<tr><td style=\"border: 1px solid #ddd; padding: 8px;\">"
-                    + removeDiacritics(detail.getNameProduct()).replaceAll("[^a-zA-Z0-9 ]", "")
-                    + "</td><td style=\"border: 1px solid #ddd; padding: 8px;\">"
-                    + detail.getQuantity()
-                    + "</td><td style=\"border: 1px solid #ddd; padding: 8px;\">"
-                    + formattedPrice + ""
-                    + "</td></tr>";
+                           + removeDiacritics(detail.getNameProduct()).replaceAll("[^a-zA-Z0-9 ]", "")
+                           + "</td><td style=\"border: 1px solid #ddd; padding: 8px;\">"
+                           + detail.getQuantity()
+                           + "</td><td style=\"border: 1px solid #ddd; padding: 8px;\">"
+                           + formattedPrice + ""
+                           + "</td></tr>";
         }
         String valueType = request.getTypePayment().equals("0") ? "Tại quầy" : "Đặt hàng";
 
         htmlContent += "</table>"
-                + "<div>"
-                + "<p style=\"margin-bottom: 10px;\">Thanh tien: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getTotalMoney()) + " VND</strong></p>"
-                + "<p style=\"margin-bottom: 10px;\">Phi van chuyen: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getShipMoney()) + " VND</strong></p>"
-                + "<p style=\"margin-bottom: 10px;\">Giam gia: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getMoneyReduced()) + " VND</strong></p>"
-                + "<p style=\"margin-bottom: 10px;\">Tong cong: <strong style=\"font-weight: bold;\">" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VND</strong></p>"
-                + "</div>"
-                + "<div>"
-                + "<p style=\"margin-bottom: 10px;\"><b>THONG TIN DON HANG:</b></p>"
-                + "<ul style=\"list-style-type: none; padding: 0; margin: 0;\">"
-                + "<li style=\"margin-bottom: 5px;\">Ma don hang: <strong style=\"font-weight: bold;\">" + code + "</strong></li>"
-                + "<li style=\"margin-bottom: 5px;\">Ngay dat hang: <strong style=\"font-weight: bold;\">" + DateUtil.converDateTimeString(dateNow) + "</strong></li>"
-                + "<li style=\"margin-bottom: 5px;\">Ngay nhan du kien: <strong style=\"font-weight: bold;\">" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>"
-                + "<li style=\"margin-bottom: 5px;\">Hinh thuc thanh toan: <strong style=\"font-weight: bold;\">" + removeDiacritics(valueType).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
-                + "</ul>"
-                + "<p style=\"margin-bottom: 10px;\"><b>DIA CHI GIAO HANG:</b></p>"
-                + "<ul style=\"list-style-type: none; padding: 0; margin: 0;\">"
-                + "<li style=\"margin-bottom: 5px;\">Ho va ten: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getFullName()).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
-                + "<li style=\"margin-bottom: 5px;\">So dien thoai: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getPhone()).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
-                + "<li style=\"margin-bottom: 5px;\">Dia chi: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh()).replaceAll("[^a-zA-Z0-9 ]", "")
-                + "</strong></li>"
-                + "</ul>"
-                + "</div>"
-                + "<p style=\"margin-bottom: 10px;\">"
-                + "Cam on ban da tin tuong va mua hang tai cua hang cua chung toi. "
-                + "Chung toi se som lien he voi ban som nhat co the."
-                + "</p>"
-                + "</div>"
-                + "</body></html>";
+                       + "<div>"
+                       + "<p style=\"margin-bottom: 10px;\">Thanh tien: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getTotalMoney()) + " VND</strong></p>"
+                       + "<p style=\"margin-bottom: 10px;\">Phi van chuyen: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getShipMoney()) + " VND</strong></p>"
+                       + "<p style=\"margin-bottom: 10px;\">Giam gia: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getMoneyReduced()) + " VND</strong></p>"
+                       + "<p style=\"margin-bottom: 10px;\">Tong cong: <strong style=\"font-weight: bold;\">" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VND</strong></p>"
+                       + "</div>"
+                       + "<div>"
+                       + "<p style=\"margin-bottom: 10px;\"><b>THONG TIN DON HANG:</b></p>"
+                       + "<ul style=\"list-style-type: none; padding: 0; margin: 0;\">"
+                       + "<li style=\"margin-bottom: 5px;\">Ma don hang: <strong style=\"font-weight: bold;\">" + code + "</strong></li>"
+                       + "<li style=\"margin-bottom: 5px;\">Ngay dat hang: <strong style=\"font-weight: bold;\">" + DateUtil.converDateTimeString(dateNow) + "</strong></li>"
+                       + "<li style=\"margin-bottom: 5px;\">Ngay nhan du kien: <strong style=\"font-weight: bold;\">" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>"
+                       + "<li style=\"margin-bottom: 5px;\">Hinh thuc thanh toan: <strong style=\"font-weight: bold;\">" + removeDiacritics(valueType).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
+                       + "</ul>"
+                       + "<p style=\"margin-bottom: 10px;\"><b>DIA CHI GIAO HANG:</b></p>"
+                       + "<ul style=\"list-style-type: none; padding: 0; margin: 0;\">"
+                       + "<li style=\"margin-bottom: 5px;\">Ho va ten: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getFullName()).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
+                       + "<li style=\"margin-bottom: 5px;\">So dien thoai: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getPhone()).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
+                       + "<li style=\"margin-bottom: 5px;\">Dia chi: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh()).replaceAll("[^a-zA-Z0-9 ]", "")
+                       + "</strong></li>"
+                       + "</ul>"
+                       + "</div>"
+                       + "<p style=\"margin-bottom: 10px;\">"
+                       + "Cam on ban da tin tuong va mua hang tai cua hang cua chung toi. "
+                       + "Chung toi se som lien he voi ban som nhat co the."
+                       + "</p>"
+                       + "</div>"
+                       + "</body></html>";
         FileSystemResource fileResource = null;
         try {
             Document document = new Document(PageSize.A4);
