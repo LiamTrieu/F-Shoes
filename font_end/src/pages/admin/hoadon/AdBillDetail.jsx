@@ -417,10 +417,9 @@ export default function AdBillDetail() {
   }
 
   function ModalConfirmPayment({ open, setOpen, billDetail, listTransaction }) {
-    const totalMoneyTrans = listTransaction.reduce(
-      (total, transaction) => total + transaction.totalMoney,
-      0,
-    )
+    const totalMoneyTrans = listTransaction
+      .filter((transaction) => transaction.type === 0)
+      .reduce((total, transaction) => total + transaction.totalMoney, 0)
     let tienCanHoanTra = 0
     billDetail ? (tienCanHoanTra = totalMoneyTrans - billDetail.moneyAfter) : (tienCanHoanTra = 0)
     const [ghiChu, setGhiChu] = useState('')

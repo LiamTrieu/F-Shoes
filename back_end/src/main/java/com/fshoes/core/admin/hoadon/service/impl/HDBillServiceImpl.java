@@ -139,16 +139,11 @@ public class HDBillServiceImpl implements HDBillService {
             } else {
                 bill.setMoneyAfter(bill.getTotalMoney().add(hdBillRequest.getMoneyShip()));
             }
-            bill.setStatus(hdBillRequest.getStatus());
+//            bill.setStatus(hdBillRequest.getStatus());
             //thêm history:
-            HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
-                    .bill(bill)
-                    .idStaff(hdBillRequest.getIdStaff())
-                    .note(hdBillRequest.getNoteBillHistory())
-                    .build();
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
-            billHistory.setNote(hdBillHistoryRequest.getNote());
+            billHistory.setNote(hdBillRequest.getNoteBillHistory());
 //            billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
             billHistory.setAccount(accFake());
             hdBillHistoryRepository.save(billHistory);

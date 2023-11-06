@@ -34,6 +34,21 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
   const handleClose = () => {
     setOpenDialog(false)
   }
+  function genOrderHistory(listOrderTimeLine) {
+    if (listOrderTimeLine[0]) {
+      let tempStatus = listOrderTimeLine[0].statusBill
+      return listOrderTimeLine.map((his, index) => {
+        if (his.statusBill == null && listOrderTimeLine[index - 1].statusBill !== null) {
+          tempStatus = listOrderTimeLine[index - 1].statusBill
+        }
+        if (his.statusBill == null) {
+          return { ...his, statusBill: tempStatus }
+        } else {
+          return his
+        }
+      })
+    }
+  }
 
   return (
     <div className="hoa-don">
@@ -72,7 +87,8 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
                 </TableRow>
               </TableHead>
               <TableBody>
-                {listOrderTimeLine.map((row, index) => (
+                {console.log(genOrderHistory(listOrderTimeLine))}
+                {genOrderHistory(listOrderTimeLine).map((row, index) => (
                   <TableRow key={'dialog timeline' + row.id}>
                     <TableCell align="center">
                       {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
