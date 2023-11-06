@@ -827,70 +827,80 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const addBill = (id) => {
     const newErrors = {}
     let checkAA = 0
-
-    if (!detailDiaChi.name.trim()) {
-      newErrors.name = 'Tên người nhận không được để trống'
-      checkAA++
-    } else if (detailDiaChi.name.trim().length > 100) {
-      newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
-      checkAA++
-    } else {
-      newErrors.name = ''
-    }
-
-    if (!detailDiaChi.specificAddress.trim()) {
-      newErrors.specificAddress = 'Địa chỉ cụ thể không được để trống'
-      checkAA++
-    } else if (detailDiaChi.name.trim().length > 225) {
-      newErrors.specificAddress = 'Địa chỉ cụ thể không được quá 225 kí tự.'
-      checkAA++
-    } else {
-      newErrors.specificAddress = ''
-    }
-
-    if (!detailDiaChi.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
-      checkAA++
-    } else {
-      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
-      if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
-        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+    if (giaoHang) {
+      if (!detailDiaChi.name.trim()) {
+        newErrors.name = 'Tên người nhận không được để trống'
+        checkAA++
+      } else if (detailDiaChi.name.trim().length > 100) {
+        newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
         checkAA++
       } else {
-        newErrors.phoneNumber = ''
+        newErrors.name = ''
+      }
+
+      if (!detailDiaChi.specificAddress.trim()) {
+        newErrors.specificAddress = 'Địa chỉ cụ thể không được để trống'
+        checkAA++
+      } else if (detailDiaChi.name.trim().length > 225) {
+        newErrors.specificAddress = 'Địa chỉ cụ thể không được quá 225 kí tự.'
+        checkAA++
+      } else {
+        newErrors.specificAddress = ''
+      }
+
+      if (!detailDiaChi.phoneNumber.trim()) {
+        newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+        checkAA++
+      } else {
+        const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+        if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
+          newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+          checkAA++
+        } else {
+          newErrors.phoneNumber = ''
+        }
+      }
+
+      if (!detailDiaChi.provinceId) {
+        newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
+        checkAA++
+      } else {
+        newErrors.provinceId = ''
+      }
+
+      if (!detailDiaChi.districtId) {
+        newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
+        checkAA++
+      } else {
+        newErrors.districtId = ''
+      }
+
+      if (!detailDiaChi.wardId) {
+        newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+        checkAA++
+      } else {
+        newErrors.wardId = ''
+      }
+      if (checkAA > 0) {
+        setErrorAddBill(newErrors)
+        return
       }
     }
-
-    if (!detailDiaChi.provinceId) {
-      newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
-      checkAA++
-    } else {
-      newErrors.provinceId = ''
-    }
-
-    if (!detailDiaChi.districtId) {
-      newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
-      checkAA++
-    } else {
-      newErrors.districtId = ''
-    }
-
-    if (!detailDiaChi.wardId) {
-      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
-      checkAA++
-    } else {
-      newErrors.wardId = ''
-    }
-    if (checkAA > 0) {
-      setErrorAddBill(newErrors)
+    if (listProductDetailBill.length === 0) {
+      toast.error('Giỏ hàng chưa có sản phẩm', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
       return
     }
+
     const data = {
       fullName: detailDiaChi.name ? detailDiaChi.name : '',
       phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
       idVourcher: voucher.id ? voucher.id : null,
       idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : null,
-      address: detailDiaChi.specificAddress ? detailDiaChi.specificAddress : '',
+      address: detailDiaChi.specificAddress
+        ? detailDiaChi.specificAddress + ', ' + xaName + ', ' + huyenName + ', ' + tinhName
+        : '',
       note: khachHang.note ? khachHang.note : '',
       moneyShip: giaoHang ? shipTotal : 0,
       moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',

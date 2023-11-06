@@ -504,26 +504,21 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       color: 'black',
                       flexGrow: 1,
                     }}>
-                    <Typography
-                      style={{
-                        fontSize: '25px',
-                        fontWeight: 'bold',
-                        marginBottom: '30px',
-                        marginTop: '30px',
-                      }}
-                      component="div">
+                    <Typography variant="h5" fontFamily={'monospace'} fontWeight={'bolder'}>
                       {getAmountProduct.nameProduct +
-                        '-' +
+                        ' ' +
                         getAmountProduct.material +
-                        '-' +
-                        getAmountProduct.category +
-                        '-' +
-                        getAmountProduct.sole +
-                        '-' +
-                        getAmountProduct.brand +
-                        '-' +
-                        getAmountProduct.color}
+                        ' ' +
+                        getAmountProduct.sole}{' '}
+                      "{getAmountProduct.color}"
                     </Typography>
+                    <div style={{ marginTop: '5px', marginBottom: '10px' }}>
+                      <b>Loại giày: </b>
+                      {getAmountProduct.category}
+                      &nbsp;&nbsp;&nbsp;&nbsp;
+                      <b>Thương hiệu: </b>
+                      {getAmountProduct.brand}
+                    </div>
                     <p style={{ color: 'red', margin: '5px 0' }}>
                       {getAmountProduct.promotion && getAmountProduct.statusPromotion === 1 ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
                         <div style={{ display: 'flex' }}>

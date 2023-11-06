@@ -25,6 +25,7 @@ public class PromotionController {
     private PromotionServiceImpl khuyenMaiService;
 
     @Autowired
+
     private ProductPromotionAddService productPromotionAddService;
     @GetMapping("/get-product-detail")
     public ObjectRespone getAllProductDeatil(ProductPromotionSearch red){

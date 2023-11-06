@@ -1,9 +1,13 @@
 import {
+  Box,
   Button,
   Checkbox,
   Grid,
+  MenuItem,
   Pagination,
   Paper,
+  Select,
+  Stack,
   TextField,
   Typography,
   useTheme,
@@ -26,6 +30,12 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import './home.css'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import bradApi from '../../../api/admin/sanpham/bradApi'
+import materialApi from '../../../api/admin/sanpham/materialApi'
+import colorApi from '../../../api/admin/sanpham/colorApi'
+import soleApi from '../../../api/admin/sanpham/soleApi'
+import categoryApi from '../../../api/admin/sanpham/categoryApi'
+import sizeApi from '../../../api/admin/sanpham/sizeApi'
 
 const listBreadcrumbs = [{ name: 'Khuyến mại', link: '/admin/promotion' }]
 
@@ -42,13 +52,52 @@ export default function AdPromotionAdd() {
   const [totalPages, setTotalPages] = useState(0)
   const [totalPagesDetailByProduct, setTotalPagesDetailByProduct] = useState(0)
   const [filter, setFilter] = useState({ page: 1, size: 5, nameProduct: '' })
-  const [filterDetailByProduct, setFilterDetailByProduct] = useState({ page: 1, size: 5 })
   const [errorName, setErrorName] = useState('')
   const [errorValue, setErrorValue] = useState('')
   const [errorTimeStart, settimeStart] = useState('')
   const [errorTimeEnd, setTimeend] = useState('')
-
   const [selectedProductIds, setSelectedProductIds] = useState([])
+
+  // ------------------------------ filters ------------------------------
+
+  const [listBrand, setListBrand] = useState([])
+  const [listMaterial, setListMaterial] = useState([])
+  const [listColor, setListColor] = useState([])
+  const [listSole, setListSole] = useState([])
+  const [listCategory, setListCategory] = useState([])
+  const [listSize, setListSize] = useState([])
+
+  const [filterProductDetail, setFilterProductDetail] = useState({
+    page: 1,
+    size: 5,
+    brand: null,
+    material: null,
+    color: null,
+    sole: null,
+    category: null,
+    nameProduct: null,
+  })
+
+  useEffect(() => {
+    bradApi.findAll().then((response) => {
+      setListBrand(response.data.data)
+    })
+    materialApi.findAll().then((response) => {
+      setListMaterial(response.data.data)
+    })
+    colorApi.findAll().then((response) => {
+      setListColor(response.data.data)
+    })
+    soleApi.findAll().then((response) => {
+      setListSole(response.data.data)
+    })
+    categoryApi.findAll().then((response) => {
+      setListCategory(response.data.data)
+    })
+    sizeApi.findAll().then((response) => {
+      setListSize(response.data.data)
+    })
+  }, [])
 
   const handleSelectAllChange = (event) => {
     const selectedIds = event.target.checked
@@ -111,10 +160,10 @@ export default function AdPromotionAdd() {
     setSelectedProductIds(selectedProductIds)
   }
 
-  const getProductDetailById = (filterDetailByProduct, selectedProductIds) => {
+  const getProductDetailById = (filterProductDetail, selectedProductIds) => {
     if (selectedProductIds.length > 0) {
       khuyenMaiApi
-        .getAllProductDetailByProduct(filterDetailByProduct, selectedProductIds)
+        .getAllProductDetailByProduct(filterProductDetail, selectedProductIds)
         .then((response) => {
           setGetProductDetailByProduct(response.data.data.data)
           setTotalPagesDetailByProduct(response.data.data.totalPages)
@@ -125,8 +174,8 @@ export default function AdPromotionAdd() {
     }
   }
   useEffect(() => {
-    getProductDetailById(filterDetailByProduct, selectedProductIds)
-  }, [filterDetailByProduct, selectedProductIds])
+    getProductDetailById(filterProductDetail, selectedProductIds)
+  }, [filterProductDetail, selectedProductIds])
 
   useEffect(() => {
     khuyenMaiApi.getAllProduct(filter).then((response) => {
@@ -413,7 +462,173 @@ export default function AdPromotionAdd() {
                   }}>
                   Chi tiết sản phẩm
                 </Typography>
-                <div style={{ height: 400, width: '100%' }}>
+                <div style={{ height: '100%', width: '100%' }}>
+                  <Box>
+                    <TextField
+                      sx={{
+                        width: '50%',
+                        '.MuiInputBase-input': { py: '7.5px' },
+                      }}
+                      size="small"
+                      variant="outlined"
+                      placeholder="Tên sản phẩm"
+                      onChange={(e) => {
+                        setFilterProductDetail({
+                          ...filterProductDetail,
+                          nameProduct: e.target.value,
+                        })
+                      }}
+                    />
+                  </Box>
+                  <Box>
+                    <b>Danh mục:</b>
+                    <Select
+                      displayEmpty
+                      sx={{
+                        '.MuiSelect-select': {
+                          pl: 1,
+                          color: 'orange',
+                          fontWeight: 'bold',
+                        },
+                        '.MuiOutlinedInput-notchedOutline': {
+                          border: 'none!important',
+                        },
+                      }}
+                      value={filterProductDetail.category}
+                      onChange={(e) => {
+                        setFilterProductDetail({ ...filterProductDetail, category: e.target.value })
+                      }}>
+                      <MenuItem value={null}>Tất cả</MenuItem>
+                      {listCategory?.map((item) => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <b>Màu sắc:</b>
+                    <Select
+                      displayEmpty
+                      sx={{
+                        '.MuiSelect-select': {
+                          pl: 1,
+                          color: 'orange',
+                          fontWeight: 'bold',
+                        },
+                        '.MuiOutlinedInput-notchedOutline': {
+                          border: 'none!important',
+                        },
+                      }}
+                      value={filterProductDetail.color}
+                      onChange={(e) => {
+                        setFilterProductDetail({ ...filterProductDetail, color: e.target.value })
+                      }}>
+                      <MenuItem value={null}>Tất cả</MenuItem>
+                      {listColor?.map((item) => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <b>Chất liệu:</b>
+                    <Select
+                      displayEmpty
+                      sx={{
+                        '.MuiSelect-select': {
+                          pl: 1,
+                          color: 'orange',
+                          fontWeight: 'bold',
+                        },
+                        '.MuiOutlinedInput-notchedOutline': {
+                          border: 'none!important',
+                        },
+                      }}
+                      value={filterProductDetail.material}
+                      onChange={(e) => {
+                        setFilterProductDetail({ ...filterProductDetail, material: e.target.value })
+                      }}>
+                      <MenuItem value={null}>Tất cả</MenuItem>
+                      {listMaterial?.map((item) => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                    <b>Kích cỡ:</b>
+                    <Select
+                      displayEmpty
+                      sx={{
+                        '.MuiSelect-select': {
+                          pl: 1,
+                          color: 'orange',
+                          fontWeight: 'bold',
+                        },
+                        '.MuiOutlinedInput-notchedOutline': {
+                          border: 'none!important',
+                        },
+                      }}
+                      value={filterProductDetail.size}
+                      onChange={(e) => {
+                        setFilterProductDetail({ ...filterProductDetail, size: e.target.value })
+                      }}>
+                      <MenuItem value={null}>Tất cả</MenuItem>
+                      {listSize?.map((item) => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item.size}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                    <b>Đế giày:</b>
+                    <Select
+                      displayEmpty
+                      sx={{
+                        '.MuiSelect-select': {
+                          pl: 1,
+                          color: 'orange',
+                          fontWeight: 'bold',
+                        },
+                        '.MuiOutlinedInput-notchedOutline': {
+                          border: 'none!important',
+                        },
+                      }}
+                      value={filterProductDetail.sole}
+                      onChange={(e) => {
+                        setFilterProductDetail({ ...filterProductDetail, sole: e.target.value })
+                      }}>
+                      <MenuItem value={null}>Tất cả</MenuItem>
+                      {listSole?.map((item) => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                    <b>Thương hiệu:</b>
+                    <Select
+                      displayEmpty
+                      sx={{
+                        '.MuiSelect-select': {
+                          pl: 1,
+                          color: 'orange',
+                          fontWeight: 'bold',
+                        },
+                        '.MuiOutlinedInput-notchedOutline': {
+                          border: 'none!important',
+                        },
+                      }}
+                      value={filterProductDetail.brand}
+                      onChange={(e) => {
+                        setFilterProductDetail({ ...filterProductDetail, brand: e.target.value })
+                      }}>
+                      <MenuItem value={null}>Tất cả</MenuItem>
+                      {listBrand?.map((item) => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Box>
                   <Table sx={{ minWidth: '100%' }} aria-label="simple table" className="tableCss">
                     <TableHead>
                       <TableRow>
@@ -432,6 +647,15 @@ export default function AdPromotionAdd() {
                         </TableCell>
                         <TableCell align="center" sx={{ width: '30%' }}>
                           Thương hiệu
+                        </TableCell>
+                        <TableCell align="center" sx={{ width: '30%' }}>
+                          Chát liệu
+                        </TableCell>
+                        <TableCell align="center" sx={{ width: '30%' }}>
+                          Màu sắc
+                        </TableCell>
+                        <TableCell align="center" sx={{ width: '30%' }}>
+                          Đế giày
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -452,33 +676,57 @@ export default function AdPromotionAdd() {
                           <TableCell align="center" component="th" scope="row">
                             {index + 1}
                           </TableCell>
-
                           <TableCell align="center">{row.name}</TableCell>
                           <TableCell align="center">{row.category}</TableCell>
                           <TableCell align="center">{row.brand}</TableCell>
+                          <TableCell align="center">{row.material}</TableCell>
+                          <TableCell align="center">{row.color}</TableCell>
+                          <TableCell align="center">{row.sole}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      marginTop: '10px',
-                    }}>
+                  <Stack
+                    mt={2}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    spacing={0}>
+                    <Typography component="span" variant={'body2'} mt={0.5}>
+                      <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                        Xem
+                      </Typography>
+                      <Select
+                        color="cam"
+                        onChange={(e) => {
+                          setFilterProductDetail({ ...filterProductDetail, size: e.target.value })
+                        }}
+                        sx={{ height: '25px', mx: 0.5 }}
+                        size="small"
+                        value={filterProductDetail.size}>
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={15}>15</MenuItem>
+                        <MenuItem value={20}>20</MenuItem>
+                      </Select>
+                      <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                        sản phẩm
+                      </Typography>
+                    </Typography>
                     <Pagination
-                      page={filterDetailByProduct.page}
+                      page={filterProductDetail.page}
                       color="cam"
                       onChange={(_, value) => {
-                        setFilterDetailByProduct({
-                          ...filterDetailByProduct,
+                        setFilterProductDetail({
+                          ...filterProductDetail,
                           page: value,
                         })
                       }}
                       count={totalPagesDetailByProduct}
                       variant="outlined"
                     />
-                  </div>
+                  </Stack>
                 </div>
               </Grid>
             </Grid>

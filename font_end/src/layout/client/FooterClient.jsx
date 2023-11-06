@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 export default function FooterClient() {
   return (
     <Box
+      className="footer"
       sx={{
         boxShadow: '0px -4px 5px -2px rgba(0,0,0,0.14), 0px 0px',
         width: '100%',
@@ -13,7 +14,7 @@ export default function FooterClient() {
         mt: 2,
       }}>
       <Container maxWidth="lg">
-        <Grid container direction="column" alignItems="center">
+        <Grid container direction="column" className="gird-footer" alignItems="center">
           <Grid container spacing={12}>
             <Grid item xs={12} sm={6} md={3}>
               <Typography className="footerTitle">Giới thiệu</Typography>
