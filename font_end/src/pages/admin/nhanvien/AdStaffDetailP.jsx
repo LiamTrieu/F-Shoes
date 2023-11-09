@@ -216,8 +216,6 @@ export default function AdStaffDetail() {
     const text = ''
     confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
-        setLoading(true)
-
         staffApi
           .update(id, staffDetail)
           .then(() => {
@@ -321,7 +319,6 @@ export default function AdStaffDetail() {
 
   const fillDetailDiaChi = (idDiaChi) => {
     DiaChiApi.getById(idDiaChi).then((response) => {
-      console.log(response.data.data)
       const { name, email, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
         response.data.data
 

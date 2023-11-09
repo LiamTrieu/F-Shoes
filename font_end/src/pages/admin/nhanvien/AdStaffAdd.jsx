@@ -259,7 +259,7 @@ const AddStaff = () => {
     const dateBirth = dayjs(staffAdd.dateBirth, 'DD/MM/YYYY')
     let check = 0
 
-    if (!staffAdd.fullName) {
+    if (!staffAdd.fullName.trim()) {
       newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
       check++
     } else if (staffAdd.fullName.length > 100) {
@@ -269,7 +269,7 @@ const AddStaff = () => {
       newErrors.fullName = ''
     }
 
-    if (!diaChi.specificAddress) {
+    if (!diaChi.specificAddress.trim()) {
       newErrors.specificAddress = 'Vui lòng nhập địa chỉ cụ thể.'
       check++
     } else if (diaChi.specificAddress.length > 225) {
@@ -279,7 +279,7 @@ const AddStaff = () => {
       newErrors.specificAddress = ''
     }
 
-    if (!staffAdd.email) {
+    if (!staffAdd.email.trim()) {
       newErrors.email = 'Vui lòng nhập Email.'
       check++
     } else {
@@ -298,7 +298,7 @@ const AddStaff = () => {
       }
     }
 
-    if (!staffAdd.citizenId) {
+    if (!staffAdd.citizenId.trim()) {
       newErrors.citizenId = 'Vui lòng nhập Số CCCD.'
       check++
     } else {
@@ -314,7 +314,7 @@ const AddStaff = () => {
       }
     }
 
-    if (!staffAdd.phoneNumber) {
+    if (!staffAdd.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
       check++
     } else {
@@ -380,7 +380,6 @@ const AddStaff = () => {
     const text = ''
     confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
-        setLoading(true)
         staffApi
           .add(staffAdd)
           .then((response) => {
@@ -478,7 +477,7 @@ const AddStaff = () => {
               value={staffAdd?.fullName}
               fullWidth
               onChange={(e) => {
-                setStaffAdd({ ...staffAdd, fullName: e.target.value.trim() })
+                setStaffAdd({ ...staffAdd, fullName: e.target.value })
                 updateDiaChi()
                 setErrors({ ...errors, fullName: '' })
               }}
@@ -502,7 +501,7 @@ const AddStaff = () => {
                   value={staffAdd?.citizenId}
                   fullWidth
                   onChange={(e) => {
-                    setStaffAdd({ ...staffAdd, citizenId: e.target.value.trim() })
+                    setStaffAdd({ ...staffAdd, citizenId: e.target.value })
                     setErrors({ ...errors, citizenId: '' })
                   }}
                 />
@@ -571,7 +570,7 @@ const AddStaff = () => {
                   variant="outlined"
                   fullWidth
                   onChange={(e) => {
-                    setStaffAdd({ ...staffAdd, email: e.target.value.trim() })
+                    setStaffAdd({ ...staffAdd, email: e.target.value })
                     setErrors({ ...errors, email: '' })
                   }}
                 />
@@ -671,7 +670,7 @@ const AddStaff = () => {
                   size="small"
                   fullWidth
                   onChange={(e) => {
-                    setStaffAdd({ ...staffAdd, phoneNumber: e.target.value.trim() })
+                    setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })
                     updateDiaChi()
                   }}
                 />

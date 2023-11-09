@@ -20,14 +20,16 @@ import ghnAPI from '../../api/admin/ghn/ghnApi'
 import './Checkout.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetCheckout } from '../../services/slices/checkoutSlice'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import clientCheckoutApi from '../../api/client/clientCheckoutApi'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../components/comfirmSwal'
 import { removeCart } from '../../services/slices/cartSlice'
 import ModalVoucher from './ModalVoucher'
+import ModalAddress from './ModalAddress'
 import { setLoading } from '../../services/slices/loadingSlice'
+import ClientAddressApi from '../../api/client/clientAddressApi'
 
 export default function Checkout() {
   const [request, setRequest] = useState({
@@ -50,7 +52,8 @@ export default function Checkout() {
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
-
+  const [isShowDiaChi, setIsShowDiaChi] = useState(false)
+  const [listAddress, setListAddress] = useState([])
   const [openModalVoucher, setOpenModalVoucher] = useState(false)
 
   const [voucher, setVoucher] = useState(null)
@@ -61,10 +64,78 @@ export default function Checkout() {
     size: 5,
   })
 
+  const loadDetailAddress = () => {
+    ClientAddressApi.getDefault().then((response) => {
+      const { idDiaChi, name, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
+        response.data.data
+
+      loadTinh()
+      loadHuyen(provinceId)
+      loadXa(districtId)
+
+      const addressParts = specificAddress.split(', ')
+      if (addressParts.length === 4) {
+        const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
+
+        setSelectedTinh({ label: tinhDetail, id: provinceId })
+        setSelectedHuyen({ label: huyenDetail, id: districtId })
+        setSelectedXa({ label: xaDetail, id: wardId })
+
+        setRequest({
+          fullName: name,
+          phone: phoneNumber,
+          xa: xaDetail,
+          huyen: huyenDetail,
+          tinh: tinhDetail,
+          address: address,
+        })
+        const filtelService = {
+          shop_id: '3911708',
+          from_district: '3440',
+          to_district: districtId,
+        }
+
+        ghnAPI.getServiceId(filtelService).then((response) => {
+          const serviceId = response.data.body.serviceId
+          const filterTotal = {
+            from_district_id: '3440',
+            service_id: serviceId,
+            to_district_id: districtId,
+            to_ward_code: wardId,
+            weight: arrData.reduce((totalWeight, e) => totalWeight + parseInt(e.weight), 0),
+            insurance_value: '10000',
+          }
+
+          ghnAPI.getTotal(filterTotal).then((response) => {
+            setPhiShip(response.data.body.total)
+
+            const filtelTime = {
+              from_district_id: '3440',
+              from_ward_code: '13010',
+              to_district_id: districtId,
+              to_ward_code: wardId,
+              service_id: serviceId,
+            }
+            ghnAPI.getime(filtelTime).then((response) => {
+              setTimeShip(response.data.body.leadtime * 1000)
+            })
+          })
+        })
+      }
+    })
+  }
+
+  const loadListAd = () => {
+    ClientAddressApi.getAll(0).then((response) => {
+      setListAddress(response.data.data.content)
+    })
+  }
+
   const navigate = useNavigate()
 
   const arrData = useSelector(GetCheckout)
   useEffect(() => {
+    loadDetailAddress()
     if (arrData.length === 0) navigate('/cart')
     loadTinh()
   }, [navigate, arrData])
@@ -311,16 +382,44 @@ export default function Checkout() {
           padding: '40px',
           paddingTop: 0,
           minHeight: '68vh',
-          marginBottom: '15px',
           py: 2,
         }}>
         <Grid container spacing={2}>
           <Grid item lg={7} sx={{ px: { lg: '40px' } }} width={'100%'}>
-            <h3>Thông tin giao hàng</h3>
+            <div className="button-lbtt">
+              <span className="checkout-info-label">Thông tin giao hàng</span>
+              <Button
+                style={{ float: 'right' }}
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  setIsShowDiaChi(true)
+                  loadListAd()
+                }}>
+                <b>Chọn Địa chỉ</b>
+              </Button>
+              <ModalAddress
+                open={isShowDiaChi}
+                setOpen={setIsShowDiaChi}
+                setRequest={setRequest}
+                setPhiShip={setPhiShip}
+                listAddress={listAddress}
+                setSelectedTinh={setSelectedTinh}
+                setSelectedHuyen={setSelectedHuyen}
+                setSelectedXa={setSelectedXa}
+                loadTinh={loadTinh}
+                loadHuyen={loadHuyen}
+                loadXa={loadXa}
+                arrData={arrData}
+                setTimeShip={setTimeShip}
+              />
+            </div>
+
             <Typography>
               <span className="required"> *</span>Họ và tên
             </Typography>
             <TextField
+              value={request.fullName}
               onChange={(e) => {
                 setRequest({ ...request, fullName: e.target.value })
                 setErrors({ ...errors, fullName: '' })
@@ -338,6 +437,7 @@ export default function Checkout() {
                   <span className="required"> *</span>Email
                 </Typography>
                 <TextField
+                  value={request.email}
                   onChange={(e) => {
                     setRequest({ ...request, email: e.target.value })
                     setErrors({ ...errors, email: '' })
@@ -355,6 +455,7 @@ export default function Checkout() {
                   <span className="required"> *</span>Số điện thoại
                 </Typography>
                 <TextField
+                  value={request.phone}
                   onChange={(e) => {
                     setRequest({ ...request, phone: e.target.value })
                     setErrors({ ...errors, phone: '' })
@@ -374,11 +475,9 @@ export default function Checkout() {
                   <span className="required"> *</span>Tỉnh/thành phố
                 </Typography>
                 <Autocomplete
-                  popupIcon={null}
                   fullWidth
                   size="small"
-                  className="search-field"
-                  id="input-tinh"
+                  id="combo-box-demo"
                   value={selectedTinh}
                   onChange={handleTinhChange}
                   options={tinh.map((item) => ({
@@ -397,11 +496,10 @@ export default function Checkout() {
                   <span className="required"> *</span>Quận/huyện
                 </Typography>
                 <Autocomplete
-                  popupIcon={null}
                   fullWidth
                   size="small"
                   className="search-field"
-                  id="input-huyen"
+                  id="combo-box-demo"
                   value={selectedHuyen}
                   onChange={handleHuyenChange}
                   options={huyen.map((item) => ({
@@ -420,11 +518,10 @@ export default function Checkout() {
                   <span className="required"> *</span>Xã/thị trấn
                 </Typography>
                 <Autocomplete
-                  popupIcon={null}
                   fullWidth
                   size="small"
                   className="search-field"
-                  id="input-xa"
+                  id="combo-box-demo"
                   value={selectedXa}
                   onChange={handleXaChange}
                   options={xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
@@ -441,6 +538,7 @@ export default function Checkout() {
                 <span className="required"> *</span>Địa chỉ cụ thể
               </Typography>
               <TextField
+                value={request.address}
                 onChange={(e) => {
                   setRequest({ ...request, address: e.target.value })
                   setErrors({ ...errors, address: '' })
@@ -477,8 +575,8 @@ export default function Checkout() {
                       alt="error"
                       src={require('../../assets/image/vnpay.jpg')}
                       style={{
-                        maxWidth: '50px',
-                        maxHeight: '50px',
+                        maxWidth: '70px',
+                        maxHeight: '70px',
                         verticalAlign: 'middle',
                       }}
                     />
@@ -492,8 +590,8 @@ export default function Checkout() {
                       alt="error"
                       src={require('../../assets/image/thanhtoan.jpg')}
                       style={{
-                        maxWidth: '50px',
-                        maxHeight: '50px',
+                        maxWidth: '40px',
+                        maxHeight: '40px',
                         verticalAlign: 'middle',
                       }}
                     />
@@ -502,125 +600,132 @@ export default function Checkout() {
                 </div>
               </RadioGroup>
             </FormControl>
+            <Button
+              component={Link}
+              to="/cart"
+              size="small"
+              variant="contained"
+              color="success"
+              sx={{ float: 'left', my: 2, mr: 2 }}>
+              <b>Quay lại trang trước</b>
+            </Button>
+            <Button
+              onClick={() => {
+                finishCheckout()
+              }}
+              size="small"
+              variant="contained"
+              color="success"
+              sx={{ float: 'right', my: 2, mr: 2 }}>
+              <b>Hoàn thành đặt hàng</b>
+            </Button>
           </Grid>
-          <Grid item lg={5} width={'100%'}>
-            <Paper sx={{ height: '100%' }} variant="outlined">
-              <Table>
-                {arrData.map((cart) => (
-                  <TableBody>
-                    <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
-                      <div>
-                        <img src={cart.image[0]} alt={cart.name} className="image-ck" />
-                        <div className="quantity-badge">{cart.soLuong}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell
-                      to={`/product/${cart.id}`}
-                      style={{ verticalAlign: 'middle' }}
-                      sx={{ px: 0 }}>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          verticalAlign: 'middle',
-                          marginLeft: '10px',
-                        }}>
-                        <p style={{ margin: 0 }}>{cart.name}</p>
-                        <b style={{ margin: 0 }}>
-                          size:{' '}
-                          {parseFloat(cart.size) % 1 === 0
-                            ? parseFloat(cart.size).toFixed(0)
-                            : parseFloat(cart.size).toFixed(1)}
-                        </b>
-                      </span>
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        display: { md: 'table-cell', xs: 'none' },
-                        color: 'red',
-                        fontWeight: 'bold',
-                        textAlign: 'left',
+          <Grid className="detail-checkout" item lg={5} width={'100%'}>
+            <Table>
+              {arrData.map((cart) => (
+                <TableBody>
+                  <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
+                    <div>
+                      <img src={cart.image[0]} alt={cart.name} className="image-ck" />
+                      <div className="quantity-badge">{cart.soLuong}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell
+                    to={`/product/${cart.id}`}
+                    style={{ verticalAlign: 'middle' }}
+                    sx={{ px: 0 }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        marginLeft: '10px',
                       }}>
-                      {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'VND',
-                      })}
-                    </TableCell>
-                  </TableBody>
-                ))}
-              </Table>
-              <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
-                <TextField
-                  sx={{ flex: 1, minWidth: '100px', width: '80%' }}
-                  value={voucher === null ? 'Mã khuyễn mãi' : voucher.name}
-                  size="small"
-                  disabled
-                />
-                <Button
-                  sx={{ ml: 2, mr: 1, width: 'auto' }}
-                  variant="outlined"
-                  onClick={() => handleFilterVoucher()}>
-                  <b>Chọn mã</b>
-                </Button>
-                <ModalVoucher
-                  open={openModalVoucher}
-                  setOpen={setOpenModalVoucher}
-                  setVoucher={setVoucher}
-                  arrData={arrData}
-                  setGiamGia={setGiamGia}
-                  voucherFilter={voucherFilter}
-                />
-              </Grid>
-              <Box sx={{ m: 1, ml: 2, mr: 2 }}>
-                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                  <Typography>Phí vận chuyển</Typography>
-                  <Typography color={'red'}>
-                    <b className="ck-phi">
-                      {phiShip.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
-                    </b>
-                  </Typography>
-                </Stack>
-                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                  <Typography>Giảm giá</Typography>
-                  <Typography color={'red'}>
-                    <b className="ck-phi">
-                      {giamGia
-                        ? giamGia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
-                        : 0}
-                    </b>
-                  </Typography>
-                </Stack>
-                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                  <Typography>Ngày nhận dự kiến: </Typography>
-                  <Typography color={'red'}>
-                    <b className="ck-phi">{timeShip ? dayjs(timeShip).format('DD-MM-YYYY') : ''}</b>
-                  </Typography>
-                </Stack>
-                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                  <Typography>
-                    <b className="ck-tong-tien">Tổng số tiền</b>
-                  </Typography>
-                  <Typography color={'red'}>
-                    <b className="ck-tong-tien">
-                      {(
-                        arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0) +
-                        phiShip -
-                        giamGia
-                      ).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
-                    </b>
-                  </Typography>
-                </Stack>
-              </Box>
+                      <p style={{ margin: 0 }}>{cart.name}</p>
+                      <b style={{ margin: 0 }}>
+                        size:{' '}
+                        {parseFloat(cart.size) % 1 === 0
+                          ? parseFloat(cart.size).toFixed(0)
+                          : parseFloat(cart.size).toFixed(1)}
+                      </b>
+                    </span>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      display: { md: 'table-cell', xs: 'none' },
+                      color: 'red',
+                      fontWeight: 'bold',
+                      textAlign: 'left',
+                    }}>
+                    {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
+                  </TableCell>
+                </TableBody>
+              ))}
+            </Table>
+            <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
+              <TextField
+                sx={{ flex: 1, minWidth: '100px', width: '80%' }}
+                value={voucher === null ? 'Mã khuyễn mãi' : voucher.name}
+                size="small"
+                disabled
+              />
               <Button
-                onClick={() => {
-                  finishCheckout()
-                }}
-                size="sm"
+                sx={{ ml: 2, mr: 1, width: 'auto' }}
                 variant="contained"
-                color="success"
-                sx={{ float: 'right', my: 2, mr: 2 }}>
-                <b>Đặt hàng</b>
+                onClick={() => handleFilterVoucher()}>
+                <b>Chọn mã</b>
               </Button>
-            </Paper>
+              <ModalVoucher
+                open={openModalVoucher}
+                setOpen={setOpenModalVoucher}
+                setVoucher={setVoucher}
+                arrData={arrData}
+                setGiamGia={setGiamGia}
+                voucherFilter={voucherFilter}
+              />
+            </Grid>
+            <Box sx={{ m: 1, ml: 2, mr: 2 }}>
+              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                <Typography>Phí vận chuyển</Typography>
+                <Typography color={'red'}>
+                  <b className="ck-phi">
+                    {phiShip.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                  </b>
+                </Typography>
+              </Stack>
+              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                <Typography>Giảm giá</Typography>
+                <Typography color={'red'}>
+                  <b className="ck-phi">
+                    {giamGia
+                      ? giamGia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+                      : 0}
+                  </b>
+                </Typography>
+              </Stack>
+              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                <Typography>Ngày nhận dự kiến: </Typography>
+                <Typography color={'red'}>
+                  <b className="ck-phi">{timeShip ? dayjs(timeShip).format('DD-MM-YYYY') : ''}</b>
+                </Typography>
+              </Stack>
+              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                <Typography>
+                  <b className="ck-tong-tien">Tổng số tiền</b>
+                </Typography>
+                <Typography color={'red'}>
+                  <b className="ck-tong-tien">
+                    {(
+                      arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0) +
+                      phiShip -
+                      giamGia
+                    ).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                  </b>
+                </Typography>
+              </Stack>
+            </Box>
           </Grid>
         </Grid>
       </Paper>
