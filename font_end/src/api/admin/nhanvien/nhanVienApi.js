@@ -36,7 +36,7 @@ const staffApi = {
     formData.append('role', staff.role)
     formData.append('status', staff.status)
     const url = `/staff/update/${id}`
-    return axiosAdmin.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+    return axiosAdmin.put(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
 
   delete: (id) => {

@@ -157,7 +157,7 @@ export default function AdCustomerPage() {
               <TableCell align="center" width={'15%'}>
                 Email
               </TableCell>
-              <TableCell align="center" width={'8%'}>
+              <TableCell align="center" width={'13%'}>
                 SDT
               </TableCell>
               <TableCell align="center" width={'10%'}>
@@ -170,7 +170,7 @@ export default function AdCustomerPage() {
                 Chức vụ
               </TableCell>
               {/* <TableCell align="center">CCCD</TableCell> */}
-              <TableCell align="center" width={'20%'}>
+              <TableCell align="center" width={'15%'}>
                 Trạng thái
               </TableCell>
               <TableCell align="center" width={'9%'}>

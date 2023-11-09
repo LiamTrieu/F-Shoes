@@ -336,6 +336,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setErrorAddBill({ ...errorAddBill, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
+    setSelectedXa(null)
     if (newValue) {
       loadHuyen(newValue.id)
       setTinhName(newValue.label)
@@ -354,6 +355,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setErrorAddBill({ ...errorAddBill, districtId: '' })
     setSelectedHuyen(newValue)
     setSelectedXa(null)
+
     if (newValue) {
       loadXa(newValue.id)
       setDiaChi({ ...diaChi, districtId: newValue.id })
@@ -379,6 +381,42 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       setDetailDiaChi({ ...detailDiaChi, wardId: '' })
       setNewDiaChi({ ...newDiaChi, wardId: { id: '', label: '' } })
     }
+    const filtelService = {
+      shop_id: '3911708',
+      from_district: '3440',
+      to_district: detailDiaChi.districtId,
+    }
+    ghnAPI.getServiceId(filtelService).then((response) => {
+      const serviceId = response.data.body.serviceId
+      const filterTotal = {
+        from_district_id: '3440',
+        service_id: serviceId,
+        to_district_id: detailDiaChi.districtId,
+        to_ward_code: newValue.id,
+        weight: '200',
+        insurance_value: '10000',
+      }
+      ghnAPI.getTotal(filterTotal).then((response) => {
+        setShipTotal(response.data.body.total)
+
+        const filtelTime = {
+          from_district_id: '3440',
+          from_ward_code: '13010',
+          to_district_id: detailDiaChi.districtId,
+          to_ward_code: newValue.id,
+          service_id: serviceId,
+        }
+        ghnAPI.getime(filtelTime).then((response) => {
+          setTimeShip(response.data.body.leadtime * 1000)
+        })
+      })
+    })
+  }
+
+  const clearSelectAddress = () => {
+    setSelectedTinh(null)
+    setSelectedHuyen(null)
+    setSelectedXa(null)
   }
   const updateDiaChi = () => {
     setDiaChi({
@@ -723,9 +761,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       if (!phoneNumberRegex.test(newDiaChi.phoneNumber.trim())) {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
         checkAA++
-        // } else if (isPhoneNumberDuplicate(khachHang.phoneNumber)) {
-        //   newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
-        //   check++
       } else {
         newErrors.phoneNumber = ''
       }
@@ -1203,6 +1238,17 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   <Button
                     onClick={() => {
                       setIsShowAddCustomer(true)
+                      setErrors({
+                        fullName: '',
+                        email: '',
+                        phoneNumber: '',
+                        dateBirth: '',
+                        provinceId: '',
+                        districtId: '',
+                        wardId: '',
+                        specificAddress: '',
+                      })
+                      clearSelectAddress()
                     }}
                     sx={{ ml: 2 }}
                     variant="contained"
@@ -1734,6 +1780,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                               wardId: '',
                               specificAddress: '',
                             })
+                            clearSelectAddress()
                           }}
                           aria-label="close"
                           color="error"
