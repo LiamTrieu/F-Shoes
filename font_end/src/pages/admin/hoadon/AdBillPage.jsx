@@ -18,7 +18,10 @@ import {
   Stack,
   InputAdornment,
   Typography,
+  Tabs,
+  Box,
 } from '@mui/material'
+import Tab from '@mui/material/Tab'
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
 import dayjs from 'dayjs'
 import { getStatus } from '../../../services/constants/statusHoaDon'
@@ -57,10 +60,18 @@ export default function AdBillPage() {
     type: '',
     inputSearch: '',
   })
+  const [valueTabHD, setValueTabHD] = React.useState('all')
+  const listSttHD = [0, 1, 2, 3, 4, 5, 6, 7]
 
   useEffect(() => {
     filterBill(filter)
   }, [filter])
+
+  const handleChangeTab = (event, newValue) => {
+    setValueTabHD(newValue)
+    const updatedFilter = { ...filter, status: newValue, page: 1 }
+    setFilter(updatedFilter)
+  }
 
   const handlePageChange = (event, newPage) => {
     const updatedFilter = { ...filter, page: newPage }
@@ -280,81 +291,99 @@ export default function AdBillPage() {
       <Paper elevation={3}>
         {listHoaDon.length === 0 ? (
           <div>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={valueTabHD} onChange={handleChangeTab} className="tabSttHD">
+                <Tab label={'Tất cả'} key={'tabSttHd all'} value={'all'}></Tab>
+                {listSttHD.map((row, i) => (
+                  <Tab label={getStatus(row)} key={'tabSttHd' + i} value={row}></Tab>
+                ))}
+              </Tabs>
+            </Box>
             <Empty />
           </div>
         ) : (
-          <Table className="tableCss">
-            <TableHead>
-              <TableRow>
-                <TableCell align="center" style={{ width: '5%' }}>
-                  #
-                </TableCell>
-                <TableCell align="center" style={{ width: '8%' }}>
-                  Mã
-                </TableCell>
-                <TableCell align="center" style={{ width: '8%' }}>
-                  Tổng SP
-                </TableCell>
-                <TableCell align="center">Tổng số tiền</TableCell>
-                <TableCell align="center">Tên khách hàng</TableCell>
-                <TableCell align="center">Ngày tạo</TableCell>
-                <TableCell align="center">Loại hoá đơn</TableCell>
-                <TableCell align="center">Trạng thái</TableCell>
-                <TableCell align="center">Hành động</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {listHoaDon.map((row, index) => (
-                <TableRow key={row.code}>
+          <>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={valueTabHD} onChange={handleChangeTab} className="tabSttHD">
+                <Tab label={'Tất cả'} key={'tabSttHd all'} value={'all'}></Tab>
+                {listSttHD.map((row, i) => (
+                  <Tab label={getStatus(row)} key={'tabSttHd' + i} value={row}></Tab>
+                ))}
+              </Tabs>
+            </Box>
+            <Table className="tableCss">
+              <TableHead>
+                <TableRow>
                   <TableCell align="center" style={{ width: '5%' }}>
-                    {row.stt}
+                    #
                   </TableCell>
                   <TableCell align="center" style={{ width: '8%' }}>
-                    {row.code}
+                    Mã
                   </TableCell>
                   <TableCell align="center" style={{ width: '8%' }}>
-                    {row.totalProduct !== null ? row.totalProduct : 0}
+                    Tổng SP
                   </TableCell>
-                  <TableCell align="center">
-                    {row.moneyAfter !== null ? formatCurrency(row.moneyAfter) : 0}
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.fullName !== null ? (
-                      row.fullName
-                    ) : (
-                      <Chip className="chip-khach-le" label="Khách lẻ" size="small" />
-                    )}
-                  </TableCell>
-                  <TableCell align="center">
-                    {dayjs(row.createdAt).format('DD/MM/YYYY  HH:mm')}
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.type ? (
-                      <Chip className="chip-giao-hang" label="Trực tuyến" size="small" />
-                    ) : (
-                      <Chip className="chip-tai-quay" label="Tại quầy" size="small" />
-                    )}
-                  </TableCell>
-                  <TableCell align="center">
-                    <Chip
-                      className={getStatusStyle(row.status)}
-                      label={getStatus(row.status)}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Link to={`/admin/bill-detail/${row.id}`}>
-                      <Tooltip title="Xem chi tiết">
-                        <IconButton>
-                          <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
-                        </IconButton>
-                      </Tooltip>
-                    </Link>
-                  </TableCell>
+                  <TableCell align="center">Tổng số tiền</TableCell>
+                  <TableCell align="center">Tên khách hàng</TableCell>
+                  <TableCell align="center">Ngày tạo</TableCell>
+                  <TableCell align="center">Loại hoá đơn</TableCell>
+                  <TableCell align="center">Trạng thái</TableCell>
+                  <TableCell align="center">Hành động</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {listHoaDon.map((row, index) => (
+                  <TableRow key={row.code}>
+                    <TableCell align="center" style={{ width: '5%' }}>
+                      {row.stt}
+                    </TableCell>
+                    <TableCell align="center" style={{ width: '8%' }}>
+                      {row.code}
+                    </TableCell>
+                    <TableCell align="center" style={{ width: '8%' }}>
+                      {row.totalProduct !== null ? row.totalProduct : 0}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.moneyAfter !== null ? formatCurrency(row.moneyAfter) : 0}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.fullName !== null ? (
+                        row.fullName
+                      ) : (
+                        <Chip className="chip-khach-le" label="Khách lẻ" size="small" />
+                      )}
+                    </TableCell>
+                    <TableCell align="center">
+                      {dayjs(row.createdAt).format('DD/MM/YYYY  HH:mm')}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.type ? (
+                        <Chip className="chip-giao-hang" label="Trực tuyến" size="small" />
+                      ) : (
+                        <Chip className="chip-tai-quay" label="Tại quầy" size="small" />
+                      )}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Chip
+                        className={getStatusStyle(row.status)}
+                        label={getStatus(row.status)}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Link to={`/admin/bill-detail/${row.id}`}>
+                        <Tooltip title="Xem chi tiết">
+                          <IconButton>
+                            <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
+                          </IconButton>
+                        </Tooltip>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </>
         )}
 
         <Stack
