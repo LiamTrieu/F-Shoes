@@ -25,6 +25,10 @@ const sanPhamApi = {
     const url = `/product/update/${request.id}`
     return axiosAdmin.post(url, request)
   },
+  updateList: (request) => {
+    const url = `/product/update-list`
+    return axiosAdmin.post(url, request)
+  },
   getProductDetail: (request) => {
     const url = `/product/product-detail`
     return axiosAdmin.get(url, { params: request })

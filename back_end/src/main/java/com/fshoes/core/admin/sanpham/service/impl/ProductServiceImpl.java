@@ -3,6 +3,7 @@ package com.fshoes.core.admin.sanpham.service.impl;
 import com.fshoes.core.admin.sanpham.model.request.PrdDetailFilterRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductDetailRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductFilterRequest;
+import com.fshoes.core.admin.sanpham.model.request.UpdateListRequest;
 import com.fshoes.core.admin.sanpham.model.respone.ProductDetailResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -71,7 +73,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @Async
     public void addProductDetail(List<ProductDetailRequest> request) {
         Product product = new Product();
         if (!Objects.equals(request.get(0).getIdProduct(), "")) {
@@ -90,12 +91,17 @@ public class ProductServiceImpl implements ProductService {
         }).toList();
         List<Image> newImages = new ArrayList<>();
         for (ProductDetail productDetail : productDetailRepository.saveAll(newProductDetail)) {
-            newImages.addAll(request.get(0).getListImage().stream().map(img -> {
-                Image image = new Image();
-                image.setUrl(img);
-                image.setProductDetail(productDetail);
-                return image;
-            }).toList());
+            for (ProductDetailRequest prdReq :request) {
+               if (Objects.equals(prdReq.getIdColor(), productDetail.getColor().getId()) &&
+                   Objects.equals(prdReq.getIdSize(), productDetail.getSize().getId())){
+                   newImages.addAll(prdReq.getListImage().stream().map(img -> {
+                       Image image = new Image();
+                       image.setUrl(img);
+                       image.setProductDetail(productDetail);
+                       return image;
+                   }).toList());
+               }
+            }
         }
         imageRepository.saveAll(newImages);
     }
@@ -164,5 +170,18 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDetail> updateListProduct(List<UpdateListRequest> requests) {
+        List<ProductDetail> listUpdate = requests.stream().map(req->{
+            ProductDetail productDetail = productDetailRepository.getReferenceById(req.getId());
+            productDetail.setAmount(req.getAmount());
+            productDetail.setPrice(BigDecimal.valueOf(req.getPrice()));
+            productDetail.setWeight(req.getWeight());
+            return productDetail;
+        }).toList();
+        return productDetailRepository.saveAll(listUpdate);
     }
 }

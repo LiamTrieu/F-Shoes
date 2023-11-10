@@ -13,6 +13,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
@@ -53,10 +54,10 @@ export default function AdProductAdd() {
   const [newProducts, setNewProducts] = useState({
     product: { label: '', value: '' },
     description: '',
-    sole: [],
-    category: [],
-    brand: [],
-    material: [],
+    sole: null,
+    category: null,
+    brand: null,
+    material: null,
     color: [],
     size: [],
   })
@@ -136,16 +137,17 @@ export default function AdProductAdd() {
     return (
       newProducts.product !== null &&
       newProducts.product.label.trim() !== '' &&
-      newProducts.sole.length !== 0 &&
-      newProducts.category.length !== 0 &&
-      newProducts.brand.length !== 0 &&
-      newProducts.material.length !== 0 &&
+      newProducts.sole !== null &&
+      newProducts.category !== null &&
+      newProducts.brand !== null &&
+      newProducts.material !== null &&
       newProducts.color.length !== 0 &&
       newProducts.size.length !== 0
     )
   }
 
   const updateNewProductDetail = (productDetail) => {
+    removeErrorByKey(productDetail.key)
     setNewProductDetails((prevDetails) => {
       return prevDetails.map((detail) => {
         if (detail.key === productDetail.key) {
@@ -160,28 +162,20 @@ export default function AdProductAdd() {
     setNewProducts(newProducts)
     if (newProductIsUndefined(newProducts)) {
       const preNewProductDetails = []
-      newProducts.sole.forEach((sole) => {
-        newProducts.category.forEach((category) => {
-          newProducts.brand.forEach((brand) => {
-            newProducts.material.forEach((material) => {
-              newProducts.color.forEach((color) => {
-                newProducts.size.forEach((size) => {
-                  preNewProductDetails.push({
-                    key: `${sole.value}${category.value}${brand.value}${color.value}${size.value}${material.value}`,
-                    category: category,
-                    brand: brand,
-                    sole: sole,
-                    color: color,
-                    material: material,
-                    size: size,
-                    price: 100000,
-                    amount: 100,
-                    weight: 500,
-                    images: [],
-                  })
-                })
-              })
-            })
+      newProducts.color.forEach((color) => {
+        newProducts.size.forEach((size) => {
+          preNewProductDetails.push({
+            key: `${newProducts.sole.value}${newProducts.category.value}${newProducts.brand.value}${color.value}${size.value}${newProducts.material.value}`,
+            category: newProducts.category,
+            brand: newProducts.brand,
+            sole: newProducts.sole,
+            color: color,
+            material: newProducts.material,
+            size: size,
+            price: 100000,
+            amount: 100,
+            weight: 500,
+            images: [],
           })
         })
       })
@@ -214,16 +208,9 @@ export default function AdProductAdd() {
     setModalOpen(null)
   }
 
-  const ContentModal = ({ images, color, sole, category, brand, material }) => {
+  const ContentModal = ({ images, color }) => {
     const [imageSelect, setImageSelect] = useState(
-      newProductDetails.find(
-        (productDetail) =>
-          productDetail.category.value === category &&
-          productDetail.brand.value === brand &&
-          productDetail.sole.value === sole &&
-          productDetail.color.value === color &&
-          productDetail.material.value === material,
-      ).images,
+      newProductDetails.find((productDetail) => productDetail.color.value === color).images,
     )
 
     const handleCheckboxChange = (event, index) => {
@@ -247,13 +234,7 @@ export default function AdProductAdd() {
 
       setNewProductDetails((prevDetails) =>
         prevDetails.map((productDetail) => {
-          if (
-            productDetail.sole.value === sole &&
-            productDetail.category.value === category &&
-            productDetail.brand.value === brand &&
-            productDetail.color.value === color &&
-            productDetail.material.value === material
-          ) {
+          if (productDetail.color.value === color) {
             return { ...productDetail, images: preImageSelect }
           } else {
             return productDetail
@@ -347,32 +328,73 @@ export default function AdProductAdd() {
   }
 
   const navigator = useNavigate()
+  const [listErr, setListErr] = useState([])
+
+  function validate() {
+    let errors = []
+
+    newProductDetails.forEach((product) => {
+      if (isNaN(product.price) || product.price <= 0 || product.price >= 100000000) {
+        errors.push({
+          key: product.key,
+          message: 'Giá sản phẩm phải là một số dương và nhỏ hơn 100 triệu',
+        })
+        return false
+      }
+      if (isNaN(product.amount) || product.amount <= 0 || product.amount >= 1000) {
+        errors.push({
+          key: product.key,
+          message: 'Số lượng sản phẩm phải là một số dương và nhỏ hơn 1000',
+        })
+        return false
+      }
+      if (isNaN(product.weight) || product.weight <= 0 || product.weight >= 10000) {
+        errors.push({
+          key: product.key,
+          message: 'Trọng lượng sản phẩm phải là một số dương và nhỏ hơn 10000',
+        })
+        return false
+      }
+      if (product.images.length < 3) {
+        errors = errors.filter((error) => error.key !== product.key)
+        errors.push({ key: product.key, message: 'Phải có ít nhất 3 hình ảnh sản phẩm' })
+        return false
+      }
+    })
+    setListErr(errors)
+    return errors.length === 0
+  }
+
+  function removeErrorByKey(key) {
+    setListErr((prevErrors) => prevErrors.filter((error) => error.key !== key))
+  }
+
   const saveProductDetail = () => {
     try {
       const title = 'Xác nhận thêm sản phẩm?'
       const text = ''
       confirmSatus(title, text).then((result) => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed && validate()) {
+          const newProductAdd = newProductDetails.map((product) => {
+            return {
+              idSole: product.sole.value,
+              idBrand: product.brand.value,
+              idCategory: product.category.value,
+              idMaterial: product.material.value,
+              idSize: product.size.value,
+              idColor: product.color.value,
+              nameProduct: product.product.label,
+              idProduct: product.product.value,
+              price: product.price,
+              amount: product.amount,
+              weight: product.weight,
+              description: product.description,
+              listImage: product.images,
+            }
+          })
           sanPhamApi
-            .addProuct(
-              newProductDetails.map((product) => {
-                return {
-                  idSole: product.sole.value,
-                  idBrand: product.brand.value,
-                  idCategory: product.category.value,
-                  idMaterial: product.material.value,
-                  idSize: product.size.value,
-                  idColor: product.color.value,
-                  nameProduct: product.product.label,
-                  idProduct: product.product.value,
-                  price: product.price,
-                  amount: product.amount,
-                  weight: product.weight,
-                  description: product.description,
-                  listImage: product.images,
-                }
-              }),
-            )
+            .addProuct(newProductAdd)
+            .then()
             .finally(() => {
               toast.success('Thêm sản phẩm thành công')
               navigator('/admin/product')
@@ -692,7 +714,6 @@ export default function AdProductAdd() {
                     Thêm mới
                   </Button>
                 }
-                multiple
                 size="small"
                 fullWidth
                 value={newProducts.category}
@@ -710,7 +731,7 @@ export default function AdProductAdd() {
                     color="cam"
                     onChange={(e) => setNewCategory({ name: e.target.value })}
                     {...params}
-                    placeholder={newProducts.category.length > 0 ? '' : 'Chọn danh mục'}
+                    placeholder={'Chọn danh mục'}
                   />
                 )}
               />
@@ -730,7 +751,6 @@ export default function AdProductAdd() {
                     Thêm mới
                   </Button>
                 }
-                multiple
                 size="small"
                 fullWidth
                 className="search-field"
@@ -748,7 +768,7 @@ export default function AdProductAdd() {
                     color="cam"
                     onChange={(e) => setNewBrand({ name: e.target.value })}
                     {...params}
-                    placeholder={newProducts.brand.length > 0 ? '' : 'Chọn thương hiệu'}
+                    placeholder={'Chọn thương hiệu'}
                   />
                 )}
               />
@@ -766,7 +786,6 @@ export default function AdProductAdd() {
                     Thêm mới
                   </Button>
                 }
-                multiple
                 size="small"
                 fullWidth
                 value={newProducts.sole}
@@ -784,7 +803,7 @@ export default function AdProductAdd() {
                     color="cam"
                     onChange={(e) => setNewSole({ name: e.target.value })}
                     {...params}
-                    placeholder={newProducts.sole.length > 0 ? '' : 'Chọn đế giày'}
+                    placeholder={'Chọn đế giày'}
                   />
                 )}
               />
@@ -804,7 +823,6 @@ export default function AdProductAdd() {
                     Thêm mới
                   </Button>
                 }
-                multiple
                 size="small"
                 fullWidth
                 className="search-field"
@@ -822,13 +840,44 @@ export default function AdProductAdd() {
                     color="cam"
                     onChange={(e) => setNewMaterial({ name: e.target.value })}
                     {...params}
-                    placeholder={newProducts.material.length > 0 ? '' : 'Chọn chất liệu'}
+                    placeholder={'Chọn chất liệu'}
                   />
                 )}
               />
             </div>
           </Stack>
-          <Stack className="mt-3 mb-3" direction="row" spacing={1}>
+          <div className="mt-3 mb-3">
+            <b>
+              <span style={{ color: 'red' }}>*</span>Mô tả sản phẩm
+            </b>
+            <Stack spacing={1}>
+              <TextField
+                color="cam"
+                onChange={(e) => {
+                  genNewProductDetail({ ...newProducts, description: e.target.value })
+                }}
+                className="search-field"
+                placeholder="Nhập mô tả sản phẩm"
+                multiline
+                rows={2}
+                variant="outlined"
+                fullWidth
+              />
+            </Stack>
+          </div>
+        </Container>
+      </Paper>
+      <Paper sx={{ py: 2, mt: 2 }}>
+        <Container className="container" sx={{ paddingBottom: '10px' }}>
+          <Typography
+            mb={1}
+            textAlign={'center'}
+            fontWeight={'600'}
+            variant="h6"
+            color={'GrayText'}>
+            Màu sắc & kích cỡ
+          </Typography>
+          <Stack className="mt-3 mb-3" spacing={1}>
             <div style={{ width: '100%' }}>
               <b>
                 <span style={{ color: 'red' }}>*</span>Màu sắc
@@ -951,276 +1000,247 @@ export default function AdProductAdd() {
               />
             </div>
           </Stack>
-          <b>Mô tả sản phẩm</b>
-          <Stack spacing={1}>
-            <TextField
-              color="cam"
-              onChange={(e) => {
-                genNewProductDetail({ ...newProducts, description: e.target.value })
-              }}
-              className="search-field"
-              placeholder="Nhập mô tả sản phẩm"
-              multiline
-              rows={2}
-              variant="outlined"
-              fullWidth
-            />
-          </Stack>
         </Container>
       </Paper>
       {newProductIsUndefined(newProducts) &&
         newProducts.color.map((color, colorIndex) => {
-          return newProducts.category.map((category, categoryIndex) => {
-            return newProducts.brand.map((brand, brandIndex) => {
-              return newProducts.material.map((material, materialIndex) => {
-                return newProducts.sole.map((sole, soleIndex) => {
-                  return (
-                    <Paper
-                      key={`papaerNewProduct${colorIndex}${materialIndex}${soleIndex}${categoryIndex}${brandIndex}`}
-                      sx={{ py: 2, mt: 2 }}>
-                      <Container>
-                        <Stack direction="row" justifyContent="space-between" alignItems="center">
-                          <Typography
-                            textAlign={'center'}
-                            fontWeight={'600'}
-                            variant="h7"
-                            color={'GrayText'}>
-                            Danh sách sản phẩm cùng loại [ {category.label} - {brand.label} -{' '}
-                            {sole.label} - {material.label} - {color.label} ]
-                          </Typography>
-                        </Stack>
-                        <Table sx={{ mt: 1, mb: 1 }} className="tableCss">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell align="center" width={'4%'}>
-                                #
+          return (
+            <Paper key={`papaerNewProduct${colorIndex}`} sx={{ py: 2, mt: 2 }}>
+              <Container>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography
+                    textAlign={'center'}
+                    fontWeight={'600'}
+                    variant="h7"
+                    color={'GrayText'}>
+                    Danh sách sản phẩm màu {color.label}
+                  </Typography>
+                </Stack>
+                <Table sx={{ mt: 1, mb: 1 }} className="tableCss">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center" width={'4%'}>
+                        #
+                      </TableCell>
+                      <TableCell width={'20%'}>Sản phẩm</TableCell>
+                      <TableCell width={'10%'}>Kích cỡ</TableCell>
+                      <TableCell width={'10%'}>Cân nặng</TableCell>
+                      <TableCell width={'10%'}>Số lượng</TableCell>
+                      <TableCell width={'10%'}>Giá</TableCell>
+                      <TableCell align="center" width={'40%'}>
+                        Ảnh
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {newProductDetails
+                      .filter((productDetail) => productDetail.color.value === color.value)
+                      .map((productDetail, index) => {
+                        return (
+                          <>
+                            <TableRow key={productDetail.key} style={{ backgroundColor: 'white' }}>
+                              <TableCell align="center">
+                                <RiDeleteBin2Line
+                                  onClick={() => {
+                                    removeErrorByKey(productDetail.key)
+                                    deleteNewProduct(productDetail)
+                                  }}
+                                  style={{ cursor: 'pointer' }}
+                                  fontSize={'20px'}
+                                  color="#da0722"
+                                />
                               </TableCell>
-                              <TableCell width={'20%'}>Sản phẩm</TableCell>
-                              <TableCell width={'10%'}>Kích cỡ</TableCell>
-                              <TableCell width={'10%'}>Cân nặng</TableCell>
-                              <TableCell width={'10%'}>Số lượng</TableCell>
-                              <TableCell width={'10%'}>Giá</TableCell>
-                              <TableCell align="center" width={'40%'}>
-                                Ảnh
+                              <TableCell sx={{ maxWidth: '0px' }}>
+                                {newProducts.product.label}
                               </TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {newProductDetails
-                              .filter(
-                                (productDetail) =>
-                                  productDetail.color.value === color.value &&
-                                  productDetail.sole.value === sole.value &&
-                                  productDetail.category.value === category.value &&
-                                  productDetail.brand.value === brand.value &&
-                                  productDetail.material.value === material.value,
-                              )
-                              .map((productDetail, index) => {
-                                return (
-                                  <TableRow key={productDetail.key}>
-                                    <TableCell align="center">
-                                      <RiDeleteBin2Line
-                                        onClick={() => {
-                                          deleteNewProduct(productDetail)
-                                        }}
-                                        style={{ cursor: 'pointer' }}
-                                        fontSize={'20px'}
-                                        color="#da0722"
-                                      />
-                                    </TableCell>
-                                    <TableCell sx={{ maxWidth: '0px' }}>
-                                      {newProducts.product.label}
-                                    </TableCell>
-                                    <TableCell>{productDetail.size.label}</TableCell>
-                                    <TableCell>
-                                      <TextField
-                                        value={productDetail.weight}
-                                        onChange={(e) => {
-                                          updateNewProductDetail({
-                                            ...productDetail,
-                                            weight: e.target.value,
-                                          })
-                                        }}
-                                        InputProps={{
-                                          style: { paddingRight: '4px' },
-                                          endAdornment: 'g',
-                                        }}
-                                        inputProps={{ min: 1 }}
-                                        size="small"
-                                        sx={{
-                                          '& input': {
-                                            p: 0,
-                                            textAlign: 'center',
-                                            fontSize: '14px',
-                                          },
-                                          '& fieldset': {
-                                            fontSize: '14px',
-                                          },
-                                        }}
-                                      />
-                                    </TableCell>
-                                    <TableCell>
-                                      <TextField
-                                        value={productDetail.amount}
-                                        onChange={(e) => {
-                                          updateNewProductDetail({
-                                            ...productDetail,
-                                            amount: e.target.value,
-                                          })
-                                        }}
-                                        inputProps={{ min: 1 }}
-                                        size="small"
-                                        sx={{
-                                          '& input': {
-                                            p: 0,
-                                            textAlign: 'center',
-                                            fontSize: '14px',
-                                          },
-                                          '& fieldset': {
-                                            fontSize: '14px',
-                                          },
-                                        }}
-                                      />
-                                    </TableCell>
-                                    <TableCell>
-                                      <TextField
-                                        value={productDetail.price}
-                                        inputProps={{ min: 1 }}
-                                        size="small"
-                                        InputProps={{
-                                          style: { paddingRight: '4px' },
-                                          endAdornment: '₫',
-                                        }}
-                                        onChange={(e) => {
-                                          updateNewProductDetail({
-                                            ...productDetail,
-                                            price: e.target.value,
-                                          })
-                                        }}
-                                        sx={{
-                                          '& input': {
-                                            p: 0,
-                                            textAlign: 'center',
-                                            fontSize: '14px',
-                                          },
-                                          '& fieldset': {
-                                            fontSize: '14px',
-                                          },
-                                        }}
-                                      />
-                                    </TableCell>
-                                    {index === 0 && (
-                                      <TableCell align="center" rowSpan={newProductDetails.length}>
-                                        <Stack
-                                          direction="row"
-                                          justifyContent="center"
-                                          alignItems="center"
-                                          spacing={1}>
-                                          {newProductDetails
-                                            .find(
-                                              (productDetail) =>
-                                                productDetail.color.value === color.value &&
-                                                productDetail.sole.value === sole.value &&
-                                                productDetail.category.value === category.value &&
-                                                productDetail.brand.value === brand.value &&
-                                                productDetail.material.value === material.value,
-                                            )
-                                            .images.map((image, index) => {
-                                              return (
-                                                <img
-                                                  key={`showImage${colorIndex}${materialIndex}${soleIndex}${index}`}
-                                                  width={'100px'}
-                                                  height={'100px'}
-                                                  style={{
-                                                    border: '1px dashed #ccc',
-                                                  }}
-                                                  src={image}
-                                                  alt="anh-san-pham"
-                                                />
-                                              )
-                                            })}
-                                          <div
-                                            onClick={() => {
-                                              openSelectImage(color.value)
-                                              setModalOpen(
-                                                `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}${categoryIndex}${brandIndex}`,
-                                              )
-                                            }}
+                              <TableCell>{productDetail.size.label}</TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={productDetail.weight}
+                                  onChange={(e) => {
+                                    updateNewProductDetail({
+                                      ...productDetail,
+                                      weight: e.target.value,
+                                    })
+                                  }}
+                                  InputProps={{
+                                    style: { paddingRight: '4px' },
+                                    endAdornment: 'g',
+                                  }}
+                                  inputProps={{ min: 1 }}
+                                  size="small"
+                                  sx={{
+                                    '& input': {
+                                      p: 0,
+                                      textAlign: 'center',
+                                      fontSize: '14px',
+                                    },
+                                    '& fieldset': {
+                                      fontSize: '14px',
+                                    },
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={productDetail.amount}
+                                  onChange={(e) => {
+                                    updateNewProductDetail({
+                                      ...productDetail,
+                                      amount: e.target.value,
+                                    })
+                                  }}
+                                  inputProps={{ min: 1 }}
+                                  size="small"
+                                  sx={{
+                                    '& input': {
+                                      p: 0,
+                                      textAlign: 'center',
+                                      fontSize: '14px',
+                                    },
+                                    '& fieldset': {
+                                      fontSize: '14px',
+                                    },
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={productDetail.price}
+                                  inputProps={{ min: 1 }}
+                                  size="small"
+                                  InputProps={{
+                                    style: { paddingRight: '4px' },
+                                    endAdornment: '₫',
+                                  }}
+                                  onChange={(e) => {
+                                    updateNewProductDetail({
+                                      ...productDetail,
+                                      price: e.target.value,
+                                    })
+                                  }}
+                                  sx={{
+                                    '& input': {
+                                      p: 0,
+                                      textAlign: 'center',
+                                      fontSize: '14px',
+                                    },
+                                    '& fieldset': {
+                                      fontSize: '14px',
+                                    },
+                                  }}
+                                />
+                              </TableCell>
+                              {index === 0 && (
+                                <TableCell align="center" rowSpan={newProductDetails.length * 2}>
+                                  <Stack
+                                    direction="row"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    spacing={1}>
+                                    {newProductDetails
+                                      .find(
+                                        (productDetail) =>
+                                          productDetail.color.value === color.value,
+                                      )
+                                      .images.map((image, index) => {
+                                        return (
+                                          <img
+                                            key={`showImage${colorIndex}`}
+                                            width={'100px'}
+                                            height={'100px'}
                                             style={{
-                                              cursor: 'pointer',
                                               border: '1px dashed #ccc',
-                                              width: '100px',
-                                              height: '100px',
-                                              textAlign: 'center',
-                                              lineHeight: '100px',
-                                            }}>
-                                            <MdImageSearch
-                                              fontSize={'20px'}
-                                              style={{ marginBottom: '-3px', marginRight: '5px' }}
-                                            />
-                                            Ảnh
-                                          </div>
-                                        </Stack>
-                                      </TableCell>
-                                    )}
-                                  </TableRow>
-                                )
-                              })}
-                          </TableBody>
-                        </Table>
-                      </Container>
-                      <DialogAddUpdate
-                        open={
-                          modalOpen ===
-                          `papaerNewProduct${colorIndex}${materialIndex}${soleIndex}${categoryIndex}${brandIndex}`
-                        }
-                        setOpen={closeModal}>
-                        <Stack direction="row" justifyContent="space-between" alignItems="center">
-                          <b>Danh sách ảnh màu {color.label}</b>
-                          <Button
-                            onClick={() => {
-                              document.getElementById('them-anh').click()
-                            }}
-                            color="cam"
-                            variant="outlined"
-                            size="small">
-                            <RiImageAddFill fontSize={'16px'} />
-                            Thêm ảnh
-                          </Button>
-                          <input
-                            onChange={(event) => uploadImage(event, color.value)}
-                            accept="image/*"
-                            hidden
-                            multiple
-                            type="file"
-                            id="them-anh"
-                          />
-                        </Stack>
-                        <ContentModal
-                          color={color.value}
-                          material={material.value}
-                          sole={sole.value}
-                          category={category.value}
-                          brand={brand.value}
-                          images={images.find((image) => image.idColor === color.value)?.data}
-                        />
-                      </DialogAddUpdate>
-                    </Paper>
-                  )
-                })
-              })
-            })
-          })
+                                            }}
+                                            src={image}
+                                            alt="anh-san-pham"
+                                          />
+                                        )
+                                      })}
+                                    <Tooltip title="Chỉnh sửa ảnh">
+                                      <div
+                                        onClick={() => {
+                                          openSelectImage(color.value)
+                                          setModalOpen(`papaerNewProduct${colorIndex}`)
+                                        }}
+                                        style={{
+                                          cursor: 'pointer',
+                                          border: '1px dashed #ccc',
+                                          width: '100px',
+                                          height: '100px',
+                                          textAlign: 'center',
+                                          lineHeight: '100px',
+                                        }}>
+                                        <MdImageSearch
+                                          fontSize={'20px'}
+                                          style={{ marginBottom: '-3px', marginRight: '5px' }}
+                                        />
+                                        Ảnh
+                                      </div>
+                                    </Tooltip>
+                                  </Stack>
+                                </TableCell>
+                              )}
+                            </TableRow>
+                            {listErr.find((err) => err.key === productDetail.key) && (
+                              <TableRow style={{ backgroundColor: 'white' }}>
+                                <TableCell colSpan={7}>
+                                  <span style={{ color: 'red' }}>
+                                    {listErr.find((err) => err.key === productDetail.key).message}
+                                  </span>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </>
+                        )
+                      })}
+                  </TableBody>
+                </Table>
+              </Container>
+
+              <DialogAddUpdate
+                open={modalOpen === `papaerNewProduct${colorIndex}`}
+                setOpen={closeModal}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <b>Danh sách ảnh màu {color.label}</b>
+                  <Button
+                    onClick={() => {
+                      document.getElementById('them-anh').click()
+                    }}
+                    color="cam"
+                    variant="outlined"
+                    size="small">
+                    <RiImageAddFill fontSize={'16px'} />
+                    Thêm ảnh
+                  </Button>
+                  <input
+                    onChange={(event) => uploadImage(event, color.value)}
+                    accept="image/*"
+                    hidden
+                    multiple
+                    type="file"
+                    id="them-anh"
+                  />
+                </Stack>
+                <ContentModal
+                  color={color.value}
+                  images={images.find((image) => image.idColor === color.value)?.data}
+                />
+              </DialogAddUpdate>
+            </Paper>
+          )
         })}
-      <Button
-        onClick={() => {
-          saveProductDetail()
-        }}
-        color="cam"
-        variant="contained"
-        sx={{ mt: 2, float: 'right' }}>
-        Lưu thay đổi
-      </Button>
+      {newProductDetails.length > 0 && (
+        <Button
+          onClick={() => {
+            saveProductDetail()
+          }}
+          color="cam"
+          variant="contained"
+          sx={{ mt: 2, float: 'right' }}>
+          Lưu thay đổi
+        </Button>
+      )}
     </div>
   )
 }

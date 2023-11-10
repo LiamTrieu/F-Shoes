@@ -3,6 +3,7 @@ package com.fshoes.core.admin.sanpham.service;
 import com.fshoes.core.admin.sanpham.model.request.PrdDetailFilterRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductDetailRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductFilterRequest;
+import com.fshoes.core.admin.sanpham.model.request.UpdateListRequest;
 import com.fshoes.core.admin.sanpham.model.respone.ProductDetailResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
@@ -42,4 +43,6 @@ public interface ProductService {
     Boolean changeStatusProduct(String id);
 
     Product updateNameProduct(String idProduct, String nameProduct);
+
+    List<ProductDetail> updateListProduct(List<UpdateListRequest> requests);
 }

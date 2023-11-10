@@ -3,6 +3,7 @@ package com.fshoes.core.admin.sanpham.controller;
 import com.fshoes.core.admin.sanpham.model.request.PrdDetailFilterRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductDetailRequest;
 import com.fshoes.core.admin.sanpham.model.request.ProductFilterRequest;
+import com.fshoes.core.admin.sanpham.model.request.UpdateListRequest;
 import com.fshoes.core.admin.sanpham.service.ProductService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
@@ -60,6 +61,11 @@ public class ProductController {
         productService.updateProductDetail(id, request);
     }
 
+    @PostMapping("/update-list")
+    public ObjectRespone updateListProduct(@RequestBody List<UpdateListRequest> requests) {
+       return new ObjectRespone( productService.updateListProduct(requests));
+    }
+
     @GetMapping("/product-detail")
     public ObjectRespone productDetail(PrdDetailFilterRequest request) {
         return new ObjectRespone(productService.getProductDetail(request));
@@ -84,4 +90,6 @@ public class ProductController {
     public ObjectRespone updateNameProduct(@PathVariable String id, @RequestParam("nameProduct") String nameProduct) {
         return new ObjectRespone(productService.updateNameProduct(id, nameProduct));
     }
+
+
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import { Button, TextField } from '@mui/material'
 import './index.css'
@@ -12,21 +12,28 @@ export default function ModalAddProduct({
   dataProduct,
   nameProduct,
   setNameProduct,
+  setProduct,
 }) {
+  const [err, setErr] = useState(null)
   const handleUpdateNameProduct = (id, nameProduct) => {
-    sanPhamApi
-      .updateNameProduct(id, nameProduct)
-      .then(() => {
-        toast.success('cập nhật thành công', {
-          position: toast.POSITION.TOP_RIGHT,
+    if (nameProduct.trim().length > 0) {
+      sanPhamApi
+        .updateNameProduct(id, nameProduct.trim())
+        .then(() => {
+          toast.success('cập nhật thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          setProduct({ ...dataProduct, name: nameProduct })
         })
-      })
-      .catch(() => {
-        toast.error('cập nhật thất bại', {
-          position: toast.POSITION.TOP_RIGHT,
+        .catch(() => {
+          toast.error('cập nhật thất bại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
         })
-      })
-    setOpen(false)
+      setOpen(false)
+    } else {
+      setErr('Tên sản phẩm không được để trống')
+    }
   }
   return (
     <DialogAddUpdate
@@ -55,6 +62,7 @@ export default function ModalAddProduct({
           placeholder="Tên sản phẩm"
           onChange={(e) => setNameProduct(e.target.value)}
         />
+        {err && <span style={{ color: 'red', textAlign: 'center' }}>{err}</span>}
       </div>
     </DialogAddUpdate>
   )

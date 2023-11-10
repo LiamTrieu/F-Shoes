@@ -17,6 +17,7 @@ import {
   Table,
   TableHead,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
@@ -85,7 +86,7 @@ export default function AdProductPage() {
             className="search-field"
             size="small"
             color="cam"
-            placeholder="Tìm kiếm sản phẩm"
+            placeholder="Nhập tên sản phẩm để tìm..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -172,14 +173,16 @@ export default function AdProductPage() {
                           size="small"
                         />
                       </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          color="cam"
-                          component={Link}
-                          to={`/admin/product/${product.id}`}>
-                          <TbEyeEdit fontSize={'25px'} />
-                        </IconButton>
-                      </TableCell>
+                      <Tooltip title="Xem chi tiết">
+                        <TableCell align="center">
+                          <IconButton
+                            color="cam"
+                            component={Link}
+                            to={`/admin/product/${product.id}`}>
+                            <TbEyeEdit fontSize={'25px'} />
+                          </IconButton>
+                        </TableCell>
+                      </Tooltip>
                     </TableRow>
                   )
                 })}

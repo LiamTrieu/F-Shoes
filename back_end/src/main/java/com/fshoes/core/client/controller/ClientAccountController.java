@@ -1,4 +1,4 @@
-﻿package com.fshoes.core.client.controller;
+package com.fshoes.core.client.controller;
 
 public class ClientAccountController {
 }

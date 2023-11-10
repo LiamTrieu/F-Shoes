@@ -1,4 +1,4 @@
-﻿package com.fshoes.core.client.repository;
+package com.fshoes.core.client.repository;
 
 import com.fshoes.repository.AccountRepository;
 import org.springframework.stereotype.Repository;

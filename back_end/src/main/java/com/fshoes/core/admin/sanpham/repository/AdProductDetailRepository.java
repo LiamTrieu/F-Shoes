@@ -18,37 +18,40 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
         SELECT
             ROW_NUMBER() over (ORDER BY pd.created_at desc ) as stt,
-            pd.id as id, 
-            pd.code as code, 
-            c.name as colorName, 
-            s.name as sole, 
-            m.name as material, 
-            si.size as size, 
-            c.code as colorCode, 
-            ca.name as category, 
-            b.name as brand, 
-            pd.amount, 
-            pd.weight, 
-            pd.price, 
+            p.deleted as deletedProduct,
+            pd.id as id,
+            pd.code as code,
+            c.name as colorName,
+            s.name as sole,
+            m.name as material,
+            si.size as size,
+            c.code as colorCode,
+            ca.name as category,
+            b.name as brand,
+            pd.amount,
+            pd.weight,
+            pd.price,
             pd.deleted,
             GROUP_CONCAT(i.url) as image
-        FROM 
+        FROM
             product_detail pd
-        JOIN 
+        JOIN
+            product p ON p.id = pd.id_product
+        JOIN
             color c ON c.id = pd.id_color
-        JOIN 
+        JOIN
             category ca ON ca.id = pd.id_category
-        JOIN 
+        JOIN
             brand b ON b.id = pd.id_brand
-        JOIN 
+        JOIN
             sole s ON s.id = pd.id_sole
-        JOIN 
+        JOIN
             material m ON m.id = pd.id_material
-        JOIN 
+        JOIN
             size si ON si.id = pd.id_size
         LEFT JOIN
             image i ON pd.id = i.id_product_detail
-        WHERE 
+        WHERE
             pd.id_product = :#{#request.product}
             AND (:#{#request.name} IS NULL OR pd.code LIKE %:#{#request.name}%)
             AND (:#{#request.color} IS NULL OR pd.id_color = :#{#request.color})
@@ -59,7 +62,7 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
             AND (:#{#request.brand} IS NULL OR pd.id_brand = :#{#request.brand})
             AND (:#{#request.status} IS NULL OR pd.deleted = :#{#request.status})
             AND (pd.price >= :#{#request.priceMin} AND pd.price <= :#{#request.priceMax})
-        GROUP BY 
+        GROUP BY
             pd.id, 
             pd.code, 
             c.name, 

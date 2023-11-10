@@ -22,6 +22,7 @@ export default function AppBarAdmin({ children }) {
   useEffect(() => {
     if (token) {
       authenticationAPi.getAdmin().then((response) => {
+        console.log(response.data.data)
         setUser(response.data.data)
       })
     }

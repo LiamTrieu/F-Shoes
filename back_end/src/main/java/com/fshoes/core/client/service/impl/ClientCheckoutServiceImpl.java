@@ -416,7 +416,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         newEmail.setToEmail(toMail);
         newEmail.setSubject("Đơn hàng F-Shoes của bạn " + codeBill);
         newEmail.setTitleEmail("<h1 style=\"text-align: center; color: #333;\">Cảm ơn bạn đã đặt hàng tại F-Shoes</h1>");
-        emailSender.sendEmailWithAttachment(newEmail, generateInvoicePDF(request, codeBill, dateNow), codeBill + ".pdf");
+
     }
 
     private String formatCurrency(String amount) {
@@ -428,92 +428,6 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         String result = Normalizer.normalize(input, Normalizer.Form.NFKD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         return result;
-    }
-
-    public FileSystemResource generateInvoicePDF(ClientCheckoutRequest request, String code, Long dateNow) {
-        String htmlContent = "<html lang=\"en\">"
-                             + "<head>"
-                             + "<meta charset=\"UTF-8\">"
-                             + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
-                             + "</head>"
-                             + "<body style=\"font-family: 'Arial Unicode MS', Arial, sans-serif; background-color: #f5f5f5\">"
-                             + "<div style=\"background-color: #fff; max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">"
-                             + "<h1 style=\"color: #333; text-align: center;\">THONG TIN DON HANG</h1>"
-                             + "<div style=\"background-color: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\">"
-                             + "<table border=\"1\" style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px;\">"
-                             + "<tr>" +
-                             "<th style=\"width: 70%\">Ten san pham</th>" +
-                             "<th style=\"width: 10%\">So luong</th>" +
-                             "<th style=\"width: 20%\">Gia tien</th>";
-
-        for (ClientBillDetaillRequest detail : request.getBillDetail()) {
-            int totalPrice = Integer.parseInt(detail.getPrice()) * detail.getQuantity();
-            String formattedPrice = String.format("%,d VND", totalPrice);
-
-            htmlContent += "<tr><td style=\"border: 1px solid #ddd; padding: 8px;\">"
-                           + removeDiacritics(detail.getNameProduct()).replaceAll("[^a-zA-Z0-9 ]", "")
-                           + "</td><td style=\"border: 1px solid #ddd; padding: 8px;\">"
-                           + detail.getQuantity()
-                           + "</td><td style=\"border: 1px solid #ddd; padding: 8px;\">"
-                           + formattedPrice + ""
-                           + "</td></tr>";
-        }
-        String valueType = request.getTypePayment().equals("0") ? "Tại quầy" : "Đặt hàng";
-
-        htmlContent += "</table>"
-                       + "<div>"
-                       + "<p style=\"margin-bottom: 10px;\">Thanh tien: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getTotalMoney()) + " VND</strong></p>"
-                       + "<p style=\"margin-bottom: 10px;\">Phi van chuyen: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getShipMoney()) + " VND</strong></p>"
-                       + "<p style=\"margin-bottom: 10px;\">Giam gia: <strong style=\"font-weight: bold;\">" + formatCurrency(request.getMoneyReduced()) + " VND</strong></p>"
-                       + "<p style=\"margin-bottom: 10px;\">Tong cong: <strong style=\"font-weight: bold;\">" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VND</strong></p>"
-                       + "</div>"
-                       + "<div>"
-                       + "<p style=\"margin-bottom: 10px;\"><b>THONG TIN DON HANG:</b></p>"
-                       + "<ul style=\"list-style-type: none; padding: 0; margin: 0;\">"
-                       + "<li style=\"margin-bottom: 5px;\">Ma don hang: <strong style=\"font-weight: bold;\">" + code + "</strong></li>"
-                       + "<li style=\"margin-bottom: 5px;\">Ngay dat hang: <strong style=\"font-weight: bold;\">" + DateUtil.converDateTimeString(dateNow) + "</strong></li>"
-                       + "<li style=\"margin-bottom: 5px;\">Ngay nhan du kien: <strong style=\"font-weight: bold;\">" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>"
-                       + "<li style=\"margin-bottom: 5px;\">Hinh thuc thanh toan: <strong style=\"font-weight: bold;\">" + removeDiacritics(valueType).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
-                       + "</ul>"
-                       + "<p style=\"margin-bottom: 10px;\"><b>DIA CHI GIAO HANG:</b></p>"
-                       + "<ul style=\"list-style-type: none; padding: 0; margin: 0;\">"
-                       + "<li style=\"margin-bottom: 5px;\">Ho va ten: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getFullName()).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
-                       + "<li style=\"margin-bottom: 5px;\">So dien thoai: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getPhone()).replaceAll("[^a-zA-Z0-9 ]", "") + "</strong></li>"
-                       + "<li style=\"margin-bottom: 5px;\">Dia chi: <strong style=\"font-weight: bold;\">" + removeDiacritics(request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh()).replaceAll("[^a-zA-Z0-9 ]", "")
-                       + "</strong></li>"
-                       + "</ul>"
-                       + "</div>"
-                       + "<p style=\"margin-bottom: 10px;\">"
-                       + "Cam on ban da tin tuong va mua hang tai cua hang cua chung toi. "
-                       + "Chung toi se som lien he voi ban som nhat co the."
-                       + "</p>"
-                       + "</div>"
-                       + "</body></html>";
-        FileSystemResource fileResource = null;
-        try {
-            Document document = new Document(PageSize.A4);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
-            document.open();
-
-            HTMLWorker htmlWorker = new HTMLWorker(document);
-            htmlWorker.parse(new StringReader(htmlContent));
-
-            document.close();
-
-            byte[] pdfBytes = outputStream.toByteArray();
-
-            String filePath = code + ".pdf";
-            File pdfFile = new File(filePath);
-            FileOutputStream fileOutputStream = new FileOutputStream(pdfFile);
-            fileOutputStream.write(pdfBytes);
-            fileResource = new FileSystemResource(pdfFile);
-            fileOutputStream.close();
-
-        } catch (IOException | DocumentException e) {
-            e.printStackTrace();
-        }
-        return fileResource;
     }
 
 }
