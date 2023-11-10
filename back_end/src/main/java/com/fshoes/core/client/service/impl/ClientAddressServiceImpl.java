@@ -29,6 +29,9 @@ public class ClientAddressServiceImpl implements ClientAddressService {
 
     @Override
     public Address getAddressDefault(UserLogin userLogin) {
-        return repository.getAddressDefault(userLogin.getUserLogin().getId());
+        if(userLogin.getUserLogin() != null){
+            return repository.getAddressDefault(userLogin.getUserLogin().getId());
+        }
+        return null;
     }
 }

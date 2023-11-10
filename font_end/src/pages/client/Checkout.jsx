@@ -66,61 +66,63 @@ export default function Checkout() {
 
   const loadDetailAddress = () => {
     ClientAddressApi.getDefault().then((response) => {
-      const { idDiaChi, name, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
-        response.data.data
+      if (response.data.data !== null) {
+        const { name, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
+          response.data.data
 
-      loadTinh()
-      loadHuyen(provinceId)
-      loadXa(districtId)
+        loadTinh()
+        loadHuyen(provinceId)
+        loadXa(districtId)
 
-      const addressParts = specificAddress.split(', ')
-      if (addressParts.length === 4) {
-        const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
+        const addressParts = specificAddress.split(', ')
+        if (addressParts.length === 4) {
+          const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
 
-        setSelectedTinh({ label: tinhDetail, id: provinceId })
-        setSelectedHuyen({ label: huyenDetail, id: districtId })
-        setSelectedXa({ label: xaDetail, id: wardId })
+          setSelectedTinh({ label: tinhDetail, id: provinceId })
+          setSelectedHuyen({ label: huyenDetail, id: districtId })
+          setSelectedXa({ label: xaDetail, id: wardId })
 
-        setRequest({
-          fullName: name,
-          phone: phoneNumber,
-          xa: xaDetail,
-          huyen: huyenDetail,
-          tinh: tinhDetail,
-          address: address,
-        })
-        const filtelService = {
-          shop_id: '3911708',
-          from_district: '3440',
-          to_district: districtId,
-        }
-
-        ghnAPI.getServiceId(filtelService).then((response) => {
-          const serviceId = response.data.body.serviceId
-          const filterTotal = {
-            from_district_id: '3440',
-            service_id: serviceId,
-            to_district_id: districtId,
-            to_ward_code: wardId,
-            weight: arrData.reduce((totalWeight, e) => totalWeight + parseInt(e.weight), 0),
-            insurance_value: '10000',
+          setRequest({
+            fullName: name,
+            phone: phoneNumber,
+            xa: xaDetail,
+            huyen: huyenDetail,
+            tinh: tinhDetail,
+            address: address,
+          })
+          const filtelService = {
+            shop_id: '3911708',
+            from_district: '3440',
+            to_district: districtId,
           }
 
-          ghnAPI.getTotal(filterTotal).then((response) => {
-            setPhiShip(response.data.body.total)
-
-            const filtelTime = {
+          ghnAPI.getServiceId(filtelService).then((response) => {
+            const serviceId = response.data.body.serviceId
+            const filterTotal = {
               from_district_id: '3440',
-              from_ward_code: '13010',
+              service_id: serviceId,
               to_district_id: districtId,
               to_ward_code: wardId,
-              service_id: serviceId,
+              weight: arrData.reduce((totalWeight, e) => totalWeight + parseInt(e.weight), 0),
+              insurance_value: '10000',
             }
-            ghnAPI.getime(filtelTime).then((response) => {
-              setTimeShip(response.data.body.leadtime * 1000)
+
+            ghnAPI.getTotal(filterTotal).then((response) => {
+              setPhiShip(response.data.body.total)
+
+              const filtelTime = {
+                from_district_id: '3440',
+                from_ward_code: '13010',
+                to_district_id: districtId,
+                to_ward_code: wardId,
+                service_id: serviceId,
+              }
+              ghnAPI.getime(filtelTime).then((response) => {
+                setTimeShip(response.data.body.leadtime * 1000)
+              })
             })
           })
-        })
+        }
       }
     })
   }

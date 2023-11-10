@@ -176,14 +176,22 @@ export default function AdCustomerDetail() {
     const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
     let check = 0
 
-    if (!khachHang.fullName.trim()) {
+    const cleanedFullName = khachHang.fullName.trim()
+
+    if (!cleanedFullName) {
       newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
       check++
-    } else if (khachHang.fullName.trim().length > 100) {
+    } else if (cleanedFullName.length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
       check++
     } else {
-      newErrors.fullName = ''
+      const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
+      if (specialCharsRegex.test(cleanedFullName)) {
+        newErrors.fullName = 'Họ và Tên không được chứa kí tự đặc biệt.'
+        check++
+      } else {
+        newErrors.fullName = ''
+      }
     }
 
     if (!khachHang.email.trim()) {
@@ -287,13 +295,20 @@ export default function AdCustomerDetail() {
     type: null,
     idCustomer: id,
   })
+
   const handleTinhChange = (newValue, index) => {
     let preDiaChi = diaChi
     if (newValue) {
       setSelectedProvince(newValue)
       setNewDiaChi({ ...newDiaChi, provinceId: { id: newValue.id, label: newValue.label } })
       preDiaChi[index] = { ...preDiaChi[index], provinceId: newValue.id, tinh: newValue.label }
+      preDiaChi[index] = { ...preDiaChi[index], districtId: '', huyen: '' }
+      preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
       setDiaChi(preDiaChi)
+
+      let preErrorsDiaChi = [...errorsDiaChi]
+      preErrorsDiaChi[index] = { provinceID: '' }
+      setErrorsDiaChi(preErrorsDiaChi)
     } else {
       setHuyen([])
       setSelectedProvince(null)
@@ -314,7 +329,12 @@ export default function AdCustomerDetail() {
       setSelectedDistrict(newValue)
       setNewDiaChi({ ...newDiaChi, districtId: { id: newValue.id, label: newValue.label } })
       preDiaChi[index] = { ...preDiaChi[index], districtId: newValue.id, huyen: newValue.label }
+      preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
       setDiaChi(preDiaChi)
+
+      let preErrorsDiaChi = [...errorsDiaChi]
+      preErrorsDiaChi[index] = { districtId: '' }
+      setErrorsDiaChi(preErrorsDiaChi)
     } else {
       setXa([])
       setSelectedDistrict(null)
@@ -331,6 +351,10 @@ export default function AdCustomerDetail() {
       setSelectedWard(newValue)
       preDiaChi[index] = { ...preDiaChi[index], wardId: newValue.id, xa: newValue.label }
       setDiaChi(preDiaChi)
+
+      let preErrorsDiaChi = [...errorsDiaChi]
+      preErrorsDiaChi[index] = { wardId: '' }
+      setErrorsDiaChi(preErrorsDiaChi)
     } else {
       setSelectedWard(null)
       setNewDiaChi({ ...newDiaChi, wardId: { id: '', label: '' } })
@@ -382,26 +406,55 @@ export default function AdCustomerDetail() {
     })
   }
 
-  const onUpdateDiaChi = (diaChi) => {
+  const [errorsDiaChi, setErrorsDiaChi] = useState([])
+
+  const onUpdateDiaChi = (diaChiaa) => {
     const newErrors = {}
     let checkAU = 0
 
-    if (!diaChi.name.trim()) {
+    let preErrorsDiaChi = [...errorsDiaChi]
+    diaChi.forEach((item, index) => {
+      if (!item.provinceId) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          provinceId: 'Tỉnh thành phố không được bỏ trống',
+        }
+        checkAU++
+      }
+      if (!item.districtId) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          districtId: 'Quận/huyện không được bỏ trống',
+        }
+        checkAU++
+      }
+      if (!item.wardId) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          wardId: 'Xã/Thị trấn không được bỏ trống',
+        }
+        checkAU++
+      }
+    })
+
+    setErrorsDiaChi(preErrorsDiaChi)
+
+    if (!diaChiaa.name.trim()) {
       newErrors.name = 'Tên người nhận không được để trống'
       checkAU++
-    } else if (diaChi.name.trim().length > 100) {
+    } else if (diaChiaa.name.trim().length > 100) {
       newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
       checkAU++
     } else {
       newErrors.name = ''
     }
 
-    if (!diaChi.phoneNumber.trim()) {
+    if (!diaChiaa.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
       checkAU++
     } else {
       const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
-      if (!phoneNumberRegex.test(diaChi.phoneNumber.trim())) {
+      if (!phoneNumberRegex.test(diaChiaa.phoneNumber.trim())) {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
         checkAU++
       } else {
@@ -414,29 +467,29 @@ export default function AdCustomerDetail() {
       return
     }
 
-    const title = diaChi.id ? 'Xác nhận Cập nhật địa chỉ?' : 'Xác nhận Thêm mới địa chỉ?'
+    const title = diaChiaa.id ? 'Xác nhận Cập nhật địa chỉ?' : 'Xác nhận Thêm mới địa chỉ?'
     const text = ''
     const updatedDiaChi = {
-      name: diaChi.name,
-      phoneNumber: diaChi.phoneNumber,
-      email: diaChi.email,
-      provinceId: selectedProvince ? selectedProvince.id : diaChi.provinceId,
-      districtId: selectedDistrict ? selectedDistrict.id : diaChi.districtId,
-      wardId: selectedWard ? selectedWard.id : diaChi.wardId,
+      name: diaChiaa.name,
+      phoneNumber: diaChiaa.phoneNumber,
+      email: diaChiaa.email,
+      provinceId: selectedProvince ? selectedProvince.id : diaChiaa.provinceId,
+      districtId: selectedDistrict ? selectedDistrict.id : diaChiaa.districtId,
+      wardId: selectedWard ? selectedWard.id : diaChiaa.wardId,
       specificAddress:
-        diaChi.specificAddress +
+        diaChiaa.specificAddress +
         (selectedWard ? `, ${selectedWard.label}` : '') +
         (selectedDistrict ? `, ${selectedDistrict.label}` : '') +
         (selectedProvince ? `, ${selectedProvince.label}` : ''),
-      type: diaChi.type === null ? 0 : diaChi.type,
+      type: diaChiaa.type === null ? 0 : diaChiaa.type,
       idCustomer: id,
     }
 
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        if (diaChi.id) {
-          updatedDiaChi.specificAddress = `${diaChi.specificAddress}, ${diaChi.xa}, ${diaChi.huyen}, ${diaChi.tinh}`
-          DiaChiApi.update(diaChi.id, updatedDiaChi)
+        if (diaChiaa.id) {
+          updatedDiaChi.specificAddress = `${diaChiaa.specificAddress}, ${diaChiaa.xa}, ${diaChiaa.huyen}, ${diaChiaa.tinh}`
+          DiaChiApi.update(diaChiaa.id, updatedDiaChi)
             .then(() => {
               loadDiaChi(initPage - 1, id)
               toast.success('Cập nhật địa chỉ thành công', {
@@ -701,7 +754,6 @@ export default function AdCustomerDetail() {
                                 <span className="required"> *</span>Tỉnh/thành phố
                               </Typography>
                               <Autocomplete
-                                popupIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -727,20 +779,26 @@ export default function AdCustomerDetail() {
                                 )}
                               />
                             </Box>
+                            {errorsDiaChi[index]?.provinceId && (
+                              <Typography variant="body2" color="error">
+                                {errorsDiaChi[index].provinceId}
+                              </Typography>
+                            )}
                           </Grid>
                           <Grid
                             item
                             xs={12}
                             md={4}
                             onClick={() => {
-                              loadHuyen(item.provinceId)
+                              if (item.provinceId) {
+                                loadHuyen(item.provinceId)
+                              }
                             }}>
                             <Box sx={{ minWidth: 120 }}>
                               <Typography>
                                 <span className="required"> *</span>Quận/huyện
                               </Typography>
                               <Autocomplete
-                                popupIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -762,18 +820,24 @@ export default function AdCustomerDetail() {
                                 )}
                               />
                             </Box>
+                            {errorsDiaChi[index]?.districtId && (
+                              <Typography variant="body2" color="error">
+                                {errorsDiaChi[index].districtId}
+                              </Typography>
+                            )}
                           </Grid>
                           <Grid item xs={12} md={4}>
                             <Box
                               sx={{ minWidth: 120 }}
                               onClick={() => {
-                                loadXa(item.districtId)
+                                if (item.districtId) {
+                                  loadXa(item.districtId)
+                                }
                               }}>
                               <Typography>
                                 <span className="required"> *</span>Xã/phường/thị trấn
                               </Typography>
                               <Autocomplete
-                                popupIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -795,6 +859,11 @@ export default function AdCustomerDetail() {
                                 )}
                               />
                             </Box>
+                            {errorsDiaChi[index]?.wardId && (
+                              <Typography variant="body2" color="error">
+                                {errorsDiaChi[index].wardId}
+                              </Typography>
+                            )}
                           </Grid>
                         </Grid>
 
@@ -819,7 +888,6 @@ export default function AdCustomerDetail() {
                             />
                           </Grid>
                         </Grid>
-                        {console.log(item.type)}
                         <IconButton
                           color="cam"
                           aria-label="favorite"
