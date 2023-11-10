@@ -1,5 +1,6 @@
 package com.fshoes.core.client.service.impl;
 
+import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
 import com.fshoes.core.client.model.response.ClientProductDetailResponse;
@@ -19,6 +20,8 @@ import com.fshoes.entity.Material;
 import com.fshoes.entity.Size;
 import com.fshoes.entity.Sole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,6 +55,11 @@ public class ClientProductServiceImpl implements ClientProductService {
         return clientProductDetailRepository.getProducts(request);
     }
 
+    @Override
+    public List<ClientProductResponse> getProductCungLoai(ClientProductCungLoaiRequest request) {
+        Pageable pageable = PageRequest.of(0, 8);
+        return clientProductDetailRepository.getProductCungLoai(request, pageable).getContent();
+    }
     @Override
     public List<ClientProductResponse> getProductsHome(ClientProductRequest request) {
         return clientProductDetailRepository.getProductsHome(request);
@@ -96,5 +104,6 @@ public class ClientProductServiceImpl implements ClientProductService {
     public List<Sole> getAllSole() {
         return clientSoleRepository.findAll();
     }
+
 
 }

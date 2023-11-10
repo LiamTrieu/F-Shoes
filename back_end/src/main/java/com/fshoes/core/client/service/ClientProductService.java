@@ -1,5 +1,6 @@
 package com.fshoes.core.client.service;
 
+import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
 import com.fshoes.core.client.model.response.ClientProductDetailResponse;
@@ -27,4 +28,6 @@ public interface ClientProductService {
     List<Material> getAllMaterial();
     List<Size> getAllSize();
     List<Sole> getAllSole();
+
+    List<ClientProductResponse> getProductCungLoai(ClientProductCungLoaiRequest request);
 }
