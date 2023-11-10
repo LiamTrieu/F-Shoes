@@ -1,10 +1,13 @@
 package com.fshoes.core.client.repository;
 
+import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
 import com.fshoes.core.client.model.response.ClientProductDetailResponse;
 import com.fshoes.core.client.model.response.ClientProductResponse;
 import com.fshoes.repository.ProductDetailRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -60,7 +63,46 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
                 GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
-    List<ClientProductResponse> getProducts( @Param("request") ClientProductRequest request);
+    List<ClientProductResponse> getProducts(@Param("request") ClientProductRequest request);
+
+    @Query(value = """
+            SELECT
+                MAX(pd.id) as id,
+                MAX(pr.id) as promotion,
+                MAX(pr.value) as value,
+                CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name, '"') AS name,
+                ca.name as nameCate,
+                b.name as nameBrand,
+                MAX(pd.price) as price,
+                MAX(pd.weight) as weight,
+                MAX(pd.amount) as amount,
+                MAX(pd.description) as description,
+                GROUP_CONCAT(DISTINCT i.url) as image,
+                pd.id_product,
+                pd.id_color,
+                pd.id_material,
+                pd.id_sole,
+                pd.id_category,
+                pd.id_brand
+            FROM
+                product_detail pd
+                JOIN product p ON p.id = pd.id_product
+                JOIN color c ON c.id = pd.id_color
+                JOIN category ca ON ca.id = pd.id_category
+                JOIN brand b ON b.id = pd.id_brand
+                JOIN sole s ON s.id = pd.id_sole
+                JOIN material m ON m.id = pd.id_material
+                LEFT JOIN image i ON pd.id = i.id_product_detail
+                LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
+                LEFT JOIN promotion pr ON pr.id = pp.id_promotion
+            WHERE
+                p.id <> :#{#request.product}
+                AND ca.id = :#{#request.category}
+                AND b.id = :#{#request.brand}
+            GROUP BY
+                pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
+            """, nativeQuery = true)
+    Page<ClientProductResponse> getProductCungLoai(@Param("request") ClientProductCungLoaiRequest request, Pageable pageable);
 
     @Query(value = """
                 SELECT pd.id as id,

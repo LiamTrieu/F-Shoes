@@ -6,6 +6,7 @@ import {
   Button,
   Container,
   IconButton,
+  Modal,
   TextField,
   ThemeProvider,
   Typography,
@@ -20,7 +21,7 @@ import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import { useEffect } from 'react'
 import clientProductApi from '../../api/client/clientProductApi'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetCart, addCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
 import ReactImageGallery from 'react-image-gallery'
@@ -28,6 +29,8 @@ import { Drawer } from '@mui/material'
 import 'react-image-gallery/styles/css/image-gallery.css'
 import './DetailProduct.css'
 import { setCheckout } from '../../services/slices/checkoutSlice'
+import StraightenIcon from '@mui/icons-material/Straighten'
+import { toast } from 'react-toastify'
 
 function calculateTotalPayment(cart) {
   let total = 0
@@ -38,6 +41,10 @@ function calculateTotalPayment(cart) {
 }
 
 export default function DetailProduct() {
+  const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
   const [soLuong, setSoluong] = useState(1)
   const [product, setProduct] = useState({ image: [], price: '' })
   const [products, setProducts] = useState([])
@@ -75,29 +82,38 @@ export default function DetailProduct() {
             setSizeSelect(result.data.data.find((data) => data.id === param.id).size)
           })
       })
-    clientProductApi.get().then((result) => {
-      const data = result.data.data
-      setProducts(
-        data.map((e) => {
-          return {
-            id: e.id,
-            title: e.name,
-            priceBefort: e.price,
-            priceAfter: e.price,
-            promotion: e.promotion,
-            value: e.value,
-            image: e.image.split(','),
-            idProduct: e.idProduct,
-            idColor: e.idColor,
-            idMaterial: e.idMaterial,
-            idSole: e.idSole,
-            idCategory: e.idCategory,
-            idBrand: e.idBrand,
-          }
-        }),
-      )
-    })
-  }, [sizeSelect])
+    clientProductApi
+      .getCungLoai({
+        category: product.idCategory,
+        brand: product.idBrand,
+        product: product.idProduct,
+        color: product.idColor,
+        sole: product.idSole,
+        material: product.idMaterial,
+      })
+      .then((result) => {
+        const data = result.data.data
+        setProducts(
+          data.map((e) => {
+            return {
+              id: e.id,
+              title: e.name,
+              priceBefort: e.price,
+              priceAfter: e.price,
+              promotion: e.promotion,
+              value: e.value,
+              image: e.image.split(','),
+              idProduct: e.idProduct,
+              idColor: e.idColor,
+              idMaterial: e.idMaterial,
+              idSole: e.idSole,
+              idCategory: e.idCategory,
+              idBrand: e.idBrand,
+            }
+          }),
+        )
+      })
+  }, [sizeSelect, param.id])
 
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
@@ -107,17 +123,47 @@ export default function DetailProduct() {
 
   const dispatch = useDispatch()
   const addProductToCart = () => {
-    const newItem = {
-      id: param.id,
-      name: product.name,
-      gia: product.price,
-      weight: product.weight,
-      image: product.image,
-      soLuong: soLuong,
-      size: sizeSelect,
+    if (
+      isNaN(parseInt(soLuong.toString().trim())) ||
+      soLuong <= 0 ||
+      soLuong >= parseInt(product.amount)
+    ) {
+      toast.warning('Số lượng không hợp lệ')
+    } else {
+      const newItem = {
+        id: param.id,
+        name: product.name,
+        gia: product.price,
+        weight: product.weight,
+        image: product.image,
+        soLuong: parseInt(soLuong.toString().trim()),
+        size: sizeSelect,
+      }
+      dispatch(addCart(newItem))
+      openSidebar()
     }
-    dispatch(addCart(newItem))
-    openSidebar()
+  }
+  const checkOut = () => {
+    console.log(product)
+    if (
+      isNaN(parseInt(soLuong.toString().trim())) ||
+      soLuong <= 0 ||
+      soLuong >= parseInt(product.amount)
+    ) {
+      toast.warning('Số lượng không hợp lệ')
+    } else {
+      const newItem = {
+        id: param.id,
+        name: product.name,
+        gia: product.price,
+        weight: product.weight,
+        image: product.image,
+        soLuong: parseInt(soLuong.toString().trim()),
+        size: sizeSelect,
+      }
+      dispatch(setCheckout([newItem]))
+      navigate('/checkout')
+    }
   }
 
   const productCart = useSelector(GetCart)
@@ -138,6 +184,13 @@ export default function DetailProduct() {
         thumbnail: image,
       }
     })
+  }
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
   }
   return (
     <div className="detail-product">
@@ -221,7 +274,29 @@ export default function DetailProduct() {
                     </Button>
                   )
                 })}
+                <Button
+                  onClick={handleOpen}
+                  variant="outlined"
+                  style={{
+                    marginLeft: '10px',
+                    color: 'black',
+                    backgroundColor: 'white',
+                    padding: '2px 2px 2px 2px',
+                    border: '1px solid gray',
+                  }}>
+                  <StraightenIcon />
+                  &nbsp; Bảng size
+                </Button>
               </Box>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description">
+                <Box sx={style}>
+                  <img src={require('../../assets/image/chonsize.jpg')} alt="chọn-size" />
+                </Box>
+              </Modal>
               <Box py={2}>
                 <Typography
                   sx={{ float: 'left', mt: '3px' }}
@@ -243,7 +318,7 @@ export default function DetailProduct() {
                   p={'3px'}>
                   <IconButton
                     onClick={(e) => {
-                      setSoluong(soLuong - 1)
+                      setSoluong(parseInt(soLuong) - 1)
                     }}
                     sx={{ p: 0 }}
                     size="small">
@@ -266,7 +341,7 @@ export default function DetailProduct() {
                   />
                   <IconButton
                     onClick={() => {
-                      setSoluong(soLuong + 1)
+                      setSoluong(parseInt(soLuong) + 1)
                     }}
                     size="small"
                     sx={{ p: 0 }}>
@@ -284,7 +359,12 @@ export default function DetailProduct() {
                 sx={{ marginRight: '15px' }}>
                 Thêm vào giỏ hàng
               </Button>
-              <Button type="submit" variant="contained" color="red" sx={{ marginRight: '15px' }}>
+              <Button
+                onClick={checkOut}
+                type="submit"
+                variant="contained"
+                color="red"
+                sx={{ marginRight: '15px' }}>
                 Mua ngay
               </Button>
             </ThemeProvider>
@@ -303,7 +383,7 @@ export default function DetailProduct() {
           </Grid2>
         </Grid2>
         <Box sx={{ width: '100%' }} mt={5}>
-          <LabelTitle text="Sản phẩm mới" />
+          <LabelTitle text="Sản phẩm cùng loại" />
           <CartProduct products={products} colsm={6} colmd={4} collg={3} />
         </Box>
         <Drawer anchor="right" open={isSidebarOpen} onClose={() => setIsSidebarOpen(false)}>

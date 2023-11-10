@@ -1,5 +1,6 @@
 package com.fshoes.core.client.controller;
 
+import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
 import com.fshoes.core.client.service.ClientProductService;
@@ -18,6 +19,11 @@ public class ClientProductController {
     public ObjectRespone getProduct(ClientProductRequest request) {
         return new ObjectRespone((clientProductService.getProducts(request)));
     }
+    @GetMapping("/product/cung-loai")
+    public ObjectRespone getProductCungLoai(ClientProductCungLoaiRequest request) {
+        return new ObjectRespone((clientProductService.getProductCungLoai(request)));
+    }
+
     @GetMapping("/product-home")
     public ObjectRespone getProductHome(ClientProductRequest request) {
         return new ObjectRespone((clientProductService.getProductsHome(request)));
