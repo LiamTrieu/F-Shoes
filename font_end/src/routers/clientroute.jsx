@@ -7,6 +7,7 @@ import Product from '../pages/client/Product'
 import News from '../pages/client/News'
 import Contact from '../pages/client/Contact'
 import AboutUs from '../pages/client/AboutUs'
+import Profile from '../pages/client/profile/Profile'
 
 const clientRoute = [
   { path: '/home', element: <Home />, index: true },
@@ -17,6 +18,7 @@ const clientRoute = [
   { path: '/cart', element: <Cart /> },
   { path: '/login', element: <Login /> },
   { path: '/checkout', element: <Checkout /> },
+  { path: '/profile', element: <Profile /> },
   { path: '/product/:id', element: <DetailProduct /> },
 ]
 

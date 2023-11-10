@@ -16,6 +16,9 @@ import java.util.List;
 public interface ClientProductService {
     List<ClientProductResponse> getProducts(ClientProductRequest request);
 
+    List<ClientProductResponse> getProductsHome(ClientProductRequest request);
+    List<ClientProductResponse> getSellingProduct(ClientProductRequest request);
+
     List<ClientProductDetailResponse> getProductBySize(ClientProductDetailRequest request);
 
     List<Brand> getAllBrand();

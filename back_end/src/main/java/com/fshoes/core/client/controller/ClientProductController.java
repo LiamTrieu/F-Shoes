@@ -18,6 +18,14 @@ public class ClientProductController {
     public ObjectRespone getProduct(ClientProductRequest request) {
         return new ObjectRespone((clientProductService.getProducts(request)));
     }
+    @GetMapping("/product-home")
+    public ObjectRespone getProductHome(ClientProductRequest request) {
+        return new ObjectRespone((clientProductService.getProductsHome(request)));
+    }
+    @GetMapping("/selling-product")
+    public ObjectRespone getSellingProduct(ClientProductRequest request) {
+        return new ObjectRespone((clientProductService.getSellingProduct(request)));
+    }
 
     @GetMapping("/product/size")
     public ObjectRespone getProductBySize(ClientProductDetailRequest request) {

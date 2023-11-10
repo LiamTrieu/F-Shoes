@@ -19,4 +19,6 @@ public interface AddProductPromotionResponse extends IsIdentified {
     String getSole();
 
     String getUrl();
+
+    String getSize();
 }

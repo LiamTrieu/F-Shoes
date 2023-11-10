@@ -5,6 +5,14 @@ const clientProductApi = {
     const url = `/client/product`
     return axiosApi.get(url, { params: filter })
   },
+  getProductHome: (filter) => {
+    const url = `/client/product-home`
+    return axiosApi.get(url, { params: filter })
+  },
+  getSellingProduct: (filter) => {
+    const url = `/client/selling-product`
+    return axiosApi.get(url, { params: filter })
+  },
   getSizes: (request) => {
     const url = `/client/product/size`
     return axiosApi.get(url, { params: request })

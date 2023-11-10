@@ -47,7 +47,7 @@ const styleModalProductDetail = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: { xs: '100vw', md: '38vw' },
-  height: '250px',
+  height: '240px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
@@ -504,6 +504,9 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       color: 'black',
                       flexGrow: 1,
                       marginTop: '10px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
                     }}>
                     <Typography variant="h5" fontFamily={'monospace'} fontWeight={'bolder'}>
                       {getAmountProduct.nameProduct +
@@ -523,7 +526,9 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                     <p style={{ color: 'red', margin: '5px 0' }}>
                       {getAmountProduct.promotion && getAmountProduct.statusPromotion === 1 ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
                         <div style={{ display: 'flex' }}>
-                          <div className="promotion-price">{`${getAmountProduct.price}đ`}</div>{' '}
+                          <div className="promotion-price">{`${formatPrice(
+                            getAmountProduct.price,
+                          )}`}</div>{' '}
                           <div>
                             <span style={{ color: 'red', fontWeight: 'bold' }}>
                               {`${formatPrice(
@@ -536,7 +541,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                           </div>
                         </div>
                       ) : (
-                        <span>{`${getAmountProduct.price * addAmount}đ`}</span>
+                        <span>{`${formatPrice(getAmountProduct.price * addAmount)}`}</span>
                       )}
                     </p>
                     {'size:' + getAmountProduct.size}

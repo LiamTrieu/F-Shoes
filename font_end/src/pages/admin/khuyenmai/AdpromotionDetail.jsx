@@ -48,13 +48,11 @@ export default function AdPromotionDetail() {
   const [getProductDetailByProduct, setGetProductDetailByProduct] = useState([])
   const [selectedRows, setSelectedRows] = useState([])
   const [totalPagesDetailByProduct, setTotalPagesDetailByProduct] = useState(0)
-  const [filterDetailByProduct, setFilterDetailProduct] = useState({ page: 1, size: 5 })
   const [selectedProductIds, setSelectedProductIds] = useState([])
   const [errorName, setErrorName] = useState('')
   const [errorValue, setErrorValue] = useState('')
   const [errorTimeStart, settimeStart] = useState('')
   const [errorTimeEnd, setTimeend] = useState('')
-
   // -------------------------- filters --------------------------------
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
@@ -157,8 +155,6 @@ export default function AdPromotionDetail() {
       .filter((row) => newSelected.includes(row.id))
       .map((selectedProduct) => selectedProduct.id)
     setSelectedProductIds(selectedProductIds)
-
-    console.log('ID của sản phẩm đã chọn:', selectedProductIds)
   }
   const getProductDetailById = (filterProductDetail, selectedProductIds) => {
     if (selectedProductIds.length > 0) {
@@ -197,6 +193,8 @@ export default function AdPromotionDetail() {
       errors.name = 'Tên khuyến mại phải là chữ'
     } else if (updatePromotion.name.length > 50) {
       errors.name = 'Tên không được dài hơn 50 ký tự'
+    } else if (updatePromotion.name !== updatePromotion.name.trim()) {
+      errors.name = 'Tên không được chứa khoảng trắng thừa'
     }
 
     if (updatePromotion.value === '') {
@@ -305,11 +303,15 @@ export default function AdPromotionDetail() {
     setUpdatePromotion({ ...updatePromotion, idProductDetail: selectedRows })
   }, [updatePromotion, selectedRows])
 
-  useEffect(() => {
+  const getAllProduct = (filter) => {
     khuyenMaiApi.getAllProduct(filter).then((response) => {
       setGetProduct(response.data.data.data)
       setTotalPages(response.data.data.totalPages)
     })
+  }
+
+  useEffect(() => {
+    getAllProduct(filter)
   }, [filter])
 
   return (
@@ -482,16 +484,7 @@ export default function AdPromotionDetail() {
         </Paper>
         {selectedRowsProduct.length > 0 && (
           <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%' }}>
-            <Typography
-              sx={{
-                fontSize: '30px',
-                fontWeight: 600,
-                marginBottom: '20px',
-                marginLeft: '20px',
-                mt: 3,
-              }}>
-              Chi tiết sản phẩm
-            </Typography>
+            <Typography className="title-chi-tiet-san-pham">Chi tiết sản phẩm</Typography>
             <Grid item xs={12}>
               <div style={{ height: '100%', width: '100%' }}>
                 <Box>

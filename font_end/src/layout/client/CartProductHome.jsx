@@ -85,6 +85,13 @@ export default function CartProductHome({ products, colmd, collg }) {
                   sx={{ textTransform: 'none' }}>
                   {product.title}
                 </Typography>
+                <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
+                  {' '}
+                  {product.nameCate}
+                </Typography>
+                {/* <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
+                  {product.nameBrand}
+                </Typography> */}
                 <Typography gutterBottom component="div">
                   <span>
                     {' '}
@@ -113,6 +120,9 @@ export default function CartProductHome({ products, colmd, collg }) {
                       })} `}</span>
                     )}
                   </span>
+                </Typography>
+                <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
+                  New
                 </Typography>
               </CardContent>
             </Card>

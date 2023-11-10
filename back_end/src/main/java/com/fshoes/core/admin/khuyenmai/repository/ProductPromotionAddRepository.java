@@ -36,15 +36,22 @@ public interface ProductPromotionAddRepository extends ProductRepository {
     Page<AddProductPromotionResponse> getAllProduct(@Param("req") ProductPromotionSearch req, Pageable pageable);
 
     @Query(value = """
-            SELECT cate.name AS category, b.name AS brand, p.name, pd.id as productDetail , p.id , MAX(i.url) as url,
-            sl.name as sole , c.name as color, m.name as material 
+            SELECT MAX(cate.name) AS category, MAX(b.name) AS brand, (p.name) , MAX(pd.id) as productDetail , (p.id) ,GROUP_CONCAT(DISTINCT i.url) as url,
+            MAX(sl.name) as sole , MAX(c.name) as color, MAX(m.name) as material  , GROUP_CONCAT(DISTINCT si.size) AS size,
+               pd.id_product,
+                       pd.id_color,
+                       pd.id_material,
+                       pd.id_sole,
+                       pd.id_category,
+                       pd.id_brand
             FROM product_detail pd 
-            left JOIN product p ON pd.id_product = p.id 
-            left join material m on m.id = pd.id_material
-            left join category cate on cate.id = pd.id_category
-            left join sole sl on sl.id = pd.id_sole
-            left join brand b on b.id  = pd.id_brand
-            left join color c on c.id = pd.id_color
+             JOIN product p ON pd.id_product = p.id 
+             join material m on m.id = pd.id_material
+             join size si on si.id = pd.id_size
+             join category cate on cate.id = pd.id_category
+             join sole sl on sl.id = pd.id_sole
+             join brand b on b.id  = pd.id_brand
+             join color c on c.id = pd.id_color
             left join image i on i.id_product_detail = pd.id
             WHERE p.id In :id
             AND  (:#{#req.category} IS NULL OR cate.id = :#{#req.category}) 
@@ -53,11 +60,11 @@ public interface ProductPromotionAddRepository extends ProductRepository {
             AND (:#{#req.brand} IS NULL OR b.id = :#{#req.brand}) 
             AND (:#{#req.sole} IS NULL OR sl.id = :#{#req.sole})  
             AND( (:#{#req.nameProduct} IS NULL OR p.name like %:#{#req.nameProduct}%) 
-                OR (:#{#req.nameProduct} IS NULL OR cate.name like %:#{#req.nameProduct}%) 
-                OR (:#{#req.nameProduct} IS NULL OR c.name like %:#{#req.nameProduct}%) 
-                OR (:#{#req.nameProduct} IS NULL OR sl.name like %:#{#req.nameProduct}%) 
-                OR (:#{#req.nameProduct} IS NULL OR m.name like %:#{#req.nameProduct}%))   
-            group by p.id,  pd.id;;
+            OR (:#{#req.nameProduct} IS NULL OR cate.name like %:#{#req.nameProduct}%) 
+            OR (:#{#req.nameProduct} IS NULL OR c.name like %:#{#req.nameProduct}%) 
+            OR (:#{#req.nameProduct} IS NULL OR sl.name like %:#{#req.nameProduct}%) 
+            OR (:#{#req.nameProduct} IS NULL OR m.name like %:#{#req.nameProduct}%))   
+            group by  p.id, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
     Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") List<String> id, Pageable pageable,@Param("req") GetProductDetailByIdProduct req);
 }
