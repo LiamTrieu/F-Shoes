@@ -12,6 +12,7 @@ import {
   Stack,
   Table,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import { TbEyeEdit } from 'react-icons/tb'
@@ -131,6 +132,13 @@ export default function AdPromotionPage() {
       setTotalPages(response.data.totalPages)
     })
   }
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      name: inputValue.replace(/^\s+/g, ''), // Remove leading whitespaces
+    }))
+  }
 
   return (
     <>
@@ -145,12 +153,7 @@ export default function AdPromotionPage() {
                 placeholder="Tìm kiếm theo tên khuyến mại"
                 className="text-field-css"
                 size="small"
-                onChange={(e) =>
-                  setFilter({
-                    ...filter,
-                    name: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -322,9 +325,11 @@ export default function AdPromotionPage() {
                   </TableCell>
                   <TableCell>
                     <Link to={`/admin/promotion/get-one/${promotion.id}`}>
-                      <IconButton sx={{ marginLeft: '30px' }} color="cam">
-                        <TbEyeEdit />
-                      </IconButton>
+                      <Tooltip title="Xem chi tiết khuyến mại">
+                        <IconButton sx={{ marginLeft: '30px' }} color="cam">
+                          <TbEyeEdit />
+                        </IconButton>
+                      </Tooltip>
                     </Link>
                   </TableCell>
                 </TableRow>

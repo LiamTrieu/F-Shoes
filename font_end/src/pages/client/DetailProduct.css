@@ -124,3 +124,12 @@
 .end-cart {
   background-color: rgb(207, 207, 207);
 }
+.discount-badge {
+  position: absolute;
+  z-index: 2;
+  top: 15px;
+  left: 15px;
+  color: white;
+  padding: 4px 20px;
+  border-radius: 10px 10px 10px 10px;
+}

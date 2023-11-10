@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=Noto+Sans+NKo+Unjoined:wght@600&family=Roboto:ital,wght@0,500;1,700&display=swap');
+
+.title-chi-tiet-san-pham {
+  font-size: 50px;
+  margin-bottom: 20px;
+  margin-top: 3;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Noto Sans NKo Unjoined', sans-serif;
+  font-family: 'Roboto', sans-serif;
+}
+
 .dateTimePro .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
   height: 0.6em !important;
 }

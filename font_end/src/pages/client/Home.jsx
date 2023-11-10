@@ -5,12 +5,14 @@ import CartProduct from '../../layout/client/CartProduct'
 import './Home.css'
 import clientProductApi from '../../api/client/clientProductApi'
 import CartProductHome from '../../layout/client/CartProductHome'
+import CartSellingProduct from '../../layout/client/CartSellingProduct'
 
 export default function Home() {
   const [products, setProducts] = useState([])
+  const [sellingProducts, setSellingProducts] = useState([])
   const videoRef = useRef(null)
   useEffect(() => {
-    clientProductApi.get().then((result) => {
+    clientProductApi.getProductHome().then((result) => {
       const data = result.data.data
       setProducts(
         data.map((e) => {
@@ -20,6 +22,34 @@ export default function Home() {
             priceBefort: e.price,
             priceAfter: e.price,
             value: e.value,
+            promotion: e.promotion,
+            image: e.image.split(','),
+            nameCate: e.nameCate,
+            nameBrand: e.nameBrand,
+            idProduct: e.idProduct,
+            idColor: e.idColor,
+            idMaterial: e.idMaterial,
+            idSole: e.idSole,
+            idCategory: e.idCategory,
+            idBrand: e.idBrand,
+          }
+        }),
+      )
+    })
+  }, [])
+
+  useEffect(() => {
+    clientProductApi.getSellingProduct().then((result) => {
+      const data = result.data.data
+      setSellingProducts(
+        data.map((e) => {
+          return {
+            id: e.id,
+            title: e.name,
+            priceBefort: e.price,
+            priceAfter: e.price,
+            value: e.value,
+            amount: e.amount,
             promotion: e.promotion,
             image: e.image.split(','),
             idProduct: e.idProduct,
@@ -125,10 +155,31 @@ export default function Home() {
           <div className="product-home">
             <Container maxWidth="xl">
               <Box className="new-product">
-                <Button className="product">NEW PRODUCT</Button>
+                <Button className="product">Hàng mới về</Button>
                 <div className="cart-product-home">
                   <CartProductHome products={products} colsm={6} colmd={4} collg={3} />
                 </div>
+              </Box>
+            </Container>
+            <Box sx={{ marginTop: '30px', marginBottom: '30px' }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    muted
+                    onEnded={handleVideoEnded}
+                    style={{ width: '100%', height: '100%' }}
+                    src="https://brand.assets.adidas.com/video/upload/if_w_gt_1920,w_1920/fw23_rivalry_launch_hp_mh_d_2c98ca2cf4.mp4"></video>
+                </Grid>
+              </Grid>
+            </Box>
+            <Container maxWidth="xl">
+              <Box className="new-product">
+                <Button className="product">SẢN PHẨM BÁN CHẠY</Button>
+                {/* <div className="cart-product-portfolio"> */}
+                <CartSellingProduct products={sellingProducts} colmd={6} collg={3} />
+                {/* </div> */}
               </Box>
 
               <Box className="about-us">

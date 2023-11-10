@@ -111,6 +111,11 @@ export default function Cart() {
         setProductSelect(preProductSelect)
       }
     }
+    const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
+      const discountAmount = (discountPercentage / 100) * originalPrice
+      const discountedPrice = originalPrice - discountAmount
+      return discountedPrice
+    }
     return cartDatas.map((cart) => {
       return (
         <TableRow sx={{ border: 0 }} key={cart.id}>
@@ -186,7 +191,30 @@ export default function Cart() {
               fontWeight: 'bold',
               textAlign: 'left',
             }}>
-            {cart.gia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+            <span>
+              {' '}
+              {cart.promotion ? (
+                <div style={{ display: 'flex' }}>
+                  <div className="promotion-price">{`${cart.gia.toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                  })} `}</div>{' '}
+                  <div>
+                    <span style={{ color: 'red', fontWeight: 'bold' }}>
+                      {`${calculateDiscountedPrice(cart.gia, cart.value).toLocaleString('it-IT', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })} `}
+                    </span>{' '}
+                  </div>
+                </div>
+              ) : (
+                <span>{`${cart.gia.toLocaleString('it-IT', {
+                  style: 'currency',
+                  currency: 'VND',
+                })} `}</span>
+              )}
+            </span>
           </TableCell>
           <TableCell sx={{ px: 0 }}>
             <Box

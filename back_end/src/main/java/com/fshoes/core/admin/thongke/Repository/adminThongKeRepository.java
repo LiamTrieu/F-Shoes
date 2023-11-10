@@ -19,9 +19,9 @@ public interface adminThongKeRepository extends BillDetailRepository {
             SELECT
                 CONCAT(p.name, ' - ', c.name, ' - ', m.name, ' - ', s.name, ' - ', ca.name, ' - ', br.name) as nameProduct,
                 MAX(pd.price) as price,
-                GROUP_CONCAT(i.url) as image,
-                GROUP_CONCAT(si.size) as size,
-                SUM(bd.quantity) as quantity
+                GROUP_CONCAT(DISTINCT i.url) as image,
+                GROUP_CONCAT(DISTINCT si.size) as size,
+                Max(bd.quantity) as quantity
             FROM bill_detail bd
             JOIN bill b ON bd.id_bill = b.id
             JOIN product_detail pd ON bd.id_product_detail = pd.id

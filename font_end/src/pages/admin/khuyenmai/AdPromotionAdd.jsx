@@ -223,6 +223,8 @@ export default function AdPromotionAdd() {
       errors.name = 'không được trùng tên khuyến mại'
     } else if (addPromotionRe.name.length > 50) {
       errors.name = 'Tên không được dài hơn 50 ký tự'
+    } else if (addPromotionRe.name !== addPromotionRe.name.trim()) {
+      errors.name = 'Tên không được chứa khoảng trắng thừa'
     }
 
     if (addPromotionRe.value === '') {
@@ -235,15 +237,14 @@ export default function AdPromotionAdd() {
 
     if (addPromotionRe.timeStart === '') {
       errors.timeStart = 'Vui lòng nhập thời gian bắt đầu'
+    } else if (timeStart.isAfter(timeEnd)) {
+      errors.timeEnd = 'Ngày bắt đầu phải bé hơn ngày kêt thúc'
     }
+
     if (addPromotionRe.timeEnd === '') {
       errors.timeEnd = 'Vui lòng nhập thời gian kết thúc'
     } else if (timeEnd.isBefore(currentDate)) {
       errors.timeEnd = 'Ngày kết thúc phải lớn hơn ngày hiện tại'
-    }
-
-    if (!timeStart.isValid() || !timeEnd.isValid() || timeStart.isAfter(timeEnd)) {
-      errors.timeStart = 'Ngày bắt đầu phải bé hơn ngày kêt thúc'
     }
 
     for (const key in errors) {
@@ -456,11 +457,12 @@ export default function AdPromotionAdd() {
               <Grid item xs={12}>
                 <Typography
                   sx={{
-                    fontSize: '30px',
+                    fontSize: '25px',
                     fontWeight: 600,
-                    marginBottom: '20px',
+                    marginBottom: '10px',
+                    marginTop: '10px',
                   }}>
-                  Chi tiết sản phẩm
+                  CHI TIẾT SẢN PHẨM
                 </Typography>
                 <div style={{ height: '100%', width: '100%' }}>
                   <Box>
@@ -657,6 +659,9 @@ export default function AdPromotionAdd() {
                         <TableCell align="center" sx={{ width: '30%' }}>
                           Đế giày
                         </TableCell>
+                        <TableCell align="center" sx={{ width: '30%' }}>
+                          Kích cỡ
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -676,12 +681,13 @@ export default function AdPromotionAdd() {
                           <TableCell align="center" component="th" scope="row">
                             {index + 1}
                           </TableCell>
-                          <TableCell align="center">{row.name}</TableCell>
+                          <TableCell align="center">{row.nameProduct}</TableCell>
                           <TableCell align="center">{row.category}</TableCell>
                           <TableCell align="center">{row.brand}</TableCell>
                           <TableCell align="center">{row.material}</TableCell>
                           <TableCell align="center">{row.color}</TableCell>
                           <TableCell align="center">{row.sole}</TableCell>
+                          <TableCell align="center">{row.size}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

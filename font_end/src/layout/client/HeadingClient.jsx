@@ -13,7 +13,6 @@ import { getCookie, removeCookie } from '../../services/cookie'
 import confirmSatus from '../../components/comfirmSwal'
 import { GetUser, addUser, removeUser } from '../../services/slices/userSlice'
 import clientCartApi from '../../api/client/clientCartApi'
-import { toast } from 'react-toastify'
 
 export default function HeadingClient() {
   const [openDrawer, setOpenDrawer] = useState(false)
@@ -89,7 +88,7 @@ export default function HeadingClient() {
           color="inherit">
           Sản phẩm
         </Typography>
-        {/* <Typography
+        <Typography
           onClick={() => {
             setOpenDrawer(false)
           }}
@@ -104,7 +103,41 @@ export default function HeadingClient() {
           component={Link}
           to="/about-us"
           color="inherit">
-          Giới thiệu
+          Loại Giầy
+        </Typography>
+        <Typography
+          onClick={() => {
+            setOpenDrawer(false)
+          }}
+          className="link-with-underline"
+          sx={{
+            marginLeft: { md: 4 },
+            fontFamily: 'monospace',
+            fontSize: '17px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+          component={Link}
+          to="/contact"
+          color="inherit">
+          Thương hiệu
+        </Typography>
+        <Typography
+          onClick={() => {
+            setOpenDrawer(false)
+          }}
+          className="link-with-underline"
+          sx={{
+            marginLeft: { md: 4 },
+            fontFamily: 'monospace',
+            fontSize: '17px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+          component={Link}
+          to="/news"
+          color="inherit">
+          Tin tức
         </Typography>
         <Typography
           onClick={() => {
@@ -122,23 +155,6 @@ export default function HeadingClient() {
           to="/contact"
           color="inherit">
           Liên hệ
-        </Typography> */}
-        <Typography
-          onClick={() => {
-            setOpenDrawer(false)
-          }}
-          className="link-with-underline"
-          sx={{
-            marginLeft: { md: 4 },
-            fontFamily: 'monospace',
-            fontSize: '17px',
-            fontWeight: 600,
-            textDecoration: 'none',
-          }}
-          component={Link}
-          to="/news"
-          color="inherit">
-          Tin tức
         </Typography>
       </Box>
     )

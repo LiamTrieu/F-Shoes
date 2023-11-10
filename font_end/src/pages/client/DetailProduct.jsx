@@ -139,7 +139,6 @@ export default function DetailProduct() {
       }
     })
   }
-
   return (
     <div className="detail-product">
       <Container maxWidth="xl">
@@ -333,7 +332,36 @@ export default function DetailProduct() {
 
                       <div className="price-and-quantity">
                         <Typography className="price-gh" variant="body1">
-                          {cart.gia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                          <span>
+                            {' '}
+                            {product.promotion ? (
+                              <div style={{ display: 'flex' }}>
+                                <div className="promotion-price">{`${product.price.toLocaleString(
+                                  'it-IT',
+                                  {
+                                    style: 'currency',
+                                    currency: 'VND',
+                                  },
+                                )} `}</div>{' '}
+                                <div>
+                                  <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                    {`${calculateDiscountedPrice(
+                                      product.price,
+                                      product.value,
+                                    ).toLocaleString('it-IT', {
+                                      style: 'currency',
+                                      currency: 'VND',
+                                    })} `}
+                                  </span>{' '}
+                                </div>
+                              </div>
+                            ) : (
+                              <span>{`${product.price.toLocaleString('it-IT', {
+                                style: 'currency',
+                                currency: 'VND',
+                              })} `}</span>
+                            )}
+                          </span>
                         </Typography>
                         <div className="quantity-control">
                           <button onClick={() => onChangeSL(cart, -1)}>-</button>
