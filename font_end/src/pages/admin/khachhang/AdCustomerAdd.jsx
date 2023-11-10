@@ -180,16 +180,35 @@ export default function AdCustomerAdd() {
     const newErrors = {}
     const currentDate = dayjs()
     const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
+    const minBirthYear = 1990
     let check = 0
 
-    if (!khachHang.fullName) {
+    const cleanedFullName = khachHang.fullName.trim()
+
+    if (!cleanedFullName) {
       newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
       check++
-    } else if (khachHang.fullName.length > 100) {
+    } else if (cleanedFullName.length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
       check++
     } else {
-      newErrors.fullName = ''
+      const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
+      if (specialCharsRegex.test(cleanedFullName)) {
+        newErrors.fullName = 'Họ và Tên không được chứa kí tự đặc biệt.'
+        check++
+      } else {
+        newErrors.fullName = ''
+      }
+    }
+
+    if (!diaChi.specificAddress.trim()) {
+      newErrors.specificAddress = 'Vui lòng nhập địa chỉ cụ thể.'
+      check++
+    } else if (diaChi.specificAddress.length > 225) {
+      newErrors.specificAddress = 'Địa chỉ không được quá 225 kí tự.'
+      check++
+    } else {
+      newErrors.specificAddress = ''
     }
 
     if (!khachHang.email) {
@@ -226,16 +245,21 @@ export default function AdCustomerAdd() {
         newErrors.phoneNumber = ''
       }
     }
-
+    console.log(dateBirth)
     if (!khachHang.dateBirth) {
-      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      newErrors.dateBirth = 'Ngày sinh không được để trống.'
       check++
     } else {
-      if (dateBirth.isAfter(currentDate)) {
-        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+      if (dateBirth.isBefore(`${minBirthYear}-01-01`) || !dateBirth.isValid()) {
+        newErrors.dateBirth = 'Ngày sinh không hợp lệ.'
         check++
       } else {
-        newErrors.dateBirth = ''
+        if (dateBirth.isAfter(currentDate)) {
+          newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+          check++
+        } else {
+          newErrors.dateBirth = ''
+        }
       }
     }
 
@@ -283,7 +307,7 @@ export default function AdCustomerAdd() {
             let khachHangId = response.data.data.id
             const obj = {
               name: diaChi.name,
-              phoneNumber: diaChi.phoneNumber,
+              phoneNumber: khachHang.phoneNumber,
               specificAddress: diaChi.specificAddress,
               type: true,
               idCustomer: khachHangId,
@@ -525,7 +549,7 @@ export default function AdCustomerAdd() {
                     type="text"
                     size="small"
                     fullWidth
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setDiaChi({
                         ...diaChi,
                         specificAddress:
@@ -537,9 +561,13 @@ export default function AdCustomerAdd() {
                           ', ' +
                           selectedTinh.label,
                       })
-                    }
+                      setErrors({ ...errors, specificAddress: '' })
+                    }}
                     disabled={!selectedXa}
                   />
+                  <Typography variant="body2" color="error">
+                    {errors.specificAddress}
+                  </Typography>
                 </Grid>
               </Grid>
             </Grid>
