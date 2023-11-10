@@ -345,6 +345,8 @@ public class AdminSellServiceImpl implements AdminSellService {
         }
     }
 
+
+
     @Override
     public List<Bill> getAllBillTaoDonHang() {
         return billRepository.getAllBillTaoDonHang();
@@ -353,6 +355,11 @@ public class AdminSellServiceImpl implements AdminSellService {
     @Override
     public List<GetAllProductResponse> getAllProduct(FilterProductDetailRequest request) {
         return getProductRepository.getAllProduct(request);
+    }
+
+    @Override
+    public GetAllProductResponse getProduct(String id) {
+        return getProductRepository.getProduct(id);
     }
 
     @Override

@@ -46,6 +46,11 @@ public class SellController {
         return new ObjectRespone(getSell.getAllProduct(request));
     }
 
+    @GetMapping("/get-product/{id}")
+    public ObjectRespone getAllProduct(@PathVariable String id) {
+        return new ObjectRespone(getSell.getProduct(id));
+    }
+
     @GetMapping("/get-size")
     public ObjectRespone getAllSize() {
         return new ObjectRespone(getSell.getListSize());
