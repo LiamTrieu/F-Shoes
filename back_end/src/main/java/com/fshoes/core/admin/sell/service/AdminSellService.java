@@ -53,4 +53,5 @@ public interface AdminSellService {
 
     Boolean deleteProductsDetail(String idBill, List<String> idPrDetail);
 
+    GetAllProductResponse getProduct(String id);
 }

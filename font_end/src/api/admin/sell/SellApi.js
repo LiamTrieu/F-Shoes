@@ -5,6 +5,10 @@ const sellApi = {
     const urlGetAll = `/sell/getProduct`
     return axiosAdmin.get(urlGetAll, { params: filter })
   },
+  getProduct: (id) => {
+    const urlGet = `/sell/get-product/${id}`
+    return axiosAdmin.get(urlGet)
+  },
 
   getAllProductCart: () => {
     const urlGetAll = `/sell/get-product-cart`

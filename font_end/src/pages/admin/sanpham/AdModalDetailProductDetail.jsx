@@ -25,6 +25,7 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import { RiImageAddFill } from 'react-icons/ri'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
+import QRCode from 'react-qr-code'
 
 export default function AdModalDetailProductDetail({
   productDetail,
@@ -55,6 +56,7 @@ export default function AdModalDetailProductDetail({
   const [sizes, setSizes] = useState([])
   const [preProductDetail, setPreProductDetail] = useState({
     id: productDetail.id,
+    code: productDetail.code,
     image: productDetail.image,
     brand: { label: productDetail.brand.name, value: productDetail.brand.id },
     category: { label: productDetail.category.name, value: productDetail.category.id },
@@ -321,6 +323,40 @@ export default function AdModalDetailProductDetail({
       })
     }
   }
+
+  const onImageDownload = () => {
+    const svg = document.getElementById('QRCode')
+    const svgData = new XMLSerializer().serializeToString(svg)
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    const img = new Image()
+
+    // Set the border properties
+    const borderWidth = 5
+    const borderColor = '#FFF' // Replace with the desired color
+
+    img.onload = () => {
+      // Set canvas size including border
+      canvas.width = img.width + 2 * borderWidth
+      canvas.height = img.height + 2 * borderWidth
+
+      // Draw border
+      ctx.fillStyle = borderColor
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      // Draw QR code image on the canvas with a border
+      ctx.drawImage(img, borderWidth, borderWidth, img.width, img.height)
+
+      const pngFile = canvas.toDataURL('image/png')
+      const downloadLink = document.createElement('a')
+      downloadLink.download = 'qrSanPham.png'
+      downloadLink.href = `${pngFile}`
+      downloadLink.click()
+    }
+
+    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`
+  }
+
   return (
     <Dialog
       fullWidth
@@ -593,6 +629,15 @@ export default function AdModalDetailProductDetail({
             justifyContent="center"
             alignItems="center"
             spacing={1}>
+            <QRCode
+              onClick={onImageDownload}
+              value={preProductDetail.id}
+              id="QRCode"
+              style={{
+                width: '100px',
+                height: '100px',
+              }}
+            />
             {imageSelect.map((image) => {
               return (
                 <img
