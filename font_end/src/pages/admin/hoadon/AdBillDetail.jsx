@@ -1021,11 +1021,13 @@ export default function AdBillDetail() {
             {loading ? (
               <div>Loading...</div>
             ) : (
-              <BillHistoryDialog
-                openDialog={openDialog}
-                setOpenDialog={setOpenDialog}
-                listOrderTimeLine={listOrderTimeLine}
-              />
+              openDialog && (
+                <BillHistoryDialog
+                  openDialog={openDialog}
+                  setOpenDialog={setOpenDialog}
+                  listOrderTimeLine={listOrderTimeLine}
+                />
+              )
             )}
           </Stack>
         </Grid>

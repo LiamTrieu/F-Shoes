@@ -1,4 +1,4 @@
-﻿package com.fshoes.core.client.model.request;
+package com.fshoes.core.client.model.request;
 
 import com.fshoes.entity.Account;
 import com.fshoes.infrastructure.constant.EntityProperties;

@@ -49,7 +49,6 @@
 
 /* Đường kẻ ngăn các các cell */
 .tableCss .MuiTableCell-root {
-  border-right: 1px solid white;
   flex: 1;
   min-width: auto;
   box-sizing: border-box;
@@ -58,6 +57,11 @@
 /* Màu nền cho ô cell */
 .tableCss th,
 .tableCss td {
+  color: #333;
+  height: 50px;
+}
+
+.tableCss th {
   background-color: white;
   color: #333;
   height: 50px;
@@ -75,13 +79,9 @@
   border-collapse: collapse;
 }
 
-.tableCss th {
-  border: 1px solid #ddd;
-}
-
 /* Hiệu ứng hover */
 .tableCss tr:hover {
-  background-color: gray;
+  background-color: rgba(128, 128, 128, 0.2);
 }
 
 /* Giữ nguyên hình dạng table với bất kỳ màn hình nào */

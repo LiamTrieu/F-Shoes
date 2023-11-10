@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { getCookie } from '../../services/cookie'
 import { axiosApi } from '../axios'
 
@@ -12,9 +13,9 @@ const authenticationAPi = {
   },
   getAdmin: () => {
     const token = getCookie('AdminToken')
-    const url = `/authentication`
+    const url = `http://localhost:8080/api/authentication`
     if (token) {
-      return axiosApi.get(url, { headers: { Authorization: `Bearer ${token}` } })
+      return axios.get(url, { headers: { Authorization: `Bearer ${token}` } })
     }
   },
   getClient: () => {
