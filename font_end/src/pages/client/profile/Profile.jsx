@@ -20,6 +20,7 @@ import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { FiUsers } from 'react-icons/fi'
 import EditIcon from '@mui/icons-material/Edit'
 import Order from './Order'
+import { Link } from 'react-router-dom'
 
 export default function Profile() {
   const [open, setOpen] = React.useState(true)
@@ -71,7 +72,7 @@ export default function Profile() {
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItemButton sx={{ pl: 4 }}>
+                <ListItemButton component={Link} to="/profile/user" sx={{ pl: 4 }}>
                   <ListItemIcon>
                     <StarBorder />
                   </ListItemIcon>

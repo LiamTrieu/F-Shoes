@@ -26,12 +26,12 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     }
 
     @Override
-    public Boolean update(UserLogin userLogin, ClientAccountRequest khachHangRequest) throws ParseException {
+    public Boolean update(UserLogin userLogin, ClientAccountRequest request) throws ParseException {
         Optional<Account> optionalCustomer = repository.findById(userLogin.getUserLogin().getId());
         if (optionalCustomer.isPresent()) {
-            Account customer = khachHangRequest.newCustomer(optionalCustomer.get());
-            if(khachHangRequest.getAvatar() != null) {
-                customer.setAvatar(cloudinaryImage.uploadAvatar(khachHangRequest.getAvatar()));
+            Account customer = request.newCustomer(optionalCustomer.get());
+            if(request.getAvatar() != null) {
+                customer.setAvatar(cloudinaryImage.uploadAvatar(request.getAvatar()));
             }
             repository.save(customer);
             return true;

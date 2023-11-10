@@ -11,5 +11,5 @@ public interface ClientAccountService {
 
     Account getOneCustomerClient(UserLogin userLogin);
 
-    Boolean update(UserLogin userLogin, ClientAccountRequest khachHangRequest) throws ParseException;
+    Boolean update(UserLogin userLogin, ClientAccountRequest request) throws ParseException;
 }
