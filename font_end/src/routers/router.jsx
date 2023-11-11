@@ -23,6 +23,7 @@ import AutGuard from '../layout/AutGuard'
 import AutGuardClient from '../layout/AutGuardClient'
 import AdminLogin from '../pages/admin/AdminLogin'
 import Forbidden403 from '../pages/httpstatus/Forbidden403'
+import NotFound404 from '../pages/httpstatus/NotFound404'
 
 const router = createBrowserRouter([
   {
@@ -67,6 +68,7 @@ const router = createBrowserRouter([
   { path: '/vnpay-payment', element: <Payment /> },
   { path: '/admin/login', element: <AdminLogin /> },
   { path: '/not-authorization', element: <Forbidden403 /> },
+  { path: '*', element: <NotFound404 /> },
 ])
 
 export default router

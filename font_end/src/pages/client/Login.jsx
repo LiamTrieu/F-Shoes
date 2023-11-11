@@ -30,6 +30,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addUser } from '../../services/slices/userSlice'
 import clientCartApi from '../../api/client/clientCartApi'
 import { GetCart, setCart } from '../../services/slices/cartSlice'
+import confirmSatus from '../../components/comfirmSwal'
+import { setLoading } from '../../services/slices/loadingSlice'
 
 const InputForm = ({ label, Icon, id, isPass, defaultValue, chagneValue }) => {
   const [showPass, setShowPass] = useState(false)
@@ -73,15 +75,193 @@ const InputForm = ({ label, Icon, id, isPass, defaultValue, chagneValue }) => {
   )
 }
 
-const RegisterPanel = () => {
+const RegisterPanel = ({ setValue }) => {
+  const [user, setUser] = useState({
+    email: '',
+    password: '',
+    name: '',
+    repass: '',
+  })
+  const [errors, setErrors] = useState({})
+
+  const navigate = useNavigate()
+  function validate(fieldName, value) {
+    let newErrors = { ...errors }
+
+    // Kiểm tra email
+    if (fieldName === 'email') {
+      newErrors.email = null
+      if (!value || !value.trim()) {
+        newErrors.email = 'Vui lòng nhập địa chỉ email.'
+      } else if (!/\S+@\S+\.\S+/.test(value.trim())) {
+        newErrors.email = 'Địa chỉ email không hợp lệ.'
+      }
+    }
+
+    // Kiểm tra mật khẩu
+    if (fieldName === 'password') {
+      newErrors.password = null
+      if (!value || !value.trim()) {
+        newErrors.password = 'Vui lòng nhập mật khẩu.'
+      } else if (value.trim().length < 6) {
+        newErrors.password = 'Mật khẩu phải chứa ít nhất 6 ký tự.'
+      }
+    }
+
+    // Kiểm tra tên
+    if (fieldName === 'name') {
+      newErrors.name = null
+      if (!value || !value.trim()) {
+        newErrors.name = 'Vui lòng nhập tên.'
+      }
+    }
+
+    // Kiểm tra mật khẩu nhập lại
+    if (fieldName === 'repass') {
+      newErrors.repass = null
+      if (!value || !value.trim()) {
+        newErrors.repass = 'Vui lòng nhập lại mật khẩu.'
+      } else if (value.trim() !== user.password.trim()) {
+        newErrors.repass = 'Mật khẩu nhập lại không khớp.'
+      }
+    }
+
+    setErrors(newErrors)
+
+    // Trả về true nếu không có lỗi, ngược lại false
+    return Object.keys(newErrors).length === 0
+  }
+  function validateAll() {
+    let newErrors = {}
+
+    // Kiểm tra email
+    if (!user.email || !user.email.trim()) {
+      newErrors.email = 'Vui lòng nhập địa chỉ email.'
+    } else if (!/\S+@\S+\.\S+/.test(user.email.trim())) {
+      newErrors.email = 'Địa chỉ email không hợp lệ.'
+    }
+
+    // Kiểm tra mật khẩu
+    if (!user.password || !user.password.trim()) {
+      newErrors.password = 'Vui lòng nhập mật khẩu.'
+    } else if (user.password.trim().length < 6) {
+      newErrors.password = 'Mật khẩu phải chứa ít nhất 6 ký tự.'
+    }
+
+    // Kiểm tra tên
+    if (!user.name || !user.name.trim()) {
+      newErrors.name = 'Vui lòng nhập tên.'
+    }
+
+    // Kiểm tra mật khẩu nhập lại
+    if (!user.repass || !user.repass.trim()) {
+      newErrors.repass = 'Vui lòng nhập lại mật khẩu.'
+    } else if (user.repass.trim() !== user.password.trim()) {
+      newErrors.repass = 'Mật khẩu nhập lại không khớp.'
+    }
+
+    setErrors(newErrors)
+
+    // Trả về true nếu không có lỗi, ngược lại false
+    return Object.keys(newErrors).length === 0
+  }
+
+  function handleInputChange(fieldName, value) {
+    setUser((prevUser) => ({ ...prevUser, [fieldName]: value }))
+    validate(fieldName, value)
+  }
+  const dispatch = useDispatch()
+  async function submit() {
+    let isValid = validateAll()
+
+    try {
+      const response = await authenticationAPi.checkMail(user.email)
+
+      if (response.data.success) {
+        isValid = false
+        setErrors({ email: 'Địa chỉ email đã tồn tại trong hệ thống.' })
+      }
+
+      if (isValid) {
+        const title = 'Xác nhận đăng ký tài khoản'
+        const result = await confirmSatus(title, '')
+
+        if (result.isConfirmed) {
+          dispatch(setLoading(true))
+          authenticationAPi.register(user.email, user.password, user.name).then(
+            (response) => {
+              if (response.data.success) {
+                toast.success('Đăng ký thành công!')
+                setValue(0)
+              }
+            },
+            () => {},
+          )
+        }
+      }
+    } catch (error) {
+      console.error('Error while checking email:', error)
+    }
+    dispatch(setLoading(false))
+  }
+
   return (
     <Box>
-      <InputForm label="Tên tài khoản *" Icon={AccountCircle} id="reg-input-user" />
-      <InputForm label="Địa chỉ email *" Icon={EmailIcon} id="reg-input-email" type="email" />
-      <InputForm label="Mật khẩu *" Icon={LockIcon} id="reg-input-pass" isPass={true} />
-      <InputForm isPass={true} label="Nhập lại mật khẩu *" Icon={LockIcon} id="reg-input-repass" />
+      <InputForm
+        chagneValue={(e) => handleInputChange('name', e)}
+        label="Họ và tên *"
+        Icon={AccountCircle}
+        id="reg-input-user"
+      />
+      {errors.name && (
+        <div style={{ color: 'red', fontSize: '13px', marginTop: '-20px', paddingBottom: '20px' }}>
+          {errors.name}
+        </div>
+      )}
+      <InputForm
+        chagneValue={(e) => handleInputChange('email', e)}
+        label="Địa chỉ email *"
+        Icon={EmailIcon}
+        id="reg-input-email"
+        type="email"
+      />
+      {errors.email && (
+        <div style={{ color: 'red', fontSize: '13px', marginTop: '-20px', paddingBottom: '20px' }}>
+          {errors.email}
+        </div>
+      )}
+      <InputForm
+        chagneValue={(e) => handleInputChange('password', e)}
+        label="Mật khẩu *"
+        Icon={LockIcon}
+        id="reg-input-pass"
+        isPass={true}
+      />
+      {errors.password && (
+        <div style={{ color: 'red', fontSize: '13px', marginTop: '-20px', paddingBottom: '20px' }}>
+          {errors.password}
+        </div>
+      )}
+      <InputForm
+        chagneValue={(e) => handleInputChange('repass', e)}
+        isPass={true}
+        label="Nhập lại mật khẩu *"
+        Icon={LockIcon}
+        id="reg-input-repass"
+      />
+      {errors.repass && (
+        <div style={{ color: 'red', fontSize: '13px', marginTop: '-20px', paddingBottom: '20px' }}>
+          {errors.repass}
+        </div>
+      )}
+
       <ThemeProvider theme={ColorCustom}>
-        <Button type="submit" variant="contained" color="neutral" sx={{ marginRight: '15px' }}>
+        <Button
+          onClick={submit}
+          type="submit"
+          variant="contained"
+          color="neutral"
+          sx={{ marginRight: '15px' }}>
           Đăng ký
         </Button>
       </ThemeProvider>
@@ -109,7 +289,7 @@ const LoginPanel = () => {
             dispatch(addUser(response.data.data))
           })
           fetchCart()
-          navigate('/home')
+          navigate(-1)
         } else {
           toast.error('Đăng nhập thất bại!')
           SetError('Tài khoản hoặc mật khẩu không chính xác')
@@ -158,7 +338,7 @@ const LoginPanel = () => {
     <Box>
       <InputForm
         chagneValue={(e) => {
-          setUser({ email: e })
+          setUser({ ...user, email: e })
         }}
         label="Địa chỉ email của bạn *"
         Icon={AccountCircle}
@@ -167,7 +347,7 @@ const LoginPanel = () => {
       />
       <InputForm
         chagneValue={(e) => {
-          setUser({ password: e })
+          setUser({ ...user, password: e })
         }}
         defaultValue={user.password}
         label="Mật khẩu *"
@@ -244,7 +424,7 @@ export default function Login() {
             }}
           />
         </Tabs>
-        {value === 0 ? <LoginPanel /> : <RegisterPanel />}
+        {value === 0 ? <LoginPanel /> : <RegisterPanel setValue={setValue} />}
       </Paper>
     </Container>
   )
