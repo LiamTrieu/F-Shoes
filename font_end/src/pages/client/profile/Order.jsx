@@ -1,89 +1,111 @@
-import { Box, Container, Divider, Paper, Tab, Tabs, TextField, Typography } from '@mui/material'
-import React from 'react'
-import PropTypes from 'prop-types'
-
-function CustomTabPanel(props) {
-  const { children, value, index, ...other } = props
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}>
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  )
-}
-
-CustomTabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-}
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  }
-}
+import {
+  Box,
+  Container,
+  Divider,
+  Grid,
+  InputAdornment,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+} from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import SearchIcon from '@mui/icons-material/Search'
+import './Order.css'
+import ClientAccountApi from '../../../api/client/clientAccount'
+import { getStatus } from '../../../services/constants/statusHoaDon'
+import { Link } from 'react-router-dom'
 
 export default function Order() {
-  const [value, setValue] = React.useState(0)
+  const [getBill, setGetBill] = useState([])
+  const [valueTabHD, setValueTabHD] = React.useState('all')
+  const listSttHD = [0, 1, 2, 3, 4, 5, 6, 7]
+  const [filter, setFilter] = useState({
+    status: '',
+    nameProductSearch: null,
+  })
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue)
+  const handleChangeTab = (event, newValue) => {
+    setValueTabHD(newValue)
+    const updatedFilter = { ...filter, status: newValue === 'all' ? '' : newValue }
+    setFilter(updatedFilter)
   }
+
+  useEffect(() => {
+    ClientAccountApi.getAllBill(filter).then((response) => {
+      setGetBill(response.data.data)
+    })
+  }, [filter])
+
+  const data = Array.from({ length: 10 }).fill(null)
   return (
     <>
-      <Container maxWidth="xl">
-        <Paper elevation={24}>
-          <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-            <Tabs value={value} onChange={handleChange} centered>
-              <Tab label="Tất cả" {...a11yProps(0)} />
-              <Tab label="Chờ thanh toán" {...a11yProps(1)} />
-              <Tab label="Đang vận chuyển" {...a11yProps(2)} />
-              <Tab label="Hoàn thành" />
-              <Tab label="Đã hủy" />
+      <div className="order">
+        <Container maxWidth="xl">
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={valueTabHD} onChange={handleChangeTab} className="tabSttHD">
+              <Tab label={'Tất cả'} key={'tabSttHd all'} value={'all'}></Tab>
+              {listSttHD.map((row, i) => (
+                <Tab label={getStatus(row)} key={'tabSttHd' + i} value={row}></Tab>
+              ))}
             </Tabs>
           </Box>
-        </Paper>
-        <TextField
-          sx={{ mt: 3, mb: 3, width: '100%' }}
-          size="small"
-          id="filled-basic"
-          placeholder="Tìm kiếm đơn hàng theo tên sản phẩm "
-          variant="filled"
-        />
-        <CustomTabPanel value={value} index={0}>
-          <div>
+          <TextField
+            sx={{ width: '100%', marginTop: '20px', border: 'none', backgroundColor: '#C0C0C0' }}
+            placeholder="Tìm kiếm theo tên khuyến mại"
+            size="small"
+            onChange={(e) => setFilter({ ...filter, nameProduct: e.target.value })}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="cam" />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <div style={{ maxHeight: '500px', overflow: 'auto' }}>
             <Divider />
-            <div style={{ display: 'flex', marginTop: '10px', marginBottom: '10px' }}>
-              <div style={{ width: '90px', height: '90px', backgroundColor: 'black' }}>
-                <img
-                  src={require('../../../assets/image/TinTuc/avata.jpg')}
-                  alt=""
-                  style={{ width: '100%', height: '100%' }}
-                />
-              </div>
-              <Typography>New Balance 990 Suede Đế nhựa "Orange" giày thể thao</Typography>
-            </div>
-            <Divider />
+            {getBill.map((item, index) => (
+              <React.Fragment key={index}>
+                <Grid container spacing={2} style={{ marginTop: '5px', marginBottom: '20px' }}>
+                  <Grid item xs={2}>
+                    <div style={{ width: '90px', height: '90px', backgroundColor: 'black' }}>
+                      <img src={item.url} alt="error" style={{ width: '100%', height: '100%' }} />
+                    </div>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
+                      {item.nameProduct + ' ' + item.material + ' ' + item.sole} "{item.color}"
+                    </Typography>
+                    <Typography>
+                      Phân loại hàng: {item.category} - {item.size}
+                    </Typography>
+                    <Typography>X{item.quantity}</Typography>
+                  </Grid>
+
+                  <Grid
+                    item
+                    xs={2}
+                    style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Link to={`/account/get-by-idBill/${item.id}`}>
+                      <div>
+                        <span>
+                          {item.price.toLocaleString('it-IT', {
+                            style: 'currency',
+                            currency: 'VND',
+                          })}
+                        </span>
+                      </div>
+                    </Link>
+                  </Grid>
+                </Grid>
+
+                {index < data.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
           </div>
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
-          Item Two
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
-          Item Three
-        </CustomTabPanel>
-      </Container>
+        </Container>
+      </div>
     </>
   )
 }
