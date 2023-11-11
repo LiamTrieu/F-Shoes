@@ -22,6 +22,18 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     @Autowired
     private CloudinaryImage cloudinaryImage;
 
+    @Autowired
+    private ClientBillRepository billRepository;
+
+    @Autowired
+    private ClientBillDetailRepository billDetailRepository;
+
+    @Autowired
+    private ClientBillHistoryRepository billHistoryRepository;
+
+    @Autowired
+    private ClientTransactionRepository transactionRepository;
+
     @Override
     public Account getOneCustomerClient(UserLogin userLogin) {
         return repository.findById(userLogin.getUserLogin().getId()).orElse(null);
@@ -46,5 +58,25 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     @Override
     public List<ClientCustomerResponse> getAll() {
         return repository.getAllAccount();
+    }
+
+    @Override
+    public List<ClientBillAccountResponse> getALlBill(ClientBillAccountRequest status) {
+        return billRepository.getALlBill(status);
+    }
+
+    @Override
+    public List<ClientBillDetailResponse> getBillDetailsByBillId(String idBill) {
+        return billDetailRepository.getBillDetailsByBillId(idBill);
+    }
+
+    @Override
+    public List<CLientBillHistoryResponse> getListBillHistoryByIdBill(String idBill) {
+        return billHistoryRepository.getListBillHistoryByIdBill(idBill);
+    }
+
+    @Override
+    public List<ClientTransactionResponse> getListTransactionByIdBill(String idBill) {
+        return transactionRepository.getTransactionByBillId(idBill);
     }
 }

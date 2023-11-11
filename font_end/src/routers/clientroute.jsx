@@ -10,6 +10,7 @@ import AboutUs from '../pages/client/AboutUs'
 import Profile from '../pages/client/profile/Profile'
 import UserProfile from '../pages/client/profile/UserProfile'
 import AddressUser from '../pages/client/profile/AddressUser'
+import Order from '../pages/client/profile/Order'
 
 const clientRoute = [
   { path: '/home', element: <Home />, index: true },
@@ -20,7 +21,14 @@ const clientRoute = [
   { path: '/cart', element: <Cart /> },
   { path: '/login', element: <Login /> },
   { path: '/checkout', element: <Checkout /> },
-  { path: '/profile', element: <Profile /> },
+  {
+    path: '/profile',
+    element: (
+      <Profile>
+        <Order />
+      </Profile>
+    ),
+  },
   { path: '/profile/user', element: <UserProfile /> },
   { path: '/profile/address', element: <AddressUser /> },
   { path: '/product/:id', element: <DetailProduct /> },

@@ -34,4 +34,38 @@ public class ClientAccountController {
     public List<ClientCustomerResponse> getAllAccount(){
         return service.getAll();
     }
+
+
+    @GetMapping("all-bill")
+    public ObjectRespone getAllBill( ClientBillAccountRequest status){
+//        Account account = userLogin.getUserLogin();
+//        if (account != null) {
+//            String idCustomer = account.getId();
+//            List<ClientBillAccountResponse> allBills = accountService.getALlBill(status);
+//            List<ClientBillAccountResponse> filteredBills = allBills.stream()
+//                    .filter(Bill -> Bill.getCustomer().equals(idCustomer))
+//                    .collect(Collectors.toList());
+//            return new ObjectRespone(filteredBills);
+//        } else {
+//            return new ObjectRespone("Không có người dùng đăng nhập hoặc không tìm thấy tài khoản.");
+//        }
+
+        return new ObjectRespone(accountService.getALlBill(status));
+
+    }
+
+    @GetMapping("/get-by-idBill/{idBill}")
+    public ObjectRespone getByIdBill(@PathVariable("idBill") String idBill) {
+        return new ObjectRespone(accountService.getBillDetailsByBillId(idBill));
+    }
+
+    @GetMapping("/get-bill-history-by-idBill/{idBill}")
+    public ObjectRespone getBillHistoryByIdBill(@PathVariable("idBill") String idBill) {
+        return new ObjectRespone(accountService.getListBillHistoryByIdBill(idBill));
+    }
+
+    @GetMapping("/get-transaction-by-idBill/{idBill}")
+    public ObjectRespone getTransactionByIdBill(@PathVariable("idBill") String idBill) {
+        return new ObjectRespone(accountService.getListTransactionByIdBill(idBill));
+    }
 }
