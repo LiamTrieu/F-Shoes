@@ -1,6 +1,7 @@
 package com.fshoes.core.client.service.impl;
 
 import com.fshoes.core.client.model.request.ClientAccountRequest;
+import com.fshoes.core.client.model.response.ClientCustomerResponse;
 import com.fshoes.core.client.repository.ClientAccountRepository;
 import com.fshoes.core.client.service.ClientAccountService;
 import com.fshoes.core.common.UserLogin;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,5 +41,10 @@ public class ClientAccountServiceImpl implements ClientAccountService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public List<ClientCustomerResponse> getAll() {
+        return repository.getAllAccount();
     }
 }

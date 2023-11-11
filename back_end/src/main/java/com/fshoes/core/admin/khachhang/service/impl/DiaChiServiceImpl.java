@@ -108,12 +108,7 @@ public class DiaChiServiceImpl implements DiaChiService {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(response.getBody());
-
-                // Truy cập vào "data" array
                 JsonNode dataArray = rootNode.get("data");
-
-                // Kiểm tra xem "data" là một mảng và có ít nhất một phần tử
-
                 if (dataArray.isArray()) {
                     List<ProvinceRespone> provinceResponeList = new ArrayList<>();
                     for (int i = 0; i < dataArray.size(); i++) {
@@ -146,7 +141,6 @@ public class DiaChiServiceImpl implements DiaChiService {
         headers.set("token", tokenApiGhn);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        // Thêm tham số idProvince vào URL để lấy danh sách quận/huyện cho tỉnh/thành phố cụ thể
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
                 .queryParam("province_id", idProvince);
 
@@ -156,11 +150,7 @@ public class DiaChiServiceImpl implements DiaChiService {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(response.getBody());
-
-                // Truy cập vào "data" array
                 JsonNode dataArray = rootNode.get("data");
-
-                // Kiểm tra xem "data" là một mảng và có ít nhất một phần tử
                 if (dataArray.isArray()) {
                     List<DistrictResponse> districtResponseList = new ArrayList<>();
                     for (int i = 0; i < dataArray.size(); i++) {
@@ -201,11 +191,7 @@ public class DiaChiServiceImpl implements DiaChiService {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(response.getBody());
-
-                // Truy cập vào "data" array
                 JsonNode dataArray = rootNode.get("data");
-
-                // Kiểm tra xem "data" là một mảng và có ít nhất một phần tử
                 if (dataArray.isArray()) {
                     List<WardResponse> wardCodeList = new ArrayList<>();
                     for (int i = 0; i < dataArray.size(); i++) {
@@ -251,12 +237,8 @@ public class DiaChiServiceImpl implements DiaChiService {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(response.getBody());
-
-                // Trích xuất giá trị của trường "total" từ đối tượng JSON
                 JsonNode dataNode = rootNode.get("data");
                 Double total = dataNode.get("total").asDouble();
-
-                // Tạo một đối tượng ShippingOrderResponse chỉ với trường "total"
                 ShippingOrderResponse shippingOrderResponse = new ShippingOrderResponse(total);
 
                 return ResponseEntity.ok(shippingOrderResponse);
@@ -292,7 +274,6 @@ public class DiaChiServiceImpl implements DiaChiService {
 
                 JsonNode dataNode = rootNode.get("data");
                 if (dataNode != null && dataNode.isArray() && dataNode.size() > 0) {
-                    // Lấy service_id của dịch vụ đầu tiên (nếu có)
                     String service_id = dataNode.get(0).get("service_id").asText();
                     ServiceId serviceId = new ServiceId(service_id);
 
@@ -337,11 +318,7 @@ public class DiaChiServiceImpl implements DiaChiService {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(response.getBody());
-
-                // Lấy thời gian giao hàng dự kiến (leadtime) từ phản hồi JSON
                 Integer leadtime = rootNode.get("data").get("leadtime").asInt();
-
-                // Tạo đối tượng TimeGhn và trả về nó trong ResponseEntity
                 TimeGhn timeGhn = new TimeGhn(leadtime);
                 return ResponseEntity.ok(timeGhn);
             } catch (Exception e) {
