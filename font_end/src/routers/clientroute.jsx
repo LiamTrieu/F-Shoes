@@ -9,6 +9,7 @@ import Contact from '../pages/client/Contact'
 import AboutUs from '../pages/client/AboutUs'
 import Profile from '../pages/client/profile/Profile'
 import UserProfile from '../pages/client/profile/UserProfile'
+import AddressUser from '../pages/client/profile/AddressUser'
 
 const clientRoute = [
   { path: '/home', element: <Home />, index: true },
@@ -21,6 +22,7 @@ const clientRoute = [
   { path: '/checkout', element: <Checkout /> },
   { path: '/profile', element: <Profile /> },
   { path: '/profile/user', element: <UserProfile /> },
+  { path: '/profile/address', element: <AddressUser /> },
   { path: '/product/:id', element: <DetailProduct /> },
 ]
 

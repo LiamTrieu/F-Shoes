@@ -245,7 +245,6 @@ export default function AdCustomerAdd() {
         newErrors.phoneNumber = ''
       }
     }
-    console.log(dateBirth)
     if (!khachHang.dateBirth) {
       newErrors.dateBirth = 'Ngày sinh không được để trống.'
       check++
@@ -446,7 +445,6 @@ export default function AdCustomerAdd() {
                   </Typography>
                   <Box sx={{ minWidth: 120 }}>
                     <Autocomplete
-                      popupIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"
@@ -473,7 +471,6 @@ export default function AdCustomerAdd() {
                   </Typography>
                   <Box sx={{ minWidth: 120 }}>
                     <Autocomplete
-                      popupIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"
@@ -500,7 +497,6 @@ export default function AdCustomerAdd() {
                   </Typography>
                   <Box sx={{ minWidth: 120 }}>
                     <Autocomplete
-                      popupIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"

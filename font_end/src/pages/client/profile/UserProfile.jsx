@@ -17,10 +17,13 @@ import ClientAccountApi from '../../../api/client/clientAccountApi'
 import dayjs from 'dayjs'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import './UserProfile.css'
+import { toast } from 'react-toastify'
+import confirmSatus from '../../../components/comfirmSwal'
 
 export default function UserProfile() {
   const [image, setImage] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [list, setList] = useState([])
   const [khachHang, setKhachHang] = useState({
     fullName: '',
     email: '',
@@ -44,6 +47,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     loadData()
+    loadList()
   }, [])
 
   const handleImageChange = (event) => {
@@ -58,13 +62,129 @@ export default function UserProfile() {
     }
   }
 
-  const loadData = (id) => {
+  const loadList = () => {
+    ClientAccountApi.getAll().then((response) => {
+      setList(response.data)
+    })
+  }
+
+  const loadData = () => {
     ClientAccountApi.getOne().then((response) => {
       const formattedBirthDate = dayjs(response.data.data.dateBirth).format('DD-MM-YYYY')
       setKhachHang({ ...response.data.data, dateBirth: formattedBirthDate })
     })
   }
 
+  const handleGenderRadioChange = (event) => {
+    setErrorsKH({ ...errorsKH, gender: '' })
+    setKhachHang({
+      ...khachHang,
+      gender: event.target.value,
+    })
+  }
+
+  const isPhoneNumberDuplicate = (phoneNumber, currentId) => {
+    return list.some(
+      (customer) => customer.phoneNumber === phoneNumber && customer.id !== currentId,
+    )
+  }
+  const isEmailDuplicate = (email, currentId) => {
+    return list.some((customer) => customer.email === email && customer.id !== currentId)
+  }
+
+  const handleButtonUpdateStaff = () => {
+    const newErrors = {}
+    const currentDate = dayjs()
+    const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
+    let check = 0
+
+    if (!khachHang.fullName.trim()) {
+      newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
+      check++
+    } else if (khachHang.fullName.trim().length > 100) {
+      newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
+      check++
+    } else {
+      newErrors.fullName = ''
+    }
+
+    if (!khachHang.email.trim()) {
+      newErrors.email = 'Vui lòng nhập Email.'
+      check++
+    } else {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+      if (!emailRegex.test(khachHang.email.trim())) {
+        newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
+        check++
+      } else if (khachHang.email.trim().length > 50) {
+        newErrors.email = 'Email không được quá 50 kí tự.'
+        check++
+      } else if (isEmailDuplicate(khachHang.email, khachHang.id)) {
+        newErrors.email = 'Email đã tồn tại.'
+        check++
+      } else {
+        newErrors.email = ''
+      }
+    }
+
+    if (!khachHang.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      check++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(khachHang.phoneNumber.trim())) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        check++
+      } else if (isPhoneNumberDuplicate(khachHang.phoneNumber, khachHang.id)) {
+        newErrors.phoneNumber = 'Số điện thoại đã tồn tại.'
+        check++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+
+    if (!khachHang.dateBirth) {
+      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      check++
+    } else {
+      if (dateBirth.isAfter(currentDate)) {
+        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+        check++
+      } else {
+        newErrors.dateBirth = ''
+      }
+    }
+
+    if (check > 0) {
+      errorsKH(newErrors)
+      return
+    }
+    const title = 'Xác nhận cập nhật thông tin?'
+    const text = ''
+    confirmSatus(title, text).then((result) => {
+      if (result.isConfirmed) {
+        ClientAccountApi.update(khachHang)
+          .then(() => {
+            toast.success('Cập nhật thông tin thành công!', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            loadData()
+          })
+          .catch(() => {
+            toast.error('Cập nhật thông tin thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
+          .finally(() => {
+            setLoading(false)
+          })
+      } else {
+        toast.error('Cập nhật thông tin thất bại', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
+    })
+  }
   return (
     <div>
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
@@ -84,8 +204,10 @@ export default function UserProfile() {
                 size="small"
                 fullWidth
                 name="fullName"
-                value={khachHang.fullName}
-                // onChange={(e) => updateKhachHang(e)}
+                value={khachHang.fullName || ''}
+                onChange={(e) => {
+                  setKhachHang({ ...khachHang, fullName: e.target.value })
+                }}
               />
               <Typography variant="body2" color="error">
                 {errorsKH.fullName}
@@ -102,8 +224,10 @@ export default function UserProfile() {
                 size="small"
                 fullWidth
                 name="email"
-                value={khachHang.email}
-                // onChange={(e) => updateKhachHang(e)}
+                value={khachHang.email || ''}
+                onChange={(e) => {
+                  setKhachHang({ ...khachHang, email: e.target.value })
+                }}
               />
               <Typography variant="body2" color="error">
                 {errorsKH.email}
@@ -120,8 +244,10 @@ export default function UserProfile() {
                 size="small"
                 fullWidth
                 name="phoneNumber"
-                value={khachHang.phoneNumber}
-                // onChange={(e) => updateKhachHang(e)}
+                value={khachHang.phoneNumber || ''}
+                onChange={(e) => {
+                  setKhachHang({ ...khachHang, phoneNumber: e.target.value })
+                }}
               />
               <Typography variant="body2" color="error">
                 {errorsKH.phoneNumber}
@@ -137,14 +263,12 @@ export default function UserProfile() {
                     className="small-datepicker"
                     name="dateBirth"
                     value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')}
-                    // onChange={(date) =>
-                    //   updateKhachHang({
-                    //     target: {
-                    //       name: 'dateBirth',
-                    //       value: date ? dayjs(date).format('DD-MM-YYYY') : null,
-                    //     },
-                    //   })
-                    // }
+                    onChange={(e) =>
+                      setKhachHang({
+                        ...khachHang,
+                        dateBirth: dayjs(e).format('DD-MM-YYYY'),
+                      })
+                    }
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -161,8 +285,7 @@ export default function UserProfile() {
                   row
                   name="gender"
                   value={khachHang.gender}
-                  //   onChange={(e) => updateKhachHang(e)}
-                >
+                  onChange={handleGenderRadioChange}>
                   <FormControlLabel value="true" control={<Radio />} label="Nam" />
                   <FormControlLabel value="false" control={<Radio />} label="Nữ" />
                 </RadioGroup>
@@ -230,7 +353,7 @@ export default function UserProfile() {
           </Grid>
         </Grid>
         <Button
-          //   onClick={() => onSubmit(id, khachHang)}
+          onClick={handleButtonUpdateStaff}
           variant="outlined"
           color="success"
           size="small"

@@ -78,7 +78,7 @@ export default function Profile() {
                   </ListItemIcon>
                   <ListItemText primary="Hồ sơ" />
                 </ListItemButton>
-                <ListItemButton sx={{ pl: 4 }}>
+                <ListItemButton component={Link} to="/profile/address" sx={{ pl: 4 }}>
                   <ListItemIcon>
                     <StarBorder />
                   </ListItemIcon>
