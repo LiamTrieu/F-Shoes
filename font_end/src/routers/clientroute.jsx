@@ -29,9 +29,30 @@ const clientRoute = [
       </Profile>
     ),
   },
-  { path: '/profile/user', element: <UserProfile /> },
-  { path: '/profile/address', element: <AddressUser /> },
-  { path: '/product/:id', element: <DetailProduct /> },
+  {
+    path: '/profile/user',
+    element: (
+      <Profile>
+        <UserProfile />
+      </Profile>
+    ),
+  },
+  {
+    path: '/profile/address',
+    element: (
+      <Profile>
+        <AddressUser />
+      </Profile>
+    ),
+  },
+  {
+    path: '/product/:id',
+    element: (
+      <Profile>
+        <DetailProduct />
+      </Profile>
+    ),
+  },
 ]
 
 export default clientRoute

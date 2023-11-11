@@ -1,6 +1,7 @@
 package com.fshoes.core.client.controller;
 
 import com.fshoes.core.client.model.request.ClientAccountRequest;
+import com.fshoes.core.client.model.request.ClientBillAccountRequest;
 import com.fshoes.core.client.model.response.ClientCustomerResponse;
 import com.fshoes.core.client.service.ClientAccountService;
 import com.fshoes.core.common.ObjectRespone;
@@ -50,22 +51,22 @@ public class ClientAccountController {
 //            return new ObjectRespone("Không có người dùng đăng nhập hoặc không tìm thấy tài khoản.");
 //        }
 
-        return new ObjectRespone(accountService.getALlBill(status));
+        return new ObjectRespone(service.getALlBill(status));
 
     }
 
     @GetMapping("/get-by-idBill/{idBill}")
     public ObjectRespone getByIdBill(@PathVariable("idBill") String idBill) {
-        return new ObjectRespone(accountService.getBillDetailsByBillId(idBill));
+        return new ObjectRespone(service.getBillDetailsByBillId(idBill));
     }
 
     @GetMapping("/get-bill-history-by-idBill/{idBill}")
     public ObjectRespone getBillHistoryByIdBill(@PathVariable("idBill") String idBill) {
-        return new ObjectRespone(accountService.getListBillHistoryByIdBill(idBill));
+        return new ObjectRespone(service.getListBillHistoryByIdBill(idBill));
     }
 
     @GetMapping("/get-transaction-by-idBill/{idBill}")
     public ObjectRespone getTransactionByIdBill(@PathVariable("idBill") String idBill) {
-        return new ObjectRespone(accountService.getListTransactionByIdBill(idBill));
+        return new ObjectRespone(service.getListTransactionByIdBill(idBill));
     }
 }
