@@ -37,7 +37,7 @@ public interface AdminSellGetProductRepository extends ProductRepository {
                                                   AND (:#{#req.sole} IS NULL OR sl.id = :#{#req.sole}) 
                                                   AND (:#{#req.codeProductDetail} IS NULL OR pd.code = :#{#req.codeProductDetail}) 
                                                   AND (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) 
-                                                  AND p.deleted = 0
+                                                  AND p.deleted = 0 AND pd.deleted = 0
                                                   group by p.id, pr.id, pd.id;
             """, nativeQuery = true)
     List<GetAllProductResponse> getAllProduct(@Param("req") FilterProductDetailRequest req);

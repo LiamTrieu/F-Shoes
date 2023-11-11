@@ -16,4 +16,11 @@ public interface ClientAccountService {
     Boolean update(UserLogin userLogin, ClientAccountRequest request) throws ParseException;
 
     List<ClientCustomerResponse> getAll();
+
+    List<ClientBillAccountResponse> getALlBill(ClientBillAccountRequest status);
+
+    List<ClientBillDetailResponse> getBillDetailsByBillId(String idBill);
+
+    List<CLientBillHistoryResponse> getListBillHistoryByIdBill(String idBill);
+    List<ClientTransactionResponse> getListTransactionByIdBill(String idBill);
 }

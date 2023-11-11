@@ -22,7 +22,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import Order from './Order'
 import { Link } from 'react-router-dom'
 
-export default function Profile() {
+export default function Profile({ children }) {
   const [open, setOpen] = React.useState(true)
 
   const handleClick = () => {
@@ -33,7 +33,7 @@ export default function Profile() {
       <Grid container spacing={2}>
         <Grid item xs={3}>
           <List
-            sx={{ width: '100%', maxWidth: 250, bgcolor: 'background.paper' }}
+            sx={{ width: '100%', maxWidth: 250, height: '100%', bgcolor: 'background.paper' }}
             component="nav"
             aria-labelledby="nested-list-subheader">
             <div style={{ display: 'flex', alignContent: 'center' }}>
@@ -105,7 +105,7 @@ export default function Profile() {
         </Grid>
 
         <Grid item xs={9}>
-          <Order />
+          {children}
         </Grid>
       </Grid>
     </Container>
