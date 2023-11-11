@@ -1,4 +1,4 @@
-package com.fshoes.core.authentication;
+package com.fshoes.core.authentication.model.response;
 
 import com.fshoes.entity.Account;
 import lombok.Getter;

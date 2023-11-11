@@ -1,8 +1,8 @@
 package com.fshoes.core.client.service.impl;
 
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
-import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
+import com.fshoes.core.authentication.service.AuthenticationService;
 import com.fshoes.core.client.model.request.ClientBillDetaillRequest;
 import com.fshoes.core.client.model.request.ClientCheckoutRequest;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
@@ -12,27 +12,24 @@ import com.fshoes.entity.*;
 import com.fshoes.infrastructure.email.Email;
 import com.fshoes.infrastructure.email.EmailSender;
 import com.fshoes.infrastructure.vnpay.VNPayConfig;
+import com.fshoes.repository.AccountRepository;
 import com.fshoes.repository.BillHistoryRepository;
 import com.fshoes.repository.BillRepository;
 import com.fshoes.repository.TransactionRepository;
 import com.fshoes.util.DateUtil;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.html.simpleparser.HTMLWorker;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.fshoes.util.MD5Util;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -57,11 +54,15 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
     @Autowired
     private EmailSender emailSender;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     private HDBillRepository hdBillRepository;
+    @Autowired
+    private AuthenticationService authenticationService;
     @Override
     public Bill thanhToan(ClientCheckoutRequest request, UserLogin userLogin) {
         Bill newBill = new Bill();
@@ -95,6 +96,19 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         newBill.setMoneyReduced(new BigDecimal(request.getMoneyReduced()));
         newBill.setMoneyShip(new BigDecimal(request.getShipMoney()));
         newBill.setDesiredReceiptDate(request.getDuKien());
+        String password = generatePassword();
+        Account account = authenticationService.checkMail(request.getEmail());
+        if ( account == null){
+            account = new Account();
+            account.setRole(2);
+            account.setFullName(request.getFullName());
+            account.setEmail(request.getEmail());
+            account.setPassword(MD5Util.getMD5(password));
+            accountRepository.save(account);
+        }else {
+            password = null;
+        }
+        newBill.setCustomer(account);
         billRepository.save(newBill);
         List<BillDetail> billDetails = request.getBillDetail().stream().map(bd -> {
             BillDetail billDetail = new BillDetail();
@@ -114,7 +128,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             billHistory.setStatusBill(newBill.getStatus());
             billHistory.setNote(request.getNote());
             billHistoryRepository.save(billHistory);
-            sendMail(request, newBill.getCode(), dateNow);
+            sendMail(request, newBill.getCode(), dateNow, password);
             messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(newBill.getId()));
         }
         return newBill;
@@ -122,7 +136,6 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
     @Override
     @Transactional
-    @Async
     public String createOrder(ClientCheckoutRequest request, UserLogin userLogin) {
         Bill bill = thanhToan(request, userLogin);
         String vnp_Version = "2.1.0";
@@ -193,6 +206,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
     @Override
     public List<ProductDetail> orderReturn(HttpServletRequest request) {
+        String password = generatePassword();
         Map fields = new HashMap();
         for (Enumeration params = request.getParameterNames(); params.hasMoreElements(); ) {
             String fieldName = null;
@@ -221,6 +235,19 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 Bill bill = billRepository.findById((String) fields.get("vnp_OrderInfo")).orElse(null);
                 if (bill != null && bill.getStatus() == 8) {
                     bill.setStatus(1);
+                    Account account = authenticationService.checkMail(bill.getEmail());
+
+                    if ( account == null){
+                        account = new Account();
+                        account.setRole(2);
+                        account.setFullName(bill.getFullName());
+                        account.setEmail(bill.getEmail());
+                        account.setPassword(MD5Util.getMD5(password));
+                        accountRepository.save(account);
+                    }else {
+                        password = null;
+                    }
+                    bill.setCustomer(account);
                     billRepository.save(bill);
                     Transaction transaction = new Transaction();
                     transaction.setTransactionCode((String) fields.get("vnp_BankTranNo"));
@@ -267,7 +294,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     billHistory.setStatusBill(bill.getStatus());
                     billHistory.setNote(bill.getNote());
                     billHistoryRepository.save(billHistory);
-                    sendMail(newRequest, bill.getCode(), Calendar.getInstance().getTimeInMillis());
+                    sendMail(newRequest, bill.getCode(), Calendar.getInstance().getTimeInMillis(), password);
                     messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
                     return listBillDetails.stream().map(BillDetail::getProductDetail).toList();
                 }
@@ -276,7 +303,8 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         return null;
     }
 
-    private void sendMail(ClientCheckoutRequest request, String codeBill, Long dateNow) {
+    @Async
+    protected void sendMail(ClientCheckoutRequest request, String codeBill, Long dateNow, String password) {
         Email newEmail = new Email();
         String[] toMail = {request.getEmail()};
 
@@ -409,14 +437,18 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                              "</div>" +
                              "<a href='http://localhost:3000/home'><button>Xem Chi Tiết</button></a>" +
                              "</div>" +
-                             "</body>" +
+                             (password == null ? "" : "</div>" +
+                                                     "        <p style=\"color: #555;\">Hoặc đăng nhập vào hệ thống:</p>\n" +
+                                                     "        <p><strong>Email:</strong> " + request.getEmail()+"</p>\n" +
+                                                     "        <p><strong>Mật khẩu:</strong> "+ password+"</p>\n" +
+                                                     "</div>")
+                             +"</body>" +
                              "</html>";
-
         newEmail.setBody(htmlContent);
         newEmail.setToEmail(toMail);
         newEmail.setSubject("Đơn hàng F-Shoes của bạn " + codeBill);
         newEmail.setTitleEmail("<h1 style=\"text-align: center; color: #333;\">Cảm ơn bạn đã đặt hàng tại F-Shoes</h1>");
-
+        emailSender.sendEmail(newEmail);
     }
 
     private String formatCurrency(String amount) {
@@ -428,6 +460,22 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         String result = Normalizer.normalize(input, Normalizer.Form.NFKD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         return result;
+    }
+
+    private String generatePassword() {
+        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        StringBuilder password = new StringBuilder();
+
+        SecureRandom random = new SecureRandom();
+
+        for (int i = 0; i < 12; i++) {
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            password.append(randomChar);
+        }
+
+        return password.toString();
     }
 
 }

@@ -30,8 +30,11 @@ import ModalVoucher from './ModalVoucher'
 import ModalAddress from './ModalAddress'
 import { setLoading } from '../../services/slices/loadingSlice'
 import ClientAddressApi from '../../api/client/clientAddressApi'
+import authenticationAPi from '../../api/authentication/authenticationAPi'
+import { GetUser } from '../../services/slices/userSlice'
 
 export default function Checkout() {
+  const userLogin = useSelector(GetUser)
   const [request, setRequest] = useState({
     fullName: '',
     email: '',
@@ -49,6 +52,11 @@ export default function Checkout() {
     duKien: '',
     billDetail: [],
   })
+  useEffect(() => {
+    if (userLogin) {
+      setRequest({ ...request, email: userLogin.email })
+    }
+  }, [userLogin])
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
@@ -244,9 +252,41 @@ export default function Checkout() {
     address: '',
   })
 
-  function finishCheckout() {
+  async function checkMail(email) {
+    const response = await authenticationAPi.checkMail(email)
+    return response.data.success
+  }
+
+  async function finishCheckout() {
     const newErrors = {}
     let check = 0
+
+    if (!userLogin) {
+      if (!request.email) {
+        newErrors.email = 'Vui lòng nhập Email.'
+        check++
+      } else {
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+        if (!emailRegex.test(request.email)) {
+          newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
+          check++
+        } else if (request.email.length > 50) {
+          newErrors.email = 'Email không được quá 50 kí tự.'
+          check++
+        } else {
+          // Use await to get the result of the asynchronous function
+          const isEmailExist = await checkMail(request.email)
+
+          if (isEmailExist) {
+            console.log(isEmailExist)
+            newErrors.email = 'Địa chỉ email đã tồn tại trong hệ thống.'
+            check++
+          } else {
+            newErrors.email = ''
+          }
+        }
+      }
+    }
     if (!request.fullName) {
       newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
       check++
@@ -257,21 +297,6 @@ export default function Checkout() {
       newErrors.fullName = ''
     }
 
-    if (!request.email) {
-      newErrors.email = 'Vui lòng nhập Email.'
-      check++
-    } else {
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
-      if (!emailRegex.test(request.email)) {
-        newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
-        check++
-      } else if (request.email.length > 50) {
-        newErrors.email = 'Email không được quá 50 kí tự.'
-        check++
-      } else {
-        newErrors.email = ''
-      }
-    }
     if (!request.phone) {
       newErrors.phone = 'Vui lòng nhập Số điện thoại.'
       check++
@@ -390,16 +415,18 @@ export default function Checkout() {
           <Grid item lg={7} sx={{ px: { lg: '40px' } }} width={'100%'}>
             <div className="button-lbtt">
               <span className="checkout-info-label">Thông tin giao hàng</span>
-              <Button
-                style={{ float: 'right' }}
-                size="small"
-                variant="outlined"
-                onClick={() => {
-                  setIsShowDiaChi(true)
-                  loadListAd()
-                }}>
-                <b>Chọn Địa chỉ</b>
-              </Button>
+              {userLogin && (
+                <Button
+                  style={{ float: 'right' }}
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    setIsShowDiaChi(true)
+                    loadListAd()
+                  }}>
+                  <b>Chọn Địa chỉ</b>
+                </Button>
+              )}
               <ModalAddress
                 open={isShowDiaChi}
                 setOpen={setIsShowDiaChi}
@@ -434,25 +461,38 @@ export default function Checkout() {
               {errors.fullName}
             </Typography>
             <Grid container mt={0} spacing={3}>
-              <Grid item xs={12} lg={7}>
-                <Typography>
-                  <span className="required"> *</span>Email
-                </Typography>
-                <TextField
-                  value={request.email}
-                  onChange={(e) => {
-                    setRequest({ ...request, email: e.target.value })
-                    setErrors({ ...errors, email: '' })
-                  }}
-                  size="small"
-                  fullWidth
-                  id="email"
-                />
-                <Typography variant="body2" color="error">
-                  {errors.email}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} lg={5}>
+              {!userLogin && (
+                <Grid item xs={12} lg={7}>
+                  <Typography>
+                    <span className="required"> *</span>Email
+                  </Typography>
+                  <TextField
+                    value={request.email}
+                    onChange={(e) => {
+                      setRequest({ ...request, email: e.target.value })
+                      setErrors({ ...errors, email: '' })
+                    }}
+                    size="small"
+                    fullWidth
+                    id="email"
+                  />
+                  <Typography variant="body2" color="error">
+                    {errors.email}
+                    {errors.email === 'Địa chỉ email đã tồn tại trong hệ thống.' && (
+                      <Typography
+                        style={{ textDecoration: 'none', fontWeight: 'bold' }}
+                        component={Link}
+                        to={'/login'}
+                        variant="body2"
+                        color="green">
+                        {' '}
+                        Đăng nhập ngay
+                      </Typography>
+                    )}
+                  </Typography>
+                </Grid>
+              )}
+              <Grid item xs={12} lg={!userLogin ? 5 : 12}>
                 <Typography>
                   <span className="required"> *</span>Số điện thoại
                 </Typography>
