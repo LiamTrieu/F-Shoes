@@ -39,4 +39,24 @@ public class ClientVoucherServiceImpl implements ClientVoucherService {
             return voucherResponse;
         }
     }
+
+    @Override
+    public List<ClientVoucherResponse> getVoucherPublicMyProfileOldest() {
+        return clientVoucherRepository.getVoucherPublicMyProfileOldest();
+    }
+
+    @Override
+    public List<ClientVoucherResponse> getVoucherPublicMyProfileLatest() {
+        return clientVoucherRepository.getVoucherPublicMyProfileLatest();
+    }
+
+    @Override
+    public List<ClientVoucherResponse> getVoucherPrivateMyProfileOldest(UserLogin userLogin) {
+        return clientVoucherRepository.getVoucherPrivateMyProfileOldest(userLogin.getUserLogin().getId());
+    }
+
+    @Override
+    public List<ClientVoucherResponse> getVoucherPrivateMyProfileLatest(UserLogin userLogin) {
+        return clientVoucherRepository.getVoucherPrivateMyProfileLatest(userLogin.getUserLogin().getId());
+    }
 }

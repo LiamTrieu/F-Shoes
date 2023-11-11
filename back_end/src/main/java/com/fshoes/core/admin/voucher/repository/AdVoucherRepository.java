@@ -69,6 +69,11 @@ public interface AdVoucherRepository extends VoucherRepository {
     List<String> getAllCodeVoucher();
 
     @Query(value = """
+            SELECT DISTINCT name FROM Voucher
+            """, nativeQuery = true)
+    List<String> getAllNameVoucher();
+
+    @Query(value = """
             SELECT DISTINCT row_number()  OVER(ORDER BY v.created_at DESC) as stt,
             v.id, v.code, v.name, v.value, v.maximum_value AS maximumValue,
             v.type, v.type_value as typeValue, v.minimum_amount AS minimumAmount, v.quantity,

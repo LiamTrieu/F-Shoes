@@ -41,6 +41,10 @@ const voucherApi = {
     const url = `/voucher/view/code-voucher`
     return axiosAdmin.get(url)
   },
+  getAllNameVoucher: () => {
+    const url = `/voucher/view/name-voucher`
+    return axiosAdmin.get(url)
+  },
   getAllVoucherByIdCustomer: (adCallVoucherOfSell) => {
     const url = `/voucher/view/voucher-by-customer`
     return axiosAdmin.get(url, { params: adCallVoucherOfSell })

@@ -28,6 +28,8 @@ public interface AdVoucherService {
 
     List<String> getAllCodeVoucher();
 
+    List<String> getAllNameVoucher();
+
     Page<AdVoucherRespone> getAllVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell);
 
     Page<AdVoucherRespone> getSearchVoucher(AdVoucherSearch adVoucherSearch);

@@ -70,4 +70,9 @@ public class AdVoucherController {
     public ObjectRespone getAllCodeVoucher() {
         return new ObjectRespone(voucherService.getAllCodeVoucher());
     }
+
+    @GetMapping("/view/name-voucher")
+    public ObjectRespone getAllNameVoucher() {
+        return new ObjectRespone(voucherService.getAllCodeVoucher());
+    }
 }

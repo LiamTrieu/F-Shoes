@@ -6,7 +6,9 @@ import com.fshoes.core.client.model.request.ClientProductRequest;
 import com.fshoes.core.client.service.ClientProductService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/client")
@@ -19,6 +21,7 @@ public class ClientProductController {
     public ObjectRespone getProduct(ClientProductRequest request) {
         return new ObjectRespone((clientProductService.getProducts(request)));
     }
+
     @GetMapping("/product/cung-loai")
     public ObjectRespone getProductCungLoai(ClientProductCungLoaiRequest request) {
         return new ObjectRespone((clientProductService.getProductCungLoai(request)));
@@ -28,6 +31,7 @@ public class ClientProductController {
     public ObjectRespone getProductHome(ClientProductRequest request) {
         return new ObjectRespone((clientProductService.getProductsHome(request)));
     }
+
     @GetMapping("/selling-product")
     public ObjectRespone getSellingProduct(ClientProductRequest request) {
         return new ObjectRespone((clientProductService.getSellingProduct(request)));
@@ -39,30 +43,37 @@ public class ClientProductController {
     }
 
     @GetMapping("/brand")
-    public ObjectRespone getBrand(){
+    public ObjectRespone getBrand() {
         return new ObjectRespone(clientProductService.getAllBrand());
     }
+
     @GetMapping("/category")
-    public ObjectRespone getcategory(){
+    public ObjectRespone getcategory() {
         return new ObjectRespone(clientProductService.getAllCategory());
     }
+
     @GetMapping("/material")
-    public ObjectRespone getMaterial(){
+    public ObjectRespone getMaterial() {
         return new ObjectRespone(clientProductService.getAllMaterial());
     }
+
     @GetMapping("/sole")
-    public ObjectRespone getSole(){
+    public ObjectRespone getSole() {
         return new ObjectRespone(clientProductService.getAllSole());
     }
+
     @GetMapping("/size")
-    public ObjectRespone getSize(){
+    public ObjectRespone getSize() {
         return new ObjectRespone(clientProductService.getAllSize());
     }
-    @GetMapping("/solor")
-    public ObjectRespone getColor(){
+
+    @GetMapping("/color")
+    public ObjectRespone getColor() {
         return new ObjectRespone(clientProductService.getAllColor());
     }
 
-
-
+    @GetMapping("/min-max-price")
+    public ObjectRespone getMinMaxPrice() {
+        return new ObjectRespone(clientProductService.getMinMaxPriceProductClient());
+    }
 }
