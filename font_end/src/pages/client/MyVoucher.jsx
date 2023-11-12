@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import './ModalVoucher.css'
+import './MyVoucher.css'
 import { Box, Grid, Paper, Stack, Tab, Tabs, Typography } from '@mui/material'
 import ClientVoucherApi from '../../api/client/ClientVoucherApi'
 import { toast } from 'react-toastify'
@@ -158,9 +158,9 @@ export default function MyVoucher() {
                   {voucherPublicLatest.length > 0 &&
                     voucherPublicLatest.map((v) => (
                       <Grid key={v.id} item xs={6}>
-                        <Grid className="grid-radio-group-modal-voucher">
-                          <Grid item xs={3} className="grid-name-voucher"></Grid>
-                          <Grid item xs={9} className="grid-information-voucher">
+                        <Grid className="grid-radio-group-modal-voucher-my-voucher">
+                          <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
+                          <Grid item xs={9} className="grid-information-voucher-my-voucher">
                             <Stack
                               direction="row"
                               justifyContent="space-between"
@@ -188,9 +188,9 @@ export default function MyVoucher() {
                   {voucherPublicOldest.length > 0 &&
                     voucherPublicOldest.map((v) => (
                       <Grid key={v.id} item xs={6}>
-                        <Grid className="grid-radio-group-modal-voucher">
-                          <Grid item xs={3} className="grid-name-voucher"></Grid>
-                          <Grid item xs={9} className="grid-information-voucher">
+                        <Grid className="grid-radio-group-modal-voucher-my-voucher">
+                          <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
+                          <Grid item xs={9} className="grid-information-voucher-my-voucher">
                             <Stack
                               direction="row"
                               justifyContent="space-between"
@@ -220,9 +220,9 @@ export default function MyVoucher() {
                   {voucherPrivateLatest.length > 0 &&
                     voucherPrivateLatest.map((v) => (
                       <Grid key={v.id} item xs={6}>
-                        <Grid className="grid-radio-group-modal-voucher">
-                          <Grid item xs={3} className="grid-name-voucher"></Grid>
-                          <Grid item xs={9} className="grid-information-voucher">
+                        <Grid className="grid-radio-group-modal-voucher-my-voucher">
+                          <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
+                          <Grid item xs={9} className="grid-information-voucher-my-voucher">
                             <Stack
                               direction="row"
                               justifyContent="space-between"
@@ -250,9 +250,9 @@ export default function MyVoucher() {
                   {voucherPrivateOldest.length > 0 &&
                     voucherPrivateOldest.map((v) => (
                       <Grid key={v.id} item xs={6}>
-                        <Grid className="grid-radio-group-modal-voucher">
-                          <Grid item xs={3} className="grid-name-voucher"></Grid>
-                          <Grid item xs={9} className="grid-information-voucher">
+                        <Grid className="grid-radio-group-modal-voucher-my-voucher">
+                          <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
+                          <Grid item xs={9} className="grid-information-voucher-my-voucher">
                             <Stack
                               direction="row"
                               justifyContent="space-between"

@@ -2,15 +2,18 @@ package com.fshoes.core.client.controller;
 
 import com.fshoes.core.client.model.request.ClientAccountRequest;
 import com.fshoes.core.client.model.request.ClientBillAccountRequest;
+import com.fshoes.core.client.model.response.ClientBillAccountResponse;
 import com.fshoes.core.client.model.response.ClientCustomerResponse;
 import com.fshoes.core.client.service.ClientAccountService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.UserLogin;
+import com.fshoes.entity.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/client/customer")
@@ -37,22 +40,9 @@ public class ClientAccountController {
     }
 
 
-    @GetMapping("all-bill")
+    @GetMapping("/all-bill")
     public ObjectRespone getAllBill( ClientBillAccountRequest status){
-//        Account account = userLogin.getUserLogin();
-//        if (account != null) {
-//            String idCustomer = account.getId();
-//            List<ClientBillAccountResponse> allBills = accountService.getALlBill(status);
-//            List<ClientBillAccountResponse> filteredBills = allBills.stream()
-//                    .filter(Bill -> Bill.getCustomer().equals(idCustomer))
-//                    .collect(Collectors.toList());
-//            return new ObjectRespone(filteredBills);
-//        } else {
-//            return new ObjectRespone("Không có người dùng đăng nhập hoặc không tìm thấy tài khoản.");
-//        }
-
-        return new ObjectRespone(service.getALlBill(status));
-
+            return new ObjectRespone(service.getALlBill(status));
     }
 
     @GetMapping("/get-by-idBill/{idBill}")
@@ -69,4 +59,17 @@ public class ClientAccountController {
     public ObjectRespone getTransactionByIdBill(@PathVariable("idBill") String idBill) {
         return new ObjectRespone(service.getListTransactionByIdBill(idBill));
     }
+
+
+    @GetMapping("/get-by-code/{code}")
+    public ObjectRespone getByCode(@PathVariable("code") String code) {
+        return new ObjectRespone(service.getBillDetailsByCode(code));
+    }
+
+    @GetMapping("/get-bill-history-by-code/{code}")
+    public ObjectRespone getBillHistoryCode(@PathVariable("code") String code) {
+        return new ObjectRespone(service.getListBillHistoryByCode(code));
+    }
+
+
 }

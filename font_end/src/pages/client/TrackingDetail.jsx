@@ -11,21 +11,21 @@ import {
   Typography,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { formatCurrency } from '../../../services/common/formatCurrency '
-import ClientAccountApi from '../../../api/client/clientAccount'
 import { useParams } from 'react-router-dom'
-import TimeLine from '../../admin/hoadon/TimeLine'
-import './Order.css'
+import TimeLine from '../admin/hoadon/TimeLine'
+import ClientAccountApi from '../../api/client/clientAccount'
+import { formatCurrency } from '../../services/common/formatCurrency '
+// import TimeLine from '../../admin/hoadon/TimeLine'
 
-export default function OrderDetail() {
-  const { id } = useParams()
+export default function TrackingDetail() {
+  const { code } = useParams()
   const [billDetail, setBillDetail] = useState([])
   const [listOrderTimeLine, setListOrderTimeLine] = useState([])
   const [loadingTimeline, setLoadingTimeline] = useState(true)
 
-  const getBillHistoryByIdBill = (id) => {
+  const getBillHistoryByIdBill = (code) => {
     setLoadingTimeline(true)
-    ClientAccountApi.getBillHistoryByIdBill(id)
+    ClientAccountApi.getBillHistoryByCode(code)
       .then((response) => {
         setListOrderTimeLine(response.data.data)
         setLoadingTimeline(false)
@@ -36,16 +36,16 @@ export default function OrderDetail() {
       })
   }
 
-  const getBillByIdBill = (id) => {
-    ClientAccountApi.getBillDetailByIdBill(id).then((response) => {
+  const getBillByIdBill = (code) => {
+    ClientAccountApi.getBillDetailByCode(code).then((response) => {
       setBillDetail(response.data.data)
     })
   }
 
   useEffect(() => {
-    getBillByIdBill(id)
-    getBillHistoryByIdBill(id)
-  }, [id])
+    getBillByIdBill(code)
+    getBillHistoryByIdBill(code)
+  }, [code])
   const totalMoney = billDetail.reduce((total, item) => total + item.totalMoney, 0)
   const moneyReduce = billDetail.reduce((reduce, item) => reduce + item.moneyReduced, 0)
   const moneyAfter = billDetail.reduce((after, item) => after + item.moneyAfter, 0)

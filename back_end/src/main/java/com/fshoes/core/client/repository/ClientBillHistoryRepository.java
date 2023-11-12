@@ -19,4 +19,13 @@ public interface ClientBillHistoryRepository extends BillHistoryRepository {
             ORDER BY bh.created_at ASC                  
             """, nativeQuery = true)
     List<CLientBillHistoryResponse> getListBillHistoryByIdBill(@Param("idBill") String idBill);
+
+    @Query(value = """
+            SELECT bh.id, bh.created_at as createdAt, bh.status_bill as statusBill,
+            bh.note as note, bh.created_by as createdBy
+            FROM bill_history bh LEFT JOIN bill b ON bh.id_bill = b.id
+            WHERE b.code = :code    
+            ORDER BY bh.created_at ASC                  
+            """, nativeQuery = true)
+    List<CLientBillHistoryResponse> getListBillHistoryByCode(@Param("code") String code);
 }
