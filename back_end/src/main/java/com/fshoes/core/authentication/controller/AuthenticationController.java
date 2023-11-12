@@ -1,5 +1,6 @@
 package com.fshoes.core.authentication.controller;
 
+import com.fshoes.core.authentication.model.request.ChangeRequest;
 import com.fshoes.core.authentication.model.request.LoginRequest;
 import com.fshoes.core.authentication.model.request.RegisterRequest;
 import com.fshoes.core.authentication.model.response.UserLoginResponse;
@@ -28,17 +29,34 @@ public class AuthenticationController {
     public ObjectRespone login(@RequestBody LoginRequest request) {
         return new ObjectRespone(authenticationService.login(request));
     }
+
+    
     @PostMapping("/register")
     public ObjectRespone register(@RequestBody RegisterRequest request) {
         return new ObjectRespone(authenticationService.register(request));
+    }
+
+    @PostMapping("/change-password")
+    public ObjectRespone change(@RequestBody RegisterRequest request) {
+        return new ObjectRespone(authenticationService.change(request));
+    }
+    @PostMapping("/doi-mat-khau")
+    public ObjectRespone change(@RequestBody ChangeRequest request) {
+        return new ObjectRespone(authenticationService.changePass(request));
     }
 
     @GetMapping
     public ObjectRespone getUserLogin() {
         return new ObjectRespone(authenticationService.userLogin());
     }
+
     @GetMapping("/check-mail")
     public ObjectRespone checkMail(@RequestParam String email) {
         return new ObjectRespone(authenticationService.checkMail(email));
+    }
+
+    @GetMapping("/send-otp")
+    public ObjectRespone sendOtp(@RequestParam String email) {
+        return new ObjectRespone(authenticationService.sendOtp(email));
     }
 }

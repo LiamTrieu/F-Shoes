@@ -15,8 +15,20 @@ const authenticationAPi = {
     const url = `/authentication/register`
     return axiosApi.post(url, { name: name, email: email, password: password })
   },
+  change: (email, password) => {
+    const url = `/authentication/change-password`
+    return axiosApi.post(url, { name: '', email: email, password: password })
+  },
+  changePassword: (password, newPassword) => {
+    const url = `/authentication/doi-mat-khau`
+    return axiosApi.post(url, { password: password, newPassword: newPassword })
+  },
   checkMail: (email) => {
     const url = `/authentication/check-mail?email=${email}`
+    return axiosApi.get(url)
+  },
+  sendOtp: (email) => {
+    const url = `/authentication/send-otp?email=${email}`
     return axiosApi.get(url)
   },
 

@@ -123,12 +123,6 @@ public class HDBillServiceImpl implements HDBillService {
     public Bill updateBill(String idBill, HDBillRequest hdBillRequest) {
         try {
             Bill bill = hdBillRepository.findById(idBill).orElseThrow(() -> new RuntimeException("khong tim thay bill co id: " + idBill));
-            if (hdBillRequest.getIdCustomer() == null) {
-                bill.setCustomer(null);
-            } else {
-                Account customer = accountRepository.findById(hdBillRequest.getIdCustomer()).orElse(null);
-                bill.setCustomer(customer);
-            }
             bill.setFullName(hdBillRequest.getFullName());
             bill.setPhoneNumber(hdBillRequest.getPhoneNumber());
             bill.setAddress(hdBillRequest.getAddress());
@@ -139,12 +133,10 @@ public class HDBillServiceImpl implements HDBillService {
             } else {
                 bill.setMoneyAfter(bill.getTotalMoney().add(hdBillRequest.getMoneyShip()));
             }
-//            bill.setStatus(hdBillRequest.getStatus());
             //thêm history:
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
             billHistory.setNote(hdBillRequest.getNoteBillHistory());
-//            billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
             billHistory.setAccount(accFake());
             hdBillHistoryRepository.save(billHistory);
             return hdBillRepository.save(bill);

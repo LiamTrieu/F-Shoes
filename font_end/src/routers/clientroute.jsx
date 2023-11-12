@@ -11,6 +11,8 @@ import Profile from '../pages/client/profile/Profile'
 import UserProfile from '../pages/client/profile/UserProfile'
 import AddressUser from '../pages/client/profile/AddressUser'
 import Order from '../pages/client/profile/Order'
+import ForgotPassword from '../pages/client/ForgotPassword'
+import ChangePassword from '../pages/client/profile/ChangePassword'
 
 const clientRoute = [
   { path: '/home', element: <Home />, index: true },
@@ -21,6 +23,8 @@ const clientRoute = [
   { path: '/cart', element: <Cart /> },
   { path: '/login', element: <Login /> },
   { path: '/checkout', element: <Checkout /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
+  { path: '/change-password', element: <ChangePassword /> },
   {
     path: '/profile',
     element: (

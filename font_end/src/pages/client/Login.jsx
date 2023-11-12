@@ -32,6 +32,7 @@ import clientCartApi from '../../api/client/clientCartApi'
 import { GetCart, setCart } from '../../services/slices/cartSlice'
 import confirmSatus from '../../components/comfirmSwal'
 import { setLoading } from '../../services/slices/loadingSlice'
+import GoogleLogin from 'react-google-login'
 
 const InputForm = ({ label, Icon, id, isPass, defaultValue, chagneValue }) => {
   const [showPass, setShowPass] = useState(false)
@@ -333,7 +334,18 @@ const LoginPanel = () => {
       )
     }
   }
+  const handleGoogleLogin = (response) => {
+    // Xử lý response từ Google và thực hiện đăng nhập
+    // response.accessToken có thể được gửi đến máy chủ để xác thực người dùng
+    console.log('Google login response:', response)
 
+    // Ví dụ: dispatch các hành động cần thiết sau khi đăng nhập thành công
+    // dispatch(addUser({ user: response.profileObj }));
+    // fetchCart();
+
+    // Ví dụ: Chuyển hướng sau khi đăng nhập thành công
+    // navigate(-1);
+  }
   return (
     <Box>
       <InputForm
@@ -355,10 +367,6 @@ const LoginPanel = () => {
         id="login-input-password"
         isPass={true}
       />
-      {/* <FormControlLabel
-        control={<Checkbox size="small" color="primary" />}
-        label="Ghi nhớ mật khẩu"
-      /> */}
       {error && <Typography color={'red'}>{error}</Typography>}
       <Box my={1}>
         <ThemeProvider theme={ColorCustom}>
@@ -370,16 +378,26 @@ const LoginPanel = () => {
             sx={{ marginRight: '15px' }}>
             Đăng nhập
           </Button>
-          <Button
-            sx={{ fontWeight: 'bold' }}
-            variant="outlined"
-            color="gray"
-            startIcon={<img src={Google} alt="Google" />}>
-            Google
-          </Button>
+          <GoogleLogin
+            clientId="401819799888-53jidf59lck1cc3l6l4daackrsfhl82q.apps.googleusercontent.com"
+            buttonText="Đăng nhập bằng Google"
+            onSuccess={handleGoogleLogin}
+            onFailure={(error) => console.error('Google login error:', error)}
+            cookiePolicy={'single_host_origin'}
+            render={(renderProps) => (
+              <Button
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+                variant="outlined"
+                color="gray"
+                startIcon={<img src={Google} alt="Google" />}>
+                Google
+              </Button>
+            )}
+          />
         </ThemeProvider>
       </Box>
-      <Typography variant="a" component={Link} to={'/'}>
+      <Typography variant="a" component={Link} to={'/forgot-password'}>
         Quên mật khẩu?
       </Typography>
     </Box>

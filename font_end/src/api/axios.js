@@ -19,7 +19,7 @@ export const axiosApi = axios.create({
 
 axiosApi.interceptors.request.use(
   (config) => {
-    // store.dispatch(setLoading(true))
+    store.dispatch(setLoading(true))
     const token = getCookie('ClientToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -33,15 +33,15 @@ axiosApi.interceptors.request.use(
 
 axiosApi.interceptors.response.use(
   (response) => {
-    // setTimeout(() => {
-    //   store.dispatch(setLoading(false))
-    // }, 400)
+    setTimeout(() => {
+      store.dispatch(setLoading(false))
+    }, 400)
     return response
   },
   (error) => {
-    // setTimeout(() => {
-    //   store.dispatch(setLoading(false))
-    // }, 400)
+    setTimeout(() => {
+      store.dispatch(setLoading(false))
+    }, 400)
     if (error.response && error.response.status === 403) {
       window.location.href = '/login'
     }
