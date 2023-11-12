@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import TimeLine from '../admin/hoadon/TimeLine'
 import ClientAccountApi from '../../api/client/clientAccount'
 import { formatCurrency } from '../../services/common/formatCurrency '
@@ -36,10 +36,18 @@ export default function TrackingDetail() {
       })
   }
 
+  const navigate = useNavigate()
   const getBillByIdBill = (code) => {
-    ClientAccountApi.getBillDetailByCode(code).then((response) => {
-      setBillDetail(response.data.data)
-    })
+    ClientAccountApi.getBillDetailByCode(code).then(
+      (response) => {
+        if (response.data.success) {
+          setBillDetail(response.data.data)
+        } else {
+          navigate('/not-found')
+        }
+      },
+      () => {},
+    )
   }
 
   useEffect(() => {
