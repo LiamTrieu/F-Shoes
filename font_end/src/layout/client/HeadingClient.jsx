@@ -1,4 +1,16 @@
-import { AppBar, Avatar, Badge, Box, Button, Drawer, Toolbar, Typography } from '@mui/material'
+import {
+  AppBar,
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Drawer,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+} from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -13,9 +25,16 @@ import { getCookie, removeCookie } from '../../services/cookie'
 import confirmSatus from '../../components/comfirmSwal'
 import { GetUser, addUser, removeUser } from '../../services/slices/userSlice'
 import clientCartApi from '../../api/client/clientCartApi'
+import { Logout } from '@mui/icons-material'
 
 export default function HeadingClient() {
   const [openDrawer, setOpenDrawer] = useState(false)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [openMenuProfile, setOpenMenuProfile] = useState(false)
+  const handleClick = (event) => {
+    anchorEl === null ? setAnchorEl(event.currentTarget) : setAnchorEl(null)
+    openMenuProfile === false ? setOpenMenuProfile(true) : setOpenMenuProfile(false)
+  }
 
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer)
@@ -228,8 +247,53 @@ export default function HeadingClient() {
             <ShoppingCartIcon />
           </Badge>
         </Button>
-        <Button onClick={handleAccount} color="inherit">
+        <IconButton onClick={(event) => handleClick(event)} color="inherit">
           <Avatar src={user && user.avatar} sx={{ width: 35, height: 35, mr: 1 }} />
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenuProfile}
+            slotProps={{
+              paper: {
+                elevation: 0,
+                sx: {
+                  overflow: 'visible',
+                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                  mt: 1.5,
+                  '& .MuiAvatar-root': {
+                    width: 32,
+                    height: 32,
+                    ml: -0.5,
+                    mr: 1,
+                  },
+                  '&:before': {
+                    content: '""',
+                    display: 'block',
+                    position: 'absolute',
+                    top: 0,
+                    right: 14,
+                    width: 10,
+                    height: 10,
+                    bgcolor: 'background.paper',
+                    transform: 'translateY(-50%) rotate(45deg)',
+                    zIndex: 0,
+                  },
+                },
+              },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
+            <Link to={`/profile`} style={{ textDecoration: 'none', color: 'black' }}>
+              <MenuItem>
+                <Avatar /> Tài khoản của tôi
+              </MenuItem>
+            </Link>
+            <MenuItem style={{ color: 'black' }} onClick={() => handleAccount()}>
+              <ListItemIcon>
+                <Logout fontSize="small" />
+              </ListItemIcon>
+              Đăng xuất
+            </MenuItem>
+          </Menu>
           <Typography
             variant="subtitle2"
             sx={{
@@ -238,7 +302,7 @@ export default function HeadingClient() {
             }}>
             {user ? user.name : 'Đăng nhập'}
           </Typography>
-        </Button>
+        </IconButton>
       </Toolbar>
     </AppBar>
   )
