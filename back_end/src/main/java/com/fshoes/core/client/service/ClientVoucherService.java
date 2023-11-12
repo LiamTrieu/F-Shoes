@@ -11,4 +11,12 @@ public interface ClientVoucherService {
     List<ClientVoucherResponse> getAllVoucherByIdCustomer(ClientVoucherRequest request, UserLogin userLogin);
 
     ClientVoucherResponse getVoucherByCode(String codeVoucher);
+
+    List<ClientVoucherResponse> getVoucherPublicMyProfileOldest();
+
+    List<ClientVoucherResponse> getVoucherPublicMyProfileLatest();
+
+    List<ClientVoucherResponse> getVoucherPrivateMyProfileOldest(UserLogin userLogin);
+
+    List<ClientVoucherResponse> getVoucherPrivateMyProfileLatest(UserLogin userLogin);
 }

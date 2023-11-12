@@ -3,22 +3,12 @@ package com.fshoes.core.client.service.impl;
 import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
+import com.fshoes.core.client.model.response.ClientMinMaxPrice;
 import com.fshoes.core.client.model.response.ClientProductDetailResponse;
 import com.fshoes.core.client.model.response.ClientProductResponse;
-import com.fshoes.core.client.repository.ClientBrandRepository;
-import com.fshoes.core.client.repository.ClientCategoryRepository;
-import com.fshoes.core.client.repository.ClientColorRepository;
-import com.fshoes.core.client.repository.ClientMaterialRepository;
-import com.fshoes.core.client.repository.ClientProductDetailRepository;
-import com.fshoes.core.client.repository.ClientSizeRepository;
-import com.fshoes.core.client.repository.ClientSoleRepository;
+import com.fshoes.core.client.repository.*;
 import com.fshoes.core.client.service.ClientProductService;
-import com.fshoes.entity.Brand;
-import com.fshoes.entity.Category;
-import com.fshoes.entity.Color;
-import com.fshoes.entity.Material;
-import com.fshoes.entity.Size;
-import com.fshoes.entity.Sole;
+import com.fshoes.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,6 +50,12 @@ public class ClientProductServiceImpl implements ClientProductService {
         Pageable pageable = PageRequest.of(0, 8);
         return clientProductDetailRepository.getProductCungLoai(request, pageable).getContent();
     }
+
+    @Override
+    public ClientMinMaxPrice getMinMaxPriceProductClient() {
+        return clientProductDetailRepository.getMinMaxPriceProductClient();
+    }
+
     @Override
     public List<ClientProductResponse> getProductsHome(ClientProductRequest request) {
         return clientProductDetailRepository.getProductsHome(request);

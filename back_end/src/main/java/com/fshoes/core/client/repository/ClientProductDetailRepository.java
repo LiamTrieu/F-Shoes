@@ -3,6 +3,7 @@ package com.fshoes.core.client.repository;
 import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
+import com.fshoes.core.client.model.response.ClientMinMaxPrice;
 import com.fshoes.core.client.model.response.ClientProductDetailResponse;
 import com.fshoes.core.client.model.response.ClientProductResponse;
 import com.fshoes.repository.ProductDetailRepository;
@@ -50,7 +51,9 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      image i ON pd.id = i.id_product_detail
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
-                WHERE (:#{#request.id} is null or pd.id = :#{#request.id}) 
+                WHERE (:#{#request.id} is null or pd.id = :#{#request.id})
+                AND (:#{#request.minPrice} IS NULl OR pd.price >= :#{#request.minPrice})
+                AND (:#{#request.maxPrice} IS NULl OR pd.price <= :#{#request.maxPrice}) 
                 AND (:#{#request.category} IS NULL OR ca.id = :#{#request.category}) 
                 AND (:#{#request.color} IS NULL OR c.id = :#{#request.color}) 
                 AND (:#{#request.material} IS NULL OR m.id = :#{#request.material}) 
@@ -181,7 +184,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 ORDER BY p.created_at DESC
                 LIMIT 10
             """, nativeQuery = true)
-    List<ClientProductResponse> getProductsHome( @Param("request") ClientProductRequest request);
+    List<ClientProductResponse> getProductsHome(@Param("request") ClientProductRequest request);
 
     @Query(value = """
                 SELECT MAX(pd.id) as id,
@@ -233,5 +236,11 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 ORDER BY bd.quantity DESC
                 LIMIT 12
             """, nativeQuery = true)
-    List<ClientProductResponse> getSellingProduct( @Param("request") ClientProductRequest request);
+    List<ClientProductResponse> getSellingProduct(@Param("request") ClientProductRequest request);
+
+    @Query(value = """
+            SELECT min(pd.price) as minPrice, max(pd.price) as maxPrice
+            FROM product_detail pd
+            """, nativeQuery = true)
+    ClientMinMaxPrice getMinMaxPriceProductClient();
 }

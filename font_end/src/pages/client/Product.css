@@ -12,6 +12,12 @@
   /* font-family: monospace !important; */
 }
 
+.list-product-portfolio .list-item {
+  display: flex !important;
+  align-items: center !important;
+  max-width: 88% !important;
+}
+
 .list-product-portfolio .list-item-button {
   display: flex !important;
   align-items: center !important;
@@ -105,7 +111,17 @@
   padding-left: 10px;
   max-height: 40rem !important;
 }
+
 .cart-product-portfolio {
   overflow: auto;
   max-height: 1000px;
+}
+
+.radio-color {
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex;
+  align-items: center !important;
+  justify-content: center;
 }
