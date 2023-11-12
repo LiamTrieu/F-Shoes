@@ -18,8 +18,6 @@ import java.math.BigDecimal;
 public class DBGenerator implements CommandLineRunner {
 
     @Autowired
-    private CartRepository cartDetailRepository;
-    @Autowired
     private CartRepository cartRepository;
     @Autowired
     private BillHistoryRepository billHistoryRepository;

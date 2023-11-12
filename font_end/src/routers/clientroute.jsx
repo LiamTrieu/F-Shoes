@@ -15,6 +15,8 @@ import Order from '../pages/client/profile/Order'
 import OrderDetail from '../pages/client/profile/OrderDetail'
 import Tracking from '../pages/client/Tracking'
 import TrackingDetail from '../pages/client/TrackingDetail'
+import ForgotPassword from '../pages/client/ForgotPassword'
+import ChangePassword from '../pages/client/profile/ChangePassword'
 
 const clientRoute = [
   { path: '/home', element: <Home />, index: true },
@@ -31,6 +33,8 @@ const clientRoute = [
   { path: `/profile/get-by-idBill/:id`, element: <OrderDetail /> },
   { path: `/tracking/:code`, element: <TrackingDetail /> },
   { path: `/tracking`, element: <Tracking /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
+  { path: '/change-password', element: <ChangePassword /> },
 
   {
     path: '/profile',

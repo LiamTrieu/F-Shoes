@@ -5,24 +5,29 @@
 .text-field-css .MuiInputBase-root:hover fieldset {
   border-color: #f2741f !important;
 }
+
 .css-6ah90r {
   align-items: center;
 
   display: flex;
 }
+
 .footerTitle {
   font-weight: 1000 !important;
   font-size: 20px !important;
   margin-bottom: 20px !important;
   margin-top: 20px !important;
 }
+
 .title-footer {
   font-weight: 1000 !important;
 }
+
 .phoneNumber {
   color: blue;
   font-weight: 700 !important;
 }
+
 .text-footer {
   margin-top: 6px !important;
   font-size: 14px !important;
@@ -34,6 +39,7 @@
   width: 18% !important;
   margin-right: 15px !important;
 }
+
 .link-with-underline {
   position: relative;
   text-decoration: none;
@@ -59,11 +65,27 @@
 .link-with-underline:hover::after {
   transform: scaleX(1);
 }
+
 .menu-title {
   display: flex;
   justify-content: center !important;
 }
 
+.menu-title .MuiTypography-root {
+  margin: 0 !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.00938em !important;
+  color: inherit !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  margin-left: 32px !important;
+}
+
 .gird-footer {
   margin-top: 96px;
+}
+
+.footer .MuiGrid-root {
+  width: calc(100% + 96px);
 }

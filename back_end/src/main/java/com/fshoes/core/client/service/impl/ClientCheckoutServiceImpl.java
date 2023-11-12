@@ -435,7 +435,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                              "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
                              "</p>" +
                              "</div>" +
-                             "<a href='http://localhost:3000/home'><button>Xem Chi Tiết</button></a>" +
+                             "<a href='http://localhost:3000/tracking/'"+codeBill+"><button>Xem Chi Tiết</button></a>" +
                              "</div>" +
                              (password == null ? "" : "</div>" +
                                                      "        <p style=\"color: #555;\">Hoặc đăng nhập vào hệ thống:</p>\n" +

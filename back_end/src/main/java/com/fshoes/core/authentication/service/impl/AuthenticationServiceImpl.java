@@ -1,5 +1,7 @@
 package com.fshoes.core.authentication.service.impl;
 
+import com.cloudinary.api.exceptions.ApiException;
+import com.fshoes.core.authentication.model.request.ChangeRequest;
 import com.fshoes.core.authentication.model.request.LoginRequest;
 import com.fshoes.core.authentication.model.request.RegisterRequest;
 import com.fshoes.core.authentication.model.response.UserLoginResponse;
@@ -15,6 +17,8 @@ import com.fshoes.infrastructure.security.JwtUtilities;
 import com.fshoes.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -98,4 +102,56 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Account checkMail(String email) {
         return accountRepository.findByEmail(email).orElse(null);
     }
+
+    @Override
+    public String sendOtp(String email) {
+        Random random = new Random();
+        StringBuilder otp = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            otp.append(random.nextInt(10));
+        }
+
+        // Tạo nội dung HTML cho email
+        String htmlBody = "<h2>Quên Mật Khẩu</h2>"
+                          + "<p>Xin chào,</p>"
+                          + "<p>Dưới đây là mã OTP của bạn:</p>"
+                          + "<h1 style=\"color: #2ecc71;\">" + otp.toString() + "</h1>"
+                          + "<p>Vui lòng sử dụng mã OTP này để đặt lại mật khẩu của bạn.</p>"
+                          + "<p>Cảm ơn bạn!</p>";
+
+        Email newEmail = new Email();
+        String[] emailSend = {email};
+        newEmail.setToEmail(emailSend);
+        newEmail.setSubject("Quên mật khẩu");
+        newEmail.setTitleEmail("");
+        newEmail.setBody(htmlBody);
+        emailSender.sendEmail(newEmail);
+
+        return otp.toString();
+    }
+
+    @Override
+    public Boolean change(RegisterRequest request) {
+        Account account = checkMail(request.getEmail());
+        if (account == null){
+            return null;
+        }else {
+            account.setPassword(MD5Util.getMD5(request.getPassword()));
+            accountRepository.save(account);
+            return true;
+        }
+    }
+
+    @Override
+    public Boolean changePass(ChangeRequest request) {
+        Account account = userLogin.getUserLogin();
+        if (account.getPassword().equals(MD5Util.getMD5(request.getPassword()))) {
+            account.setPassword(MD5Util.getMD5(request.getPassword()));
+            accountRepository.save(account);
+            return true;
+        }else {
+            return null;
+        }
+    }
+
 }
