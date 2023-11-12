@@ -210,12 +210,92 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                     CustomerVoucher customerVoucher = adCustomerVoucherRequest.newCustomerVoucher(new CustomerVoucher());
                     customerVoucherList.add(customerVoucher);
 
+                    String valueText = voucher.getTypeValue() == 0 ? (voucher.getValue() + "%") : (voucher.getValue() + "(VNĐ)");
                     String[] toMail = {customer.getEmail()};
                     Email email = new Email();
-                    email.setBody("<b style=\"text-align: center;\">Hạn sử dụng: </b>" + DateUtil.converDateTimeString(voucher.getStartDate()) + " ---> " + DateUtil.converDateTimeString(voucher.getEndDate()) + "<br/>");
+                    email.setBody("<!DOCTYPE html>\n" +
+                            "<html>\n" +
+                            "  <head>\n" +
+                            "    <style>\n" +
+                            "      body {\n" +
+                            "        font-family: Arial, sans-serif;\n" +
+                            "        background-color: #f5f5f5;\n" +
+                            "      }\n" +
+                            "\n" +
+                            "      .container {\n" +
+                            "        background-color: #fff;\n" +
+                            "        max-width: 600px;\n" +
+                            "        margin: 0 auto;\n" +
+                            "        padding: 20px;\n" +
+                            "        border: 1px solid #ccc;\n" +
+                            "        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n" +
+                            "      }\n" +
+                            "\n" +
+                            "      h1 {\n" +
+                            "        color: #333;\n" +
+                            "        text-align: center;\n" +
+                            "      }\n" +
+                            "\n" +
+                            "      .voucher {\n" +
+                            "        background-image: url(\"https://shorturl.at/uBKU6\");\n" +
+                            "        background-size: auto;\n" +
+                            "        background-repeat: no-repeat;\n" +
+                            "        background-position: center center;\n" +
+                            "        color: #fff;\n" +
+                            "        text-align: center;\n" +
+                            "        padding: 20px;\n" +
+                            "        margin: 20px 0;\n" +
+                            "        border-radius: 5px;\n" +
+                            "        display: flex;\n" +
+                            "      }\n" +
+                            "\n" +
+                            "      .voucher p {\n" +
+                            "        font-size: 18px;\n" +
+                            "        font-weight: bold;\n" +
+                            "        color: #333;\n" +
+                            "        flex: 2;\n" +
+                            "      }\n" +
+                            "\n" +
+                            "      button {\n" +
+                            "        background-color: #333;\n" +
+                            "        color: #fff;\n" +
+                            "        padding: 10px 20px;\n" +
+                            "        border: none;\n" +
+                            "        border-radius: 5px;\n" +
+                            "        font-size: 16px;\n" +
+                            "        cursor: pointer;\n" +
+                            "      }\n" +
+                            "\n" +
+                            "      button:hover {\n" +
+                            "        background-color: #555;\n" +
+                            "      }\n" +
+                            "    </style>\n" +
+                            "  </head>\n" +
+                            "  <body>\n" +
+                            "    <div class=\"container\">\n" +
+                            "      <h1>Thông Báo Tặng Voucher</h1>\n" +
+                            "      <p>Xin chào quý khách hàng thân yêu,</p>\n" +
+                            "      <p>\n" +
+                            "        Chúng tôi vô cùng vui mừng thông báo rằng bạn đã nhận được một voucher\n" +
+                            "        giảm giá đặc biệt từ chúng tôi.\n" +
+                            "      </p>\n" +
+                            "      <div class=\"voucher\">\n" +
+                            "        <p>Giảm giá " + valueText + "</p>\n" +
+                            "        <p>Có hiệu lực từ: " + DateUtil.converDateString(voucher.getStartDate()) + "</p>\n" +
+                            "      </div>\n" +
+                            "\n" +
+                            "      <p>\n" +
+                            "        Hãy sử dụng mã voucher này khi bạn mua sắm trên trang web của chúng tôi\n" +
+                            "        để nhận được ưu đãi đặc biệt.\n" +
+                            "      </p>\n" +
+                            "       <a href='http://localhost:3000/home'><button>Xem Chi Tiết</button></a>" +
+                            "      <p>Cảm ơn bạn đã ủng hộ chúng tôi!</p>\n" +
+                            "    </div>\n" +
+                            "  </body>\n" +
+                            "</html>\n");
                     email.setToEmail(toMail);
                     email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
-                    email.setTitleEmail("<b style=\"text-align: center;\">Bạn đã nhận được khuyễn mãi (voucher): </b><span>" + voucher.getName() + "</span>");
+                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn đã nhận được khuyễn mãi: </b><span>" + voucher.getName() + "</span>");
                     emailSender.sendEmail(email);
                 }
             }
@@ -250,6 +330,11 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     @Override
     public List<String> getAllCodeVoucher() {
         return adVoucherRepository.getAllCodeVoucher();
+    }
+
+    @Override
+    public List<String> getAllNameVoucher() {
+        return adVoucherRepository.getAllNameVoucher();
     }
 
     @Override

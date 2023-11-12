@@ -8,6 +8,7 @@ import News from '../pages/client/News'
 import Contact from '../pages/client/Contact'
 import AboutUs from '../pages/client/AboutUs'
 import Profile from '../pages/client/profile/Profile'
+import MyVoucher from '../pages/client/MyVoucher'
 import UserProfile from '../pages/client/profile/UserProfile'
 import AddressUser from '../pages/client/profile/AddressUser'
 import Order from '../pages/client/profile/Order'
@@ -26,6 +27,9 @@ const clientRoute = [
   { path: '/cart', element: <Cart /> },
   { path: '/login', element: <Login /> },
   { path: '/checkout', element: <Checkout /> },
+  { path: '/profile', element: <Profile /> },
+  { path: '/profile/user', element: <UserProfile /> },
+  { path: '/product/:id', element: <DetailProduct /> },
   { path: `/profile/get-by-idBill/:id`, element: <OrderDetail /> },
   { path: `/tracking/:code`, element: <TrackingDetail /> },
   { path: `/tracking`, element: <Tracking /> },
@@ -53,6 +57,15 @@ const clientRoute = [
     element: (
       <Profile>
         <AddressUser />
+      </Profile>
+    ),
+  },
+
+  {
+    path: '/profile/my-voucher',
+    element: (
+      <Profile>
+        <MyVoucher />
       </Profile>
     ),
   },

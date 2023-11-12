@@ -92,7 +92,7 @@ export default function Profile({ children }) {
                 <ListItemText primary="Đơn mua" />
               </ListItemButton>
               {/* ------------------------------------- === ------------------------------------- */}
-              <ListItemButton>
+              <ListItemButton component={Link} to="/profile/my-voucher">
                 <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
                   <Box component={LiaMoneyCheckAltSolid} sx={{ fontSize: '24px' }} />
                 </ListItemIcon>

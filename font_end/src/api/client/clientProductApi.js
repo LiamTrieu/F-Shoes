@@ -41,12 +41,17 @@ const clientProductApi = {
   },
 
   getColor: () => {
-    const url = `/client/solor`
+    const url = `/client/color`
     return axiosApi.get(url)
   },
 
   getSole: () => {
     const url = `/client/sole`
+    return axiosApi.get(url)
+  },
+
+  getMinMaxPrice: () => {
+    const url = `/client/min-max-price`
     return axiosApi.get(url)
   },
 }

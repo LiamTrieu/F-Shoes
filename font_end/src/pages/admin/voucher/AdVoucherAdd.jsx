@@ -70,11 +70,18 @@ export default function AdVoucherAdd() {
   const [errorEndDate, setErrorEndDate] = useState('')
   // const [errorListIdCustomer, setErrorListIdCustomer] = useState('')
   const [allCodeVoucher, setAllCodeVoucher] = useState([])
+  const [allNameVoucher, setAllNameVoucher] = useState([])
   const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
+
+  const listCode = []
+  allCodeVoucher.map((m) => listCode.push(m.toLowerCase()))
+  const listName = []
+  allNameVoucher.map((m) => listName.push(m.toLowerCase()))
 
   useEffect(() => {
     handelCustomeFill(initPage)
     haldleAllCodeVoucher()
+    haldleAllNameVoucher()
   }, [initPage])
 
   const haldleAllCodeVoucher = () => {
@@ -82,6 +89,19 @@ export default function AdVoucherAdd() {
       .getAllCodeVoucher()
       .then((response) => {
         setAllCodeVoucher(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const haldleAllNameVoucher = () => {
+    voucherApi
+      .getAllNameVoucher()
+      .then((response) => {
+        setAllNameVoucher(response.data.data)
       })
       .catch(() => {
         toast.warning('Vui lòng f5 tải lại dữ liệu', {
@@ -106,48 +126,58 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.code.trim() === '') {
       errors.code = 'Mã không được để trống'
+    } else if (voucherAdd.code !== voucherAdd.code.trim()) {
+      errors.code = 'Mã không được chứa khoảng trắng thừa'
     } else if (voucherAdd.code.length > 30) {
       errors.code = 'Mã không được dài hơn 30 ký tự'
-    } else if (allCodeVoucher.includes(voucherAdd.code)) {
+    } else if (listCode.includes(voucherAdd.code.toLowerCase())) {
       errors.code = 'Mã đã tồn tại'
+    } else if (/[^a-zA-Z0-9_\s]+/.test(voucherAdd.code)) {
+      errors.code = 'Mã không được chứa ký tự đặc biệt'
     }
 
     if (voucherAdd.name.trim() === '') {
       errors.name = 'Tên không được để trống'
+    } else if (voucherAdd.name !== voucherAdd.name.trim()) {
+      errors.name = 'Tên không được chứa khoảng trắng thừa'
     } else if (voucherAdd.name.length > 100) {
       errors.name = 'Tên không được dài hơn 100 ký tự'
+    } else if (listName.includes(voucherAdd.name.toLowerCase())) {
+      errors.name = 'Tên đã tồn tại'
+    } else if (/[^a-zA-Z0-9_\s]+/.test(voucherAdd.name)) {
+      errors.name = 'Tên không được chứa ký tự đặc biệt'
     }
 
     if (voucherAdd.typeValue === 0) {
       if (voucherAdd.value === null) {
-        errors.value = 'Giá trị không được để trống'
+        setVoucherAdd({ ...voucherAdd, value: 0 })
       } else if (!Number.isInteger(voucherAdd.value)) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
-      } else if (voucherAdd.value < 0) {
-        errors.value = 'giá trị tối thiểu 0%'
+      } else if (voucherAdd.value < 1) {
+        errors.value = 'giá trị tối thiểu 1%'
       } else if (voucherAdd.value > 100) {
         errors.value = 'giá trị tối đa 100%'
       }
     } else {
       if (voucherAdd.value === null) {
-        errors.value = 'Giá trị không được để trống'
+        setVoucherAdd({ ...voucherAdd, value: 0 })
       } else if (!Number.isInteger(voucherAdd.value)) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
-      } else if (voucherAdd.value < 0) {
-        errors.value = 'giá trị tối thiểu 0 VNĐ'
+      } else if (voucherAdd.value < 1) {
+        errors.value = 'giá trị tối thiểu 1 VNĐ'
       }
     }
 
     if (voucherAdd.maximumValue === null) {
-      errors.maximumValue = 'Giá trị tối đa không được để trống'
+      setVoucherAdd({ ...voucherAdd, maximumValue: 0 })
     } else if (!Number.isInteger(voucherAdd.maximumValue)) {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
-    } else if (voucherAdd.maximumValue < 0) {
-      errors.maximumValue = 'giá trị tối đa tối thiểu 0 (vnđ)'
+    } else if (voucherAdd.maximumValue < 1) {
+      errors.maximumValue = 'giá trị tối đa tối thiểu 1 (vnđ)'
     }
 
     if (voucherAdd.quantity === null) {
-      errors.quantity = 'Số lượng không được để trống'
+      setVoucherAdd({ ...voucherAdd, quantity: 0 })
     } else if (!Number.isInteger(voucherAdd.quantity)) {
       errors.quantity = 'Số lượng chỉ được nhập số nguyên'
     } else if (voucherAdd.quantity < 1) {
@@ -155,11 +185,11 @@ export default function AdVoucherAdd() {
     }
 
     if (voucherAdd.minimumAmount === null) {
-      errors.minimumAmount = 'Điều kiện không được để trống'
+      setVoucherAdd({ ...voucherAdd, minimumAmount: 0 })
     } else if (!Number.isInteger(voucherAdd.minimumAmount)) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
-    } else if (voucherAdd.minimumAmount < 0) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
+    } else if (voucherAdd.minimumAmount < 1) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 1 (vnđ)'
     }
 
     if (voucherAdd.startDate.trim() === '') {
@@ -207,7 +237,6 @@ export default function AdVoucherAdd() {
       confirmSatus(title, text, theme).then((result) => {
         if (result.isConfirmed) {
           const updatedVoucherAdd = { ...voucherAdd, listIdCustomer: selectedCustomerIds }
-          console.log(updatedVoucherAdd)
           voucherApi
             .addVoucher(updatedVoucherAdd)
             .then(() => {
@@ -248,7 +277,7 @@ export default function AdVoucherAdd() {
 
   const handelOnchangePage = (page) => {
     setInitPage(page)
-    handelCustomeFill(page - 1)
+    handelCustomeFill(page)
   }
 
   const handleSelectAllChange = (event) => {
@@ -315,6 +344,7 @@ export default function AdVoucherAdd() {
                   type="number"
                   size="small"
                   fullWidth
+                  defaultValue={0}
                   onChange={(e) => setVoucherAdd({ ...voucherAdd, value: Number(e.target.value) })}
                   InputProps={{
                     endAdornment: (
@@ -343,6 +373,7 @@ export default function AdVoucherAdd() {
                   type="number"
                   size="small"
                   fullWidth
+                  defaultValue={0}
                   onChange={(e) =>
                     setVoucherAdd({
                       ...voucherAdd,
@@ -373,6 +404,7 @@ export default function AdVoucherAdd() {
                   variant="outlined"
                   size="small"
                   fullWidth
+                  defaultValue={0}
                   onChange={(e) =>
                     setVoucherAdd({
                       ...voucherAdd,
@@ -397,6 +429,7 @@ export default function AdVoucherAdd() {
                   type="number"
                   size="small"
                   fullWidth
+                  defaultValue={0}
                   onChange={(e) =>
                     setVoucherAdd({
                       ...voucherAdd,
