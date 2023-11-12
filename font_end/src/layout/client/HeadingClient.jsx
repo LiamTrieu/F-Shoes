@@ -11,7 +11,7 @@ import { useEffect } from 'react'
 import authenticationAPi from '../../api/authentication/authenticationAPi'
 import { getCookie, removeCookie } from '../../services/cookie'
 import confirmSatus from '../../components/comfirmSwal'
-import { GetUser, addUser, removeUser } from '../../services/slices/userSlice'
+import { GetUser, removeUser } from '../../services/slices/userSlice'
 import clientCartApi from '../../api/client/clientCartApi'
 
 export default function HeadingClient() {
@@ -118,27 +118,11 @@ export default function HeadingClient() {
             textDecoration: 'none',
           }}
           component={Link}
-          to="/contact"
-          color="inherit">
-          Thương hiệu
-        </Typography>
-        <Typography
-          onClick={() => {
-            setOpenDrawer(false)
-          }}
-          className="link-with-underline"
-          sx={{
-            marginLeft: { md: 4 },
-            fontFamily: 'monospace',
-            fontSize: '17px',
-            fontWeight: 600,
-            textDecoration: 'none',
-          }}
-          component={Link}
           to="/news"
           color="inherit">
           Tin tức
         </Typography>
+
         <Typography
           onClick={() => {
             setOpenDrawer(false)
@@ -156,19 +140,29 @@ export default function HeadingClient() {
           color="inherit">
           Liên hệ
         </Typography>
+        <Typography
+          onClick={() => {
+            setOpenDrawer(false)
+          }}
+          className="link-with-underline"
+          sx={{
+            marginLeft: { md: 4 },
+            fontFamily: 'monospace',
+            fontSize: '17px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+          component={Link}
+          to="/tracking"
+          color="inherit">
+          Tra cứu
+        </Typography>
       </Box>
     )
   }
   const user = useSelector(GetUser)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  useEffect(() => {
-    if (getCookie('ClientToken')) {
-      authenticationAPi.getClient().then((response) => {
-        dispatch(addUser(response.data.data))
-      })
-    }
-  }, [dispatch])
 
   function handleAccount() {
     const title = 'Xác nhận đăng xuất tài khoản?'
