@@ -40,7 +40,6 @@ export default function AdVoucherDetail() {
   const theme = useTheme()
   const { id } = useParams()
   const navigate = useNavigate()
-  const [isSelectVisible, setIsSelectVisible] = useState(false)
   const [listCustomer, setListCustomer] = useState([])
   const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
@@ -56,7 +55,9 @@ export default function AdVoucherDetail() {
   const [errorStartDate, setErrorStartDate] = useState('')
   const [errorEndDate, setErrorEndDate] = useState('')
   const [allCodeVoucher, setAllCodeVoucher] = useState([])
+  const [allNameVoucher, setAllNameVoucher] = useState([])
   const [prevCodeValue, setPrevCodeValue] = useState('')
+  const [prevNameValue, setPrevNameValue] = useState('')
   const initialVoucher = {
     code: '',
     name: '',
@@ -71,10 +72,16 @@ export default function AdVoucherDetail() {
   }
   const [voucherDetail, setVoucherDetail] = useState(initialVoucher)
 
+  const listCode = []
+  allCodeVoucher.map((m) => listCode.push(m.toLowerCase()))
+  const listName = []
+  allNameVoucher.map((m) => listName.push(m.toLowerCase()))
+
   useEffect(() => {
     fetchData(id)
     handelCustomeFill(initPage)
     haldleAllCodeVoucher()
+    haldleAllNameVoucher()
   }, [id, initPage])
 
   useEffect(() => {
@@ -99,7 +106,7 @@ export default function AdVoucherDetail() {
         })
 
         setPrevCodeValue(response.data.data.code)
-        setIsSelectVisible(response.data.data.type === 1)
+        setPrevNameValue(response.data.data.name)
       })
       .catch(() => {
         alert('Error: Không tải được dữ liệu API')
@@ -130,6 +137,19 @@ export default function AdVoucherDetail() {
       })
   }
 
+  const haldleAllNameVoucher = () => {
+    voucherApi
+      .getAllNameVoucher()
+      .then((response) => {
+        setAllNameVoucher(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
   const handleValidation = () => {
     let check = 0
     const errors = {
@@ -145,21 +165,32 @@ export default function AdVoucherDetail() {
 
     if (voucherDetail.code.trim() === '') {
       errors.code = 'Mã không được để trống'
+    } else if (voucherDetail.code !== voucherDetail.code.trim()) {
+      errors.code = 'Mã không được chứa khoảng trắng thừa'
     } else if (voucherDetail.code.length > 30) {
       errors.code = 'Mã không được dài hơn 30 ký tự'
     } else if (
       prevCodeValue !== voucherDetail.code &&
-      allCodeVoucher.includes(voucherDetail.code)
+      listCode.includes(voucherDetail.code.toLowerCase())
     ) {
       errors.code = 'Mã đã tồn tại'
-    } else {
-      errors.code = ''
+    } else if (/[^a-zA-Z0-9_\s]+/.test(voucherDetail.code)) {
+      errors.code = 'Mã không được chứa ký tự đặc biệt'
     }
 
     if (voucherDetail.name.trim() === '') {
       errors.name = 'Tên không được để trống'
+    } else if (voucherDetail.name !== voucherDetail.name.trim()) {
+      errors.name = 'Tên không được chứa khoảng trắng thừa'
     } else if (voucherDetail.name.length > 100) {
       errors.name = 'Tên không được dài hơn 100 ký tự'
+    } else if (
+      prevNameValue !== voucherDetail.name &&
+      listName.includes(voucherDetail.name.toLowerCase())
+    ) {
+      errors.name = 'Tên đã tồn tại'
+    } else if (/[^a-zA-Z0-9_\s]+/.test(voucherDetail.name)) {
+      errors.name = 'Tên không được chứa ký tự đặc biệt'
     }
 
     if (voucherDetail.typeValue === 0) {
@@ -167,8 +198,8 @@ export default function AdVoucherDetail() {
         errors.value = 'Giá trị không được để trống'
       } else if (!Number.isInteger(voucherDetail.value)) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
-      } else if (voucherDetail.value < 0) {
-        errors.value = 'giá trị tối thiểu 0%'
+      } else if (voucherDetail.value < 1) {
+        errors.value = 'giá trị tối thiểu 1%'
       } else if (voucherDetail.value > 100) {
         errors.value = 'giá trị tối đa 100%'
       }
@@ -177,8 +208,8 @@ export default function AdVoucherDetail() {
         errors.value = 'Giá trị không được để trống'
       } else if (!Number.isInteger(voucherDetail.value)) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
-      } else if (voucherDetail.value < 0) {
-        errors.value = 'giá trị tối thiểu 0 VNĐ'
+      } else if (voucherDetail.value < 1) {
+        errors.value = 'giá trị tối thiểu 1 VNĐ'
       }
     }
 
@@ -186,8 +217,8 @@ export default function AdVoucherDetail() {
       errors.maximumValue = 'Giá trị tối đa không được để trống'
     } else if (!Number.isInteger(voucherDetail.maximumValue)) {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
-    } else if (voucherDetail.maximumValue < 0) {
-      errors.maximumValue = 'giá trị tối đa tối thiểu 0 (vnđ)'
+    } else if (voucherDetail.maximumValue < 1) {
+      errors.maximumValue = 'giá trị tối đa tối thiểu 1 (vnđ)'
     }
 
     if (voucherDetail.quantity === null) {
@@ -202,8 +233,8 @@ export default function AdVoucherDetail() {
       errors.minimumAmount = 'Điều kiện không được để trống'
     } else if (!Number.isInteger(voucherDetail.minimumAmount)) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
-    } else if (voucherDetail.minimumAmount < 0) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
+    } else if (voucherDetail.minimumAmount < 1) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 1 (vnđ)'
     }
 
     if (voucherDetail.startDate.trim() === '') {
@@ -549,7 +580,6 @@ export default function AdVoucherDetail() {
                     control={<Radio />}
                     label="Công khai"
                     onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
-                    onClick={() => setIsSelectVisible(false)}
                   />
                   <FormControlLabel
                     name="typeUpdate"
@@ -557,7 +587,6 @@ export default function AdVoucherDetail() {
                     control={<Radio />}
                     label="Cá nhân"
                     onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
-                    onClick={() => setIsSelectVisible(true)}
                   />
                 </RadioGroup>
               </FormControl>

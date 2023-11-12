@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ClientBillRepository extends BillRepository {
     @Query(value = """
-            select bi.id, bi.id_customer , p.name as nameProduct, bd.price, bd.quantity ,s.size as size,
+            select bi.id,bi.code, bi.id_customer , p.name as nameProduct, bd.price, bd.quantity ,s.size as size,
              c.name as color,m.name as material,sl.name as sole,b.name as brand,cate.name as category, MAX(i.url) as url
              from bill bi join bill_detail bd on bi.id = bd.id_bill
             join product_detail pd on pd.id = bd.id_product_detail
@@ -26,9 +26,9 @@ public interface ClientBillRepository extends BillRepository {
               left join image i on i.id_product_detail = pd.id
                WHERE (:#{#request.status} is null or bi.status = :#{#request.status}) 
               AND (:#{#request.nameProductSearch} is null or p.name like %:#{#request.nameProductSearch}%) 
+              AND bi.id_customer = :idAccount
               group by p.id, bi.id,bd.id, pd.id;
-              
             """, nativeQuery = true)
-    List<ClientBillAccountResponse> getALlBill(@Param("request") ClientBillAccountRequest request);
+    List<ClientBillAccountResponse> getALlBill(@Param("request") ClientBillAccountRequest request, String idAccount);
 
 }

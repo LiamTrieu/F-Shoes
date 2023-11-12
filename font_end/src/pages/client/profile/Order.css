@@ -13,3 +13,33 @@
   margin-top: -105px;
   margin-left: 78px;
 }
+
+.time-line .scrollbar-container {
+  overflow-x: auto;
+}
+
+.time-line .scrollbar-container::-webkit-scrollbar {
+  width: 3px !important;
+  height: 10px !important;
+}
+
+.time-line .scrollbar-container::-webkit-scrollbar-thumb {
+  background-color: rgb(206, 206, 206) !important;
+}
+
+.time-line .scrollbar-container::-webkit-scrollbar-button {
+  display: none !important;
+}
+
+.time-line {
+  padding-right: 8px;
+}
+
+.time-line .MuiGrid-root .MuiTypography-root {
+  margin: 13px !important;
+}
+
+.profile .MuiContainer-root {
+  padding-left: 120px !important;
+  padding-right: 120px !important;
+}

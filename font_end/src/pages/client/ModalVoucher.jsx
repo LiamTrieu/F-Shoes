@@ -123,18 +123,12 @@ export default function ModalVoucher({
             </Button>
           </Grid>
           <div className="data-radio-group-modal-voucher">
-            <RadioGroup
-              className="radio-group-modal-voucher"
-              name="voucher"
-              // value={codeVoucher ? codeVoucher : ''}
-            >
+            <RadioGroup className="radio-group-modal-voucher" name="voucher">
               {listVoucher &&
                 listVoucher.map((v) => (
                   <ListItem key={v.id} variant="outlined" sx={{ boxShadow: 'sm' }}>
                     <Grid className="grid-radio-group-modal-voucher">
-                      <Grid item xs={4} className="grid-name-voucher">
-                        {v.name}
-                      </Grid>
+                      <Grid item xs={4} className="grid-name-voucher"></Grid>
                       <Grid item xs={8} className="grid-information-voucher">
                         <Stack direction="row" justifyContent="space-between" alignItems="center">
                           <div>

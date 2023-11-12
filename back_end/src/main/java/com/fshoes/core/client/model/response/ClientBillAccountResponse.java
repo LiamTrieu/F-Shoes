@@ -12,6 +12,8 @@ public interface ClientBillAccountResponse extends IsIdentified {
 
     String getNameProduct();
 
+    String getCode();
+
     String getCategory();
 
     String getBrand();

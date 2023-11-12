@@ -11,79 +11,86 @@ import CartProduct from '../../layout/client/CartProduct'
 import {
   Collapse,
   Container,
-  FormControl,
-  FormControlLabel,
   InputAdornment,
-  MenuItem,
   Radio,
-  RadioGroup,
-  Select,
   Slider,
+  SliderThumb,
   Stack,
   TextField,
   Typography,
 } from '@mui/material'
-import Checkbox from '@mui/material/Checkbox'
 import { Grid } from '@mui/material'
 import './Product.css'
-import { BiCategoryAlt, BiFontSize, BiSolidColorFill } from 'react-icons/bi'
+import { BiCategoryAlt, BiSolidColorFill } from 'react-icons/bi'
 import { GiBrandyBottle, GiMaterialsScience, GiBootPrints } from 'react-icons/gi'
+import { FaCheck } from 'react-icons/fa'
 import { GrMoney } from 'react-icons/gr'
 import SearchIcon from '@mui/icons-material/Search'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import clientProductApi from '../../api/client/clientProductApi'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
+import styled from '@emotion/styled'
 
-function valuetext(value) {
-  return `${value}°C`
+function AirbnbThumbComponent(props) {
+  const { children, ...other } = props
+  return <SliderThumb {...other}>{children}</SliderThumb>
 }
+
+const AirbnbSlider = styled(Slider)(() => ({
+  color: '#fc7c27',
+  height: 1,
+  padding: '13px 0',
+  '& .MuiSlider-thumb': {
+    height: 20,
+    width: 20,
+    backgroundColor: '#fff',
+    border: '1px solid currentColor',
+    '&:hover': {
+      boxShadow: '0 0 0 8px rgba(58, 133, 137, 0.16)',
+    },
+    '& .airbnb-bar': {
+      height: 1,
+      width: 1,
+      backgroundColor: '#fc7c27',
+      marginLeft: 1,
+      marginRight: 1,
+    },
+    '& .MuiSlider-valueLabel': {
+      lineHeight: 1.2,
+      fontSize: 12,
+      backgroundColor: '#fc7c27',
+    },
+  },
+}))
 
 export default function Product() {
   const [openCategory, setOpenCategory] = useState(false)
   const [openBrand, setOpenBrand] = useState(false)
   const [openMaterial, setOpenMaterial] = useState(false)
   const [openSole, setOpenSole] = useState(false)
-  const [openSize, setOpenSize] = useState(false)
   const [openColor, setOpenColor] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false)
   const [products, setProducts] = useState([])
   const [showMenuBar, setShowMenuBar] = useState(true)
   const [isMenuBarVisible, setIsMenuBarVisible] = useState(true)
-  const [selectedFilter, setselectedFilter] = useState([])
   const [filter, setFilter] = useState({
-    brand: [],
-    material: [],
-    color: [],
-    sole: [],
-    category: [],
-    size: [],
+    brand: null,
+    material: null,
+    color: null,
+    sole: null,
+    category: null,
+    minPrice: 0,
+    maxPrice: 0,
     nameProductDetail: null,
   })
-
-  const handleRowCheckboxChange = (event, customerId) => {
-    const selectedIndex = selectedFilter.indexOf(customerId)
-    let newSelectedIds = []
-
-    if (selectedIndex === -1) {
-      newSelectedIds = [...selectedFilter, customerId]
-    } else {
-      newSelectedIds = [
-        ...selectedFilter.slice(0, selectedIndex),
-        ...selectedFilter.slice(selectedIndex + 1),
-      ]
-    }
-
-    setselectedFilter(newSelectedIds)
-  }
+  const [minMaxPrice, setMinMaxPrice] = useState({})
   // -------------------------------------- Filter ----------------------------------
-
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
   const [listColor, setListColor] = useState([])
   const [listSole, setListSole] = useState([])
   const [listCategory, setListCategory] = useState([])
-  const [listSize, setListSize] = useState([])
 
   useEffect(() => {
     clientProductApi.getBrand().then((response) => {
@@ -100,9 +107,6 @@ export default function Product() {
     })
     clientProductApi.getCategory().then((response) => {
       setListCategory(response.data.data)
-    })
-    clientProductApi.getSize().then((response) => {
-      setListSize(response.data.data)
     })
   }, [])
 
@@ -131,28 +135,32 @@ export default function Product() {
     })
   }, [filter])
 
+  useEffect(() => {
+    clientProductApi.getMinMaxPrice().then((response) => {
+      setMinMaxPrice(response.data.data)
+      setFilter({
+        ...filter,
+        minPrice: response.data.data.minPrice,
+        maxPrice: response.data.data.maxPrice,
+      })
+    })
+  }, [])
+
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer)
   }
 
-  const [value1, setValue1] = React.useState([20, 37])
-
-  const handleChange1 = (event, newValue, activeThumb) => {
-    if (!Array.isArray(newValue)) {
-      return
-    }
-
-    if (activeThumb === 0) {
-      setValue1([Math.min(newValue[0], value1[1] - 10), value1[1]])
-    } else {
-      setValue1([value1[0], Math.max(newValue[1], value1[0] + 10)])
-    }
-  }
-
   const toggleMenuBar = () => {
     setShowMenuBar(!showMenuBar)
-
     setIsMenuBarVisible(!isMenuBarVisible)
+  }
+
+  const checkColor = (idColor) => {
+    if (filter.color === idColor) {
+      setFilter({ ...filter, color: null })
+    } else {
+      setFilter({ ...filter, color: idColor })
+    }
   }
 
   const MenuBar = () => {
@@ -171,12 +179,15 @@ export default function Product() {
             <List component="div" disablePadding>
               {listCategory.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox
+                  <Radio
                     key={lf.id}
                     value={lf.id}
-                    checked={selectedFilter.includes(lf.id)}
-                    onClick={(e) => setFilter({ ...filter, category: e.target.value })}
-                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                    checked={filter.category === lf.id}
+                    onClick={(e) =>
+                      filter.category === lf.id
+                        ? setFilter({ ...filter, category: null })
+                        : setFilter({ ...filter, category: e.target.value })
+                    }
                   />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
@@ -193,12 +204,15 @@ export default function Product() {
             <List component="div" disablePadding>
               {listBrand.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox
+                  <Radio
                     key={lf.id}
                     value={lf.id}
-                    checked={selectedFilter.includes(lf.id)}
-                    onClick={(e) => setFilter({ ...filter, brand: e.target.value })}
-                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                    checked={filter.brand === lf.id}
+                    onClick={(e) =>
+                      filter.brand === lf.id
+                        ? setFilter({ ...filter, brand: null })
+                        : setFilter({ ...filter, brand: e.target.value })
+                    }
                   />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
@@ -217,12 +231,15 @@ export default function Product() {
             <List component="div" disablePadding>
               {listMaterial.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox
+                  <Radio
                     key={lf.id}
                     value={lf.id}
-                    checked={selectedFilter.includes(lf.id)}
-                    onClick={(e) => setFilter({ ...filter, material: e.target.value })}
-                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                    checked={filter.material === lf.id}
+                    onClick={(e) =>
+                      filter.material === lf.id
+                        ? setFilter({ ...filter, material: null })
+                        : setFilter({ ...filter, material: e.target.value })
+                    }
                   />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
@@ -239,40 +256,21 @@ export default function Product() {
             <List component="div" disablePadding>
               {listSole.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Checkbox
+                  <Radio
                     key={lf.id}
                     value={lf.id}
-                    checked={selectedFilter.includes(lf.id)}
-                    onClick={(e) => setFilter({ ...filter, sole: e.target.value })}
-                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
+                    checked={filter.sole === lf.id}
+                    onClick={(e) =>
+                      filter.sole === lf.id
+                        ? setFilter({ ...filter, sole: null })
+                        : setFilter({ ...filter, sole: e.target.value })
+                    }
                   />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
             </List>
           </Collapse>
-          {/* --------------------------------------------- SIZE --------------------------------------------- */}
-          {/* <ListItemButton onClick={() => setOpenSize(!openSize)} className="list-item-button">
-            <BiFontSize className="icon-portfolio" />
-            <ListItemText primary="Kích cỡ" />
-            {openSize ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          <Collapse in={openSize} timeout="auto" unmountOnExit className="collapse-portfolio">
-            <List component="div" disablePadding>
-              {listSize.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    value={lf.id}
-                    checked={selectedFilter.includes(lf.id)}
-                    onClick={(e) => setFilter({ ...filter, size: e.target.value })}
-                    onChange={(event) => handleRowCheckboxChange(event, lf.id)}
-                  />
-                  <ListItemText primary={lf.size} key={lf.id} value={lf.id} />
-                </ListItemButton>
-              ))}
-            </List>
-          </Collapse> */}
           {/* --------------------------------------------- COLOR --------------------------------------------- */}
           <ListItemButton onClick={() => setOpenColor(!openColor)} className="list-item-button">
             <BiSolidColorFill className="icon-portfolio" />
@@ -283,21 +281,15 @@ export default function Product() {
             <List component="div" disablePadding>
               <Grid container>
                 {listColor.map((lf) => (
-                  <Grid items xs={4}>
-                    <ListItemButton>
-                      <FormControl>
-                        <RadioGroup>
-                          <FormControlLabel
-                            value={lf.id}
-                            control={<Radio style={{ color: `${lf.code}` }} />}
-                            checked={filter.color.includes(lf.id)}
-                            onClick={(e) => setFilter({ ...filter, color: e.target.value })}
-                          />
-
-                          {lf.name}
-                        </RadioGroup>
-                      </FormControl>
-                    </ListItemButton>
+                  <Grid items xs={4} key={lf.id}>
+                    <ListItem>
+                      <div
+                        style={{ backgroundColor: `${lf.code}` }}
+                        className="radio-color"
+                        onClick={() => checkColor(lf.id)}>
+                        {filter.color === lf.id && <FaCheck color="white" />}
+                      </div>
+                    </ListItem>
                   </Grid>
                 ))}
               </Grid>
@@ -308,13 +300,19 @@ export default function Product() {
             <GrMoney className="icon-portfolio" />
             <ListItemText primary="Giá tiền" />
           </ListItemButton>
-          <ListItem>
-            <Slider
-              value={value1}
-              onChange={handleChange1}
+          <ListItem className="list-item">
+            <AirbnbSlider
+              onChangeCommitted={(_, value) =>
+                setFilter({ ...filter, minPrice: value[0], maxPrice: value[1] })
+              }
+              min={minMaxPrice.minPrice}
+              max={minMaxPrice.maxPrice}
               valueLabelDisplay="auto"
-              getAriaValueText={valuetext}
-              className="slider-portfolio"
+              slots={{ thumb: AirbnbThumbComponent }}
+              value={[filter.minPrice, filter.maxPrice]}
+              valueLabelFormat={(value) =>
+                `${value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}`
+              }
             />
           </ListItem>
         </div>
