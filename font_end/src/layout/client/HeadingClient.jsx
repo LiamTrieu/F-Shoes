@@ -276,17 +276,27 @@ export default function HeadingClient() {
             }}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-            <Link to={`/profile`} style={{ textDecoration: 'none', color: 'black' }}>
-              <MenuItem>
-                <Avatar /> Tài khoản của tôi
-              </MenuItem>
-            </Link>
-            <MenuItem style={{ color: 'black' }} onClick={() => handleAccount()}>
-              <ListItemIcon>
-                <Logout fontSize="small" />
-              </ListItemIcon>
-              Đăng xuất
-            </MenuItem>
+            {user ? (
+              <>
+                <Link to={`/profile`} style={{ textDecoration: 'none', color: 'black' }}>
+                  <MenuItem>
+                    <Avatar /> Tài khoản của tôi
+                  </MenuItem>
+                </Link>
+                <MenuItem style={{ color: 'black' }} onClick={() => handleAccount()}>
+                  <ListItemIcon>
+                    <Logout fontSize="small" />
+                  </ListItemIcon>
+                  Đăng xuất
+                </MenuItem>
+              </>
+            ) : (
+              <Link to={`/login`} style={{ textDecoration: 'none', color: 'black' }}>
+                <MenuItem>
+                  <Avatar /> Đăng nhập
+                </MenuItem>
+              </Link>
+            )}
           </Menu>
           <Typography
             variant="subtitle2"

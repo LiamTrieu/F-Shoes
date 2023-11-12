@@ -28,7 +28,7 @@ const clientRoute = [
   { path: '/login', element: <Login /> },
   { path: '/checkout', element: <Checkout /> },
   { path: '/profile', element: <Profile /> },
-  { path: '/profile/user', element: <UserProfile /> },
+  // { path: '/profile/user', element: <UserProfile /> },
   { path: '/product/:id', element: <DetailProduct /> },
   { path: `/profile/get-by-idBill/:id`, element: <OrderDetail /> },
   { path: `/tracking/:code`, element: <TrackingDetail /> },
@@ -37,7 +37,7 @@ const clientRoute = [
   { path: '/change-password', element: <ChangePassword /> },
 
   {
-    path: '/profile',
+    path: '/profile/user',
     element: (
       <Profile>
         <UserProfile />
