@@ -131,35 +131,39 @@ export default function AdBillDetail() {
   }
 
   const handleTextFieldQuantityChange = (row, index, newValue) => {
-    if (newValue !== 0 || newValue !== undefined || newValue !== '') {
-      const updatedList = listBillDetail.map((item, i) =>
-        i === index ? { ...item, quantity: parseInt(newValue, 10) || 0 } : item,
-      )
-      setListBillDetail(updatedList)
-      changeQuantity(row.id, newValue)
-      if (billDetail.moneyReduced != null) {
-        const newMoneyAfter =
-          updatedList.reduce(
-            (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
-            0,
-          ) - billDetail.moneyReduced
-        setMoneyAfter(newMoneyAfter)
-      } else {
-        const newMoneyAfter = updatedList.reduce(
+    let soLuong = 1
+    if (!isNaN(newValue) && newValue > 0) {
+      soLuong = newValue
+    }
+    const updatedList = listBillDetail.map((item, i) =>
+      i === index ? { ...item, quantity: parseInt(soLuong, 10) || 0 } : item,
+    )
+    setListBillDetail(updatedList)
+    changeQuantity(row.id, soLuong)
+    if (billDetail.moneyReduced != null) {
+      const newMoneyAfter =
+        updatedList.reduce(
           (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
           0,
-        )
-        setMoneyAfter(newMoneyAfter)
-      }
+        ) - billDetail.moneyReduced
+      setMoneyAfter(newMoneyAfter)
+    } else {
+      const newMoneyAfter = updatedList.reduce(
+        (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
+        0,
+      )
+      setMoneyAfter(newMoneyAfter)
     }
   }
 
   const handleTextFieldQuanityFocus = (event, index) => {
-    if (event.target.value === '' || event.target.value === '0') {
-      const updatedList = listBillDetail.map((item, i) =>
-        i === index ? { ...item, quantity: 0 } : item,
-      )
-      setListBillDetail(updatedList)
+    if (!isNaN(event.target.value)) {
+      if (event.target.value !== '' && event.target.value !== '0') {
+        const updatedList = listBillDetail.map((item, i) =>
+          i === index ? { ...item, quantity: 1 } : item,
+        )
+        setListBillDetail(updatedList)
+      }
     }
   }
 
@@ -923,9 +927,15 @@ export default function AdBillDetail() {
   }
 
   const changeQuantity = (idBillDetail, quantity) => {
-    hoaDonChiTietApi.changeQuantity(idBillDetail, quantity).catch((error) => {
-      console.error('NO ok', error)
-    })
+    if (!isNaN(quantity) && quantity > 0) {
+      hoaDonChiTietApi.changeQuantity(idBillDetail, quantity).catch((error) => {
+        console.error('NO ok', error)
+      })
+    } else {
+      hoaDonChiTietApi.changeQuantity(idBillDetail, 1).catch((error) => {
+        console.error('NO ok', error)
+      })
+    }
   }
 
   const deleteBillDetail = (hdct, idBill) => {
