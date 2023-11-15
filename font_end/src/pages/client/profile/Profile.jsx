@@ -69,7 +69,7 @@ export default function Profile({ children }) {
               </ListItemButton>
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                  <ListItemButton component={Link} to="/profile" sx={{ pl: 4 }}>
+                  <ListItemButton component={Link} to="/profile/user" sx={{ pl: 4 }}>
                     <ListItemIcon>
                       <StarBorder />
                     </ListItemIcon>
