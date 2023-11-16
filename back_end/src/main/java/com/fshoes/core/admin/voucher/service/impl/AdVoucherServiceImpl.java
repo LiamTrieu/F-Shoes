@@ -10,6 +10,8 @@ import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
+import com.fshoes.core.client.repository.ClientVoucherRepository;
+import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Account;
 import com.fshoes.entity.CustomerVoucher;
 import com.fshoes.entity.Voucher;
@@ -47,6 +49,10 @@ public class AdVoucherServiceImpl implements AdVoucherService {
 
     @Autowired
     private EmailSender emailSender;
+    @Autowired
+    private ClientVoucherRepository clientVoucherRepository;
+    @Autowired
+    private UserLogin userLogin;
 
     @Override
     public List<Voucher> getAllVoucher() {
@@ -303,6 +309,11 @@ public class AdVoucherServiceImpl implements AdVoucherService {
             List<Voucher> listVoucher = new ArrayList<>();
             listVoucher.add(voucherUpdate);
             messagingTemplate.convertAndSend("/topic/voucherUpdates", listVoucher);
+
+
+            messagingTemplate.convertAndSend("/topic/voucher-client-update",
+                    clientVoucherRepository.getVoucherPrivateMyProfileLatestReal(voucherUpdate.getId()));
+
             return voucherUpdate;
         } else {
             return null;

@@ -6,6 +6,8 @@ import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
 import ModalVoucherDetail from './ModalVoucherDetail'
 import Empty from '../../components/Empty'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
 function CustomTabPanel(props) {
   const { children, value, index } = props
@@ -20,7 +22,7 @@ function CustomTabPanel(props) {
     </div>
   )
 }
-
+var stompClient = null
 export default function MyVoucher() {
   const [openModal, setOpenModal] = useState(false)
   const [valueTabs, setValueTabs] = useState(0)
@@ -94,7 +96,6 @@ export default function MyVoucher() {
         })
       })
   }
-
   const fetchVoucherPrivateLatest = () => {
     ClientVoucherApi.getVoucherPrivateMyProfileLatest()
       .then((respone) => {
@@ -105,6 +106,35 @@ export default function MyVoucher() {
           position: toast.POSITION.TOP_CENTER,
         })
       })
+  }
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/voucher-client-update', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateReal(data)
+      }
+    })
+  }
+
+  function updateReal(data) {
+    const preVoucherPrivateLatest = [...voucherPrivateLatest]
+    const index = preVoucherPrivateLatest.findIndex((voucher) => voucher.id === data.id)
+    console.log(index)
+    if (index !== -1) {
+      preVoucherPrivateLatest[index] = data
+      setVoucherPrivateLatest(preVoucherPrivateLatest)
+    }
   }
 
   useEffect(() => {

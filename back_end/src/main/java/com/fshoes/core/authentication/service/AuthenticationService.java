@@ -1,6 +1,7 @@
 package com.fshoes.core.authentication.service;
 
 import com.fshoes.core.authentication.model.request.ChangeRequest;
+import com.fshoes.core.authentication.model.request.LoginGoogleRequest;
 import com.fshoes.core.authentication.model.request.LoginRequest;
 import com.fshoes.core.authentication.model.request.RegisterRequest;
 import com.fshoes.core.authentication.model.response.UserLoginResponse;
@@ -22,4 +23,6 @@ public interface AuthenticationService {
     Boolean change(RegisterRequest request);
 
     Boolean changePass(ChangeRequest request);
+
+    String loginGoogle(LoginGoogleRequest request);
 }

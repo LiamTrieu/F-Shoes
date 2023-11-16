@@ -11,6 +11,10 @@ const authenticationAPi = {
     const url = `/authentication/login`
     return axiosApi.post(url, { email: email, password: password })
   },
+  loginGoogle: (email, name, image) => {
+    const url = `/authentication/login-google`
+    return axiosApi.post(url, { email: email, name: name, image: image })
+  },
   register: (email, password, name) => {
     const url = `/authentication/register`
     return axiosApi.post(url, { name: name, email: email, password: password })

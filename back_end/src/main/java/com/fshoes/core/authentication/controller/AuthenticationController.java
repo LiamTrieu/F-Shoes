@@ -1,6 +1,7 @@
 package com.fshoes.core.authentication.controller;
 
 import com.fshoes.core.authentication.model.request.ChangeRequest;
+import com.fshoes.core.authentication.model.request.LoginGoogleRequest;
 import com.fshoes.core.authentication.model.request.LoginRequest;
 import com.fshoes.core.authentication.model.request.RegisterRequest;
 import com.fshoes.core.authentication.model.response.UserLoginResponse;
@@ -29,8 +30,11 @@ public class AuthenticationController {
     public ObjectRespone login(@RequestBody LoginRequest request) {
         return new ObjectRespone(authenticationService.login(request));
     }
+    @PostMapping("/login-google")
+    public ObjectRespone loginGoogle(@RequestBody LoginGoogleRequest request) {
+        return new ObjectRespone(authenticationService.loginGoogle(request));
+    }
 
-    
     @PostMapping("/register")
     public ObjectRespone register(@RequestBody RegisterRequest request) {
         return new ObjectRespone(authenticationService.register(request));
