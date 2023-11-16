@@ -3,7 +3,7 @@ import { axiosApi } from '../axios'
 const clientProductApi = {
   get: (filter) => {
     const url = `/client/product`
-    return axiosApi.get(url, { params: filter })
+    return axiosApi.post(url, filter)
   },
   getCungLoai: (filter) => {
     const url = `/client/product/cung-loai`
