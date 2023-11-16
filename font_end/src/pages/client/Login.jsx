@@ -12,6 +12,7 @@ import {
   InputAdornment,
   InputLabel,
   Paper,
+  Stack,
   Tab,
   Tabs,
   ThemeProvider,
@@ -32,7 +33,8 @@ import clientCartApi from '../../api/client/clientCartApi'
 import { GetCart, setCart } from '../../services/slices/cartSlice'
 import confirmSatus from '../../components/comfirmSwal'
 import { setLoading } from '../../services/slices/loadingSlice'
-import GoogleLogin from 'react-google-login'
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
+import { jwtDecode } from 'jwt-decode'
 
 const InputForm = ({ label, Icon, id, isPass, defaultValue, chagneValue }) => {
   const [showPass, setShowPass] = useState(false)
@@ -334,17 +336,24 @@ const LoginPanel = () => {
       )
     }
   }
-  const handleGoogleLogin = (response) => {
-    // Xử lý response từ Google và thực hiện đăng nhập
-    // response.accessToken có thể được gửi đến máy chủ để xác thực người dùng
-    console.log('Google login response:', response)
-
-    // Ví dụ: dispatch các hành động cần thiết sau khi đăng nhập thành công
-    // dispatch(addUser({ user: response.profileObj }));
-    // fetchCart();
-
-    // Ví dụ: Chuyển hướng sau khi đăng nhập thành công
-    // navigate(-1);
+  function loginGoogle(data) {
+    authenticationAPi.loginGoogle(data.email, data.name, data.picture).then(
+      (response) => {
+        if (response.data.success) {
+          setCookie('ClientToken', response.data.data, 7)
+          toast.success('Đăng nhập thành công!')
+          SetError(null)
+          authenticationAPi.getClient().then((response) => {
+            dispatch(addUser(response.data.data))
+          })
+          fetchCart()
+          navigate(-1)
+        } else {
+          toast.error('Đăng nhập thất bại!')
+        }
+      },
+      () => {},
+    )
   }
   return (
     <Box>
@@ -370,31 +379,27 @@ const LoginPanel = () => {
       {error && <Typography color={'red'}>{error}</Typography>}
       <Box my={1}>
         <ThemeProvider theme={ColorCustom}>
-          <Button
-            onClick={submit}
-            type="submit"
-            variant="contained"
-            color="neutral"
-            sx={{ marginRight: '15px' }}>
-            Đăng nhập
-          </Button>
-          <GoogleLogin
-            clientId="401819799888-53jidf59lck1cc3l6l4daackrsfhl82q.apps.googleusercontent.com"
-            buttonText="Đăng nhập bằng Google"
-            onSuccess={handleGoogleLogin}
-            onFailure={(error) => console.error('Google login error:', error)}
-            cookiePolicy={'single_host_origin'}
-            render={(renderProps) => (
-              <Button
-                onClick={renderProps.onClick}
-                disabled={renderProps.disabled}
-                variant="outlined"
-                color="gray"
-                startIcon={<img src={Google} alt="Google" />}>
-                Google
-              </Button>
-            )}
-          />
+          <Stack direction="row" spacing={2}>
+            <Button
+              onClick={submit}
+              type="submit"
+              variant="contained"
+              color="neutral"
+              sx={{ marginRight: '15px' }}>
+              Đăng nhập
+            </Button>
+            <GoogleOAuthProvider clientId="520968091112-fcbec2sb49beti8ugc2rmqngkdobq4j7.apps.googleusercontent.com">
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  var decoded = jwtDecode(credentialResponse.credential)
+                  loginGoogle(decoded)
+                }}
+                onError={() => {
+                  toast.error('Đăng nhập google không thành công!')
+                }}
+              />
+            </GoogleOAuthProvider>
+          </Stack>
         </ThemeProvider>
       </Box>
       <Typography variant="a" component={Link} to={'/forgot-password'}>
