@@ -238,34 +238,7 @@ export default function AdBillPage() {
             </DemoContainer>
           </LocalizationProvider>
 
-          <FormControl fullWidth style={{ flexBasis: '25%' }}>
-            <div className="filter">
-              <b>Trạng thái:</b>
-              <Select
-                displayEmpty
-                size="small"
-                value={statusBill}
-                onChange={handleChangeSelectStatusBill}>
-                <MenuItem value="all">Tất cả</MenuItem>
-                {[
-                  { id: 0, name: 'Đã huỷ' },
-                  { id: 1, name: 'Chờ xác nhận' },
-                  { id: 2, name: 'Đã xác nhận' },
-                  { id: 3, name: 'Đang vận chuyển' },
-                  { id: 4, name: 'Đã giao hàng' },
-                  { id: 5, name: 'Đã thanh toán' },
-                  { id: 6, name: 'Chờ thanh toán' },
-                  { id: 7, name: 'Hoàn thành' },
-                ]?.map((item) => (
-                  <MenuItem key={item?.id} value={item?.id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
-          </FormControl>
-
-          <FormControl fullWidth style={{ flexBasis: '20%' }}>
+          <FormControl>
             <div className="filter">
               <b>Loại:</b>
               <Select
