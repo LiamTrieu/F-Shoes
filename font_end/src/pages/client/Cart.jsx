@@ -323,7 +323,7 @@ export default function Cart() {
               <TableBody>{RowDataCustom({ cartDatas: product })}</TableBody>
             </Table>
           </TableContainer>
-          <Button component={Link} to="/products" variant="outlined" color="success">
+          <Button component={Link} to="/products" variant="outlined" color="cam">
             <ArrowBackIcon />
             <b>Tiếp tục mua hàng</b>
           </Button>

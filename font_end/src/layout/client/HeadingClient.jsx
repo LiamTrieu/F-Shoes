@@ -278,7 +278,7 @@ export default function HeadingClient() {
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
             {user ? (
               <>
-                <Link to={`/profile`} style={{ textDecoration: 'none', color: 'black' }}>
+                <Link to={`/profile/user`} style={{ textDecoration: 'none', color: 'black' }}>
                   <MenuItem>
                     <Avatar /> Tài khoản của tôi
                   </MenuItem>

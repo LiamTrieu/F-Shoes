@@ -3,15 +3,18 @@ package com.fshoes.core.client.model.response;
 import com.fshoes.entity.base.IsIdentified;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.lang.annotation.Target;
 import java.math.BigDecimal;
 
 public interface ClientProductResponse extends IsIdentified {
 
     String getPromotion();
+
     Integer getValue();
+
     String getName();
+
     String getNameCate();
+
     String getNameBrand();
 
     Float getSize();
@@ -31,6 +34,7 @@ public interface ClientProductResponse extends IsIdentified {
 
     @Value("#{target.id_color}")
     String getIdColor();
+
     @Value("#{target.id_material}")
     String getIdMaterial();
 
@@ -42,8 +46,6 @@ public interface ClientProductResponse extends IsIdentified {
 
     @Value("#{target.id_brand}")
     String getIdBrand();
-
-
 
 
 }

@@ -8,6 +8,7 @@ import com.fshoes.core.admin.thongke.Modal.request.ThongKeRequest;
 import com.fshoes.core.admin.thongke.Repository.adminThongKeRepository;
 import com.fshoes.core.admin.thongke.Service.ThongKeService;
 import com.fshoes.core.common.PageReponse;
+import com.fshoes.util.GenHoaDon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

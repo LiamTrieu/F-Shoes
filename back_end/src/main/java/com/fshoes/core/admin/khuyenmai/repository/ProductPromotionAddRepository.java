@@ -36,8 +36,8 @@ public interface ProductPromotionAddRepository extends ProductRepository {
     Page<AddProductPromotionResponse> getAllProduct(@Param("req") ProductPromotionSearch req, Pageable pageable);
 
     @Query(value = """
-            SELECT MAX(cate.name) AS category, MAX(b.name) AS brand, (p.name) , MAX(pd.id) as productDetail , (p.id) ,GROUP_CONCAT(DISTINCT i.url) as url,
-            MAX(sl.name) as sole , MAX(c.name) as color, MAX(m.name) as material  , GROUP_CONCAT(DISTINCT si.size) AS size,
+            SELECT (cate.name) AS category, (b.name) AS brand, (p.name) , (pd.id) as productDetail , (p.id) , i.url as url,
+            (sl.name) as sole , (c.name) as color, (m.name) as material  , si.size AS size,
                pd.id_product,
                        pd.id_color,
                        pd.id_material,
@@ -64,7 +64,7 @@ public interface ProductPromotionAddRepository extends ProductRepository {
             OR (:#{#req.nameProduct} IS NULL OR c.name like %:#{#req.nameProduct}%) 
             OR (:#{#req.nameProduct} IS NULL OR sl.name like %:#{#req.nameProduct}%) 
             OR (:#{#req.nameProduct} IS NULL OR m.name like %:#{#req.nameProduct}%))   
-            group by  p.id, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
+
             """, nativeQuery = true)
     Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") List<String> id, Pageable pageable,@Param("req") GetProductDetailByIdProduct req);
 }

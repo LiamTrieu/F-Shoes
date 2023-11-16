@@ -6,9 +6,7 @@ import com.fshoes.core.client.model.request.ClientProductRequest;
 import com.fshoes.core.client.service.ClientProductService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/client")
@@ -17,8 +15,8 @@ public class ClientProductController {
     @Autowired
     private ClientProductService clientProductService;
 
-    @GetMapping("/product")
-    public ObjectRespone getProduct(ClientProductRequest request) {
+    @PostMapping("/product")
+    public ObjectRespone getProduct(@RequestBody ClientProductRequest request) {
         return new ObjectRespone((clientProductService.getProducts(request)));
     }
 

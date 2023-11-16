@@ -98,6 +98,13 @@ export default function Profile({ children }) {
                 </ListItemIcon>
                 <ListItemText primary="Kho voucher" />
               </ListItemButton>
+              {/* ------------------------------------- === ------------------------------------- */}
+              <ListItemButton component={Link} to="/profile/change-password">
+                <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+                  <Box component={LiaMoneyCheckAltSolid} sx={{ fontSize: '24px' }} />
+                </ListItemIcon>
+                <ListItemText primary="Đổi mật khẩu" />
+              </ListItemButton>
             </List>
           </Grid>
 

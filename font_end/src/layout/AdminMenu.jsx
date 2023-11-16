@@ -96,26 +96,12 @@ export default function AdminMenu() {
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Sản phẩm"
               />
             </ListItemButton>
-            <ListItemButton component={Link} to="/admin/size">
-              <ListItemText
-                sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                primary="&nbsp;	&bull; &nbsp; &nbsp; Size"
-              />
-            </ListItemButton>
 
             <ListItemButton component={Link} to="/admin/sole">
               <ListItemText
                 sx={{ m: 0, p: 0 }}
                 primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
                 primary="&nbsp;	&bull; &nbsp; &nbsp; Đế giày"
-              />
-            </ListItemButton>
-            <ListItemButton component={Link} to="/admin/color">
-              <ListItemText
-                sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                primary="&nbsp;	&bull; &nbsp; &nbsp; Màu sắc"
               />
             </ListItemButton>
 

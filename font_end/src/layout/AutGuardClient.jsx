@@ -3,6 +3,7 @@ import { getCookie } from '../services/cookie'
 import authenticationAPi from '../api/authentication/authenticationAPi'
 import { useDispatch } from 'react-redux'
 import { addUser } from '../services/slices/userSlice'
+import ThemeAdmin from '../services/theme/ThemeAdmin'
 
 export default function AutGuardClient({ children }) {
   const dispatch = useDispatch()
@@ -14,5 +15,5 @@ export default function AutGuardClient({ children }) {
     }
   }, [dispatch])
 
-  return children
+  return <ThemeAdmin>{children}</ThemeAdmin>
 }
