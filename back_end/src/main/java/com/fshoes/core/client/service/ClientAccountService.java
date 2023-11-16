@@ -23,9 +23,13 @@ public interface ClientAccountService {
     List<ClientBillDetailResponse> getBillDetailsByBillId(String idBill);
 
     List<CLientBillHistoryResponse> getListBillHistoryByIdBill(String idBill);
+
     List<ClientTransactionResponse> getListTransactionByIdBill(String idBill);
 
     List<ClientBillDetailResponse> getBillDetailsByCode(String code);
 
     List<CLientBillHistoryResponse> getListBillHistoryByCode(String code);
+
+    ClientBillResponse getClientBillResponse(String id);
+    
 }

@@ -38,6 +38,9 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     @Autowired
     private UserLogin userLogin;
 
+    @Autowired
+    private ClientBillRepository clientBillRepository;
+
     @Override
     public Account getOneCustomerClient(UserLogin userLogin) {
         return repository.findById(userLogin.getUserLogin().getId()).orElse(null);
@@ -48,7 +51,7 @@ public class ClientAccountServiceImpl implements ClientAccountService {
         Optional<Account> optionalCustomer = repository.findById(userLogin.getUserLogin().getId());
         if (optionalCustomer.isPresent()) {
             Account customer = request.newCustomer(optionalCustomer.get());
-            if(request.getAvatar() != null) {
+            if (request.getAvatar() != null) {
                 customer.setAvatar(cloudinaryImage.uploadAvatar(request.getAvatar()));
             }
             repository.save(customer);
@@ -92,5 +95,10 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     @Override
     public List<CLientBillHistoryResponse> getListBillHistoryByCode(String code) {
         return billHistoryRepository.getListBillHistoryByCode(code);
+    }
+
+    @Override
+    public ClientBillResponse getClientBillResponse(String id) {
+        return clientBillRepository.getClientBillResponse(id);
     }
 }

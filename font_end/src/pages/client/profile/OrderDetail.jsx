@@ -1,4 +1,5 @@
 import {
+  Button,
   Container,
   Divider,
   Grid,
@@ -16,12 +17,15 @@ import ClientAccountApi from '../../../api/client/clientAccount'
 import { useParams } from 'react-router-dom'
 import TimeLine from '../../admin/hoadon/TimeLine'
 import './Order.css'
+import ModalClientBillUpdateAddress from './ModalUpdateAddressBillClient'
 
 export default function OrderDetail() {
   const { id } = useParams()
   const [billDetail, setBillDetail] = useState([])
   const [listOrderTimeLine, setListOrderTimeLine] = useState([])
   const [loadingTimeline, setLoadingTimeline] = useState(true)
+  const [billClient, setBillCilent] = useState()
+  const [openModalUpdateAdd, setopenModalUpdateAdd] = useState(false)
 
   const getBillHistoryByIdBill = (id) => {
     setLoadingTimeline(true)
@@ -39,19 +43,42 @@ export default function OrderDetail() {
   const getBillByIdBill = (id) => {
     ClientAccountApi.getBillDetailByIdBill(id).then((response) => {
       setBillDetail(response.data.data)
+      console.log('data')
+      console.log(response.data.data)
     })
+  }
+
+  const getBillClient = (id) => {
+    setLoadingTimeline(true)
+    ClientAccountApi.getBillClient(id)
+      .then((response) => {
+        setBillCilent(response.data.data)
+        console.log('data bill Client')
+        console.log(response.data.data)
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API get bill client: ', error)
+        setLoadingTimeline(false)
+      })
   }
 
   useEffect(() => {
     getBillByIdBill(id)
     getBillHistoryByIdBill(id)
+    getBillClient(id)
   }, [id])
-  const totalMoney = billDetail.reduce((total, item) => total + item.totalMoney, 0)
-  const moneyReduce = billDetail.reduce((reduce, item) => reduce + item.moneyReduced, 0)
-  const moneyAfter = billDetail.reduce((after, item) => after + item.moneyAfter, 0)
-  const moneyShip = billDetail.reduce((ship, item) => ship + item.moneyShip, 0)
+  // const totalMoney = billDetail.reduce((total, item) => total + item.totalMoney, 0)
+  // const moneyReduce = billDetail.reduce((reduce, item) => reduce + item.moneyReduced, 0)
+  // const moneyAfter = billDetail.reduce((after, item) => after + item.moneyAfter, 0)
+  // const moneyShip = billDetail.reduce((ship, item) => ship + item.moneyShip, 0)
   return (
     <div>
+      <ModalClientBillUpdateAddress
+        open={openModalUpdateAdd}
+        setOPen={setopenModalUpdateAdd}
+        billDetail={billClient}
+        listBillDetail={billDetail}
+      />
       <Container maxWidth="lg">
         <Paper elevation={3} className="time-line" sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
           <h3>Lịch sử đơn hàng</h3>
@@ -74,6 +101,16 @@ export default function OrderDetail() {
                 </Grid>
               )}
             </Grid>
+            {billClient && billClient.status === 1 ? (
+              <Button
+                variant="outlined"
+                style={{ marginRight: '5px' }}
+                onClick={() => setopenModalUpdateAdd(true)}>
+                Cập nhật
+              </Button>
+            ) : (
+              ''
+            )}
           </Container>
         </Paper>
 
@@ -112,21 +149,27 @@ export default function OrderDetail() {
                     <div style={{ float: 'right' }}>Tổng tiền hàng:</div>
                   </Grid>
                   <Grid item xs={3}>
-                    <div style={{ float: 'right' }}>{formatCurrency(totalMoney)}</div>
+                    <div style={{ float: 'right' }}>
+                      {billClient ? formatCurrency(billClient.totalMoney) : formatCurrency(0)}
+                    </div>
                   </Grid>
                   <Divider />
                   <Grid item xs={9}>
                     <div style={{ float: 'right' }}>Phí vận chuyển:</div>
                   </Grid>
                   <Grid item xs={3}>
-                    <div style={{ float: 'right' }}>{formatCurrency(moneyShip)}</div>
+                    <div style={{ float: 'right' }}>
+                      {billClient ? formatCurrency(billClient.moneyShip) : formatCurrency(0)}
+                    </div>
                   </Grid>
                   <Divider />
                   <Grid item xs={9}>
                     <div style={{ float: 'right' }}>Giảm giá:</div>
                   </Grid>
                   <Grid item xs={3}>
-                    <div style={{ float: 'right' }}>{formatCurrency(moneyReduce)}</div>
+                    <div style={{ float: 'right' }}>
+                      {billClient ? formatCurrency(billClient.moneyReduced) : formatCurrency(0)}
+                    </div>
                   </Grid>
                   <Divider />
                   <Grid item xs={9}>
@@ -135,7 +178,7 @@ export default function OrderDetail() {
                   <Grid item xs={3}>
                     <div
                       style={{ float: 'right', fontSize: '20px', color: 'red', fontWeight: 700 }}>
-                      {formatCurrency(moneyAfter)}
+                      {billClient ? formatCurrency(billClient.moneyAfter) : formatCurrency(0)}
                     </div>
                   </Grid>
                   <Divider />

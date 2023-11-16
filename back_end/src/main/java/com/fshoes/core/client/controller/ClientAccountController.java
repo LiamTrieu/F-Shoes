@@ -30,19 +30,19 @@ public class ClientAccountController {
     }
 
     @GetMapping("/get-one")
-    public ObjectRespone getOneUser(){
+    public ObjectRespone getOneUser() {
         return new ObjectRespone(service.getOneCustomerClient(userLogin));
     }
 
     @GetMapping("/get-all")
-    public List<ClientCustomerResponse> getAllAccount(){
+    public List<ClientCustomerResponse> getAllAccount() {
         return service.getAll();
     }
 
 
     @GetMapping("/all-bill")
-    public ObjectRespone getAllBill( ClientBillAccountRequest status){
-            return new ObjectRespone(service.getALlBill(status));
+    public ObjectRespone getAllBill(ClientBillAccountRequest status) {
+        return new ObjectRespone(service.getALlBill(status));
     }
 
     @GetMapping("/get-by-idBill/{idBill}")
@@ -71,5 +71,9 @@ public class ClientAccountController {
         return new ObjectRespone(service.getListBillHistoryByCode(code));
     }
 
+    @GetMapping("/get-client-billResponse/{id}")
+    public ObjectRespone getClientBillResponse(@PathVariable("id") String id) {
+        return new ObjectRespone(service.getClientBillResponse(id));
+    }
 
 }

@@ -26,5 +26,9 @@ const ClientAccountApi = {
     const url = `/client/customer/get-bill-history-by-code/${code}`
     return axiosApi.get(url)
   },
+  getBillClient: (idBill) => {
+    const url = `/client/customer/get-client-billResponse/${idBill}`
+    return axiosApi.get(url)
+  },
 }
 export default ClientAccountApi
