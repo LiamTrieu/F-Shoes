@@ -50,9 +50,9 @@ export default function ModalVoucherDetail({ openModal, setOpenModal, voucher })
                     Giá trị:
                     {voucher.typeValue === 0 ? voucher.value + ' %' : voucher.value + ' VNĐ'}
                     <br />
-                    Giá trị tối đa: {voucher.maximumValue} VNĐ
+                    Tối đa: {voucher.maximumValue} VNĐ
                     <br />
-                    Điều kiện: Đơn tối thiểu {voucher.minimumAmount} VNĐ
+                    Tối thiểu: {voucher.minimumAmount} VNĐ
                   </div>
                 </Stack>
               </Grid>

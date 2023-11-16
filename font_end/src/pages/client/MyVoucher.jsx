@@ -168,9 +168,9 @@ export default function MyVoucher() {
                               <div>
                                 Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
                                 <br />
-                                Giá trị tối đa: {v.maximumValue} VNĐ
+                                Tối đa: {v.maximumValue} VNĐ
                                 <br />
-                                Điều kiện: Đơn tối thiểu {v.minimumAmount} VNĐ
+                                Tối thiểu: {v.minimumAmount} VNĐ
                               </div>
                               <div>
                                 <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
@@ -198,9 +198,9 @@ export default function MyVoucher() {
                               <div>
                                 Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
                                 <br />
-                                Giá trị tối đa: {v.maximumValue} VNĐ
+                                Tối đa: {v.maximumValue} VNĐ
                                 <br />
-                                Điều kiện: Đơn tối thiểu {v.minimumAmount} VNĐ
+                                Tối thiểu: {v.minimumAmount} VNĐ
                               </div>
                               <div>
                                 <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
@@ -230,9 +230,9 @@ export default function MyVoucher() {
                               <div>
                                 Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
                                 <br />
-                                Giá trị tối đa: {v.maximumValue} VNĐ
+                                Tối đa: {v.maximumValue} VNĐ
                                 <br />
-                                Điều kiện: Đơn tối thiểu {v.minimumAmount} VNĐ
+                                Tối thiểu: {v.minimumAmount} VNĐ
                               </div>
                               <div>
                                 <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
@@ -260,9 +260,9 @@ export default function MyVoucher() {
                               <div>
                                 Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
                                 <br />
-                                Giá trị tối đa: {v.maximumValue} VNĐ
+                                Tối đa: {v.maximumValue} VNĐ
                                 <br />
-                                Điều kiện: Đơn tối thiểu {v.minimumAmount} VNĐ
+                                Tối thiểu: {v.minimumAmount} VNĐ
                               </div>
                               <div>
                                 <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>

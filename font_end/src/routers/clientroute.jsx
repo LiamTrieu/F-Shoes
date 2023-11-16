@@ -28,13 +28,19 @@ const clientRoute = [
   { path: '/login', element: <Login /> },
   { path: '/checkout', element: <Checkout /> },
   { path: '/profile', element: <Profile /> },
-  // { path: '/profile/user', element: <UserProfile /> },
   { path: '/product/:id', element: <DetailProduct /> },
   { path: `/profile/get-by-idBill/:id`, element: <OrderDetail /> },
   { path: `/tracking/:code`, element: <TrackingDetail /> },
   { path: `/tracking`, element: <Tracking /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
-  { path: '/change-password', element: <ChangePassword /> },
+  {
+    path: '/profile/change-password',
+    element: (
+      <Profile>
+        <ChangePassword />
+      </Profile>
+    ),
+  },
 
   {
     path: '/profile/user',

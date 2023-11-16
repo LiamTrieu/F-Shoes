@@ -49,7 +49,7 @@ const ChangePassword = () => {
   return !token ? (
     <Navigate to={'/home'} />
   ) : (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="lg">
       <CssBaseline />
       <Box
         sx={{

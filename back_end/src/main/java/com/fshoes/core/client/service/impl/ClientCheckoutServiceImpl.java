@@ -435,7 +435,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                              "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
                              "</p>" +
                              "</div>" +
-                             "<a href='http://localhost:3000/tracking/'"+codeBill+"><button>Xem Chi Tiết</button></a>" +
+                             "<a href='http://localhost:3000/tracking/" + codeBill + "'><button>Xem Chi Tiết</button></a>" +
                              "</div>" +
                              (password == null ? "" : "</div>" +
                                                      "        <p style=\"color: #555;\">Hoặc đăng nhập vào hệ thống:</p>\n" +
@@ -454,12 +454,6 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
     private String formatCurrency(String amount) {
         int amountInt = Integer.parseInt(amount);
         return String.format("%,d", amountInt);
-    }
-
-    public String removeDiacritics(String input) {
-        String result = Normalizer.normalize(input, Normalizer.Form.NFKD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-        return result;
     }
 
     private String generatePassword() {

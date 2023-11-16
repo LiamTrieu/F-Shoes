@@ -8,9 +8,7 @@ import adStaffRoute from './adminroute/adstaffroute'
 import adVoucherRoute from './adminroute/advoucherroute'
 import clientRoute from './clientroute'
 import AppBarAdmin from '../layout/AppBarAdmin'
-import adSizeRoute from './adminroute/adsizeroute'
 import adSoleRoute from './adminroute/adsoleroute'
-import adColorRoute from './adminroute/adcolorroute'
 import adCategoryRoute from './adminroute/adcategoryroute'
 import adMaterialRoute from './adminroute/admaterialroute'
 import adBrandRoute from './adminroute/adbrandroute'
@@ -55,9 +53,7 @@ const router = createBrowserRouter([
       ...adPromotionRoute,
       ...adStaffRoute,
       ...adVoucherRoute,
-      ...adSizeRoute,
       ...adSoleRoute,
-      ...adColorRoute,
       ...adCategoryRoute,
       ...adMaterialRoute,
       ...adBrandRoute,
