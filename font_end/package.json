@@ -13,6 +13,7 @@
     "@mui/x-data-grid": "^6.12.1",
     "@mui/x-date-pickers": "^6.12.1",
     "@mui/x-date-pickers-pro": "^6.12.1",
+    "@react-oauth/google": "^0.11.1",
     "@reduxjs/toolkit": "^1.9.7",
     "@stomp/stompjs": "^7.0.0",
     "@sweetalert2/theme-material-ui": "^5.0.15",
@@ -26,12 +27,12 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "google-map-react": "^2.2.1",
+    "jwt-decode": "^4.0.0",
     "numeral": "^2.0.6",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-cookie": "^6.1.0",
     "react-dom": "^18.2.0",
-    "react-google-login": "^5.2.2",
     "react-google-recaptcha": "^3.1.0",
     "react-hook-form": "^7.45.4",
     "react-icons": "^4.10.1",
@@ -72,10 +73,6 @@
     ]
   },
   "overrides": {
-    "react-google-login": {
-      "react": "$react",
-      "react-dom": "$react-dom"
-    },
     "@cielblog/react-horizontal-timeline": {
       "react": "$react",
       "react-dom": "$react-dom"

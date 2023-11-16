@@ -1,7 +1,7 @@
 package com.fshoes.core.authentication.service.impl;
 
-import com.cloudinary.api.exceptions.ApiException;
 import com.fshoes.core.authentication.model.request.ChangeRequest;
+import com.fshoes.core.authentication.model.request.LoginGoogleRequest;
 import com.fshoes.core.authentication.model.request.LoginRequest;
 import com.fshoes.core.authentication.model.request.RegisterRequest;
 import com.fshoes.core.authentication.model.response.UserLoginResponse;
@@ -151,6 +151,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return true;
         }else {
             return null;
+        }
+    }
+
+    @Override
+    public String loginGoogle(LoginGoogleRequest request) {
+        Account account = accountRepository.findByEmail(request.getEmail()).orElse(null);
+        if (account == null) {
+            account = new Account();
+            account.setEmail(request.getEmail());
+            account.setFullName(request.getName());
+            account.setAvatar(request.getImage());
+            account.setRole(2);
+            accountRepository.save(account);
+        }
+        if (account.getRole() == 2) {
+            return jwtUtilities.generateToken(account.getEmail());
+        } else {
+            throw new RestApiException("Email đã được sử dụng!");
         }
     }
 
