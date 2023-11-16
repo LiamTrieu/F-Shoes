@@ -350,7 +350,7 @@ export default function AddressUser() {
                     name="name"
                     value={diaChi.name}
                     onChange={(e) => {
-                      setDiaChi({ ...diaChi, name: e.target.value.trim() })
+                      setDiaChi({ ...diaChi, name: e.target.value })
                       setErrors({ ...errors, fullName: '' })
                     }}
                   />

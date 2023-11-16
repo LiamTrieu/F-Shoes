@@ -47,33 +47,4 @@ public class EmailSender {
         }
     }
 
-    @Async
-    public void sendEmailWithAttachment(Email email, FileSystemResource file, String attachmentName) {
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
-            ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
-            mimeMessageHelper.setFrom(sender);
-            mimeMessageHelper.setBcc(email.getToEmail());
-            mimeMessageHelper.setText(email.getBody(), true);
-            mimeMessageHelper.setSubject(email.getSubject());
-
-            mimeMessageHelper.addAttachment(attachmentName, file);
-
-            // Add inline logo
-            mimeMessageHelper.addInline("logoImage", resource);
-
-            javaMailSender.send(mimeMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (file != null) {
-                try {
-                    file.getFile().delete(); // Xóa tệp sau khi gửi email
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }

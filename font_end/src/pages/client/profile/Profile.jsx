@@ -69,7 +69,7 @@ export default function Profile({ children }) {
               </ListItemButton>
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                  <ListItemButton component={Link} to="/profile" sx={{ pl: 4 }}>
+                  <ListItemButton component={Link} to="/profile/user" sx={{ pl: 4 }}>
                     <ListItemIcon>
                       <StarBorder />
                     </ListItemIcon>
@@ -97,6 +97,13 @@ export default function Profile({ children }) {
                   <Box component={LiaMoneyCheckAltSolid} sx={{ fontSize: '24px' }} />
                 </ListItemIcon>
                 <ListItemText primary="Kho voucher" />
+              </ListItemButton>
+              {/* ------------------------------------- === ------------------------------------- */}
+              <ListItemButton component={Link} to="/profile/change-password">
+                <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+                  <Box component={LiaMoneyCheckAltSolid} sx={{ fontSize: '24px' }} />
+                </ListItemIcon>
+                <ListItemText primary="Đổi mật khẩu" />
               </ListItemButton>
             </List>
           </Grid>

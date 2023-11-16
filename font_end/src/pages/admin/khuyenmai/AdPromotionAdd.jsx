@@ -681,7 +681,7 @@ export default function AdPromotionAdd() {
                           <TableCell align="center" component="th" scope="row">
                             {index + 1}
                           </TableCell>
-                          <TableCell align="center">{row.nameProduct}</TableCell>
+                          <TableCell align="center">{row.name}</TableCell>
                           <TableCell align="center">{row.category}</TableCell>
                           <TableCell align="center">{row.brand}</TableCell>
                           <TableCell align="center">{row.material}</TableCell>

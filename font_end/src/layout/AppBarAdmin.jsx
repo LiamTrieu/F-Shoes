@@ -22,7 +22,6 @@ export default function AppBarAdmin({ children }) {
   useEffect(() => {
     if (token) {
       authenticationAPi.getAdmin().then((response) => {
-        console.log(response.data.data)
         setUser(response.data.data)
       })
     }
@@ -84,7 +83,7 @@ export default function AppBarAdmin({ children }) {
               p: 6,
               py: 0,
               transition: 'width 0.5s',
-              minHeight: '65px',
+              height: '80px',
             }}
             src={require('../assets/image/logoweb.png')}
             alt="logo"
