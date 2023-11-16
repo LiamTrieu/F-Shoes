@@ -9,10 +9,10 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Drawer from '@mui/material/Drawer'
 import CartProduct from '../../layout/client/CartProduct'
 import {
+  Checkbox,
   Collapse,
   Container,
   InputAdornment,
-  Radio,
   Slider,
   SliderThumb,
   Stack,
@@ -75,13 +75,13 @@ export default function Product() {
   const [showMenuBar, setShowMenuBar] = useState(true)
   const [isMenuBarVisible, setIsMenuBarVisible] = useState(true)
   const [filter, setFilter] = useState({
-    brand: null,
-    material: null,
-    color: null,
-    sole: null,
-    category: null,
-    minPrice: 0,
-    maxPrice: 0,
+    brand: [],
+    material: [],
+    color: [],
+    sole: [],
+    category: [],
+    minPrice: null,
+    maxPrice: null,
     nameProductDetail: null,
   })
   const [minMaxPrice, setMinMaxPrice] = useState({})
@@ -111,6 +111,18 @@ export default function Product() {
   }, [])
 
   useEffect(() => {
+    console.log(
+      '==================' +
+        filter.category +
+        '/ ' +
+        filter.brand +
+        '/ ' +
+        filter.material +
+        '/ ' +
+        filter.sole +
+        '/ ' +
+        filter.color,
+    )
     clientProductApi.get(filter).then((result) => {
       const data = result.data.data
       setProducts(
@@ -154,13 +166,91 @@ export default function Product() {
     setShowMenuBar(!showMenuBar)
     setIsMenuBarVisible(!isMenuBarVisible)
   }
+  // -------------------------------------- select checked ----------------------------------
+  const [selectCategory, setSelectCategory] = useState([])
+  const [selectBrand, setSelectBrand] = useState([])
+  const [selectMaterial, setSelectMaterial] = useState([])
+  const [selectSole, setSelectSole] = useState([])
+  const [selectColor, setSelectColor] = useState([])
 
-  const checkColor = (idColor) => {
-    if (filter.color === idColor) {
-      setFilter({ ...filter, color: null })
+  const handleCheckBoxCategory = (event, id) => {
+    const selectedIndex = selectCategory.indexOf(id)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectCategory, id]
     } else {
-      setFilter({ ...filter, color: idColor })
+      newSelectedIds = [
+        ...selectCategory.slice(0, selectedIndex),
+        ...selectCategory.slice(selectedIndex + 1),
+      ]
     }
+    setSelectCategory(newSelectedIds)
+    setFilter({ ...filter, category: newSelectedIds })
+  }
+
+  const handleCheckBoxBrand = (event, id) => {
+    const selectedIndex = selectBrand.indexOf(id)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectBrand, id]
+    } else {
+      newSelectedIds = [
+        ...selectBrand.slice(0, selectedIndex),
+        ...selectBrand.slice(selectedIndex + 1),
+      ]
+    }
+    setSelectBrand(newSelectedIds)
+    setFilter({ ...filter, brand: newSelectedIds })
+  }
+
+  const handleCheckBoxMaterial = (event, id) => {
+    const selectedIndex = selectMaterial.indexOf(id)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectMaterial, id]
+    } else {
+      newSelectedIds = [
+        ...selectMaterial.slice(0, selectedIndex),
+        ...selectMaterial.slice(selectedIndex + 1),
+      ]
+    }
+    setSelectMaterial(newSelectedIds)
+    setFilter({ ...filter, material: newSelectedIds })
+  }
+
+  const handleCheckBoxSole = (event, id) => {
+    const selectedIndex = selectSole.indexOf(id)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectSole, id]
+    } else {
+      newSelectedIds = [
+        ...selectSole.slice(0, selectedIndex),
+        ...selectSole.slice(selectedIndex + 1),
+      ]
+    }
+    setSelectSole(newSelectedIds)
+    setFilter({ ...filter, sole: newSelectedIds })
+  }
+
+  const handleCheckBoxColor = (event, id) => {
+    const selectedIndex = selectColor.indexOf(id)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectColor, id]
+    } else {
+      newSelectedIds = [
+        ...selectColor.slice(0, selectedIndex),
+        ...selectColor.slice(selectedIndex + 1),
+      ]
+    }
+    setSelectColor(newSelectedIds)
+    setFilter({ ...filter, color: newSelectedIds })
   }
 
   const MenuBar = () => {
@@ -179,15 +269,10 @@ export default function Product() {
             <List component="div" disablePadding>
               {listCategory.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Radio
+                  <Checkbox
                     key={lf.id}
-                    value={lf.id}
-                    checked={filter.category === lf.id}
-                    onClick={(e) =>
-                      filter.category === lf.id
-                        ? setFilter({ ...filter, category: null })
-                        : setFilter({ ...filter, category: e.target.value })
-                    }
+                    checked={selectCategory.includes(lf.id)}
+                    onChange={(e) => handleCheckBoxCategory(e, lf.id)}
                   />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
@@ -204,15 +289,10 @@ export default function Product() {
             <List component="div" disablePadding>
               {listBrand.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Radio
+                  <Checkbox
                     key={lf.id}
-                    value={lf.id}
-                    checked={filter.brand === lf.id}
-                    onClick={(e) =>
-                      filter.brand === lf.id
-                        ? setFilter({ ...filter, brand: null })
-                        : setFilter({ ...filter, brand: e.target.value })
-                    }
+                    checked={selectBrand.includes(lf.id)}
+                    onChange={(e) => handleCheckBoxBrand(e, lf.id)}
                   />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
@@ -231,15 +311,10 @@ export default function Product() {
             <List component="div" disablePadding>
               {listMaterial.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Radio
+                  <Checkbox
                     key={lf.id}
-                    value={lf.id}
-                    checked={filter.material === lf.id}
-                    onClick={(e) =>
-                      filter.material === lf.id
-                        ? setFilter({ ...filter, material: null })
-                        : setFilter({ ...filter, material: e.target.value })
-                    }
+                    checked={selectMaterial.includes(lf.id)}
+                    onChange={(e) => handleCheckBoxMaterial(e, lf.id)}
                   />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
@@ -256,15 +331,10 @@ export default function Product() {
             <List component="div" disablePadding>
               {listSole.map((lf) => (
                 <ListItemButton key={lf.id}>
-                  <Radio
+                  <Checkbox
                     key={lf.id}
-                    value={lf.id}
-                    checked={filter.sole === lf.id}
-                    onClick={(e) =>
-                      filter.sole === lf.id
-                        ? setFilter({ ...filter, sole: null })
-                        : setFilter({ ...filter, sole: e.target.value })
-                    }
+                    checked={selectSole.includes(lf.id)}
+                    onChange={(e) => handleCheckBoxSole(e, lf.id)}
                   />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
@@ -286,8 +356,9 @@ export default function Product() {
                       <div
                         style={{ backgroundColor: `${lf.code}` }}
                         className="radio-color"
-                        onClick={() => checkColor(lf.id)}>
-                        {filter.color === lf.id && <FaCheck color="white" />}
+                        onClick={(e) => handleCheckBoxColor(e, lf.id)}>
+                        {/* {filter.color === lf.id && <FaCheck color="white" />} */}
+                        {selectColor.includes(lf.id) && <FaCheck color="white" />}
                       </div>
                     </ListItem>
                   </Grid>
@@ -298,7 +369,7 @@ export default function Product() {
           {/* --------------------------------------------- PRICE --------------------------------------------- */}
           <ListItemButton className="list-item-button">
             <GrMoney className="icon-portfolio" />
-            <ListItemText primary="Giá tiền" />
+            <ListItemText primary="Giá tiền (Giá gốc)" />
           </ListItemButton>
           <ListItem className="list-item">
             <AirbnbSlider
@@ -374,7 +445,7 @@ export default function Product() {
               </Typography>
             </Stack>
             <div className="cart-product-portfolio">
-              <CartProduct products={products} colmd={6} collg={4} />
+              <CartProduct products={products} colmd={6} collg={4} colxl={3} />
             </div>
           </Box>
         </Grid>
