@@ -141,6 +141,9 @@ export default function AdStaffDetail() {
     } else if (staffDetail.fullName.trim().length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
       check++
+    } else if (staffDetail.fullName.trim().length < 5) {
+      newErrors.fullName = 'Họ và Tên không được ít hơn 5 kí tự.'
+      check++
     } else {
       newErrors.fullName = ''
     }
@@ -521,7 +524,7 @@ export default function AdStaffDetail() {
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                format={'DD-MM-YYYY'}
+                format="DD-MM-YYYY"
                 className="small-datepicker"
                 sx={{ width: '100%' }}
                 value={dayjs(staffDetail.dateBirth, 'DD-MM-YYYY')}

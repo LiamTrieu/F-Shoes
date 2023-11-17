@@ -165,6 +165,7 @@ export default function AdCustomerAdd() {
   }
 
   const handleGenderChange = (event) => {
+    setErrors({ ...errors, gender: '' })
     setKhachHang({ ...khachHang, gender: event.target.value })
   }
 
@@ -183,17 +184,24 @@ export default function AdCustomerAdd() {
     const minBirthYear = 1990
     let check = 0
 
-    const cleanedFullName = khachHang.fullName.trim()
+    const trimmedFullName = khachHang.fullName.trim()
+    const hasExtraSpaces = khachHang.fullName !== trimmedFullName
 
-    if (!cleanedFullName) {
+    if (hasExtraSpaces) {
+      newErrors.fullName = 'Tên không được chứa khoảng trắng thừa.'
+      check++
+    } else if (!trimmedFullName) {
       newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
       check++
-    } else if (cleanedFullName.length > 100) {
+    } else if (trimmedFullName.length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
+      check++
+    } else if (trimmedFullName.length < 5) {
+      newErrors.fullName = 'Họ và Tên không được ít hơn 5 kí tự.'
       check++
     } else {
       const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
-      if (specialCharsRegex.test(cleanedFullName)) {
+      if (specialCharsRegex.test(trimmedFullName)) {
         newErrors.fullName = 'Họ và Tên không được chứa kí tự đặc biệt.'
         check++
       } else {
@@ -201,11 +209,17 @@ export default function AdCustomerAdd() {
       }
     }
 
+    const specificAddressParts = diaChi.specificAddress.split(', ')
+    const [diaChiCuThe] = specificAddressParts
+    console.log(diaChiCuThe)
     if (!diaChi.specificAddress.trim()) {
       newErrors.specificAddress = 'Vui lòng nhập địa chỉ cụ thể.'
       check++
     } else if (diaChi.specificAddress.length > 225) {
       newErrors.specificAddress = 'Địa chỉ không được quá 225 kí tự.'
+      check++
+    } else if (diaChiCuThe.length < 5) {
+      newErrors.specificAddress = 'Địa chỉ không được ít hơn 5 kí tự.'
       check++
     } else {
       newErrors.specificAddress = ''
@@ -361,7 +375,7 @@ export default function AdCustomerAdd() {
                 size="small"
                 fullWidth
                 onChange={(e) => {
-                  setKhachHang({ ...khachHang, fullName: e.target.value.trim() })
+                  setKhachHang({ ...khachHang, fullName: e.target.value })
                   updateDiaChi()
                   setErrors({ ...errors, fullName: '' })
                 }}
@@ -523,11 +537,13 @@ export default function AdCustomerAdd() {
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['DatePicker']}>
                       <DatePicker
+                        format="DD-MM-YYYY"
                         sx={{ width: '100%' }}
                         className="small-datepicker"
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setKhachHang({ ...khachHang, dateBirth: dayjs(e).format('DD-MM-YYYY') })
-                        }
+                          setErrors({ ...errors, dateBirth: '' })
+                        }}
                       />
                     </DemoContainer>
                   </LocalizationProvider>
@@ -549,7 +565,7 @@ export default function AdCustomerAdd() {
                       setDiaChi({
                         ...diaChi,
                         specificAddress:
-                          e.target.value.trim() +
+                          e.target.value +
                           ', ' +
                           selectedXa.label +
                           ', ' +

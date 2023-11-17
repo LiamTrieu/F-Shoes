@@ -184,6 +184,9 @@ export default function AdCustomerDetail() {
     } else if (cleanedFullName.length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
       check++
+    } else if (cleanedFullName.length < 5) {
+      newErrors.fullName = 'Họ và Tên không được ít hơn 5 kí tự.'
+      check++
     } else {
       const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
       if (specialCharsRegex.test(cleanedFullName)) {
@@ -381,16 +384,6 @@ export default function AdCustomerDetail() {
     setIsAddingDiaChi(true)
   }
 
-  const [errorsAU, setErrorsAU] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    provinceId: '',
-    districtId: '',
-    wardId: '',
-    specificAddress: '',
-  })
-
   const deleteDiaChi = (idDC) => {
     const title = 'Xác nhận xóa địa chỉ?'
     const text = ''
@@ -435,35 +428,69 @@ export default function AdCustomerDetail() {
         }
         checkAU++
       }
+
+      const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
+      if (!item.name.trim()) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          name: 'Tên người nhận không được để trống',
+        }
+        checkAU++
+      } else if (item.name.trim().length > 100) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          name: 'Tên người nhận không được quá 100 kí tự.',
+        }
+        checkAU++
+      } else if (specialCharsRegex.test(item.name)) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          name: 'Họ và Tên không được chứa kí tự đặc biệt.',
+        }
+        checkAU++
+      } else {
+        newErrors.name = ''
+      }
+
+      if (!item.specificAddress.trim()) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          specificAddress: 'Địa chỉ cụ thể không được để trống',
+        }
+        checkAU++
+      } else if (item.specificAddress.trim().length > 225) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          specificAddress: 'Địa chỉ cụ thể không được quá 225 kí tự.',
+        }
+        checkAU++
+      } else {
+        newErrors.specificAddress = ''
+      }
+
+      if (!item.phoneNumber.trim()) {
+        preErrorsDiaChi[index] = {
+          ...preErrorsDiaChi[index],
+          phoneNumber: 'Vui lòng nhập Số điện thoại.',
+        }
+        checkAU++
+      } else {
+        const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+        if (!phoneNumberRegex.test(item.phoneNumber.trim())) {
+          preErrorsDiaChi[index] = {
+            ...preErrorsDiaChi[index],
+            phoneNumber: 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).',
+          }
+          checkAU++
+        } else {
+          newErrors.phoneNumber = ''
+        }
+      }
     })
 
     setErrorsDiaChi(preErrorsDiaChi)
 
-    if (!diaChiaa.name.trim()) {
-      newErrors.name = 'Tên người nhận không được để trống'
-      checkAU++
-    } else if (diaChiaa.name.trim().length > 100) {
-      newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
-      checkAU++
-    } else {
-      newErrors.name = ''
-    }
-
-    if (!diaChiaa.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
-      checkAU++
-    } else {
-      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
-      if (!phoneNumberRegex.test(diaChiaa.phoneNumber.trim())) {
-        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
-        checkAU++
-      } else {
-        newErrors.phoneNumber = ''
-      }
-    }
-
     if (checkAU > 0) {
-      setErrorsAU(newErrors)
       return
     }
 
@@ -503,6 +530,7 @@ export default function AdCustomerDetail() {
             })
         } else {
           DiaChiApi.add(updatedDiaChi).then(() => {
+            setIsAddingDiaChi(false)
             loadDiaChi(initPage - 1, id)
             toast.success('Thêm địa chỉ thành công', {
               position: toast.POSITION.TOP_RIGHT,
@@ -615,6 +643,7 @@ export default function AdCustomerDetail() {
                   <DemoContainer components={['DatePicker']}>
                     <DatePicker
                       className="small-datepicker"
+                      format="DD-MM-YYYY"
                       name="dateBirth"
                       value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')}
                       onChange={(date) =>
@@ -720,9 +749,11 @@ export default function AdCustomerDetail() {
                                 setDiaChi(updatedDiaChi)
                               }}
                             />
-                            <Typography variant="body2" color="error">
-                              {errorsAU.name}
-                            </Typography>
+                            {errorsDiaChi[index]?.name && (
+                              <Typography variant="body2" color="error">
+                                {errorsDiaChi[index].name}
+                              </Typography>
+                            )}
                           </Grid>
                           <Grid item xs={12} md={6}>
                             <Typography>
@@ -742,9 +773,11 @@ export default function AdCustomerDetail() {
                                 setDiaChi(updatedDiaChi)
                               }}
                             />
-                            <Typography variant="body2" color="error">
-                              {errorsAU.phoneNumber}
-                            </Typography>
+                            {errorsDiaChi[index]?.phoneNumber && (
+                              <Typography variant="body2" color="error">
+                                {errorsDiaChi[index].phoneNumber}
+                              </Typography>
+                            )}
                           </Grid>
                         </Grid>
                         <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -886,6 +919,11 @@ export default function AdCustomerDetail() {
                                 setDiaChi(updatedDiaChi)
                               }}
                             />
+                            {errorsDiaChi[index]?.specificAddress && (
+                              <Typography variant="body2" color="error">
+                                {errorsDiaChi[index].specificAddress}
+                              </Typography>
+                            )}
                           </Grid>
                         </Grid>
                         <IconButton

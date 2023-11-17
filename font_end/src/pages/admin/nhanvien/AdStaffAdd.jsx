@@ -265,6 +265,9 @@ const AddStaff = () => {
     } else if (staffAdd.fullName.length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
       check++
+    } else if (staffAdd.fullName.length < 5) {
+      newErrors.fullName = 'Họ và Tên không được ít hơn 5 kí tự.'
+      check++
     } else {
       newErrors.fullName = ''
     }
@@ -274,6 +277,9 @@ const AddStaff = () => {
       check++
     } else if (diaChi.specificAddress.length > 225) {
       newErrors.specificAddress = 'Địa chỉ không được quá 225 kí tự.'
+      check++
+    } else if (diaChi.specificAddress.length < 5) {
+      newErrors.specificAddress = 'Địa chỉ không được ít hơn 5 kí tự.'
       check++
     } else {
       newErrors.specificAddress = ''
@@ -548,6 +554,7 @@ const AddStaff = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: '100%' }}
+                    format="DD-MM-YYYY"
                     value={staffAdd.dateBirth ? dayjs(staffAdd.dateBirth, 'DD-MM-YYYY') : null}
                     className="small-datepicker"
                     onChange={(e) => {

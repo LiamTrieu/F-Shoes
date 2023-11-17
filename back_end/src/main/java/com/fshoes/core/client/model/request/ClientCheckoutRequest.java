@@ -16,8 +16,11 @@ public class ClientCheckoutRequest {
     private String email;
     private String phone;
     private String tinh;
+    private String provinceId;
     private String huyen;
+    private String districtId;
     private String xa;
+    private String wardId;
     private String address;
     private String note;
     private String typePayment;
