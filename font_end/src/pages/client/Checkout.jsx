@@ -40,8 +40,11 @@ export default function Checkout() {
     email: '',
     phone: '',
     tinh: '',
+    provinceId: '',
     huyen: '',
+    districtId: '',
     xa: '',
+    wardId: '',
     address: '',
     note: '',
     typePayment: '',
@@ -180,7 +183,7 @@ export default function Checkout() {
     setErrors({ ...errors, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
-    setRequest({ ...request, tinh: newValue.label })
+    setRequest({ ...request, tinh: newValue.label, provinceId: newValue.id })
     if (newValue) {
       loadHuyen(newValue.id)
     } else {
@@ -192,7 +195,7 @@ export default function Checkout() {
     setErrors({ ...errors, districtId: '' })
     setSelectedHuyen(newValue)
     setSelectedXa(null)
-    setRequest({ ...request, huyen: newValue.label })
+    setRequest({ ...request, huyen: newValue.label, districtId: newValue.id })
     if (newValue) {
       loadXa(newValue.id)
     } else {
@@ -202,7 +205,7 @@ export default function Checkout() {
   const handleXaChange = (_, newValue) => {
     setErrors({ ...errors, wardId: '' })
     setSelectedXa(newValue)
-    setRequest({ ...request, xa: newValue.label })
+    setRequest({ ...request, xa: newValue.label, wardId: newValue.id })
     const filtelService = {
       shop_id: '3911708',
       from_district: '3440',
@@ -274,16 +277,7 @@ export default function Checkout() {
           newErrors.email = 'Email không được quá 50 kí tự.'
           check++
         } else {
-          // Use await to get the result of the asynchronous function
-          const isEmailExist = await checkMail(request.email)
-
-          if (isEmailExist) {
-            console.log(isEmailExist)
-            newErrors.email = 'Địa chỉ email đã tồn tại trong hệ thống.'
-            check++
-          } else {
-            newErrors.email = ''
-          }
+          newErrors.email = ''
         }
       }
     }
