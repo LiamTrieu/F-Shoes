@@ -46,6 +46,11 @@ public class ClientProductServiceImpl implements ClientProductService {
     }
 
     @Override
+    public ClientProductResponse getProductById(String id) {
+        return clientProductDetailRepository.getProductById(id);
+    }
+
+    @Override
     public List<ClientProductResponse> getProductCungLoai(ClientProductCungLoaiRequest request) {
         Pageable pageable = PageRequest.of(0, 8);
         return clientProductDetailRepository.getProductCungLoai(request, pageable).getContent();

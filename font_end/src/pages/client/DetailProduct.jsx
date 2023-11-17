@@ -51,7 +51,7 @@ export default function DetailProduct() {
   const [sizes, setSizes] = useState([])
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [sizeSelect, setSizeSelect] = useState()
-  const param = useParams('id')
+  const { id } = useParams()
 
   const openSidebar = () => {
     setIsSidebarOpen(true)
@@ -59,9 +59,9 @@ export default function DetailProduct() {
   useEffect(() => {
     let data
     clientProductApi
-      .get(param)
+      .getById(id)
       .then((result) => {
-        data = result.data.data[0]
+        data = result.data.data
         setProduct({
           ...data,
           image: data.image.split(','),
@@ -79,7 +79,7 @@ export default function DetailProduct() {
           })
           .then((result) => {
             setSizes(result.data.data)
-            setSizeSelect(result.data.data.find((data) => data.id === param.id).size)
+            setSizeSelect(result.data.data.find((data) => data.id === id).size)
           })
       })
     clientProductApi
@@ -113,7 +113,7 @@ export default function DetailProduct() {
           }),
         )
       })
-  }, [sizeSelect, param.id])
+  }, [sizeSelect, id])
 
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
@@ -131,7 +131,7 @@ export default function DetailProduct() {
       toast.warning('Số lượng không hợp lệ')
     } else {
       const newItem = {
-        id: param.id,
+        id: id,
         name: product.name,
         gia: product.price,
         weight: product.weight,
@@ -153,7 +153,7 @@ export default function DetailProduct() {
       toast.warning('Số lượng không hợp lệ')
     } else {
       const newItem = {
-        id: param.id,
+        id: id,
         name: product.name,
         gia: product.price,
         weight: product.weight,
@@ -265,8 +265,8 @@ export default function DetailProduct() {
                       variant="outlined"
                       style={{
                         marginLeft: '10px',
-                        color: param.id === e.id ? 'white' : 'black',
-                        backgroundColor: param.id === e.id ? 'black' : 'white',
+                        color: id === e.id ? 'white' : 'black',
+                        backgroundColor: id === e.id ? 'black' : 'white',
                         padding: '2px 0px 2px 0px',
                         border: '1px solid gray',
                       }}>

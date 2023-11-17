@@ -20,6 +20,11 @@ public class ClientProductController {
         return new ObjectRespone((clientProductService.getProducts(request)));
     }
 
+    @GetMapping("/product/{id}")
+    public ObjectRespone getProductById(@PathVariable String id) {
+        return new ObjectRespone((clientProductService.getProductById(id)));
+    }
+
     @GetMapping("/product/cung-loai")
     public ObjectRespone getProductCungLoai(ClientProductCungLoaiRequest request) {
         return new ObjectRespone((clientProductService.getProductCungLoai(request)));

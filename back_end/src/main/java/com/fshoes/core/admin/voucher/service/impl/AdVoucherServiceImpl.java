@@ -311,8 +311,8 @@ public class AdVoucherServiceImpl implements AdVoucherService {
             messagingTemplate.convertAndSend("/topic/voucherUpdates", listVoucher);
 
 
-            messagingTemplate.convertAndSend("/topic/voucher-client-update",
-                    clientVoucherRepository.getVoucherPrivateMyProfileLatestReal(voucherUpdate.getId()));
+            messagingTemplate.convertAndSend("/topic/my-voucher-realtime",
+                    clientVoucherRepository.getVoucherReal(voucherUpdate.getId()));
 
             return voucherUpdate;
         } else {

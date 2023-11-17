@@ -74,6 +74,67 @@ export default function AdProductAdd() {
   const [newColor, setNewColor] = useState({ code: '#000000', name: '' })
   const [newSize, setNewSize] = useState({ size: '' })
 
+  const fetchListCategory = () => {
+    categoryApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setCategorys(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
+  }
+  const fetchListBrand = () => {
+    bradApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setBrands(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
+  }
+  const fetchListMaterial = () => {
+    materialApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setMaterials(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
+  }
+  const fetchListSole = () => {
+    soleApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setSoles(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
+  }
+  const fetchListSize = () => {
+    sizeApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setSizes(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
+  }
+  const fetchListColor = () => {
+    colorApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setColors(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
+  }
+
   useEffect(() => {
     sanPhamApi.getList().then(
       (result) => {
@@ -83,54 +144,12 @@ export default function AdProductAdd() {
       },
       (err) => console.error(err),
     )
-    categoryApi.getList().then(
-      (result) => {
-        if (result.data.success) {
-          setCategorys(result.data.data)
-        }
-      },
-      (err) => console.error(err),
-    )
-    bradApi.getList().then(
-      (result) => {
-        if (result.data.success) {
-          setBrands(result.data.data)
-        }
-      },
-      (err) => console.error(err),
-    )
-    soleApi.getList().then(
-      (result) => {
-        if (result.data.success) {
-          setSoles(result.data.data)
-        }
-      },
-      (err) => console.error(err),
-    )
-    materialApi.getList().then(
-      (result) => {
-        if (result.data.success) {
-          setMaterials(result.data.data)
-        }
-      },
-      (err) => console.error(err),
-    )
-    colorApi.getList().then(
-      (result) => {
-        if (result.data.success) {
-          setColors(result.data.data)
-        }
-      },
-      (err) => console.error(err),
-    )
-    sizeApi.getList().then(
-      (result) => {
-        if (result.data.success) {
-          setSizes(result.data.data)
-        }
-      },
-      (err) => console.error(err),
-    )
+    fetchListCategory()
+    fetchListBrand()
+    fetchListSole()
+    fetchListMaterial()
+    fetchListColor()
+    fetchListSize()
   }, [])
 
   const newProductIsUndefined = (newProducts) => {
@@ -458,6 +477,7 @@ export default function AdProductAdd() {
         toast.success('Thêm thể loại thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        fetchListCategory()
       }
     } catch (error) {
       toast.error('Thêm thể loại thất bại', {
@@ -490,6 +510,7 @@ export default function AdProductAdd() {
         toast.success('Thêm thương hiệu thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        fetchListBrand()
       }
     } catch (error) {
       toast.error('Thêm thương hiệu thất bại', {
@@ -497,6 +518,7 @@ export default function AdProductAdd() {
       })
     }
   }
+
   const handleAddSole = async (newSole) => {
     try {
       if (newSole.name === '') {
@@ -521,6 +543,7 @@ export default function AdProductAdd() {
         toast.success('Thêm đế giày thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        fetchListSole()
       }
     } catch (error) {
       toast.error('Thêm đế giày thất bại', {
@@ -553,6 +576,7 @@ export default function AdProductAdd() {
         toast.success('Thêm chất liệu thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        fetchListMaterial()
       }
     } catch (error) {
       toast.error('Thêm chất liệu thất bại', {
@@ -606,6 +630,7 @@ export default function AdProductAdd() {
         toast.success('Thêm màu sắc thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        fetchListColor()
       }
       setOpenModalColor(false)
     } catch (error) {
@@ -646,6 +671,7 @@ export default function AdProductAdd() {
         toast.success('Thêm kích cỡ thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        fetchListSize()
       }
     } catch (error) {
       toast.error('Thêm kích cỡ thất bại', {

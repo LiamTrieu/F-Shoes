@@ -26,26 +26,12 @@ var stompClient = null
 export default function MyVoucher() {
   const [openModal, setOpenModal] = useState(false)
   const [valueTabs, setValueTabs] = useState(0)
-  const [valueTabsPublic, setValueTabsPublic] = useState(0)
-  const [valueTabsPrivate, setValueTabsPrivate] = useState(0)
   const [voucherByCode, setVoucherByCode] = useState({})
-  const [voucherPublicOldest, setVoucherPublicOldest] = useState([])
-  const [voucherPublicLatest, setVoucherPublicLatest] = useState([])
-  const [voucherPrivateOldest, setVoucherPrivateOldest] = useState([])
-  const [voucherPrivateLatest, setVoucherPrivateLatest] = useState([])
+  const [voucherPublic, setVoucherPublic] = useState([])
+  const [voucherPrivate, setVoucherPrivate] = useState([])
 
   const handleChange = (event, newValue) => {
     setValueTabs(newValue)
-    setValueTabsPublic(0)
-    setValueTabsPrivate(0)
-  }
-
-  const handleChangePublic = (event, newValue) => {
-    setValueTabsPublic(newValue)
-  }
-
-  const handleChangePrivate = (event, newValue) => {
-    setValueTabsPrivate(newValue)
   }
 
   const handleOpenModal = (codeVoucher) => {
@@ -61,10 +47,10 @@ export default function MyVoucher() {
     setOpenModal(true)
   }
 
-  const fetchVoucherPublicOldest = () => {
-    ClientVoucherApi.getVoucherPublicMyProfileOldest()
+  const fetchVoucherPublic = () => {
+    ClientVoucherApi.getVoucherPublicMyProfile()
       .then((respone) => {
-        setVoucherPublicOldest(respone.data.data)
+        setVoucherPublic(respone.data.data)
       })
       .catch(() => {
         toast.error('Vui lòng tải lại trang: ', {
@@ -73,33 +59,10 @@ export default function MyVoucher() {
       })
   }
 
-  const fetchVoucherPublicLatest = () => {
-    ClientVoucherApi.getVoucherPublicMyProfileLatest()
+  const fetchVoucherPrivate = () => {
+    ClientVoucherApi.getVoucherPrivateMyProfile()
       .then((respone) => {
-        setVoucherPublicLatest(respone.data.data)
-      })
-      .catch(() => {
-        toast.error('Vui lòng tải lại trang: ', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-      })
-  }
-
-  const fetchVoucherPrivateOldest = () => {
-    ClientVoucherApi.getVoucherPrivateMyProfileOldest()
-      .then((respone) => {
-        setVoucherPrivateOldest(respone.data.data)
-      })
-      .catch(() => {
-        toast.error('Vui lòng tải lại trang: ', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-      })
-  }
-  const fetchVoucherPrivateLatest = () => {
-    ClientVoucherApi.getVoucherPrivateMyProfileLatest()
-      .then((respone) => {
-        setVoucherPrivateLatest(respone.data.data)
+        setVoucherPrivate(respone.data.data)
       })
       .catch(() => {
         toast.error('Vui lòng tải lại trang: ', {
@@ -119,7 +82,7 @@ export default function MyVoucher() {
   }, [])
 
   const onConnect = () => {
-    stompClient.subscribe('/topic/voucher-client-update', (message) => {
+    stompClient.subscribe('/topic/my-voucher-realtime', (message) => {
       if (message.body) {
         const data = JSON.parse(message.body)
         updateReal(data)
@@ -128,20 +91,23 @@ export default function MyVoucher() {
   }
 
   function updateReal(data) {
-    const preVoucherPrivateLatest = [...voucherPrivateLatest]
-    const index = preVoucherPrivateLatest.findIndex((voucher) => voucher.id === data.id)
-    console.log(index)
-    if (index !== -1) {
-      preVoucherPrivateLatest[index] = data
-      setVoucherPrivateLatest(preVoucherPrivateLatest)
+    const preVoucherPublic = [...voucherPublic]
+    const preVoucherPrivate = [...voucherPrivate]
+    const indexPublic = preVoucherPublic.findIndex((voucher) => voucher.id === data.id)
+    const indexPrivate = preVoucherPrivate.findIndex((voucher) => voucher.id === data.id)
+    if (indexPrivate !== -1) {
+      preVoucherPrivate[indexPublic] = data
+      setVoucherPrivate(preVoucherPrivate)
+    }
+    if (indexPublic !== -1) {
+      preVoucherPublic[indexPublic] = data
+      setVoucherPublic(preVoucherPublic)
     }
   }
 
   useEffect(() => {
-    fetchVoucherPublicOldest()
-    fetchVoucherPublicLatest()
-    fetchVoucherPrivateOldest()
-    fetchVoucherPrivateLatest()
+    fetchVoucherPublic()
+    fetchVoucherPrivate()
   }, [])
 
   return (
@@ -156,155 +122,59 @@ export default function MyVoucher() {
                 <Tab label="Cá nhân" />
               </Tabs>
             </Box>
-            {valueTabs === 0 && (
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', mt: 1 }}>
-                <Tabs
-                  value={valueTabsPublic}
-                  onChange={handleChangePublic}
-                  textColor="secondary"
-                  indicatorColor="secondary"
-                  wrapped>
-                  <Tab label="Mới nhất" wrapped />
-                  <Tab label="Cũ nhất" wrapped />
-                </Tabs>
-              </Box>
-            )}
-            {valueTabs === 1 && (
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', mt: 1 }}>
-                <Tabs
-                  value={valueTabsPrivate}
-                  onChange={handleChangePrivate}
-                  textColor="secondary"
-                  indicatorColor="secondary"
-                  wrapped>
-                  <Tab label="Mới nhất" wrapped />
-                  <Tab label="Cũ nhất" wrapped />
-                </Tabs>
-              </Box>
-            )}
             <CustomTabPanel value={valueTabs} index={0}>
-              <CustomTabPanel value={valueTabsPublic} index={0}>
-                <Grid container spacing={2}>
-                  {voucherPublicLatest.length > 0 &&
-                    voucherPublicLatest.map((v) => (
-                      <Grid key={v.id} item xs={6}>
-                        <Grid className="grid-radio-group-modal-voucher-my-voucher">
-                          <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
-                          <Grid item xs={9} className="grid-information-voucher-my-voucher">
-                            <Stack
-                              direction="row"
-                              justifyContent="space-between"
-                              alignItems="center">
-                              <div>
-                                Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
-                                <br />
-                                Tối đa: {v.maximumValue} VNĐ
-                                <br />
-                                Tối thiểu: {v.minimumAmount} VNĐ
-                              </div>
-                              <div>
-                                <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
-                              </div>
-                            </Stack>
-                          </Grid>
+              <Grid container spacing={2}>
+                {voucherPublic.length > 0 &&
+                  voucherPublic.map((v) => (
+                    <Grid key={v.id} item xs={6}>
+                      <Grid className="grid-radio-group-modal-voucher-my-voucher">
+                        <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
+                        <Grid item xs={9} className="grid-information-voucher-my-voucher">
+                          <Stack direction="row" justifyContent="space-between" alignItems="center">
+                            <div>
+                              Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
+                              <br />
+                              Tối đa: {v.maximumValue} VNĐ
+                              <br />
+                              Tối thiểu: {v.minimumAmount} VNĐ
+                            </div>
+                            <div>
+                              <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
+                            </div>
+                          </Stack>
                         </Grid>
                       </Grid>
-                    ))}
-                  {voucherPublicLatest.length < 1 && <Empty />}
-                </Grid>
-              </CustomTabPanel>
-              <CustomTabPanel value={valueTabsPublic} index={1}>
-                <Grid container spacing={2}>
-                  {voucherPublicOldest.length > 0 &&
-                    voucherPublicOldest.map((v) => (
-                      <Grid key={v.id} item xs={6}>
-                        <Grid className="grid-radio-group-modal-voucher-my-voucher">
-                          <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
-                          <Grid item xs={9} className="grid-information-voucher-my-voucher">
-                            <Stack
-                              direction="row"
-                              justifyContent="space-between"
-                              alignItems="center">
-                              <div>
-                                Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
-                                <br />
-                                Tối đa: {v.maximumValue} VNĐ
-                                <br />
-                                Tối thiểu: {v.minimumAmount} VNĐ
-                              </div>
-                              <div>
-                                <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
-                              </div>
-                            </Stack>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    ))}
-                  {voucherPublicOldest.length < 1 && <Empty />}
-                </Grid>
-              </CustomTabPanel>
+                    </Grid>
+                  ))}
+                {voucherPublic.length < 1 && <Empty />}
+              </Grid>
             </CustomTabPanel>
             <CustomTabPanel value={valueTabs} index={1}>
-              <CustomTabPanel value={valueTabsPrivate} index={0}>
-                <Grid container spacing={2}>
-                  {voucherPrivateLatest.length > 0 &&
-                    voucherPrivateLatest.map((v) => (
-                      <Grid key={v.id} item xs={6}>
-                        <Grid className="grid-radio-group-modal-voucher-my-voucher">
-                          <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
-                          <Grid item xs={9} className="grid-information-voucher-my-voucher">
-                            <Stack
-                              direction="row"
-                              justifyContent="space-between"
-                              alignItems="center">
-                              <div>
-                                Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
-                                <br />
-                                Tối đa: {v.maximumValue} VNĐ
-                                <br />
-                                Tối thiểu: {v.minimumAmount} VNĐ
-                              </div>
-                              <div>
-                                <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
-                              </div>
-                            </Stack>
-                          </Grid>
+              <Grid container spacing={2}>
+                {voucherPrivate.length > 0 &&
+                  voucherPrivate.map((v) => (
+                    <Grid key={v.id} item xs={6}>
+                      <Grid className="grid-radio-group-modal-voucher-my-voucher">
+                        <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
+                        <Grid item xs={9} className="grid-information-voucher-my-voucher">
+                          <Stack direction="row" justifyContent="space-between" alignItems="center">
+                            <div>
+                              Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
+                              <br />
+                              Tối đa: {v.maximumValue} VNĐ
+                              <br />
+                              Tối thiểu: {v.minimumAmount} VNĐ
+                            </div>
+                            <div>
+                              <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
+                            </div>
+                          </Stack>
                         </Grid>
                       </Grid>
-                    ))}
-                  {voucherPrivateLatest.length < 1 && <Empty />}
-                </Grid>
-              </CustomTabPanel>
-              <CustomTabPanel value={valueTabsPrivate} index={1}>
-                <Grid container spacing={2}>
-                  {voucherPrivateOldest.length > 0 &&
-                    voucherPrivateOldest.map((v) => (
-                      <Grid key={v.id} item xs={6}>
-                        <Grid className="grid-radio-group-modal-voucher-my-voucher">
-                          <Grid item xs={3} className="grid-name-voucher-my-voucher"></Grid>
-                          <Grid item xs={9} className="grid-information-voucher-my-voucher">
-                            <Stack
-                              direction="row"
-                              justifyContent="space-between"
-                              alignItems="center">
-                              <div>
-                                Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
-                                <br />
-                                Tối đa: {v.maximumValue} VNĐ
-                                <br />
-                                Tối thiểu: {v.minimumAmount} VNĐ
-                              </div>
-                              <div>
-                                <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
-                              </div>
-                            </Stack>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    ))}
-                  {voucherPrivateOldest.length < 1 && <Empty />}
-                </Grid>
-              </CustomTabPanel>
+                    </Grid>
+                  ))}
+                {voucherPrivate.length < 1 && <Empty />}
+              </Grid>
             </CustomTabPanel>
           </Box>
         </Grid>

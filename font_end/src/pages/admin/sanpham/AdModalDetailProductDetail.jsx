@@ -74,8 +74,13 @@ export default function AdModalDetailProductDetail({
     description: productDetail.description,
   })
   const [images, setImages] = useState([])
+  const [newCategory, setNewCategory] = useState({ name: '' })
+  const [newBrand, setNewBrand] = useState({ name: '' })
+  const [newSole, setNewSole] = useState({ name: '' })
+  const [newMaterial, setNewMaterial] = useState({ name: '' })
+  const [newSize, setNewSize] = useState({ size: '' })
 
-  useEffect(() => {
+  const fetchListCategory = () => {
     categoryApi.getList().then(
       (result) => {
         if (result.data.success) {
@@ -84,6 +89,8 @@ export default function AdModalDetailProductDetail({
       },
       (err) => console.error(err),
     )
+  }
+  const fetchListBrand = () => {
     bradApi.getList().then(
       (result) => {
         if (result.data.success) {
@@ -92,14 +99,8 @@ export default function AdModalDetailProductDetail({
       },
       (err) => console.error(err),
     )
-    soleApi.getList().then(
-      (result) => {
-        if (result.data.success) {
-          setSoles(result.data.data)
-        }
-      },
-      (err) => console.error(err),
-    )
+  }
+  const fetchListMaterial = () => {
     materialApi.getList().then(
       (result) => {
         if (result.data.success) {
@@ -108,14 +109,18 @@ export default function AdModalDetailProductDetail({
       },
       (err) => console.error(err),
     )
-    colorApi.getList().then(
+  }
+  const fetchListSole = () => {
+    soleApi.getList().then(
       (result) => {
         if (result.data.success) {
-          setColors(result.data.data)
+          setSoles(result.data.data)
         }
       },
       (err) => console.error(err),
     )
+  }
+  const fetchListSize = () => {
     sizeApi.getList().then(
       (result) => {
         if (result.data.success) {
@@ -124,6 +129,25 @@ export default function AdModalDetailProductDetail({
       },
       (err) => console.error(err),
     )
+  }
+  const fetchListColor = () => {
+    colorApi.getList().then(
+      (result) => {
+        if (result.data.success) {
+          setColors(result.data.data)
+        }
+      },
+      (err) => console.error(err),
+    )
+  }
+
+  useEffect(() => {
+    fetchListCategory()
+    fetchListBrand()
+    fetchListSole()
+    fetchListMaterial()
+    fetchListColor()
+    fetchListSize()
   }, [productDetail])
 
   useEffect(() => {
@@ -357,6 +381,177 @@ export default function AdModalDetailProductDetail({
     img.src = `data:image/svg+xml;base64,${btoa(svgData)}`
   }
 
+  const handleAddCategory = async (newCategory) => {
+    try {
+      if (newCategory.name === '') {
+        toast.warning('Tên thể loại không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      const response = await categoryApi.getAllNameCategory()
+      if (response.data && Array.isArray(response.data.data)) {
+        const listNameCategory = response.data.data
+
+        if (listNameCategory.includes(newCategory.name)) {
+          toast.warning('Tên thể loại đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        await categoryApi.addCategory(newCategory)
+        toast.success('Thêm thể loại thành công', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        fetchListCategory()
+      }
+    } catch (error) {
+      toast.error('Thêm thể loại thất bại', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
+  }
+
+  const handleAddBrand = async (newBrand) => {
+    try {
+      if (newBrand.name === '') {
+        toast.warning('Tên thương hiệu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      const response = await bradApi.getAllNameBrand()
+      if (response.data && Array.isArray(response.data.data)) {
+        const listNameBrand = response.data.data
+
+        if (listNameBrand.includes(newBrand.name)) {
+          toast.warning('Tên thương hiệu đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        await bradApi.addBrand(newBrand)
+        toast.success('Thêm thương hiệu thành công', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        fetchListBrand()
+      }
+    } catch (error) {
+      toast.error('Thêm thương hiệu thất bại', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
+  }
+
+  const handleAddSole = async (newSole) => {
+    try {
+      if (newSole.name === '') {
+        toast.warning('Tên đế giày không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      const response = await soleApi.getAllNameSole()
+      if (response.data && Array.isArray(response.data.data)) {
+        const listNameSole = response.data.data
+
+        if (listNameSole.includes(newSole.name)) {
+          toast.warning('Tên đế giày đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        await soleApi.addSole(newSole)
+        toast.success('Thêm đế giày thành công', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        fetchListSole()
+      }
+    } catch (error) {
+      toast.error('Thêm đế giày thất bại', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
+  }
+
+  const handleAddMaterial = async (newMaterial) => {
+    try {
+      if (newMaterial.name === '') {
+        toast.warning('Tên chất liệu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      const response = await materialApi.getAllNameMaterial()
+      if (response.data && Array.isArray(response.data.data)) {
+        const listNameMaterial = response.data.data
+
+        if (listNameMaterial.includes(newMaterial.name)) {
+          toast.warning('Tên chất liệu đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        await materialApi.addMaterial(newMaterial)
+        toast.success('Thêm chất liệu thành công', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        fetchListMaterial()
+      }
+    } catch (error) {
+      toast.error('Thêm chất liệu thất bại', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
+  }
+
+  const handleAddSize = async (newSize) => {
+    try {
+      if (newSize.size === '') {
+        toast.warning('Kích cỡ không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      if (isNaN(newSize.size) === true) {
+        toast.warning('Tên kích cỡ phải là số', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
+
+      const response = await sizeApi.getAllNameSize()
+      if (response.data && Array.isArray(response.data.data)) {
+        const listNameSize = response.data.data
+
+        if (listNameSize.includes(newSize.size)) {
+          toast.warning('Kích cỡ đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        await sizeApi.addSize(newSize)
+        toast.success('Thêm kích cỡ thành công', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        fetchListSize()
+      }
+    } catch (error) {
+      toast.error('Thêm kích cỡ thất bại', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
+  }
+
   return (
     <Dialog
       fullWidth
@@ -376,6 +571,16 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Danh mục
               </b>
               <Autocomplete
+                noOptionsText={
+                  <Button
+                    size="small"
+                    fullWidth
+                    color="cam"
+                    onClick={() => handleAddCategory(newCategory)}>
+                    <PlaylistAddIcon />
+                    Thêm mới
+                  </Button>
+                }
                 size="small"
                 fullWidth
                 value={preProductDetail.category}
@@ -390,7 +595,12 @@ export default function AdModalDetailProductDetail({
                   return { label: category.name, value: category.id }
                 })}
                 renderInput={(params) => (
-                  <TextField color="cam" {...params} placeholder={'Chọn danh mục'} />
+                  <TextField
+                    color="cam"
+                    onChange={(e) => setNewCategory({ name: e.target.value })}
+                    {...params}
+                    placeholder={'Chọn danh mục'}
+                  />
                 )}
               />
               {err.category && <span style={{ color: 'red' }}>{err.category}</span>}
@@ -400,6 +610,16 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Thương hiệu
               </b>
               <Autocomplete
+                noOptionsText={
+                  <Button
+                    size="small"
+                    fullWidth
+                    color="cam"
+                    onClick={() => handleAddBrand(newBrand)}>
+                    <PlaylistAddIcon />
+                    Thêm mới
+                  </Button>
+                }
                 size="small"
                 fullWidth
                 className="search-field"
@@ -414,7 +634,12 @@ export default function AdModalDetailProductDetail({
                   return { label: brand.name, value: brand.id }
                 })}
                 renderInput={(params) => (
-                  <TextField color="cam" {...params} placeholder={'Chọn thương hiệu'} />
+                  <TextField
+                    color="cam"
+                    onChange={(e) => setNewBrand({ name: e.target.value })}
+                    {...params}
+                    placeholder={'Chọn thương hiệu'}
+                  />
                 )}
               />
               {err.brand && <span style={{ color: 'red' }}>{err.brand}</span>}
@@ -426,6 +651,12 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Đế giày
               </b>
               <Autocomplete
+                noOptionsText={
+                  <Button size="small" fullWidth color="cam" onClick={() => handleAddSole(newSole)}>
+                    <PlaylistAddIcon />
+                    Thêm mới
+                  </Button>
+                }
                 size="small"
                 fullWidth
                 value={preProductDetail.sole}
@@ -440,7 +671,12 @@ export default function AdModalDetailProductDetail({
                   return { label: sole.name, value: sole.id }
                 })}
                 renderInput={(params) => (
-                  <TextField color="cam" {...params} placeholder={'Chọn đế giày'} />
+                  <TextField
+                    color="cam"
+                    onChange={(e) => setNewSole({ name: e.target.value })}
+                    {...params}
+                    placeholder={'Chọn đế giày'}
+                  />
                 )}
               />
               {err.sole && <span style={{ color: 'red' }}>{err.sole}</span>}
@@ -450,6 +686,16 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Chất liệu
               </b>
               <Autocomplete
+                noOptionsText={
+                  <Button
+                    size="small"
+                    fullWidth
+                    color="cam"
+                    onClick={() => handleAddMaterial(newMaterial)}>
+                    <PlaylistAddIcon />
+                    Thêm mới
+                  </Button>
+                }
                 size="small"
                 fullWidth
                 className="search-field"
@@ -464,7 +710,12 @@ export default function AdModalDetailProductDetail({
                   return { label: material.name, value: material.id }
                 })}
                 renderInput={(params) => (
-                  <TextField color="cam" {...params} placeholder={'Chọn chất liệu'} />
+                  <TextField
+                    color="cam"
+                    onChange={(e) => setNewMaterial({ name: e.target.value })}
+                    {...params}
+                    placeholder={'Chọn chất liệu'}
+                  />
                 )}
               />
               {err.material && <span style={{ color: 'red' }}>{err.material}</span>}
@@ -476,6 +727,12 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Màu sắc
               </b>
               <Autocomplete
+                noOptionsText={
+                  <Button size="small" fullWidth color="cam" onClick={() => console.log()}>
+                    <PlaylistAddIcon />
+                    Thêm mới
+                  </Button>
+                }
                 size="small"
                 value={preProductDetail.color}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
@@ -515,7 +772,7 @@ export default function AdModalDetailProductDetail({
               </b>
               <Autocomplete
                 noOptionsText={
-                  <Button size="small" fullWidth color="cam" onClick={() => console.log()}>
+                  <Button size="small" fullWidth color="cam" onClick={() => handleAddSize(newSize)}>
                     <PlaylistAddIcon />
                     Thêm mới
                   </Button>
@@ -534,7 +791,15 @@ export default function AdModalDetailProductDetail({
                   return { label: size.size.toString(), value: size.id }
                 })}
                 renderInput={(params) => (
-                  <TextField id="newSize" color="cam" {...params} placeholder={'Chọn kích cỡ'} />
+                  <TextField
+                    id="newSize"
+                    onChange={(e) => {
+                      setNewSize({ size: e.target.value })
+                    }}
+                    color="cam"
+                    {...params}
+                    placeholder={'Chọn kích cỡ'}
+                  />
                 )}
               />
               {err.size && <span style={{ color: 'red' }}>{err.size}</span>}
