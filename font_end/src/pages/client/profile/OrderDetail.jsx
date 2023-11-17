@@ -1,23 +1,36 @@
 import {
+  Box,
   Button,
   Container,
   Divider,
   Grid,
+  IconButton,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
+  TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import RemoveIcon from '@mui/icons-material/Remove'
 import React, { useEffect, useState } from 'react'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import ClientAccountApi from '../../../api/client/clientAccount'
 import { useParams } from 'react-router-dom'
 import TimeLine from '../../admin/hoadon/TimeLine'
 import './Order.css'
-import ModalClientBillUpdateAddress from './ModalUpdateAddressBillClient'
+import ModalUpdateAddressBillClient from './ModalUpdateAddressBillClient'
+import { CiCircleRemove } from 'react-icons/ci'
+import ClientModalThemSP from './ModalThemSPBillClient'
+import { toast } from 'react-toastify'
+import confirmSatus from '../../../components/comfirmSwal'
+import clientCartApi from '../../../api/client/clientCartApi'
+import DialogAddUpdate from '../../../components/DialogAddUpdate'
 
 export default function OrderDetail() {
   const { id } = useParams()
@@ -26,6 +39,9 @@ export default function OrderDetail() {
   const [loadingTimeline, setLoadingTimeline] = useState(true)
   const [billClient, setBillCilent] = useState()
   const [openModalUpdateAdd, setopenModalUpdateAdd] = useState(false)
+  const [openModalThemSP, setOpenModalThemSP] = useState(false)
+  const [listTransaction, setListTransaction] = useState([])
+  const [openModalCancelBill, setOpenModalCancelBill] = useState(false)
 
   const getBillHistoryByIdBill = (id) => {
     setLoadingTimeline(true)
@@ -48,6 +64,90 @@ export default function OrderDetail() {
     })
   }
 
+  const getTransactionByIdbill = (id) => {
+    ClientAccountApi.getTransactionByIdBill(id).then((response) => {
+      setListTransaction(response.data.data)
+    })
+  }
+
+  const handleDecrementQuantity = (row, index) => {
+    const updatedList = billDetail.map((item, i) =>
+      i === index ? { ...item, quantity: item.quantity - 1 } : item,
+    )
+    const updatedRow = { ...row, quantity: row.quantity - 1 }
+    updatedList[index] = updatedRow
+    setBillDetail(updatedList)
+    const billDetailRequest = {
+      productDetailId: updatedRow.productDetailId,
+      idBill: billClient.id,
+      quantity: updatedRow.quantity,
+      price: updatedRow.price,
+      status: 0,
+    }
+    handleChangeQuanity(billClient.id, billDetailRequest)
+  }
+
+  const handleIncrementQuantity = (row, index) => {
+    const updatedList = billDetail.map((item, i) =>
+      i === index ? { ...item, quantity: item.quantity + 1 } : item,
+    )
+    const updatedRow = { ...row, quantity: row.quantity + 1 }
+    updatedList[index] = updatedRow
+    setBillDetail(updatedList)
+    const billDetailRequest = {
+      productDetailId: updatedRow.productDetailId,
+      idBill: billClient.id,
+      quantity: updatedRow.quantity,
+      price: updatedRow.price,
+      status: 0,
+    }
+    handleChangeQuanity(billClient.id, billDetailRequest)
+  }
+
+  const handleChangeQuanity = (id, selectedProduct) => {
+    const billDetailReq = {
+      productDetailId: selectedProduct.productDetailId,
+      idBill: id,
+      quantity: selectedProduct.quantity,
+      price: selectedProduct.price,
+      status: 0,
+    }
+    ClientAccountApi.saveBillDetail(billDetailReq)
+      .then((response) => {
+        getBillByIdBill(id)
+        toast.success('Đã thay đổi số lượng sản phẩm', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      })
+      .catch((error) => {
+        toast.error('Đã xảy ra lỗi', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        console.error('Lỗi khi gửi yêu cầu APIsaveBillDetail: ', error)
+      })
+  }
+
+  const handleTextFieldQuantityChange = (row, index, newValue) => {
+    let soLuong
+    if (!isNaN(newValue) && newValue > 0) {
+      soLuong = newValue
+    } else {
+      soLuong = 1
+    }
+    const updatedList = billDetail.map((item, i) =>
+      i === index ? { ...item, quantity: parseInt(soLuong, 10) || 0 } : item,
+    )
+    setBillDetail(updatedList)
+    const billDetailRequest = {
+      productDetailId: row.productDetailId,
+      idBill: billClient.id,
+      quantity: soLuong,
+      price: row.price,
+      status: 0,
+    }
+    handleChangeQuanity(billClient.id, billDetailRequest)
+  }
+
   const getBillClient = (id) => {
     setLoadingTimeline(true)
     ClientAccountApi.getBillClient(id)
@@ -62,22 +162,120 @@ export default function OrderDetail() {
       })
   }
 
+  const handleTextFieldQuanityFocus = (event, index) => {
+    if (!isNaN(event.target.value)) {
+      if (event.target.value !== '' && event.target.value !== '0') {
+        const updatedList = billDetail.map((item, i) =>
+          i === index ? { ...item, quantity: 1 } : item,
+        )
+        setBillDetail(updatedList)
+      }
+    }
+  }
+
+  const deleteBillDetail = (id) => {
+    ClientAccountApi.deleteBillDetail(id)
+      .then((response) => {
+        getBillByIdBill(id)
+        toast.success('Đã xoá sản phẩm khỏi giỏ hàng', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      })
+      .catch((error) => {
+        toast.error('Đã xảy ra lỗi', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        console.error('Lỗi khi gửi yêu cầu xoá billDetail: ', error)
+      })
+  }
+  const handleDeleteSPConfirmation = (hdct) => {
+    confirmSatus('Xác nhận xoá', 'Bạn có chắc chắn muốn xoá sản phẩm này?').then((result) => {
+      if (result.isConfirmed) {
+        deleteBillDetail(hdct.id)
+      }
+    })
+  }
+
+  function ModalCancelBill({ open, setOpen, billDetail }) {
+    const [ghiChu, setGhiChu] = useState('')
+
+    const updateStatusBillRequest = {
+      noteBillHistory: ghiChu,
+    }
+    const handlecancelBill = (id, updateStatusBillRequest) => {
+      if (billClient.status === 1) {
+        ClientAccountApi.cancelBill(id, updateStatusBillRequest)
+          .then((response) => {
+            toast.success('Đã huỷ đơn hàng', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            setOpen(false)
+          })
+          .catch((error) => {
+            toast.error('Đã xảy ra lỗi', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            console.error('Lỗi khi gửi yêu cầu API huỷ đơn hàng: ', error)
+          })
+      }
+    }
+
+    return (
+      <DialogAddUpdate
+        open={open}
+        setOpen={setOpen}
+        title={'Huỷ đơn hàng'}
+        buttonSubmit={
+          <Button
+            style={{ boxShadow: 'none', textTransform: 'none', borderRadius: '8px' }}
+            color="cam"
+            variant="contained"
+            onClick={() => handlecancelBill(billDetail.id, updateStatusBillRequest)}>
+            Lưu
+          </Button>
+        }>
+        <div>
+          <TextField
+            color="cam"
+            className="search-field"
+            size="small"
+            fullWidth
+            label="Ghi chú"
+            multiline
+            rows={4}
+            value={ghiChu}
+            onChange={(e) => setGhiChu(e.target.value)}
+          />
+        </div>
+      </DialogAddUpdate>
+    )
+  }
+
   useEffect(() => {
     getBillByIdBill(id)
     getBillHistoryByIdBill(id)
     getBillClient(id)
+    getTransactionByIdbill(id)
   }, [id])
-  // const totalMoney = billDetail.reduce((total, item) => total + item.totalMoney, 0)
-  // const moneyReduce = billDetail.reduce((reduce, item) => reduce + item.moneyReduced, 0)
-  // const moneyAfter = billDetail.reduce((after, item) => after + item.moneyAfter, 0)
-  // const moneyShip = billDetail.reduce((ship, item) => ship + item.moneyShip, 0)
+
   return (
     <div>
-      <ModalClientBillUpdateAddress
+      <ModalUpdateAddressBillClient
         open={openModalUpdateAdd}
         setOPen={setopenModalUpdateAdd}
         billDetail={billClient}
         listBillDetail={billDetail}
+      />
+      <ClientModalThemSP
+        open={openModalThemSP}
+        setOPen={setOpenModalThemSP}
+        billDetail={billClient ? billClient : null}
+        idBill={billClient ? billClient.id : null}
+      />
+      <ModalCancelBill
+        setOpen={setOpenModalCancelBill}
+        open={openModalCancelBill}
+        billDetail={billClient}
       />
       <Container maxWidth="lg">
         <Paper elevation={3} className="time-line" sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
@@ -101,7 +299,7 @@ export default function OrderDetail() {
                 </Grid>
               )}
             </Grid>
-            {billClient && billClient.status === 1 ? (
+            {billClient && billClient.status === 1 && listTransaction.length < 1 ? (
               <Button
                 variant="outlined"
                 style={{ marginRight: '5px' }}
@@ -111,10 +309,36 @@ export default function OrderDetail() {
             ) : (
               ''
             )}
+            {billClient && billClient.status === 1 && listTransaction.length < 1 ? (
+              <Button
+                variant="contained"
+                className="them-moi"
+                color="error"
+                style={{ marginRight: '5px' }}
+                onClick={() => setOpenModalCancelBill(true)}
+                sx={{ minWidth: '30px' }}>
+                Huỷ đơn
+              </Button>
+            ) : (
+              ''
+            )}
           </Container>
         </Paper>
 
         <Paper style={{ marginBottom: '30px' }}>
+          {billClient && billClient.status === 1 && listTransaction.length < 1 && (
+            <Stack sx={{ float: 'right' }}>
+              <Button
+                variant="outlined"
+                className="them-moi"
+                color="cam"
+                style={{ marginRight: '5px' }}
+                onClick={() => setOpenModalThemSP(true)}>
+                Thêm sản phẩm
+              </Button>
+            </Stack>
+          )}
+
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TableContainer sx={{ maxHeight: 300, marginBottom: 5 }}>
@@ -134,9 +358,67 @@ export default function OrderDetail() {
                           </Typography>
                           <Typography>X{row.quantity}</Typography>
                         </TableCell>
+                        <TableCell align="center">
+                          <Box
+                            width={'65px'}
+                            display="flex"
+                            alignItems="center"
+                            sx={{ border: '1px solid gray', borderRadius: '20px' }}
+                            p={'3px'}>
+                            <IconButton
+                              sx={{ p: 0 }}
+                              size="small"
+                              onClick={() => handleDecrementQuantity(row, index)}
+                              disabled={
+                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                              }>
+                              <RemoveIcon fontSize="1px" />
+                            </IconButton>
+                            <TextField
+                              value={row.quantity}
+                              inputProps={{ min: 1 }}
+                              size="small"
+                              sx={{
+                                width: '30px',
+                                '& input': { p: 0, textAlign: 'center' },
+                                '& fieldset': {
+                                  border: 'none',
+                                },
+                              }}
+                              onChange={(e) =>
+                                handleTextFieldQuantityChange(row, index, e.target.value)
+                              }
+                              disabled={
+                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                              }
+                            />
+
+                            <IconButton
+                              sx={{ p: 0 }}
+                              size="small"
+                              onClick={() => handleIncrementQuantity(row, index)}
+                              disabled={
+                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                              }>
+                              <AddIcon fontSize="1px" />
+                            </IconButton>
+                          </Box>
+                        </TableCell>
                         <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
                           {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
                           <br />
+                        </TableCell>
+                        <TableCell>
+                          {billClient &&
+                            billClient.status === 1 &&
+                            billDetail.length > 1 &&
+                            listTransaction.length < 1 && (
+                              <Tooltip title="Xoá sản phẩm">
+                                <IconButton onClick={() => handleDeleteSPConfirmation(row)}>
+                                  <CiCircleRemove />
+                                </IconButton>
+                              </Tooltip>
+                            )}
                         </TableCell>
                       </TableRow>
                     ))}

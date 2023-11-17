@@ -18,8 +18,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import dayjs from 'dayjs'
 import { formatCurrency } from '../../../services/common/formatCurrency '
-import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
 import { toast } from 'react-toastify'
+import ClientAccountApi from '../../../api/client/clientAccount'
 
 const styleAdBillModalUpdateAdd = {
   position: 'absolute',
@@ -32,7 +32,7 @@ const styleAdBillModalUpdateAdd = {
   boxShadow: 24,
 }
 
-export default function ModalClientBillUpdateAddress({
+export default function ModalUpdateAddressBillClient({
   open,
   setOPen,
   billDetail,
@@ -58,6 +58,8 @@ export default function ModalClientBillUpdateAddress({
   })
 
   useEffect(() => {
+    console.log('bill detail')
+    console.log(listBillDetail)
     loadTinh()
     if (billDetail && billDetail.address) {
       const addressParts = billDetail.address.split(', ')
@@ -215,8 +217,7 @@ export default function ModalClientBillUpdateAddress({
       diaChiCuThe + ', ' + selectedXa.label + ', ' + selectedHuyen.label + ', ' + selectedTinh.label
     hdBillReq.address = diaChi
     console.log(hdBillReq)
-    hoaDonApi
-      .update(billDetail.id, hdBillReq)
+    ClientAccountApi.updateInfBill(billDetail.id, hdBillReq)
       .then(() => {
         toast.success('Đã cập nhật thông tin đơn hàng', {
           position: toast.POSITION.TOP_RIGHT,
@@ -268,6 +269,7 @@ export default function ModalClientBillUpdateAddress({
               <TextField
                 id="bill_full_name"
                 sx={{ mt: 1, width: '48%', marginTop: 2 }}
+                color="cam"
                 label="Tên người nhận"
                 size="small"
                 value={hdBillReq.fullName}
@@ -278,6 +280,7 @@ export default function ModalClientBillUpdateAddress({
               />
 
               <TextField
+                color="cam"
                 variant="outlined"
                 label="Số điện thoại"
                 type="text"
@@ -314,7 +317,12 @@ export default function ModalClientBillUpdateAddress({
                     }
                     getOptionLabel={(options) => options.label}
                     renderInput={(params) => (
-                      <TextField placeholder="nhập tên tỉnh" label="Tỉnh/thành phố" {...params} />
+                      <TextField
+                        placeholder="nhập tên tỉnh"
+                        label="Tỉnh/thành phố"
+                        color="cam"
+                        {...params}
+                      />
                     )}
                   />
                 </Grid>
@@ -335,7 +343,12 @@ export default function ModalClientBillUpdateAddress({
                     }
                     getOptionLabel={(option) => option.label}
                     renderInput={(params) => (
-                      <TextField placeholder="Chọn huyện" label="Quận/huyện" {...params} />
+                      <TextField
+                        placeholder="Chọn huyện"
+                        label="Quận/huyện"
+                        color="cam"
+                        {...params}
+                      />
                     )}
                   />
                 </Grid>
@@ -350,12 +363,18 @@ export default function ModalClientBillUpdateAddress({
                     options={xa && xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
                     getOptionLabel={(option) => option.label}
                     renderInput={(params) => (
-                      <TextField placeholder="Chọn xã" label="Xã/phường/thị trấn" {...params} />
+                      <TextField
+                        placeholder="Chọn xã"
+                        label="Xã/phường/thị trấn"
+                        color="cam"
+                        {...params}
+                      />
                     )}
                   />
                 </Grid>
               </Grid>
               <TextField
+                color="cam"
                 variant="outlined"
                 label="Địa chỉ cụ thể"
                 type="text"
@@ -369,6 +388,7 @@ export default function ModalClientBillUpdateAddress({
               <TextField
                 id="bill_note"
                 sx={{ mt: 1, width: '48%', float: 'right', marginTop: 2 }}
+                color="cam"
                 label="Ghi chú"
                 size="small"
                 value={hdBillReq.note}
@@ -384,6 +404,7 @@ export default function ModalClientBillUpdateAddress({
                 onChange={() => {
                   setGiaoHang(!giaoHang)
                 }}
+                color="warning"
                 checked={giaoHang}
                 size="small"
               />
@@ -405,7 +426,13 @@ export default function ModalClientBillUpdateAddress({
             )}
           </Stack>
           <Stack sx={{ margin: 2 }}>
-            <Button onClick={() => confirmUpdateBill()}>Xác nhận</Button>
+            <Button
+              variant="outlined"
+              className="them-moi"
+              color="cam"
+              onClick={() => confirmUpdateBill()}>
+              Xác nhận
+            </Button>
           </Stack>
         </Paper>
       </Modal>
