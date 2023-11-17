@@ -46,7 +46,6 @@ import { toast } from 'react-toastify'
 import AdModalDetailProductDetail from './AdModalDetailProductDetail'
 import confirmSatus from '../../../components/comfirmSwal'
 import Carousel from 'react-material-ui-carousel'
-import { CheckBox } from '@mui/icons-material'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 function AirbnbThumbComponent(props) {

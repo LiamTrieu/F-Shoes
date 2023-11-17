@@ -13,6 +13,8 @@ import java.util.List;
 public interface ClientProductService {
     List<ClientProductResponse> getProducts(ClientProductRequest request);
 
+    ClientProductResponse getProductById(String id);
+
     List<ClientProductResponse> getProductsHome(ClientProductRequest request);
 
     List<ClientProductResponse> getSellingProduct(ClientProductRequest request);

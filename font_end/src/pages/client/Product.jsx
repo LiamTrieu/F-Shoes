@@ -31,7 +31,7 @@ import clientProductApi from '../../api/client/clientProductApi'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
 import styled from '@emotion/styled'
-
+import PropTypes from 'prop-types'
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -64,7 +64,12 @@ const AirbnbSlider = styled(Slider)(() => ({
   },
 }))
 
+AirbnbThumbComponent.propTypes = {
+  children: PropTypes.node,
+}
+
 export default function Product() {
+  const [priceMax, setPriceMax] = useState(999999999)
   const [openCategory, setOpenCategory] = useState(false)
   const [openBrand, setOpenBrand] = useState(false)
   const [openMaterial, setOpenMaterial] = useState(false)
@@ -111,18 +116,6 @@ export default function Product() {
   }, [])
 
   useEffect(() => {
-    console.log(
-      '==================' +
-        filter.category +
-        '/ ' +
-        filter.brand +
-        '/ ' +
-        filter.material +
-        '/ ' +
-        filter.sole +
-        '/ ' +
-        filter.color,
-    )
     clientProductApi.get(filter).then((result) => {
       const data = result.data.data
       setProducts(
@@ -373,14 +366,15 @@ export default function Product() {
           </ListItemButton>
           <ListItem className="list-item">
             <AirbnbSlider
-              onChangeCommitted={(_, value) =>
+              onChangeCommitted={(_, value) => {
                 setFilter({ ...filter, minPrice: value[0], maxPrice: value[1] })
-              }
+                setPriceMax(value[1])
+              }}
               min={minMaxPrice.minPrice}
               max={minMaxPrice.maxPrice}
               valueLabelDisplay="auto"
               slots={{ thumb: AirbnbThumbComponent }}
-              value={[filter.minPrice, filter.maxPrice]}
+              defaultValue={[filter.minPrice, priceMax]}
               valueLabelFormat={(value) =>
                 `${value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}`
               }
@@ -445,7 +439,7 @@ export default function Product() {
               </Typography>
             </Stack>
             <div className="cart-product-portfolio">
-              <CartProduct products={products} colmd={6} collg={4} colxl={3} />
+              <CartProduct products={products} colmd={6} collg={4} />
             </div>
           </Box>
         </Grid>

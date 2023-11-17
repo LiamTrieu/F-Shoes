@@ -28,7 +28,6 @@ const clientRoute = [
   { path: '/login', element: <Login /> },
   { path: '/checkout', element: <Checkout /> },
   { path: '/profile', element: <Profile /> },
-  { path: '/product/:id', element: <DetailProduct /> },
   { path: `/profile/get-by-idBill/:id`, element: <OrderDetail /> },
   { path: `/tracking/:code`, element: <TrackingDetail /> },
   { path: `/tracking`, element: <Tracking /> },

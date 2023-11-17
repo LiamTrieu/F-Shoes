@@ -5,6 +5,10 @@ const clientProductApi = {
     const url = `/client/product`
     return axiosApi.post(url, filter)
   },
+  getById: (id) => {
+    const url = `/client/product/${id}`
+    return axiosApi.get(url)
+  },
   getCungLoai: (filter) => {
     const url = `/client/product/cung-loai`
     return axiosApi.get(url, { params: filter })
