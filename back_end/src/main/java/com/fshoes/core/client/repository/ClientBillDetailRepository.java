@@ -20,7 +20,7 @@ public interface ClientBillDetailRepository extends BillDetailRepository {
                     bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId,
                     bd.status as status , m.name as material , cate.name as category, br.name as brand, sl.name as sole,
                     c.name as color, b.phone_number as phoneNumberCustomer, b.address as address, b.full_name as nameCustomer, b.id as idBill,
-                    b.total_money as totalMoney , b.money_after as moneyAfter , b.money_reduced as moneyReduced, b.money_ship as moneyShip
+                    b.total_money as totalMoney , b.money_after as moneyAfter , b.money_reduced as moneyReduced, b.money_ship as moneyShip, pd.weight as weight
              FROM bill_detail bd
                  LEFT JOIN product_detail pd ON bd.id_product_detail = pd.id
                  LEFT JOIN product p ON pd.id_product = p.id
@@ -58,4 +58,8 @@ public interface ClientBillDetailRepository extends BillDetailRepository {
              WHERE b.code = :code
              GROUP BY bd.id, p.name, c.name, bd.price, pd.price, s.size, pd.id, bd.status;            """, nativeQuery = true)
     List<ClientBillDetailResponse> getBillDetailsByCode(@Param("code") String code);
+
+    BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
+
+
 }

@@ -1,7 +1,12 @@
 package com.fshoes.core.client.controller;
 
+import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
 import com.fshoes.core.client.model.request.ClientAccountRequest;
 import com.fshoes.core.client.model.request.ClientBillAccountRequest;
+import com.fshoes.core.client.model.request.ClientBillDetailRequest;
+import com.fshoes.core.client.model.request.ClientBillRequest;
+import com.fshoes.core.client.model.request.ClientCancelBillRequest;
 import com.fshoes.core.client.model.response.ClientBillAccountResponse;
 import com.fshoes.core.client.model.response.ClientCustomerResponse;
 import com.fshoes.core.client.service.ClientAccountService;
@@ -30,19 +35,19 @@ public class ClientAccountController {
     }
 
     @GetMapping("/get-one")
-    public ObjectRespone getOneUser(){
+    public ObjectRespone getOneUser() {
         return new ObjectRespone(service.getOneCustomerClient(userLogin));
     }
 
     @GetMapping("/get-all")
-    public List<ClientCustomerResponse> getAllAccount(){
+    public List<ClientCustomerResponse> getAllAccount() {
         return service.getAll();
     }
 
 
     @GetMapping("/all-bill")
-    public ObjectRespone getAllBill( ClientBillAccountRequest status){
-            return new ObjectRespone(service.getALlBill(status));
+    public ObjectRespone getAllBill(ClientBillAccountRequest status) {
+        return new ObjectRespone(service.getALlBill(status));
     }
 
     @GetMapping("/get-by-idBill/{idBill}")
@@ -69,6 +74,33 @@ public class ClientAccountController {
     @GetMapping("/get-bill-history-by-code/{code}")
     public ObjectRespone getBillHistoryCode(@PathVariable("code") String code) {
         return new ObjectRespone(service.getListBillHistoryByCode(code));
+    }
+
+    @GetMapping("/get-client-billResponse/{id}")
+    public ObjectRespone getClientBillResponse(@PathVariable("id") String id) {
+        return new ObjectRespone(service.getClientBillResponse(id));
+    }
+
+    @PutMapping("/update-inf-bill/{id}")
+    public ObjectRespone updateInfBill(@PathVariable("id") String idBill,
+                                       @RequestBody ClientBillRequest clientBillRequest) {
+        return new ObjectRespone(service.updateBill(idBill, clientBillRequest));
+    }
+
+    @PostMapping("/save-billDetail")
+    public ObjectRespone save(@RequestBody ClientBillDetailRequest clientBillDetailRequest) {
+        return new ObjectRespone(service.saveBillDetail(clientBillDetailRequest));
+    }
+
+    @DeleteMapping("/delete-billDetail/{id}")
+    public ObjectRespone deleteBillDetail(@PathVariable("id") String idBillDetail) {
+        return new ObjectRespone(service.delete(idBillDetail));
+    }
+
+    @PutMapping("/cancel-bill/{id}")
+    public ObjectRespone cancelBill(@PathVariable("id") String idBill,
+                                    @RequestBody ClientCancelBillRequest clientCancelBillRequest) {
+        return new ObjectRespone(service.cancelBill(idBill, clientCancelBillRequest));
     }
 
 

@@ -34,7 +34,6 @@ import lichSuGiaoDichApi from '../../../api/admin/hoadon/lichSuGiaoDich'
 import AdBillTransaction from './AdBillTransaction'
 import lichSuHoaDonApi from '../../../api/admin/hoadon/lichSuHoaDonApi'
 import hoaDonChiTietApi from '../../../api/admin/hoadon/hoaDonChiTiet'
-import { formatCurrency } from '../../../services/common/formatCurrency '
 import BillHistoryDialog from './AdDialogOrderTimeLine'
 import { getStatusStyle } from './getStatusStyle'
 
@@ -419,7 +418,14 @@ export default function AdBillDetail() {
       </DialogAddUpdate>
     )
   }
-
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      currencyDisplay: 'code',
+    })
+    return formatter.format(value)
+  }
   function ModalConfirmPayment({ open, setOpen, billDetail, listTransaction }) {
     const totalMoneyTrans = listTransaction
       .filter((transaction) => transaction.type === 0)
@@ -592,14 +598,13 @@ export default function AdBillDetail() {
                 color="cam"
                 value={cashReceived}
                 onChange={(e) => {
-                  const cashReceivedValue = parseFloat(e.target.value)
+                  const inputValue = e.target.value.replace(/\D/g, '')
 
-                  const validCashReceived = isNaN(cashReceivedValue) ? 0 : cashReceivedValue
-                  setCashReceived(validCashReceived)
+                  setCashReceived(formatCurrency(inputValue))
 
                   const totalAmount = parseFloat(billDetail ? billDetail.totalMoney : 0)
-                  setChangeAmount(validCashReceived - totalAmount)
-                  setPaymentAmount(validCashReceived)
+                  setChangeAmount(formatCurrency(inputValue).replace(/\D/g, '') - totalAmount)
+                  setPaymentAmount(formatCurrency(inputValue).replace(/\D/g, ''))
                 }}
                 className="search-field"
                 size="small"
