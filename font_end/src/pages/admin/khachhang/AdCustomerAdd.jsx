@@ -181,7 +181,7 @@ export default function AdCustomerAdd() {
     const newErrors = {}
     const currentDate = dayjs()
     const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
-    const minBirthYear = 1990
+    const minBirthYear = 1900
     let check = 0
 
     const trimmedFullName = khachHang.fullName.trim()
