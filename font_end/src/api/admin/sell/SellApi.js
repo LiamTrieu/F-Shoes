@@ -60,6 +60,10 @@ const sellApi = {
     const url = `/sell/add-bill/${id}`
     return axiosAdmin.put(url, data)
   },
+  payOrder: (data, id) => {
+    const url = `/sell/pay-order/${id}`
+    return axiosAdmin.put(url, data)
+  },
 
   updateQuantityProductDetail: (id, quantity) => {
     const url = `/sell/update-quantity-product-detail/${id}?quantity=${quantity}`

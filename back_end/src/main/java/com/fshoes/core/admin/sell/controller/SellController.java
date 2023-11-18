@@ -102,6 +102,11 @@ public class SellController {
         return new ObjectRespone(getSell.addBill(request, id));
     }
 
+    @PutMapping("/pay-order/{id}")
+    public ObjectRespone payOrder(@RequestBody AddBillRequest request, @PathVariable String id) {
+        return new ObjectRespone(getSell.PayOrder(request, id));
+    }
+
     @PutMapping("/update-quantity-product-detail/{id}")
     public ObjectRespone updateQuantityProductDetail(@PathVariable String id, @RequestParam("quantity") Integer quantity) {
         return new ObjectRespone(getSell.updateQuantityProductDetail(id, quantity));

@@ -115,6 +115,7 @@
 .cart-product-portfolio {
   overflow: auto;
   max-height: 1000px;
+  position: relative;
 }
 
 .radio-color {
@@ -124,4 +125,11 @@
   display: flex;
   align-items: center !important;
   justify-content: center;
+}
+
+.cart-icon-container {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

@@ -8,6 +8,7 @@ import {
   Container,
   FormControl,
   FormControlLabel,
+  FormLabel,
   Grid,
   IconButton,
   InputAdornment,
@@ -53,6 +54,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import PaymentIcon from '@mui/icons-material/Payment'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -75,6 +77,18 @@ const styleModalAddCustomer = {
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
+}
+const styleCustomerPays = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  height: 550,
+  bgcolor: 'background.paper',
+  borderRadius: '8px',
+  boxShadow: 24,
+  p: 4,
 }
 
 export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }) {
@@ -101,6 +115,22 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [timeShip, setTimeShip] = useState('')
   const [list, setList] = useState([])
   const [nameCustomer, setNameCustomer] = useState('')
+  const [customerAmount, setCustomerAmount] = useState(0)
+
+  const [open, setOpen] = React.useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+  const [paymentMethod, setPaymentMethod] = useState('0')
+  const [transactionCode, setTransactionCode] = useState('')
+  const [isTextFieldDisabled, setIsTextFieldDisabled] = useState(false)
+  const [noteTransaction, setNoteTransaction] = useState('')
+
+  const handlePaymentMethodChange = (event) => {
+    const selectedPaymentMethod = event.target.value
+    setPaymentMethod(selectedPaymentMethod)
+    setIsTextFieldDisabled(selectedPaymentMethod === '1')
+  }
+
   const [searchKhachHang, setSearchKhachHang] = useState({
     nameSearch: '',
     gender: '',
@@ -149,13 +179,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     specificAddress: '',
   })
   const [selectedProductIds, setSelectedProductIds] = useState([])
-
-  const handleSelectAllChange = (event) => {
-    const selectedIds = event.target.checked
-      ? listProductDetailBill.map((row) => row.productDetail)
-      : []
-    setSelectedRows(selectedIds)
-  }
 
   const handleRowCheckboxChange = (event, ProductDetailId) => {
     const selectedIndex = selectedRows.indexOf(ProductDetailId)
@@ -943,20 +966,56 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       moneyAfter: totalPrice ? totalPrice : '',
       type: giaoHang === true ? 1 : 0,
     }
+    const dataPay = {
+      fullName: detailDiaChi.name ? detailDiaChi.name : '',
+      phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
+      idVourcher: voucher.id ? voucher.id : null,
+      idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : null,
+      address: detailDiaChi.specificAddress
+        ? detailDiaChi.specificAddress + ', ' + xaName + ', ' + huyenName + ', ' + tinhName
+        : '',
+      note: khachHang.note ? khachHang.note : '',
+      moneyShip: giaoHang ? shipTotal : 0,
+      moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',
+      totalMoney: totalPriceCart ? totalPriceCart : '',
+      moneyAfter: totalPrice ? totalPrice : '',
+      type: giaoHang === true ? 1 : 0,
+      customerAmount: customerAmount,
+      transactionCode: transactionCode ? transactionCode : null,
+      paymentMethod: paymentMethod === '1' ? 1 : 0,
+      noteTransaction: noteTransaction ? noteTransaction : null,
+      desiredReceiptDate: timeShip ? timeShip : '',
+    }
 
-    const title = 'Xác nhận đặt hàng ?'
-    const text = ''
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        sellApi.addBill(data, id).then((response) => {
-          toast.success(' xác nhận thành công', {
-            position: toast.POSITION.TOP_CENTER,
+    if (giaoHang) {
+      const title = 'Xác nhận đặt hàng ?'
+      const text = ''
+      confirmSatus(title, text, theme).then((result) => {
+        if (result.isConfirmed) {
+          sellApi.addBill(data, id).then((response) => {
+            toast.success(' xác nhận thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            getAllBillTaoDonHang()
+            setSelectBill('')
           })
-          getAllBillTaoDonHang()
-          setSelectBill('')
-        })
-      }
-    })
+        }
+      })
+    } else {
+      const titlePay = 'Xác nhận thanh toán ?'
+      const textPay = ''
+      confirmSatus(titlePay, textPay, theme).then((result) => {
+        if (result.isConfirmed) {
+          sellApi.payOrder(dataPay, id).then((response) => {
+            toast.success(' Thanh toán thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            getAllBillTaoDonHang()
+            setSelectBill('')
+          })
+        }
+      })
+    }
   }
 
   const totalSum = listProductDetailBill.reduce((sum, cart) => {
@@ -976,6 +1035,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const totalMoneyReduce = moneyVoucher > voucher.maximumValue ? voucher.maximumValue : moneyVoucher
 
   const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce
+
+  const excessMoney = customerAmount - totalPrice
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -2391,18 +2452,151 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   <b>{formatPrice(totalPrice)}</b>
                 </Typography>
               </Stack>
+              {!giaoHang && (
+                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                  <Typography>
+                    <b>Thanh toán ngay</b>
+                    <Button
+                      style={{
+                        color: 'black',
+                        border: '1px solid black',
+                        width: '25px',
+                        height: '30px',
+                        marginLeft: '30px',
+                      }}
+                      onClick={handleOpen}>
+                      <PaymentIcon />
+                    </Button>
+                  </Typography>
+                </Stack>
+              )}
             </Box>
           </Grid2>
         </Grid2>
+        <div>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description">
+            <Box sx={styleCustomerPays}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Thanh toán
+              </Typography>
+              <TextField
+                id="outlined-basic"
+                color="cam"
+                label="Tổng tiền"
+                value={formatPrice(totalPrice)}
+                variant="outlined"
+                sx={{ width: '330px', marginTop: '15px' }}
+                size="small"
+              />
+              <TextField
+                id="outlined-basic"
+                color="cam"
+                label="Tiền khách đưa"
+                type="number"
+                variant="outlined"
+                onChange={(e) => setCustomerAmount(e.target.value)}
+                sx={{ width: '330px', marginTop: '10px' }}
+                value={customerAmount}
+                size="small"
+              />
+              <TextField
+                id="outlined-basic"
+                color="cam"
+                label="Tiền thừa"
+                variant="outlined"
+                value={formatPrice(excessMoney)}
+                sx={{ width: '330px', marginTop: '10px' }}
+                defaultValue={0}
+                size="small"
+                InputProps={{
+                  readOnly: true,
+                  style: {
+                    color: excessMoney < 0 ? 'red' : 'black',
+                  },
+                }}
+              />
+              <TextField
+                color="cam"
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Ghi chú"
+                onChange={(e) => setNoteTransaction(e.target.value)}
+                multiline
+                rows={4}
+                style={{ marginTop: '10px' }}
+              />
+              <FormControl component="fieldset">
+                <FormLabel component="legend">Phương thức thanh toán:</FormLabel>
+                <RadioGroup
+                  row
+                  aria-label="payment-method"
+                  name="payment-method"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}>
+                  <FormControlLabel value="0" control={<Radio />} label="Chuyển khoản" />
+                  <FormControlLabel value="1" control={<Radio />} label="Tiền mặt" />
+                </RadioGroup>
+              </FormControl>
+              <TextField
+                color="cam"
+                placeholder="Mã giao dịch"
+                variant="outlined"
+                sx={{ width: '330px', marginTop: '10px' }}
+                size="small"
+                value={transactionCode}
+                onChange={(e) => setTransactionCode(e.target.value)}
+                // disabled={isTextFieldDisabled}
+                disabled={paymentMethod !== '0'}
+                required={paymentMethod === '0'}
+              />
+              {paymentMethod === '0' && transactionCode.trim() === '' && (
+                <span style={{ color: 'red', marginBottom: '5px' }}>
+                  Vui lòng nhập mã giao dịch
+                </span>
+              )}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: '20px',
+                }}>
+                <Button
+                  onClick={handleClose}
+                  variant="contained"
+                  sx={{ backgroundColor: '#FF3333' }}
+                  color="error">
+                  Hủy
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ marginLeft: '20px' }}
+                  color="success"
+                  onClick={() => addBill(idBill)}>
+                  Thanh toán
+                </Button>
+              </div>
+            </Box>
+          </Modal>
+        </div>
         <Box p={2}>
           <Stack direction={'row'} justifyContent={'right'}>
-            <Button
-              variant="outlined"
-              style={{ borderRadius: '8px' }}
-              color="cam"
-              onClick={() => addBill(idBill)}>
-              Xác nhận đặt hàng
-            </Button>
+            {giaoHang ? (
+              <Button
+                variant="outlined"
+                style={{ borderRadius: '8px' }}
+                color="cam"
+                onClick={() => addBill(idBill)}>
+                Xác nhận đặt hàng
+              </Button>
+            ) : (
+              ''
+            )}
           </Stack>
         </Box>
       </Paper>

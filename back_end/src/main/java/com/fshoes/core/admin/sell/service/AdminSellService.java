@@ -30,6 +30,8 @@ public interface AdminSellService {
 
     Bill addBill(AddBillRequest request, String id);
 
+    Bill PayOrder(AddBillRequest request, String id);
+
     BillDetail addBillDetail(CreateBillRequest request, String id);
 
     List<CartDetailResponse> getCartDetail();

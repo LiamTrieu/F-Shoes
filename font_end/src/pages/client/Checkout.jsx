@@ -32,6 +32,7 @@ import { setLoading } from '../../services/slices/loadingSlice'
 import ClientAddressApi from '../../api/client/clientAddressApi'
 import authenticationAPi from '../../api/authentication/authenticationAPi'
 import { GetUser } from '../../services/slices/userSlice'
+import ReplyIcon from '@mui/icons-material/Reply'
 
 export default function Checkout() {
   const userLogin = useSelector(GetUser)
@@ -397,16 +398,21 @@ export default function Checkout() {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 3 }}>
+    <Container maxWidth="lg" sx={{ mt: 3 }}>
       <Paper
         sx={{
           padding: '40px',
           paddingTop: 0,
           minHeight: '68vh',
           py: 2,
+          backgroundColor: 'rgba(249, 249, 246, 0.985)',
         }}>
         <Grid container spacing={2}>
-          <Grid item lg={7} sx={{ px: { lg: '40px' } }} width={'100%'}>
+          <Grid
+            item
+            lg={7}
+            sx={{ px: { lg: '40px' }, backgroundColor: 'white', mt: '20px' }}
+            width={'100%'}>
             <div className="button-lbtt">
               <span className="checkout-info-label">Thông tin giao hàng</span>
               {userLogin && (
@@ -437,26 +443,45 @@ export default function Checkout() {
                 setTimeShip={setTimeShip}
               />
             </div>
-
-            <Typography>
-              <span className="required"> *</span>Họ và tên
-            </Typography>
-            <TextField
-              value={request.fullName}
-              onChange={(e) => {
-                setRequest({ ...request, fullName: e.target.value })
-                setErrors({ ...errors, fullName: '' })
-              }}
-              size="small"
-              fullWidth
-              id="fullname"
-            />
-            <Typography variant="body2" color="error">
-              {errors.fullName}
-            </Typography>
             <Grid container mt={0} spacing={3}>
+              <Grid item xs={6}>
+                <Typography>
+                  <span className="required"> *</span>Họ và tên
+                </Typography>
+                <TextField
+                  value={request.fullName}
+                  onChange={(e) => {
+                    setRequest({ ...request, fullName: e.target.value })
+                    setErrors({ ...errors, fullName: '' })
+                  }}
+                  size="small"
+                  fullWidth
+                  id="fullname"
+                />
+                <Typography variant="body2" color="error">
+                  {errors.fullName}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography>
+                  <span className="required"> *</span>Số điện thoại
+                </Typography>
+                <TextField
+                  value={request.phone}
+                  onChange={(e) => {
+                    setRequest({ ...request, phone: e.target.value })
+                    setErrors({ ...errors, phone: '' })
+                  }}
+                  size="small"
+                  fullWidth
+                  id="phone"
+                />
+                <Typography variant="body2" color="error">
+                  {errors.phone}
+                </Typography>
+              </Grid>
               {!userLogin && (
-                <Grid item xs={12} lg={7}>
+                <Grid item xs={12}>
                   <Typography>
                     <span className="required"> *</span>Email
                   </Typography>
@@ -486,24 +511,6 @@ export default function Checkout() {
                   </Typography>
                 </Grid>
               )}
-              <Grid item xs={12} lg={!userLogin ? 5 : 12}>
-                <Typography>
-                  <span className="required"> *</span>Số điện thoại
-                </Typography>
-                <TextField
-                  value={request.phone}
-                  onChange={(e) => {
-                    setRequest({ ...request, phone: e.target.value })
-                    setErrors({ ...errors, phone: '' })
-                  }}
-                  size="small"
-                  fullWidth
-                  id="phone"
-                />
-                <Typography variant="body2" color="error">
-                  {errors.phone}
-                </Typography>
-              </Grid>
             </Grid>
             <Grid container mt={0} spacing={3}>
               <Grid item xs={12} lg={4}>
@@ -604,57 +611,62 @@ export default function Checkout() {
                 value={selectedValue}
                 aria-labelledby="demo-radio-buttons-group-label"
                 name="radio-buttons-group">
-                <div className="ck-pttt">
-                  <label style={{ display: 'flex', alignItems: 'center' }}>
-                    <Radio size="small" onChange={handleRadioChange} value={'0'} />
-                    <img
-                      alt="error"
-                      src={require('../../assets/image/vnpay.jpg')}
-                      style={{
-                        maxWidth: '70px',
-                        maxHeight: '70px',
-                        verticalAlign: 'middle',
-                      }}
-                    />
-                    Thanh toán khi nhận hàng
-                  </label>
-                </div>
-                <div className="ck-pttt">
-                  <label style={{ display: 'flex', alignItems: 'center' }}>
-                    <Radio size="small" onChange={handleRadioChange} value={'1'} />
-                    <img
-                      alt="error"
-                      src={require('../../assets/image/thanhtoan.jpg')}
-                      style={{
-                        maxWidth: '40px',
-                        maxHeight: '40px',
-                        verticalAlign: 'middle',
-                      }}
-                    />
-                    Thanh toán ngay
-                  </label>
+                <div className="pay">
+                  <div className="ck-pttt">
+                    <label style={{ display: 'flex', alignItems: 'center' }}>
+                      <Radio size="small" onChange={handleRadioChange} value={'0'} />
+                      <img
+                        alt="error"
+                        src={require('../../assets/image/thanhtoan.jpg')}
+                        style={{
+                          maxWidth: '40px',
+                          maxHeight: '40px',
+                          verticalAlign: 'middle',
+                        }}
+                      />
+                      Thanh toán khi nhận hàng
+                    </label>
+                  </div>
+                  <div className="ck-pttt">
+                    <label style={{ display: 'flex', alignItems: 'center' }}>
+                      <Radio size="small" onChange={handleRadioChange} value={'1'} />
+                      <img
+                        alt="error"
+                        src={require('../../assets/image/vnpay.jpg')}
+                        style={{
+                          maxWidth: '70px',
+                          maxHeight: '70px',
+                          verticalAlign: 'middle',
+                        }}
+                      />
+                      Thanh toán ngay
+                    </label>
+                  </div>
                 </div>
               </RadioGroup>
             </FormControl>
-            <Button
-              component={Link}
-              to="/cart"
-              size="small"
-              variant="contained"
-              color="success"
-              sx={{ float: 'left', my: 2, mr: 2 }}>
-              <b>Quay lại trang trước</b>
-            </Button>
             <Button
               onClick={() => {
                 finishCheckout()
               }}
               size="small"
               variant="contained"
-              color="success"
-              sx={{ float: 'right', my: 2, mr: 2 }}>
-              <b>Hoàn thành đặt hàng</b>
+              sx={{
+                width: '100%',
+                my: 2,
+                mr: 2,
+                height: '40px',
+                color: '#FF9900',
+                backgroundColor: 'black',
+              }}>
+              <b style={{ color: 'white' }}>Hoàn thành đặt hàng</b>
             </Button>
+            <div>
+              <Link to="/cart" style={{ textDecoration: 'none' }}>
+                <ReplyIcon />
+                <b>Quay lại giỏ hàng</b>
+              </Link>
+            </div>
           </Grid>
           <Grid className="detail-checkout" item lg={5} width={'100%'}>
             <Table>
@@ -702,17 +714,23 @@ export default function Checkout() {
             </Table>
             <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
               <TextField
-                sx={{ flex: 1, minWidth: '100px', width: '80%' }}
+                sx={{ flex: 1, minWidth: '100px', width: '100%' }}
                 value={voucher === null ? 'Mã khuyễn mãi' : voucher.name}
                 size="small"
+                className="input-voucher"
                 disabled
+                InputProps={{
+                  endAdornment: (
+                    <Button
+                      variant="contained"
+                      onClick={() => handleFilterVoucher()}
+                      style={{ backgroundColor: 'black' }}>
+                      <b>Chọn </b>
+                    </Button>
+                  ),
+                }}
               />
-              <Button
-                sx={{ ml: 2, mr: 1, width: 'auto' }}
-                variant="contained"
-                onClick={() => handleFilterVoucher()}>
-                <b>Chọn mã</b>
-              </Button>
+
               <ModalVoucher
                 open={openModalVoucher}
                 setOpen={setOpenModalVoucher}

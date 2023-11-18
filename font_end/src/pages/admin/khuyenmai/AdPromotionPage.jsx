@@ -36,6 +36,8 @@ import { toast } from 'react-toastify'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import FileUploadIcon from '@mui/icons-material/FileUpload'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
 
 var stompClient = null
 export default function AdPromotionPage() {
@@ -140,6 +142,17 @@ export default function AdPromotionPage() {
     }))
   }
 
+  const handleExportTemplate = () => {
+    khuyenMaiApi
+      .exportExcel()
+      .then((response) => {
+        toast.success('export success!')
+      })
+      .catch((error) => {
+        console.error('Error exporting Excel template:', error)
+      })
+  }
+
   return (
     <>
       <div className="promotion">
@@ -171,6 +184,20 @@ export default function AdPromotionPage() {
                 <AddIcon />
                 <Typography sx={{ ml: 0, fontWeight: '500' }}>Thêm mới</Typography>
               </Button>
+              {/* <Button
+                sx={{ borderRadius: '8px' }}
+                color="cam"
+                variant="outlined"
+                onClick={handleExportTemplate}>
+                <FileUploadIcon />
+              </Button>
+              <Button
+                sx={{ borderRadius: '8px' }}
+                color="cam"
+                variant="outlined"
+                onClick={handleExportTemplate}>
+                <FileDownloadIcon />
+              </Button> */}
             </Stack>
             <Stack
               my={2}

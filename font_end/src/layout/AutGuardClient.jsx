@@ -4,6 +4,7 @@ import authenticationAPi from '../api/authentication/authenticationAPi'
 import { useDispatch } from 'react-redux'
 import { addUser } from '../services/slices/userSlice'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
+import { Box } from '@mui/material'
 
 export default function AutGuardClient({ children }) {
   const dispatch = useDispatch()
@@ -15,5 +16,9 @@ export default function AutGuardClient({ children }) {
     }
   }, [dispatch])
 
-  return <ThemeAdmin>{children}</ThemeAdmin>
+  return (
+    <ThemeAdmin>
+      <Box sx={{ backgroundColor: 'rgba(249, 249, 246, 0.985)' }}>{children}</Box>
+    </ThemeAdmin>
+  )
 }

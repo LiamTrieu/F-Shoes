@@ -48,12 +48,6 @@
   align-items: center;
 }
 
-.quantity-control {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-}
-
 .quantity-control input {
   max-width: 40px;
   text-align: center;
@@ -61,7 +55,7 @@
 }
 
 .quantity-control button {
-  background-color: #cab411;
+  background-color: #333;
   color: #fff;
   border: none;
   cursor: pointer;

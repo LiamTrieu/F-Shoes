@@ -78,14 +78,24 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
   const [getAmountProduct, setGetAmountProduct] = useState([])
 
   const [addAmount, setAddAmount] = useState(1)
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value
+    const numericValue = parseInt(inputValue, 10)
+
+    if (inputValue === '' || isNaN(numericValue) || numericValue < 1) {
+      setAddAmount(0)
+    } else {
+      setAddAmount(numericValue)
+    }
+  }
 
   const handleAddAmount = () => {
-    setAddAmount(addAmount + 1)
+    setAddAmount((prevAmount) => prevAmount + 1)
   }
 
   const handleRemoveAmount = () => {
     if (addAmount > 1) {
-      setAddAmount(addAmount - 1)
+      setAddAmount((prevAmount) => prevAmount - 1)
     }
   }
 
@@ -136,8 +146,10 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
 
   const onSubmitAddBillDetail = (id, idBill) => {
     let priceToAdd = selectedProduct.price
-    if (selectedProduct.value) {
+    if (selectedProduct.value && selectedProduct.statusPromotion === 1) {
       priceToAdd = (selectedProduct.price * (100 - selectedProduct.value)) / 100
+    } else {
+      priceToAdd = selectedProduct.price
     }
     if (addAmount > getAmountProduct.amount) {
       setErrorQuantity('Số lượng không còn đủ')
@@ -594,13 +606,13 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                                 calculateDiscountedPrice(
                                   getAmountProduct.price,
                                   getAmountProduct.value,
-                                ) * addAmount,
+                                ),
                               )}`}
                             </span>{' '}
                           </div>
                         </div>
                       ) : (
-                        <span>{`${formatPrice(getAmountProduct.price * addAmount)}`}</span>
+                        <span>{`${getAmountProduct.price}`}</span>
                       )}
                     </p>
                     {'size:' + getAmountProduct.size}
@@ -644,11 +656,22 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       <TextField
                         value={addAmount}
                         inputProps={{ min: 1 }}
-                        onChange={(e) => setAddAmount(e.target.value)}
+                        // onChange={(e) => setAddAmount(e.target.value)}
+                        onChange={handleInputChange}
                         size="small"
+                        type="number"
                         sx={{
-                          width: '30px ',
-                          '& input': { p: 0, textAlign: 'center' },
+                          width: '30px',
+                          '& input': {
+                            p: 0,
+                            textAlign: 'center',
+                            /* Ẩn nút tăng giảm số lượng */
+                            '-moz-appearance': 'textfield',
+                            '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+                              '-webkit-appearance': 'none',
+                              margin: 0,
+                            },
+                          },
                           '& fieldset': {
                             border: 'none',
                           },

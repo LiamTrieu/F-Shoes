@@ -32,6 +32,9 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
 import styled from '@emotion/styled'
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
+import { addCart } from '../../services/slices/cartSlice'
+import { useDispatch } from 'react-redux'
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -77,6 +80,7 @@ export default function Product() {
   const [openColor, setOpenColor] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false)
   const [products, setProducts] = useState([])
+  const [product, setProduct] = useState([])
   const [showMenuBar, setShowMenuBar] = useState(true)
   const [isMenuBarVisible, setIsMenuBarVisible] = useState(true)
   const [filter, setFilter] = useState({
@@ -90,6 +94,7 @@ export default function Product() {
     nameProductDetail: null,
   })
   const [minMaxPrice, setMinMaxPrice] = useState({})
+  const [idProduct, setIdProduct] = useState(null)
   // -------------------------------------- Filter ----------------------------------
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
@@ -439,7 +444,7 @@ export default function Product() {
               </Typography>
             </Stack>
             <div className="cart-product-portfolio">
-              <CartProduct products={products} colmd={6} collg={4} />
+              <CartProduct products={products} colmd={6} collg={3} />
             </div>
           </Box>
         </Grid>

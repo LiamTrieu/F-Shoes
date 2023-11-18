@@ -13,6 +13,15 @@ import com.fshoes.infrastructure.constant.StatusVoucher;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.ProductPromotionRepository;
 import com.fshoes.util.DateUtil;
+import org.apache.http.client.utils.DateUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +31,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -172,6 +185,52 @@ public class PromotionServiceImpl implements PromotionService {
     public Page<PromotionRespone> getAllPromotion(PromotionSearch filter) {
         Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());
         return khuyenMaiRepository.getPromotion(filter, pageable);
+    }
+
+    @Override
+    public Boolean exportExcel() throws IOException {
+
+        String userHome = System.getProperty("user.home");
+        String outputPath = userHome + File.separator + "Downloads" + File.separator + "file_template_import" + ".xlsx";
+
+        Workbook workbook = new SXSSFWorkbook();
+        Sheet sheet = workbook.createSheet("import khuyến mại");
+
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        Row header = sheet.createRow(0);
+        Cell cell0 = header.createCell(0);
+        cell0.setCellValue("STT");
+        cell0.setCellStyle(headerStyle);
+
+        Cell cell1 = header.createCell(1);
+        cell1.setCellValue("Name");
+        cell1.setCellStyle(headerStyle);
+
+        Cell cell2 = header.createCell(2);
+        cell2.setCellValue("Gia tri");
+        cell2.setCellStyle(headerStyle);
+
+        Cell cell3 = header.createCell(3);
+        cell3.setCellValue("Từ ngày");
+        cell3.setCellStyle(headerStyle);
+
+        Cell cell4 = header.createCell(4);
+        cell4.setCellValue("Đến ngày");
+        cell4.setCellStyle(headerStyle);
+
+        try{
+            FileOutputStream outputStream = new FileOutputStream(outputPath);
+            workbook.write(outputStream);
+            outputStream.close();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
 
