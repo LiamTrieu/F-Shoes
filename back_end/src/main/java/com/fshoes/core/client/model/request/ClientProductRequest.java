@@ -10,12 +10,10 @@ import java.util.List;
 @Setter
 public class ClientProductRequest {
     private String id;
-    private List<String> brand;
-    private List<String> material;
-    private List<String> color;
-    private List<String> sole;
-    private List<String> category;
-    private BigDecimal minPrice;
-    private BigDecimal maxPrice;
+    private String brand;
+    private String material;
+    private String color;
+    private String sole;
+    private String category;
     private String nameProductDetail;
 }

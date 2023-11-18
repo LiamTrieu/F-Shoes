@@ -1,5 +1,6 @@
 package com.fshoes.core.client.controller;
 
+import com.fshoes.core.client.model.request.ClientFindProductRequest;
 import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
@@ -15,9 +16,14 @@ public class ClientProductController {
     @Autowired
     private ClientProductService clientProductService;
 
-    @PostMapping("/product")
-    public ObjectRespone getProduct(@RequestBody ClientProductRequest request) {
+    @GetMapping("/product")
+    public ObjectRespone getProduct(ClientProductRequest request) {
         return new ObjectRespone((clientProductService.getProducts(request)));
+    }
+
+    @PostMapping("/all/product")
+    public ObjectRespone getAllProduct(@RequestBody ClientFindProductRequest request) {
+        return new ObjectRespone((clientProductService.getAllProducts(request)));
     }
 
     @GetMapping("/product/{id}")

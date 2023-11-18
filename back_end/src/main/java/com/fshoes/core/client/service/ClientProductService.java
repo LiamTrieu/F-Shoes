@@ -1,5 +1,6 @@
 package com.fshoes.core.client.service;
 
+import com.fshoes.core.client.model.request.ClientFindProductRequest;
 import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
@@ -12,6 +13,8 @@ import java.util.List;
 
 public interface ClientProductService {
     List<ClientProductResponse> getProducts(ClientProductRequest request);
+
+    List<ClientProductResponse> getAllProducts(ClientFindProductRequest request);
 
     ClientProductResponse getProductById(String id);
 

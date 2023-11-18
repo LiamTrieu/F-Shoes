@@ -121,7 +121,7 @@ export default function Product() {
   }, [])
 
   useEffect(() => {
-    clientProductApi.get(filter).then((result) => {
+    clientProductApi.getAllProduct(filter).then((result) => {
       const data = result.data.data
       setProducts(
         data.map((e) => {
