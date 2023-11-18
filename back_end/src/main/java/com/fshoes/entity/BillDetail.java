@@ -28,6 +28,8 @@ public class BillDetail extends PrimaryEntity {
 
     private StatusBillDetail status;
 
+    private String note;
+
     @ManyToOne
     @JoinColumn(name = "id_bill", referencedColumnName = "id")
     private Bill bill;

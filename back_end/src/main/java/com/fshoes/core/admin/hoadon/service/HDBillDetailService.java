@@ -25,4 +25,6 @@ public interface HDBillDetailService {
 
     Boolean delete(HDBillDetailRequest hdBillDetailRequest);
 
+    Boolean returnProduct(String idBillDetail, HDBillDetailRequest hdBillDetailRequest);
+
 }

@@ -22,9 +22,13 @@ import {
   Divider,
   Tooltip,
   Switch,
+  Modal,
+  Toolbar,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
+import { HiOutlineReceiptRefund } from 'react-icons/hi'
+import CloseIcon from '@mui/icons-material/Close'
 import { CiCircleRemove } from 'react-icons/ci'
 import React, { useState, useEffect, useCallback } from 'react'
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
@@ -65,11 +69,13 @@ export default function AdBillDetail() {
   const [openModalConfirmDelive, setOpenModalConfirmDelive] = useState(false)
   const [openModalConfirmPayment, setOpenModalConfirmPayment] = useState(false)
   const [openModalConfirmComplete, setOpenModalConfirmComplete] = useState(false)
+  const [openModalReturnProduct, setOpenModalReturnProduct] = useState(false)
   const [openCodalConfirmReceived, setOpenModalConfirmReceived] = useState(false)
   const [openModalCancelBill, setOpenModalCancelBill] = useState(false)
   const [isUpdateBill, setIsUpdateBill] = useState(false)
   const [isShowBtnConfirmPayment, setIsShowBtnConfirmPayment] = useState(false)
   const [openModalThemSP, setOpenModalThemSP] = useState(false)
+  const [billDetailReturn, setBillDetailReturn] = useState()
 
   const [openModalUpdateAdd, setopenModalUpdateAdd] = useState(false)
 
@@ -418,6 +424,7 @@ export default function AdBillDetail() {
       </DialogAddUpdate>
     )
   }
+
   const formatCurrency = (value) => {
     const formatter = new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -426,6 +433,7 @@ export default function AdBillDetail() {
     })
     return formatter.format(value)
   }
+
   function ModalConfirmPayment({ open, setOpen, billDetail, listTransaction }) {
     const totalMoneyTrans = listTransaction
       .filter((transaction) => transaction.type === 0)
@@ -717,6 +725,7 @@ export default function AdBillDetail() {
             Lưu
           </Button>
         }>
+        {console.log(billDetailReturn)}
         <div>
           <TextField
             color="cam"
@@ -734,6 +743,194 @@ export default function AdBillDetail() {
     )
   }
 
+  function ModalReturnProduct({ open, setOpen, billDetailReturn, idBill }) {
+    const [ghiChu, setGhiChu] = useState('')
+    const [soLuong, setSoLuong] = useState(billDetailReturn ? billDetailReturn.quantity : 0)
+
+    const hdBillDetailReq = {
+      productDetailId: billDetailReturn ? billDetailReturn.productDetailId : null,
+      idBill: idBill,
+      quantity: soLuong,
+      note: ghiChu,
+    }
+    const handleReturnProduct = (billDetailReturn, hdBillDetailReq) => {
+      hoaDonChiTietApi
+        .returnProduct(billDetailReturn.id, hdBillDetailReq)
+        .then(() => {
+          toast.success('Đã xác nhận hoàn trả', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          setIsUpdateBill(true)
+          setOpenModalReturnProduct(false)
+        })
+        .catch(() => {
+          toast.error('Đã xảy ra lỗi', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+        })
+    }
+    const confirmReturnProduct = () => {
+      if (isNaN(soLuong) || soLuong <= 0) {
+        toast.error('Số lượng không hợp lệ', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+        return
+      }
+      if (soLuong > billDetailReturn.quantity) {
+        toast.error('Số lượng hoàn trả lớn hơn số sản phẩm đã mua', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+        return
+      }
+      if (ghiChu.trim().length === 0) {
+        toast.error('Vui lòng nhập ghi chú', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+        return
+      }
+      confirmSatus('Xác nhận ', 'Xác nhận hoàn hàng?').then((result) => {
+        if (result.isConfirmed) {
+          handleReturnProduct(billDetailReturn, hdBillDetailReq)
+        }
+      })
+    }
+
+    return (
+      <Modal
+        open={open}
+        setOpen={setOpen}
+        title={'Xác nhận hoàn hàng'}
+        onClose={() => {
+          setOpen(false)
+        }}>
+        <div>
+          <Box sx={styleModalReturnProduct}>
+            <Toolbar>
+              <Box
+                sx={{
+                  color: 'black',
+                  flexGrow: 1,
+                }}>
+                <Typography variant="h6" component="div">
+                  Xác nhận hoàn hàng
+                </Typography>
+              </Box>
+              <IconButton
+                onClick={() => {
+                  setOpen(false)
+                }}
+                aria-label="close"
+                color="error"
+                style={{
+                  boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
+                }}>
+                <CloseIcon />
+              </IconButton>
+            </Toolbar>
+            {billDetailReturn && (
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TableContainer
+                    sx={{ maxHeight: 300, marginBottom: 5 }}
+                    className="table-container-custom-scrollbar">
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableBody>
+                        <TableRow key={'billDetail' + billDetailReturn.id}>
+                          <TableCell align="center">
+                            <img src={billDetailReturn.productImg} alt="" width={'100px'} />
+                          </TableCell>
+                          <TableCell>
+                            {billDetailReturn.productName} <br></br>
+                            {billDetailReturn.price !== billDetailReturn.productPrice ? (
+                              <span>
+                                <del
+                                  style={{
+                                    color: 'gray',
+                                    textDecorationColor: 'gray',
+                                    textDecorationLine: 'line-through',
+                                  }}>
+                                  {formatCurrency(billDetailReturn.productPrice)}
+                                </del>
+
+                                <span
+                                  style={{
+                                    color: 'red',
+                                    marginLeft: 15,
+                                  }}>
+                                  {formatCurrency(billDetailReturn.price)}
+                                </span>
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  color: 'red',
+                                  marginLeft: 15,
+                                }}>
+                                {formatCurrency(billDetailReturn.productPrice)}
+                              </span>
+                            )}
+                            <br />
+                            Size: {billDetailReturn.size}
+                            <br />x{billDetailReturn.quantity}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>
+                            <TextField
+                              color="cam"
+                              className="search-field"
+                              size="small"
+                              fullWidth
+                              label="Số lượng:"
+                              value={soLuong}
+                              onChange={(e) => setSoLuong(e.target.value)}
+                              sx={{ marginBottom: 2 }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              color="cam"
+                              className="search-field"
+                              size="small"
+                              fullWidth
+                              label="Ghi chú"
+                              multiline
+                              rows={4}
+                              value={ghiChu}
+                              onChange={(e) => setGhiChu(e.target.value)}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Box>
+                    <Button
+                      variant="outlined"
+                      color="cam"
+                      style={{ width: '90%', marginLeft: '5%', marginBottom: 10 }}
+                      onClick={() => confirmReturnProduct()}>
+                      <b>Xác nhận</b>
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+            )}
+          </Box>
+        </div>
+      </Modal>
+    )
+  }
+  const styleModalReturnProduct = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: { xs: '50vw', md: '50vw' },
+    bgcolor: 'white',
+    borderRadius: 1.5,
+    boxShadow: 24,
+  }
   function ModalCancelBill({ open, setOpen, billDetail }) {
     const [ghiChu, setGhiChu] = useState('')
 
@@ -871,6 +1068,8 @@ export default function AdBillDetail() {
       .getByIdBill(id)
       .then((response) => {
         setListOrderTimeLine(response.data.data)
+        console.log('Time line:')
+        console.log(response.data.data)
         setLoadingTimeline(false)
       })
       .catch((error) => {
@@ -963,6 +1162,7 @@ export default function AdBillDetail() {
         })
       })
   }
+
   const handleDeleteSPConfirmation = (hdct, idBill) => {
     confirmSatus('Xác nhận xoá', 'Bạn có chắc chắn muốn xoá sản phẩm này?').then((result) => {
       if (result.isConfirmed) {
@@ -970,6 +1170,12 @@ export default function AdBillDetail() {
       }
     })
   }
+
+  const handleReturnProduct = (item) => {
+    setBillDetailReturn(item)
+    setOpenModalReturnProduct(true)
+  }
+
   return (
     <div className="hoa-don">
       <ModalConfirmBill
@@ -994,6 +1200,12 @@ export default function AdBillDetail() {
         open={openModalConfirmComplete}
         billDetail={billDetail}
       />
+      <ModalReturnProduct
+        setOpen={setOpenModalReturnProduct}
+        open={openModalReturnProduct}
+        billDetailReturn={billDetailReturn}
+        idBill={billDetail ? billDetail.id : null}
+      />
       <ModalCancelBill
         setOpen={setOpenModalCancelBill}
         open={openModalCancelBill}
@@ -1005,12 +1217,14 @@ export default function AdBillDetail() {
         billDetail={billDetail}
       />
       <AdBillModalThemSP
+        load={setIsUpdateBill}
         open={openModalThemSP}
         setOPen={setOpenModalThemSP}
         billDetail={billDetail ? billDetail : null}
         idBill={billDetail ? billDetail.id : null}
       />
       <ModalAdBillUpdateAddress
+        load={setIsUpdateBill}
         open={openModalUpdateAdd}
         setOPen={setopenModalUpdateAdd}
         billDetail={billDetail}
@@ -1152,7 +1366,6 @@ export default function AdBillDetail() {
       {/* Hoá đơn chi tiết */}
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <div>
-          {' '}
           {billDetail && (
             <div>
               {listBillDetail.length > 0 ? (
@@ -1309,6 +1522,13 @@ export default function AdBillDetail() {
                                             </IconButton>
                                           </Tooltip>
                                         )}
+                                      {billDetail && billDetail.status === 3 && (
+                                        <Tooltip title="Hoàn hàng">
+                                          <IconButton onClick={() => handleReturnProduct(row)}>
+                                            <HiOutlineReceiptRefund />
+                                          </IconButton>
+                                        </Tooltip>
+                                      )}
                                     </TableCell>
                                   </TableRow>
                                 ))}
@@ -1326,7 +1546,7 @@ export default function AdBillDetail() {
         </div>
         {/* list hoàn trả */}
         <div>
-          {billDetail && billDetail.status > 3 && billDetail.status !== 6 && (
+          {billDetail && (
             <div>
               {listBillDetailUnactive.length > 0 ? (
                 <div>
@@ -1335,7 +1555,7 @@ export default function AdBillDetail() {
                     justifyContent="space-between"
                     alignItems="flex-start"
                     spacing={2}>
-                    <h3>Hoàn trả</h3>
+                    <h3>Hoàn hàng</h3>
                   </Stack>
                   <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
                   {listBillDetailUnactive.length === 0 ? (
@@ -1382,59 +1602,13 @@ export default function AdBillDetail() {
                                             marginLeft: 15,
                                           }}>
                                           {formatCurrency(row.productPrice)}
-                                          {formatCurrency(row.price)}
                                         </span>
                                       )}
                                       <br />
                                       Size: {row.size}
                                       <br />x{row.quantity}
                                     </TableCell>
-                                    <TableCell align="center">
-                                      <Box
-                                        width={'65px'}
-                                        display="flex"
-                                        alignItems="center"
-                                        sx={{ border: '1px solid gray', borderRadius: '20px' }}
-                                        p={'3px'}>
-                                        <IconButton
-                                          sx={{ p: 0 }}
-                                          size="small"
-                                          onClick={() => handleDecrementQuantity(row, index)}>
-                                          <RemoveIcon fontSize="1px" />
-                                        </IconButton>
-                                        <TextField
-                                          value={row.quantity}
-                                          inputProps={{ min: 1 }}
-                                          size="small"
-                                          sx={{
-                                            width: '30px ',
-                                            '& input': { p: 0, textAlign: 'center' },
-                                            '& fieldset': {
-                                              border: 'none',
-                                            },
-                                          }}
-                                          onChange={(e) =>
-                                            handleTextFieldQuantityChange(index, e.target.value)
-                                          }
-                                          onFocus={(e) => handleTextFieldQuanityFocus(e, index)}
-                                        />
-
-                                        <IconButton
-                                          sx={{ p: 0 }}
-                                          size="small"
-                                          onClick={() => handleIncrementQuantity(row, index)}>
-                                          <AddIcon fontSize="1px" />
-                                        </IconButton>
-                                      </Box>
-                                    </TableCell>
-                                    <TableCell
-                                      align="center"
-                                      style={{ fontWeight: 'bold', color: 'red' }}>
-                                      {row.price !== null
-                                        ? formatCurrency(row.price * row.quantity)
-                                        : 0}
-                                      <br />
-                                    </TableCell>
+                                    <TableCell>{row.note}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
