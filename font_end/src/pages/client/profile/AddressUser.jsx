@@ -326,7 +326,11 @@ export default function AddressUser() {
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <p className="hs-user">Địa Chỉ của tôi</p>
-          <Button onClick={handleAddAddress} variant="contained" startIcon={<AddIcon />}>
+          <Button
+            onClick={handleAddAddress}
+            sx={{ textTransform: 'none' }}
+            variant="contained"
+            startIcon={<AddIcon />}>
             Thêm địa chỉ
           </Button>
           <Modal
@@ -504,7 +508,7 @@ export default function AddressUser() {
               <Grid item xs={12} md={7}>
                 <Typography className="title-ac-name">{item.name}</Typography>
                 <Typography className="title-ac-ps">{item.phoneNumber}</Typography>
-                <Typography className="title-ac-ps">{item.specificAddress}</Typography>
+                <Typography className="title-ac-ps1">{item.specificAddress}</Typography>
                 {item.type === true ? <span class="mac-dinh-ac">Mặc định</span> : ''}
               </Grid>
               <Grid item xs={12} md={5}>

@@ -286,45 +286,49 @@ export default function OrderDetail() {
         <Paper style={{ marginBottom: '30px' }}>
           <Container maxWidth="xl">
             <Grid container spacing={2}>
-              {billDetail.length > 0 && (
-                <Grid item xs={4}>
-                  <Typography variant="h5">ĐỊA CHỈ NHẬN HÀNG</Typography>
-                  <Typography style={{ marginTop: '30px' }}>
-                    {billDetail[0].nameCustomer}
-                  </Typography>
-                  <Typography style={{ marginTop: '10px', fontSize: '14px' }}>
-                    {billDetail[0].phoneNumberCustomer}
-                  </Typography>
-                  <Typography style={{ fontSize: '14px' }}>{billDetail[0].address}</Typography>
+              <Grid item xs={8}>
+                {billDetail.length > 0 && (
+                  <div>
+                    <Typography variant="h5">ĐỊA CHỈ NHẬN HÀNG</Typography>
+                    <Typography style={{ marginTop: '30px' }}>
+                      {billDetail[0].nameCustomer}
+                    </Typography>
+                    <Typography style={{ marginTop: '10px', fontSize: '14px' }}>
+                      {billDetail[0].phoneNumberCustomer}
+                    </Typography>
+                    <Typography style={{ fontSize: '14px' }}>{billDetail[0].address}</Typography>
+                  </div>
+                )}
+              </Grid>
+              <Grid item xs={4}>
+                <Grid container justifyContent="flex-end" spacing={2}>
+                  <Grid item xs={12}>
+                    {billClient && billClient.status === 1 && listTransaction.length < 1 && (
+                      <Button
+                        variant="outlined"
+                        style={{ minWidth: '30%', float: 'right', marginTop: '20px' }}
+                        onClick={() => setopenModalUpdateAdd(true)}>
+                        Cập nhật
+                      </Button>
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sx={{ mt: 3 }}>
+                    {billClient && billClient.status === 1 && listTransaction.length < 1 && (
+                      <Button
+                        variant="contained"
+                        className="them-moi"
+                        color="error"
+                        style={{ minWidth: '30%', float: 'right' }}
+                        onClick={() => setOpenModalCancelBill(true)}>
+                        Huỷ đơn
+                      </Button>
+                    )}
+                  </Grid>
                 </Grid>
-              )}
+              </Grid>
             </Grid>
-            {billClient && billClient.status === 1 && listTransaction.length < 1 ? (
-              <Button
-                variant="outlined"
-                style={{ marginRight: '5px' }}
-                onClick={() => setopenModalUpdateAdd(true)}>
-                Cập nhật
-              </Button>
-            ) : (
-              ''
-            )}
-            {billClient && billClient.status === 1 && listTransaction.length < 1 ? (
-              <Button
-                variant="contained"
-                className="them-moi"
-                color="error"
-                style={{ marginRight: '5px' }}
-                onClick={() => setOpenModalCancelBill(true)}
-                sx={{ minWidth: '30px' }}>
-                Huỷ đơn
-              </Button>
-            ) : (
-              ''
-            )}
           </Container>
         </Paper>
-
         <Paper style={{ marginBottom: '30px' }}>
           {billClient && billClient.status === 1 && listTransaction.length < 1 && (
             <Stack sx={{ float: 'right' }}>
