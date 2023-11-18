@@ -34,8 +34,15 @@ public class AddBillRequest {
 
     private Integer type;
 
+    private BigDecimal customerAmount;
 
+    private Integer paymentMethod;
 
+    private String transactionCode;
+
+    private String noteTransaction;
+
+    private  Long desiredReceiptDate;
 
 
 }

@@ -4,6 +4,7 @@ import {
   Button,
   Checkbox,
   Container,
+  Divider,
   IconButton,
   TableFooter,
   TextField,
@@ -291,10 +292,18 @@ export default function Cart() {
   }
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="lg">
       <Grid2 container rowSpacing={1} columnSpacing={3}>
         <Grid2 lg={8} width={'100%'}>
           <TableContainer component={Paper} sx={{ mb: '10px' }}>
+            <Typography sx={{ fontSize: '20px', fontWeight: 700, ml: 3, mb: 3, mt: 2 }}>
+              Giỏ hàng của bạn
+            </Typography>
+            <Divider style={{ height: '1px', backgroundColor: 'black', marginBottom: '20px' }} />
+
+            <Typography sx={{ fontSize: '17px', ml: 3, mb: 3, mt: 2 }}>
+              Bạn đang có <span style={{ fontWeight: 700 }}>5 sản phẩm</span> trong giỏ hàng
+            </Typography>
             <Table>
               <TableHead>
                 <TableRow sx={{ display: { md: 'table-row', xs: 'none' } }}>
@@ -309,7 +318,7 @@ export default function Cart() {
                   </TableCell>
                   <TableCellCustom
                     className="table-custom"
-                    labels={['Sản phẩm', 'Giá', 'Số lượng', 'Tạm tính', '']}
+                    labels={['Sản phẩm', 'Giá', 'Số lượng', 'Tạm tính', 'Thao tác']}
                     isCart={true}
                   />
                 </TableRow>
@@ -329,40 +338,42 @@ export default function Cart() {
           </Button>
         </Grid2>
         <Grid2 lg={4} xs={12}>
-          {productSelect.length !== 0 && (
-            <Paper component={Container} variant="outlined" sx={{ minHeight: '74vh' }}>
-              <Typography variant="h6" sx={{ fontFamily: 'monospace', fontWeight: '900' }}>
-                Cộng giỏ hàng
-              </Typography>
-              <Table>
-                <OrderCartHeading />
-                <TableBody sx={BoderDotted}>
-                  <OrderCartBody orders={productSelect} />
-                </TableBody>
-                <TableFooter sx={NoBoder}>
-                  <OrderCartFotter
-                    label="Tạm tính"
-                    value={productSelect
-                      .reduce((tong, e) => tong + e.gia * e.soLuong, 0)
-                      .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
-                  />
-                </TableFooter>
-              </Table>
-              <Button
-                component={Link}
-                to="/checkout"
-                onClick={() => {
-                  dispatch(setCheckout(productSelect))
-                }}
-                size="sm"
-                variant="contained"
-                color="warning"
-                sx={{ minWidth: '100%' }}>
-                <PaidRoundedIcon />
-                <b> Tiến hành thanh toán</b>
-              </Button>
-            </Paper>
-          )}
+          <Paper component={Container} variant="outlined" sx={{ minHeight: '54vh' }}>
+            <Typography
+              variant="h6"
+              sx={{ fontFamily: 'monospace', fontWeight: '900', mt: 4, mb: 4 }}>
+              THÔNG TIN ĐƠN HÀNG
+            </Typography>
+            <Table>
+              <TableFooter sx={NoBoder}>
+                <OrderCartFotter
+                  label="Tổng tiền"
+                  value={productSelect
+                    .reduce((tong, e) => tong + e.gia * e.soLuong, 0)
+                    .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                />
+              </TableFooter>
+            </Table>
+            <Divider style={{ height: '1px', backgroundColor: 'black', marginBottom: '20px' }} />
+            <Typography sx={{ fontSize: '14px' }}>
+              . Phí vận chuyển sẽ được tính ở trang thanh toán.
+            </Typography>
+            <Typography sx={{ fontSize: '14px', marginBottom: '20px' }}>
+              .Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.
+            </Typography>
+            <Button
+              component={Link}
+              to="/checkout"
+              onClick={() => {
+                dispatch(setCheckout(productSelect))
+              }}
+              size="sm"
+              variant="contained"
+              sx={{ minWidth: '100%', backgroundColor: '#333' }}>
+              <PaidRoundedIcon />
+              <b> Tiến hành thanh toán</b>
+            </Button>
+          </Paper>
         </Grid2>
       </Grid2>
     </Container>

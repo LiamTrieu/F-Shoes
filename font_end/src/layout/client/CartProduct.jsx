@@ -1,8 +1,13 @@
-import React from 'react'
-import { Grid, Card, CardMedia, CardContent, Typography, Box, Button } from '@mui/material'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Grid, Card, CardMedia, CardContent, Typography, Box, Button, Tooltip } from '@mui/material'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import './productHome.css'
 import Carousel from 'react-material-ui-carousel'
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
+import clientProductApi from '../../api/client/clientProductApi'
+import { useDispatch } from 'react-redux'
+import { addCart } from '../../services/slices/cartSlice'
+import { toast } from 'react-toastify'
 
 export default function CartProduct({ products, colmd, collg }) {
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
@@ -10,12 +15,35 @@ export default function CartProduct({ products, colmd, collg }) {
     const discountedPrice = originalPrice - discountAmount
     return discountedPrice
   }
+  const [isCartHovered, setIsCartHovered] = useState(false)
+  // const [product, setProduct] = useState({ image: [], price: '' })
+
+  let navigate = useNavigate()
+  const dispatch = useDispatch()
+  const addProductToCart = (id) => {
+    clientProductApi.getById(id).then((response) => {
+      console.log(response.data.data)
+      const newItem = {
+        id: id,
+        idProduct: response.data.data.idProduct,
+        name: response.data.data.name,
+        gia: response.data.data.price,
+        weight: response.data.data.weight,
+        image: response.data.data.image.split(','),
+        soLuong: parseInt(1),
+        size: response.data.data.size,
+      }
+      dispatch(addCart(newItem))
+      navigate('/cart')
+      toast.success('Thêm sản phẩm thành công')
+    })
+  }
 
   return (
     <>
       <Grid container rowSpacing={1} columnSpacing={3}>
         {products.map((product, i) => {
-          const hasPromotion = product.promotion !== null
+          const hasPromotion = product.promotion !== null && product.statusPromotion === 1
           const discountValue = product.value || 0
 
           const red = [255, 0, 0]
@@ -26,7 +54,16 @@ export default function CartProduct({ products, colmd, collg }) {
             Math.round((1 - discountValue / 100) * green[2] + (discountValue / 100) * red[2]),
           ]
           return (
-            <Grid key={i} item xs={6} sm={6} md={colmd} lg={collg} width={'100%'}>
+            <Grid
+              key={i}
+              item
+              xs={6}
+              sm={6}
+              md={colmd}
+              lg={collg}
+              width={'100%'}
+              onMouseEnter={() => setIsCartHovered(i)}
+              onMouseLeave={() => setIsCartHovered(null)}>
               <Button
                 component={Link}
                 to={`/product/${product.id}`}
@@ -75,6 +112,25 @@ export default function CartProduct({ products, colmd, collg }) {
                         ))}
                       </Carousel>
                     </Box>
+
+                    {isCartHovered === i && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          zIndex: 2,
+                          top: '80%',
+                          left: '40%',
+                        }}>
+                        <Tooltip title="Mua ngay">
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => addProductToCart(product.id)}>
+                            <AddShoppingCartIcon />
+                          </Button>
+                        </Tooltip>
+                      </div>
+                    )}
                   </Box>
 
                   <CardContent>
@@ -88,7 +144,7 @@ export default function CartProduct({ products, colmd, collg }) {
                     <Typography gutterBottom component="div">
                       <span>
                         {' '}
-                        {product.promotion ? (
+                        {product.promotion && product.statusPromotion === 1 ? (
                           <div style={{ display: 'flex' }}>
                             <div className="promotion-price">{`${product.priceBefort.toLocaleString(
                               'it-IT',

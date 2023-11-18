@@ -67,6 +67,10 @@ const khuyenMaiApi = {
     const urlDeletePromotion = `/promotion/delete/${id}`
     return axiosAdmin.put(urlDeletePromotion)
   },
+  exportExcel: () => {
+    const urlDeletePromotion = `/promotion/export-excel`
+    return axiosAdmin.post(urlDeletePromotion)
+  },
 }
 
 export default khuyenMaiApi

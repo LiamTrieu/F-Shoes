@@ -25,7 +25,7 @@ export default function CartSellingProduct({ products, colmd, collg }) {
     <>
       <Grid container rowSpacing={1} columnSpacing={3}>
         {products.map((product, i) => {
-          const hasPromotion = product.promotion !== null
+          const hasPromotion = product.promotion !== null && product.statusPromotion === 1
           const discountValue = product.value || 0
 
           const red = [255, 0, 0]
@@ -98,7 +98,7 @@ export default function CartSellingProduct({ products, colmd, collg }) {
                     <Typography gutterBottom component="div">
                       <span>
                         {' '}
-                        {product.promotion ? (
+                        {product.promotion && product.statusPromotion === 1 ? (
                           <div style={{ display: 'flex' }}>
                             <div className="promotion-price">{`${product.priceBefort.toLocaleString(
                               'it-IT',

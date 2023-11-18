@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -69,6 +70,11 @@ public class PromotionController {
     @PostMapping("/add-product-promotion")
     public ObjectRespone addProductPromotion(@RequestBody ProductPromotionAddRequest request) throws ParseException {
         return new ObjectRespone(khuyenMaiService.addKhuyenMaiOnProduct(request));
+    }
+
+    @PostMapping("/export-excel")
+    public ObjectRespone exportExcel() throws IOException {
+        return new ObjectRespone(khuyenMaiService.exportExcel());
     }
 
 

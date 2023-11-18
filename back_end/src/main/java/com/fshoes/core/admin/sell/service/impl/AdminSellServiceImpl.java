@@ -15,10 +15,13 @@ import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.common.PageReponse;
+import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
 import com.fshoes.infrastructure.constant.Message;
 import com.fshoes.infrastructure.exception.RestApiException;
 import com.fshoes.repository.ProductDetailRepository;
+import com.fshoes.repository.TransactionRepository;
+import com.fshoes.util.GenHoaDon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +42,9 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Autowired
     private AdminSellGetCustomerRepository getCustomerRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
+
 
     @Autowired
     private AdminCreateCartRepository cartRepository;
@@ -67,6 +73,9 @@ public class AdminSellServiceImpl implements AdminSellService {
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     private HDBillRepository hdBillRepository;
+
+    @Autowired
+    private UserLogin userLogin;
 
     @Override
     public PageReponse<GetALlCustomerResponse> getAllCustomer(AdCustomerRequest request) {
@@ -168,6 +177,67 @@ public class AdminSellServiceImpl implements AdminSellService {
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill);
         billHistory.setStatusBill(2);
+        billHistoryRepository.save(billHistory);
+        messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
+        return bill;
+    }
+
+    @Override
+    public Bill PayOrder(AddBillRequest request, String id) {
+
+        Bill bill = billRepository.findById(id).orElseThrow(() -> {
+            throw new RestApiException(Message.API_ERROR);
+        });
+        if (request.getIdVourcher() == null) {
+            bill.setVoucher(null);
+        } else {
+            Voucher voucher = voucherRepository.findById(request.getIdVourcher()).orElse(null);
+            assert voucher != null;
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+            bill.setVoucher(voucher);
+            AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), request.getIdCustomer());
+            if (adCustomerVoucherRespone != null) {
+                customerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+            }
+        }
+
+        if (request.getIdCustomer() == null) {
+            bill.setCustomer(null);
+        } else {
+            Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
+            assert account != null;
+            bill.setCustomer(account);
+        }
+        bill.setNote(request.getNote());
+        bill.setAddress(request.getAddress());
+        bill.setPhoneNumber(request.getPhoneNumber());
+        bill.setFullName(request.getFullName());
+        bill.setTotalMoney(request.getTotalMoney());
+        bill.setMoneyShip(request.getMoneyShip());
+        bill.setMoneyReduced(request.getMoneyReduce());
+        bill.setMoneyAfter(request.getMoneyAfter());
+        bill.setType(request.getType());
+        bill.setCustomerAmount(request.getCustomerAmount());
+        bill.setDesiredReceiptDate(request.getDesiredReceiptDate());
+        bill.setStatus(7);
+        billRepository.save(bill);
+
+        Transaction transaction = new Transaction();
+        transaction.setBill(bill);
+        transaction.setTransactionCode(request.getTransactionCode());
+        transaction.setPaymentMethod(request.getPaymentMethod());
+        transaction.setType(0);
+        transaction.setStatus(0);
+        transaction.setTotalMoney(request.getMoneyAfter());
+        transaction.setAccount(userLogin.getUserLogin());
+        transaction.setNote(request.getNoteTransaction());
+        transactionRepository.save(transaction);
+
+
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill);
+        billHistory.setStatusBill(7);
         billHistoryRepository.save(billHistory);
         messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
         return bill;
