@@ -63,4 +63,10 @@ public class HDBillDetailController {
         return hdBillDetailService.delete(hdBillDetailRequest);
     }
 
+    @PutMapping("/return-product/{id}")
+    public ObjectRespone returnProduct(@PathVariable("id") String id,
+                                       @RequestBody HDBillDetailRequest hdBillDetailRequest) {
+        return new ObjectRespone(hdBillDetailService.returnProduct(id, hdBillDetailRequest));
+    }
+
 }

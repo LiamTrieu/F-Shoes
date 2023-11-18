@@ -216,6 +216,7 @@ public class ClientAccountServiceImpl implements ClientAccountService {
         try {
             BillDetail billDetail = billDetailRepository.findById(id).get();
             Bill bill = billDetail.getBill();
+            billDetailRepository.delete(billDetail);
             List<BillDetail> listBillDetail = billDetailRepository.findAllByBillId(bill.getId());
             BigDecimal totalAmount = listBillDetail.stream()
                     .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
@@ -231,7 +232,7 @@ public class ClientAccountServiceImpl implements ClientAccountService {
             }
             bill.setMoneyAfter(tienCanThanhToan);
             billRepository.save(bill);
-            billDetailRepository.delete(billDetail);
+
             return true;
         } catch (Exception e) {
             return false;

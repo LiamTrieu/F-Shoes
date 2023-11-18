@@ -25,4 +25,6 @@ public class HDBillDetailRequest {
 
     private Integer status;
 
+    private String note;
+
 }

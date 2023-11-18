@@ -29,6 +29,10 @@ const hoaDonChiTietApi = {
     const url = `/billDetail/delete`
     return axiosAdmin.put(url, billDetailReq)
   },
+  returnProduct: (idBillDetail, hdBillDetailReq) => {
+    const url = `/billDetail/return-product/${idBillDetail}`
+    return axiosAdmin.put(url, hdBillDetailReq)
+  },
 }
 
 export default hoaDonChiTietApi

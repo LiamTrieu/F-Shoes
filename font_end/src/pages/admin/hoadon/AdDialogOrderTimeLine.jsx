@@ -81,7 +81,7 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
               <TableHead>
                 <TableRow>
                   <TableCell align="center">Thời gian</TableCell>
-                  <TableCell align="center">Nhân viên</TableCell>
+                  <TableCell align="center">Người chỉnh sửa</TableCell>
                   <TableCell align="center">Trạng thái HĐ</TableCell>
                   <TableCell align="center">Ghi chú</TableCell>
                 </TableRow>
@@ -93,7 +93,7 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
                     <TableCell align="center">
                       {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
                     </TableCell>
-                    <TableCell align="center">{row.createdBy}</TableCell>
+                    <TableCell align="center">{row.email}</TableCell>
                     <TableCell align="center">
                       <Chip
                         className={getStatusStyle(row.statusBill)}

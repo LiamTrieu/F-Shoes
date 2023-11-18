@@ -32,7 +32,13 @@ const styleAdBillModalUpdateAdd = {
   boxShadow: 24,
 }
 
-export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, listBillDetail }) {
+export default function ModalAdBillUpdateAddress({
+  open,
+  setOPen,
+  billDetail,
+  listBillDetail,
+  load,
+}) {
   const [giaoHang, setGiaoHang] = useState()
   const [selectedTinh, setSelectedTinh] = useState(null)
   const [selectedHuyen, setSelectedHuyen] = useState(null)
@@ -215,6 +221,7 @@ export default function ModalAdBillUpdateAddress({ open, setOPen, billDetail, li
         toast.success('Đã cập nhật thông tin đơn hàng', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        load(true)
         setOPen(false)
       })
       .catch((error) => {

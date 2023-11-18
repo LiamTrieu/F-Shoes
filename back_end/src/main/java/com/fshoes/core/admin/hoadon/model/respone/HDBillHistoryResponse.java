@@ -11,5 +11,7 @@ public interface HDBillHistoryResponse extends IsIdentified {
 
     String getCreatedBy();
 
+    String getEmail();
+
 
 }

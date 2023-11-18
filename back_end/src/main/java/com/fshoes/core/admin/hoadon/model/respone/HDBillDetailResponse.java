@@ -24,5 +24,7 @@ public interface HDBillDetailResponse extends IsIdentified {
 
     Integer getWeight();
 
+    String getNote();
+
 
 }

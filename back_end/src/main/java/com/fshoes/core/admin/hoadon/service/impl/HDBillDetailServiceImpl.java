@@ -6,6 +6,7 @@ import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
+import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
 import com.fshoes.entity.BillHistory;
@@ -35,6 +36,9 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     @Autowired
     private HDBillHistoryRepository hdBillHistoryRepository;
 
+    @Autowired
+    private UserLogin userLogin;
+
     @Transactional
     @Override
     public BillDetail save(HDBillDetailRequest hdBillDetailRequest) {
@@ -45,6 +49,7 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill);
+        billHistory.setAccount(userLogin.getUserLogin());
 
         if (billDetail == null) {
 
@@ -227,6 +232,61 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean returnProduct(String idBillDetail, HDBillDetailRequest hdBillDetailRequest) {
+        try {
+            BillHistory billHistory = new BillHistory();
+            billHistory.setAccount(userLogin.getUserLogin());
+            BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
+            Bill bill = billDetail.getBill();
+            billHistory.setBill(bill);
+            if (billDetail.getQuantity() == hdBillDetailRequest.getQuantity()) {
+                billDetail.setStatus(1);
+                billDetail.setNote(hdBillDetailRequest.getNote());
+                hdBillDetailRepository.save(billDetail);
+                billHistory.setNote(hdBillDetailRequest.getNote());
+                hdBillHistoryRepository.save(billHistory);
+            } else {
+                billDetail.setQuantity(billDetail.getQuantity() - hdBillDetailRequest.getQuantity());
+                hdBillDetailRepository.save(billDetail);
+                BillDetail newBillDetail = BillDetail.builder()
+                        .quantity(hdBillDetailRequest.getQuantity())
+                        .bill(bill)
+                        .price(billDetail.getPrice())
+                        .productDetail(billDetail.getProductDetail())
+                        .note(hdBillDetailRequest.getNote())
+                        .build();
+                newBillDetail.setStatus(1);
+                hdBillDetailRepository.save(newBillDetail);
+                billHistory.setNote("Hoàn " + hdBillDetailRequest.getQuantity() + " sản phẩm " + billDetail.getProductDetail().getProduct().getName() + " - " + billDetail.getProductDetail().getSize().getSize() + " - " + billDetail.getProductDetail().getColor().getName());
+                hdBillHistoryRepository.save(billHistory);
+            }
+            ProductDetail detail = billDetail.getProductDetail();
+            detail.setAmount(detail.getAmount() + hdBillDetailRequest.getQuantity());
+            productDetailRepository.save(detail);
+            List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
+
+            BigDecimal totalAmount = listBillDetail.stream()
+                    .filter(item -> item.getStatus() != 1)
+                    .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            bill.setTotalMoney(totalAmount);
+            BigDecimal tienCanThanhToan = totalAmount;
+            if (bill.getMoneyReduced() != null) {
+                tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
+            }
+            if (bill.getMoneyShip() != null) {
+                tienCanThanhToan = tienCanThanhToan.add(bill.getMoneyShip());
+            }
+            bill.setMoneyAfter(tienCanThanhToan);
+            hdBillRepositpory.save(bill);
+            return true;
+        } catch (Exception exception) {
             return false;
         }
     }
