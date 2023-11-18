@@ -81,9 +81,9 @@ export default function AppBarAdmin({ children }) {
             component={'img'}
             sx={{
               p: 6,
-              py: 0,
+              py: 1,
               transition: 'width 0.5s',
-              height: '80px',
+              height: '100px',
             }}
             src={require('../assets/image/logoweb.png')}
             alt="logo"

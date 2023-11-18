@@ -457,10 +457,9 @@ export default function Checkout() {
                   size="small"
                   fullWidth
                   id="fullname"
+                  error={Boolean(errors.fullName)}
+                  helperText={errors.fullName}
                 />
-                <Typography variant="body2" color="error">
-                  {errors.fullName}
-                </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography>
@@ -475,10 +474,9 @@ export default function Checkout() {
                   size="small"
                   fullWidth
                   id="phone"
+                  error={Boolean(errors.phone)}
+                  helperText={errors.phone}
                 />
-                <Typography variant="body2" color="error">
-                  {errors.phone}
-                </Typography>
               </Grid>
               {!userLogin && (
                 <Grid item xs={12}>

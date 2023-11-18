@@ -22,6 +22,7 @@ import AutGuardClient from '../layout/AutGuardClient'
 import AdminLogin from '../pages/admin/AdminLogin'
 import Forbidden403 from '../pages/httpstatus/Forbidden403'
 import NotFound404 from '../pages/httpstatus/NotFound404'
+import adReturnRoute from './adminroute/adreturnroute'
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,7 @@ const router = createBrowserRouter([
       ...adMaterialRoute,
       ...adBrandRoute,
       ...adSellRoute,
+      ...adReturnRoute,
       { path: '/admin/dashboard', element: <Dashboard /> },
     ],
   },

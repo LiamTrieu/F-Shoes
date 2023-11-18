@@ -10,6 +10,7 @@ import { AiOutlineDashboard } from 'react-icons/ai'
 import { RiBillLine } from 'react-icons/ri'
 import { CiMoneyBill } from 'react-icons/ci'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
+import { MdOutlineAssignmentReturn } from 'react-icons/md'
 import { MdOutlineSell } from 'react-icons/md'
 import { IoChevronForwardOutline } from 'react-icons/io5'
 import { FiUsers } from 'react-icons/fi'
@@ -129,6 +130,16 @@ export default function AdminMenu() {
             </ListItemButton>
           </List>
         </Collapse>
+        <ListItemButton className="mt-3" component={Link} to="/admin/return-order">
+          <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+            <Box component={MdOutlineAssignmentReturn} sx={{ fontSize: '25px' }} />
+          </ListItemIcon>
+          <ListItemText
+            sx={{ m: 0, p: 0 }}
+            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+            primary="Trả hàng"
+          />
+        </ListItemButton>
         <ListItemButton className="mt-3" component={Link} to="/admin/voucher">
           <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
             <Box component={LiaMoneyCheckAltSolid} sx={{ fontSize: '25px' }} />
