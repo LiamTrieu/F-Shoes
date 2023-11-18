@@ -3,6 +3,10 @@ import { axiosApi } from '../axios'
 const clientProductApi = {
   get: (filter) => {
     const url = `/client/product`
+    return axiosApi.get(url, { params: filter })
+  },
+  getAllProduct: (filter) => {
+    const url = `/client/all/product`
     return axiosApi.post(url, filter)
   },
   getById: (id) => {

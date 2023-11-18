@@ -1,5 +1,6 @@
 package com.fshoes.core.client.service.impl;
 
+import com.fshoes.core.client.model.request.ClientFindProductRequest;
 import com.fshoes.core.client.model.request.ClientProductCungLoaiRequest;
 import com.fshoes.core.client.model.request.ClientProductDetailRequest;
 import com.fshoes.core.client.model.request.ClientProductRequest;
@@ -43,6 +44,11 @@ public class ClientProductServiceImpl implements ClientProductService {
     @Override
     public List<ClientProductResponse> getProducts(ClientProductRequest request) {
         return clientProductDetailRepository.getProducts(request);
+    }
+
+    @Override
+    public List<ClientProductResponse> getAllProducts(ClientFindProductRequest request) {
+        return clientProductDetailRepository.getAllProductClient(request);
     }
 
     @Override

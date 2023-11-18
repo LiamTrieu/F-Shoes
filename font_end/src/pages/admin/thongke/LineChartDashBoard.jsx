@@ -1,5 +1,5 @@
 import React from 'react'
-import { Line } from 'react-chartjs-2'
+import { Bar, Line } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
 import { Box } from '@mui/material'
 import dayjs from 'dayjs'
@@ -22,7 +22,7 @@ export default function LineChartDashBoard(props) {
   }
   return (
     <Box mt={2} width={'99%'}>
-      <Line data={data} height={'100%'} />
+      <Bar data={data} height={'100%'} />
     </Box>
   )
 }
