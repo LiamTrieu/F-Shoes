@@ -128,7 +128,7 @@ public class GenHoaDon {
             invoiceHeader2.setSpacingAfter(5f);
             document.add(invoiceHeader2);
             // Thêm bảng sản phẩm
-            PdfPTable table = new PdfPTable(5);
+            PdfPTable table = new PdfPTable(6);
             table.setWidthPercentage(100);
             table.setSpacingBefore(10f);
             table.setSpacingAfter(10f);
@@ -152,12 +152,16 @@ public class GenHoaDon {
                 cell = new PdfPCell(new Phrase("Thành tiền", headerFont));
                 table.addCell(cell);
 
+                cell = new PdfPCell(new Phrase("Trạng thái", headerFont));
+                table.addCell(cell);
+
                 // Thêm dữ liệu sản phẩm
                 table.addCell(String.valueOf(sttCounter));
                 table.addCell(productDetailRepository.getName(billDetail.getProductDetail().getId()));
                 table.addCell(String.valueOf(billDetail.getQuantity()));
                 table.addCell(decimalFormat.format(billDetail.getPrice()));
                 table.addCell(decimalFormat.format(billDetail.getPrice().multiply(BigDecimal.valueOf(billDetail.getQuantity()))));
+                table.addCell(billDetail.getStatus() == 1 ? "Hàng trả" : "");
                 sttCounter++;
             }
 
