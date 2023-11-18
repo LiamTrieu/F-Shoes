@@ -257,6 +257,7 @@ const AddStaff = () => {
     const newErrors = {}
     const currentDate = dayjs()
     const dateBirth = dayjs(staffAdd.dateBirth, 'DD/MM/YYYY')
+    const minBirthYear = 1900
     let check = 0
 
     if (!staffAdd.fullName.trim()) {
@@ -269,7 +270,13 @@ const AddStaff = () => {
       newErrors.fullName = 'Họ và Tên không được ít hơn 5 kí tự.'
       check++
     } else {
-      newErrors.fullName = ''
+      const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
+      if (specialCharsRegex.test(staffAdd.fullName)) {
+        newErrors.fullName = 'Họ và Tên không được chứa kí tự đặc biệt.'
+        check++
+      } else {
+        newErrors.fullName = ''
+      }
     }
 
     if (!diaChi.specificAddress.trim()) {
@@ -337,14 +344,19 @@ const AddStaff = () => {
     }
 
     if (!staffAdd.dateBirth) {
-      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      newErrors.dateBirth = 'Ngày sinh không được để trống.'
       check++
     } else {
-      if (dateBirth.isAfter(currentDate)) {
-        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+      if (dateBirth.isBefore(`${minBirthYear}-01-01`) || !dateBirth.isValid()) {
+        newErrors.dateBirth = 'Ngày sinh không hợp lệ.'
         check++
       } else {
-        newErrors.dateBirth = ''
+        if (dateBirth.isAfter(currentDate)) {
+          newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+          check++
+        } else {
+          newErrors.dateBirth = ''
+        }
       }
     }
 
@@ -593,7 +605,7 @@ const AddStaff = () => {
                 </Typography>
                 <Box sx={{ minWidth: 120 }}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     fullWidth
                     size="small"
                     className="search-field"
@@ -620,7 +632,7 @@ const AddStaff = () => {
                 </Typography>
                 <Box sx={{ minWidth: 120 }}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     fullWidth
                     size="small"
                     className="search-field"
@@ -647,7 +659,7 @@ const AddStaff = () => {
                 </Typography>
                 <Box sx={{ minWidth: 120 }}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     fullWidth
                     size="small"
                     className="search-field"
@@ -679,6 +691,7 @@ const AddStaff = () => {
                   onChange={(e) => {
                     setStaffAdd({ ...staffAdd, phoneNumber: e.target.value })
                     updateDiaChi()
+                    setErrors({ ...errors, phoneNumber: '' })
                   }}
                 />
                 <Typography variant="body2" color="error">

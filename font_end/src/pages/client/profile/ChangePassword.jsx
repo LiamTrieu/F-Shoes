@@ -1,15 +1,46 @@
-import { Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import {
+  Box,
+  Button,
+  Paper,
+  TextField,
+  Typography,
+  InputAdornment,
+  IconButton,
+} from '@mui/material'
 import { toast } from 'react-toastify'
 import authenticationAPi from '../../../api/authentication/authenticationAPi'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { getCookie } from '../../../services/cookie'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false)
+
   const navigate = useNavigate()
+
+  const handleTogglePasswordVisibility = (field) => {
+    switch (field) {
+      case 'currentPassword':
+        setShowCurrentPassword(!showCurrentPassword)
+        break
+      case 'newPassword':
+        setShowNewPassword(!showNewPassword)
+        break
+      case 'confirmNewPassword':
+        setShowConfirmNewPassword(!showConfirmNewPassword)
+        break
+      default:
+        break
+    }
+  }
+
   const handleChangePassword = async () => {
     if (!currentPassword) {
       toast.error('Vui lòng nhập mật khẩu cũ')
@@ -46,69 +77,104 @@ const ChangePassword = () => {
   }
 
   const token = getCookie('ClientToken')
+
   return !token ? (
     <Navigate to={'/home'} />
   ) : (
-    <Container component="main" maxWidth="lg">
-      <CssBaseline />
+    <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '450px', mx: 'auto' }}>
+      <p className="hs-user">Đổi mật khẩu</p>
+      <hr />
       <Box
+        component="form"
+        noValidate
         sx={{
-          marginTop: 8,
+          mt: 3,
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
         }}>
-        <Typography component="h1" variant="h5">
-          Đổi Mật Khẩu
+        <Typography sx={{ textAlign: 'left' }}>
+          <span className="required"> *</span>Mật khẩu hiện tại
         </Typography>
-        <Box component="form" noValidate sx={{ mt: 3 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="currentPassword"
-            label="Mật Khẩu Cũ"
-            name="currentPassword"
-            type="password"
-            autoComplete="current-password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="newPassword"
-            label="Mật Khẩu Mới"
-            name="newPassword"
-            type="password"
-            autoComplete="new-password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="confirmNewPassword"
-            label="Xác Nhận Mật Khẩu Mới"
-            name="confirmNewPassword"
-            type="password"
-            autoComplete="new-password"
-            value={confirmNewPassword}
-            onChange={(e) => setConfirmNewPassword(e.target.value)}
-          />
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={handleChangePassword}>
-            Đổi Mật Khẩu
-          </Button>
-        </Box>
+        <TextField
+          required
+          fullWidth
+          size="small"
+          type={showCurrentPassword ? 'text' : 'password'}
+          autoComplete="current-password"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => handleTogglePasswordVisibility('currentPassword')}
+                  edge="end">
+                  {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Typography sx={{ textAlign: 'left', mt: 3 }}>
+          <span className="required"> *</span>Mật khẩu mới
+        </Typography>
+        <TextField
+          required
+          fullWidth
+          size="small"
+          name="newPassword"
+          type={showNewPassword ? 'text' : 'password'}
+          autoComplete="new-password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => handleTogglePasswordVisibility('newPassword')}
+                  edge="end">
+                  {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Typography sx={{ textAlign: 'left', mt: 3 }}>
+          <span className="required"> *</span>Nhập lại mật khẩu mới
+        </Typography>
+        <TextField
+          required
+          fullWidth
+          size="small"
+          name="confirmNewPassword"
+          type={showConfirmNewPassword ? 'text' : 'password'}
+          autoComplete="new-password"
+          value={confirmNewPassword}
+          onChange={(e) => setConfirmNewPassword(e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => handleTogglePasswordVisibility('confirmNewPassword')}
+                  edge="end">
+                  {showConfirmNewPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Button
+          type="button"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+          onClick={handleChangePassword}>
+          Đổi Mật Khẩu
+        </Button>
       </Box>
-    </Container>
+    </Paper>
   )
 }
 

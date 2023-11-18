@@ -19,6 +19,9 @@ import EditIcon from '@mui/icons-material/Edit'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { GetUser } from '../../../services/slices/userSlice'
+import BadgeIcon from '@mui/icons-material/Badge'
+import KeyIcon from '@mui/icons-material/Key'
+import LocationOnIcon from '@mui/icons-material/LocationOn'
 import './Order.css'
 
 export default function Profile({ children }) {
@@ -71,13 +74,13 @@ export default function Profile({ children }) {
                 <List component="div" disablePadding>
                   <ListItemButton component={Link} to="/profile/user" sx={{ pl: 4 }}>
                     <ListItemIcon>
-                      <StarBorder />
+                      <BadgeIcon />
                     </ListItemIcon>
                     <ListItemText primary="Hồ sơ" />
                   </ListItemButton>
                   <ListItemButton component={Link} to="/profile/address" sx={{ pl: 4 }}>
                     <ListItemIcon>
-                      <StarBorder />
+                      <LocationOnIcon />
                     </ListItemIcon>
                     <ListItemText primary="Địa chỉ" />
                   </ListItemButton>
@@ -101,7 +104,7 @@ export default function Profile({ children }) {
               {/* ------------------------------------- === ------------------------------------- */}
               <ListItemButton component={Link} to="/profile/change-password">
                 <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
-                  <Box component={LiaMoneyCheckAltSolid} sx={{ fontSize: '24px' }} />
+                  <Box component={KeyIcon} sx={{ fontSize: '24px' }} />
                 </ListItemIcon>
                 <ListItemText primary="Đổi mật khẩu" />
               </ListItemButton>

@@ -34,7 +34,7 @@ const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
 
 export default function AdStaffDetail() {
   const { id } = useParams()
-  const [staffDetail, setStaffDetail] = useState({ avatar: null, gender: '', role: '' }) // Khởi tạo giá trị ban đầu cho gender và role
+  const [staffDetail, setStaffDetail] = useState({ avatar: null, gender: '', role: '' })
   const [image, setImage] = useState(null)
   const [loading, setLoading] = useState(false)
   const [diaChi, setDiaChi] = useState([])
@@ -107,8 +107,10 @@ export default function AdStaffDetail() {
   }
   const [errors, setErrors] = useState({
     fullName: '',
+    name: '',
     email: '',
     phoneNumber: '',
+    phoneNumberAd: '',
     dateBirth: '',
     gender: '',
     citizenId: '',
@@ -145,7 +147,13 @@ export default function AdStaffDetail() {
       newErrors.fullName = 'Họ và Tên không được ít hơn 5 kí tự.'
       check++
     } else {
-      newErrors.fullName = ''
+      const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
+      if (specialCharsRegex.test(staffDetail.fullName)) {
+        newErrors.fullName = 'Họ và Tên không được chứa kí tự đặc biệt.'
+        check++
+      } else {
+        newErrors.fullName = ''
+      }
     }
 
     if (!staffDetail.email.trim()) {
@@ -211,10 +219,60 @@ export default function AdStaffDetail() {
       }
     }
 
+    if (!detailDiaChi.name.trim()) {
+      newErrors.name = 'Tên người nhận không được để trống'
+      check++
+    } else if (detailDiaChi.name.trim().length > 100) {
+      newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
+      check++
+    } else {
+      newErrors.name = ''
+    }
+
+    if (!detailDiaChi.phoneNumber.trim()) {
+      newErrors.phoneNumberAd = 'Vui lòng nhập Số điện thoại.'
+      check++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
+        newErrors.phoneNumberAd = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        check++
+      } else {
+        newErrors.phoneNumberAd = ''
+      }
+    }
+
+    if (!tinhName) {
+      newErrors.provinceId = 'Vui lòng chọn tỉnh.'
+      check++
+    }
+    if (!huyenName) {
+      newErrors.districtId = 'Vui lòng chọn huyện.'
+      check++
+    }
+    if (!xaName) {
+      newErrors.wardId = 'Vui lòng chọn xã.'
+      check++
+    }
+
+    if (!detailDiaChi.specificAddress.trim()) {
+      newErrors.specificAddress = 'Vui lòng nhập địa chỉ cụ thể.'
+      check++
+    } else if (detailDiaChi.specificAddress.trim().length > 225) {
+      newErrors.specificAddress = 'Địa chỉ cụ thể không được quá 225 kí tự.'
+      check++
+    } else if (detailDiaChi.specificAddress.trim().length < 5) {
+      newErrors.specificAddress = 'Địa chỉ cụ thể không được ít hơn 5 kí tự.'
+      check++
+    } else {
+      newErrors.specificAddress = ''
+    }
+
     if (check > 0) {
       setErrors(newErrors)
       return
     }
+
     const title = 'Xác nhận cập nhật nhân viên?'
     const text = ''
     confirmSatus(title, text).then((result) => {
@@ -267,17 +325,14 @@ export default function AdStaffDetail() {
       setXa(response.data)
     })
   }
-  const [errorsAA, setErrorsAA] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    provinceId: '',
-    districtId: '',
-    wardId: '',
-    specificAddress: '',
-  })
 
   const handleTinhChange = (_, newValue) => {
+    setXa([])
+    setDetailDiaChi({ ...detailDiaChi, districtId: '' })
+    setHuyenName('')
+    setDetailDiaChi({ ...detailDiaChi, wardId: '' })
+    setXaName('')
+    setErrors({ ...errors, provinceId: '' })
     if (newValue) {
       loadHuyen(newValue.id)
       setTinhName(newValue.label)
@@ -289,6 +344,9 @@ export default function AdStaffDetail() {
   }
 
   const handleHuyenChange = (_, newValue) => {
+    setDetailDiaChi({ ...detailDiaChi, wardId: '' })
+    setXaName('')
+    setErrors({ ...errors, districtId: '' })
     if (newValue) {
       loadXa(newValue.id)
       setHuyenName(newValue.label)
@@ -300,6 +358,7 @@ export default function AdStaffDetail() {
   }
 
   const handleXaChange = (_, newValue) => {
+    setErrors({ ...errors, wardId: '' })
     if (newValue) {
       setXaName(newValue.label)
       setDetailDiaChi({ ...detailDiaChi, wardId: newValue.id })
@@ -351,35 +410,6 @@ export default function AdStaffDetail() {
   }
 
   const onUpdateDiaChi = (detailDiaChi) => {
-    const newErrors = {}
-    let checkAA = 0
-
-    if (!detailDiaChi.name.trim()) {
-      newErrors.name = 'Tên người nhận không được để trống'
-      checkAA++
-    } else if (detailDiaChi.name.trim().length > 100) {
-      newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
-      checkAA++
-    } else {
-      newErrors.name = ''
-    }
-
-    if (!detailDiaChi.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
-      checkAA++
-    } else {
-      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
-      if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
-        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
-        checkAA++
-      } else {
-        newErrors.phoneNumber = ''
-      }
-    }
-    if (checkAA > 0) {
-      setErrorsAA(newErrors)
-      return
-    }
     detailDiaChi.specificAddress = `${detailDiaChi.specificAddress}, ${xaName}, ${huyenName}, ${tinhName}`
 
     DiaChiApi.update(detailDiaChi.id, detailDiaChi)
@@ -604,7 +634,7 @@ export default function AdStaffDetail() {
                           }}
                         />
                         <Typography variant="body2" color="error">
-                          {errorsAA.name}
+                          {errors.name}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} md={6}>
@@ -624,7 +654,7 @@ export default function AdStaffDetail() {
                           }}
                         />
                         <Typography variant="body2" color="error">
-                          {errorsAA.phoneNumber}
+                          {errors.phoneNumberAd}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -635,7 +665,7 @@ export default function AdStaffDetail() {
                             <span className="required"> *</span>Tỉnh/thành phố
                           </Typography>
                           <Autocomplete
-                            popupIcon={null}
+                            clearIcon={null}
                             fullWidth
                             size="small"
                             className="search-field"
@@ -654,6 +684,9 @@ export default function AdStaffDetail() {
                               <TextField placeholder="nhập tên tỉnh" color="cam" {...params} />
                             )}
                           />
+                          <Typography variant="body2" color="error">
+                            {errors.provinceId}
+                          </Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} md={4}>
@@ -662,7 +695,7 @@ export default function AdStaffDetail() {
                             <span className="required"> *</span>Quận/huyện
                           </Typography>
                           <Autocomplete
-                            popupIcon={null}
+                            clearIcon={null}
                             fullWidth
                             size="small"
                             className="search-field"
@@ -680,6 +713,9 @@ export default function AdStaffDetail() {
                               <TextField placeholder="Chọn huyện" color="cam" {...params} />
                             )}
                           />
+                          <Typography variant="body2" color="error">
+                            {errors.districtId}
+                          </Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} md={4}>
@@ -688,7 +724,7 @@ export default function AdStaffDetail() {
                             <span className="required"> *</span>Xã/phường/thị trấn
                           </Typography>
                           <Autocomplete
-                            popupIcon={null}
+                            clearIcon={null}
                             fullWidth
                             size="small"
                             className="search-field"
@@ -702,6 +738,9 @@ export default function AdStaffDetail() {
                               <TextField placeholder="Chọn xã" color="cam" {...params} />
                             )}
                           />
+                          <Typography variant="body2" color="error">
+                            {errors.wardId}
+                          </Typography>
                         </Box>
                       </Grid>
                     </Grid>
@@ -726,6 +765,9 @@ export default function AdStaffDetail() {
                             setErrors({ ...errors, specificAddress: '' })
                           }}
                         />
+                        <Typography variant="body2" color="error">
+                          {errors.specificAddress}
+                        </Typography>
                       </Grid>
                     </Grid>
                   </AccordionDetails>
