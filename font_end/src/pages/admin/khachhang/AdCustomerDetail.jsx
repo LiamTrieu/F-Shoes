@@ -763,12 +763,6 @@ export default function AdCustomerDetail() {
                               onChange={(e) => {
                                 const updatedDiaChi = [...diaChi]
                                 updatedDiaChi[index].name = e.target.value
-                                if (e.target.value.trim() !== '') {
-                                  const updatedErrors = [...errorsDiaChi]
-                                  updatedErrors[index].name = ''
-                                  setErrorsDiaChi(updatedErrors)
-                                }
-
                                 setDiaChi(updatedDiaChi)
                               }}
                               error={Boolean(errorsDiaChi[index]?.name)}
@@ -790,12 +784,6 @@ export default function AdCustomerDetail() {
                               onChange={(e) => {
                                 const updatedDiaChi = [...diaChi]
                                 updatedDiaChi[index].phoneNumber = e.target.value
-                                if (e.target.value.trim() !== '') {
-                                  const updatedErrors = [...errorsDiaChi]
-                                  updatedErrors[index].phoneNumber = ''
-                                  setErrorsDiaChi(updatedErrors)
-                                }
-
                                 setDiaChi(updatedDiaChi)
                               }}
                               error={Boolean(errorsDiaChi[index]?.phoneNumber)}
@@ -942,12 +930,6 @@ export default function AdCustomerDetail() {
                               onChange={(e) => {
                                 const updatedDiaChi = [...diaChi]
                                 updatedDiaChi[index].specificAddress = e.target.value
-                                if (e.target.value.trim() !== '') {
-                                  const updatedErrors = [...errorsDiaChi]
-                                  updatedErrors[index].specificAddress = ''
-                                  setErrorsDiaChi(updatedErrors)
-                                }
-
                                 setDiaChi(updatedDiaChi)
                               }}
                               error={Boolean(errorsDiaChi[index]?.specificAddress)}
