@@ -40,5 +40,10 @@ const thongKeApi = {
     const urlGetAll = `/statistical/get-product-take-out`
     return axiosAdmin.get(urlGetAll, { params: filter })
   },
+
+  getProductInCustom: (filter) => {
+    const urlGetAll = `/statistical/get-product-in-custom`
+    return axiosAdmin.get(urlGetAll, { params: filter })
+  },
 }
 export default thongKeApi

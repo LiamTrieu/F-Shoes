@@ -36,7 +36,7 @@
   margin-bottom: 10px !important;
 }
 
-.icon-css {
+.icon-css-dashboarh {
   color: white !important;
   margin-right: 5px !important;
 }
@@ -106,4 +106,28 @@
 .button-reload-css .MuiSvgIcon-root {
   width: 20px !important;
   height: 20px !important;
+}
+
+.grid-date-dashboard {
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 60px !important;
+}
+
+.dateTime-dashboard fieldset {
+  border-radius: 8px !important;
+}
+
+.dateTime-dashboard:hover fieldset {
+  border-color: #fc7c27 !important;
+}
+
+.dateTime-dashboard .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  height: 0.6em !important;
+}
+.dateTime-dashboard .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
+  line-height: 0.6em !important;
+  padding-top: 2px !important;
+  padding-bottom: 14px !important;
 }

@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.voucher.service;
 
+import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
@@ -13,6 +14,8 @@ import java.util.List;
 
 public interface AdVoucherService {
     List<Voucher> getAllVoucher();
+
+    List<KhachHangRespone> getAllCustomer();
 
     AdVoucherRespone getVoucherById(String id);
 

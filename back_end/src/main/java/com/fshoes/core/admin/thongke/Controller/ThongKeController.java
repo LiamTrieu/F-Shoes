@@ -1,12 +1,15 @@
 package com.fshoes.core.admin.thongke.Controller;
 
 import com.fshoes.core.admin.thongke.Modal.request.GetDataDashBoardRequest;
+import com.fshoes.core.admin.thongke.Modal.request.GetDataDashBoarhByDateRequest;
 import com.fshoes.core.admin.thongke.Service.ThongKeService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/admin/statistical")
@@ -53,5 +56,10 @@ public class ThongKeController {
     @GetMapping("/get-product-take-out")
     public ObjectRespone getProductTakeOut(GetDataDashBoardRequest request) {
         return new ObjectRespone(thongKeService.getProductTakeOut(request));
+    }
+
+    @GetMapping("/get-product-in-custom")
+    public ObjectRespone getProductInCustom(GetDataDashBoarhByDateRequest request) throws ParseException {
+        return new ObjectRespone(thongKeService.getProductInCustom(request));
     }
 }

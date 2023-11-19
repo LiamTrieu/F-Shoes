@@ -5,6 +5,7 @@ import com.fshoes.core.admin.thongke.Modal.Response.DoanhThuResponse;
 import com.fshoes.core.admin.thongke.Modal.Response.GetDataDashBoardResponse;
 import com.fshoes.core.admin.thongke.Modal.Response.ThongKeSanPhamResponse;
 import com.fshoes.core.admin.thongke.Modal.request.GetDataDashBoardRequest;
+import com.fshoes.core.admin.thongke.Modal.request.GetDataDashBoarhByDateRequest;
 import com.fshoes.core.admin.thongke.Repository.adminThongKeRepository;
 import com.fshoes.core.admin.thongke.Service.ThongKeService;
 import com.fshoes.core.common.PageReponse;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Service
@@ -63,5 +65,13 @@ public class ThongKeServiceImpl implements ThongKeService {
     public PageReponse<GetDataDashBoardResponse> getProductTakeOut(GetDataDashBoardRequest request) {
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
         return new PageReponse<>(thongKeRepository.getProductTakeOut(request, pageable));
+    }
+
+    @Override
+    public PageReponse<GetDataDashBoardResponse> getProductInCustom(GetDataDashBoarhByDateRequest request) throws ParseException {
+        Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
+        Long startDate = request.converDate(request.getStartDate());
+        Long endDate = request.converDate(request.getEndDate());
+        return new PageReponse<>(thongKeRepository.getProductInCustom(startDate, endDate, pageable));
     }
 }

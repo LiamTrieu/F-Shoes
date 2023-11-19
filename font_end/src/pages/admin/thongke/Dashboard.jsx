@@ -29,7 +29,11 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import AutorenewIcon from '@mui/icons-material/Autorenew'
 import EqualizerIcon from '@mui/icons-material/Equalizer'
 import './Dashboard.css'
+import Empty from '../../../components/Empty'
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import dayjs from 'dayjs'
 
 const DashboardCard = function ({ iconCart, title, total, product, order, color }) {
   return (
@@ -82,6 +86,12 @@ export default function Dashboard() {
   const [doanhThuCu, setDoanhThuCu] = useState({})
   const [dataBieuDo, setDataBieuDo] = useState([])
   const [filter, setFilter] = useState({
+    page: 1,
+    size: 5,
+  })
+  const [filterInCustom, setFilterInCustom] = useState({
+    startDate: dayjs().format('DD-MM-YYYY'),
+    endDate: dayjs().format('DD-MM-YYYY'),
     page: 1,
     size: 5,
   })
@@ -139,6 +149,17 @@ export default function Dashboard() {
 
   const fecthDataYear = (filter) => {
     thongKeApi.getAllProductInYear(filter).then((response) => {
+      setDataProductSelling(
+        response.data.data.data.map((e) => {
+          return { ...e, image: e.image.split(',') }
+        }),
+      )
+      setTotalPages(response.data.data.totalPages)
+    })
+  }
+
+  const fecthDataInCustom = (filter) => {
+    thongKeApi.getProductInCustom(filter).then((response) => {
       setDataProductSelling(
         response.data.data.data.map((e) => {
           return { ...e, image: e.image.split(',') }
@@ -243,7 +264,8 @@ export default function Dashboard() {
       fecthDataYear(filter)
     }
     fecthDataTakeOut(filterTakeOut)
-  }, [filter, doanhThu, indexButton, filterTakeOut])
+    fecthDataInCustom(filterInCustom)
+  }, [filter, doanhThu, indexButton, filterTakeOut, filterInCustom])
 
   useEffect(() => {
     fecthDoanhThu()
@@ -347,11 +369,59 @@ export default function Dashboard() {
                 Tùy chỉnh
               </Button>
             </Grid>
+            {indexButton === 5 && (
+              <Grid container mb={1} className="grid-date-dashboard">
+                <Grid item xs={6} className="dateTime-dashboard">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      format={'DD-MM-YYYY'}
+                      ampm={false}
+                      onChange={(e) =>
+                        setFilterInCustom({
+                          ...filterInCustom,
+                          startDate: dayjs(e).format('DD-MM-YYYY'),
+                        })
+                      }
+                      defaultValue={dayjs()}
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear'],
+                          onClick: () => setFilterInCustom({ ...filterInCustom, startDate: '' }),
+                        },
+                      }}
+                      label="Từ ngày"
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item xs={6} className="dateTime-dashboard">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      format={'DD-MM-YYYY'}
+                      ampm={false}
+                      onChange={(e) =>
+                        setFilterInCustom({
+                          ...filterInCustom,
+                          endDate: dayjs(e).format('DD-MM-YYYY'),
+                        })
+                      }
+                      defaultValue={dayjs()}
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear'],
+                          onClick: () => setFilterInCustom({ ...filterInCustom, endDate: '' }),
+                        },
+                      }}
+                      label="Đến ngày"
+                    />
+                  </LocalizationProvider>
+                </Grid>
+              </Grid>
+            )}
             <Table aria-label="simple table" className="table-css">
               <TableHead>
                 <TableRow>
-                  <TableCell width="10%">Ảnh sản phẩm</TableCell>
-                  <TableCell width="50%">Tên sản phẩm</TableCell>
+                  <TableCell width="15%">Ảnh sản phẩm</TableCell>
+                  <TableCell width="45%">Tên sản phẩm</TableCell>
                   <TableCell align="right" width="10%">
                     Số lượng
                   </TableCell>
@@ -437,8 +507,8 @@ export default function Dashboard() {
             <Table aria-label="simple table" className="table-css">
               <TableHead>
                 <TableRow>
-                  <TableCell width="10%">Ảnh sản phẩm</TableCell>
-                  <TableCell width="50%">Tên sản phẩm</TableCell>
+                  <TableCell width="15%">Ảnh sản phẩm</TableCell>
+                  <TableCell width="45%">Tên sản phẩm</TableCell>
                   <TableCell align="right" width="10%">
                     Số lượng
                   </TableCell>
@@ -529,7 +599,7 @@ export default function Dashboard() {
             </Stack>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboarh" />
                 Doanh thu ngày
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -550,7 +620,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboarh" />
                 Doanh thu Tuần
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -571,7 +641,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Doanh thu Tháng
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -592,7 +662,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Doanh thu năm
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -613,7 +683,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Đơn hàng ngày
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -634,7 +704,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Đơn hàng tuần
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -655,7 +725,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Đơn hàng tháng
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -676,7 +746,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Đơn hàng năm
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -697,7 +767,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Sản phẩm ngày
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -718,7 +788,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Sản phẩm tuần
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -739,7 +809,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Sản phẩm tháng
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
@@ -760,7 +830,7 @@ export default function Dashboard() {
             </Grid>
             <Grid container className="grid-tang-truong">
               <Grid item xs={5} className="grid-tang-truong-data">
-                <EqualizerIcon className="icon-css" />
+                <EqualizerIcon className="icon-css-dashboard" />
                 Sản phẩm năm
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">

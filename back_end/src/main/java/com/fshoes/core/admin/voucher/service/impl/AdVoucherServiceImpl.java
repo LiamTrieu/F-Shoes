@@ -1,5 +1,6 @@
 package com.fshoes.core.admin.voucher.service.impl;
 
+import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
 import com.fshoes.core.admin.voucher.model.request.AdCustomerVoucherRequest;
@@ -57,6 +58,11 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     @Override
     public List<Voucher> getAllVoucher() {
         return adVoucherRepository.findAll();
+    }
+
+    @Override
+    public List<KhachHangRespone> getAllCustomer() {
+        return adVoucherRepository.getAllCustomer();
     }
 
     @Override
