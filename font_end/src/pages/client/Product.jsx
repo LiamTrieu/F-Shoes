@@ -132,6 +132,7 @@ export default function Product() {
             priceAfter: e.price,
             value: e.value,
             promotion: e.promotion,
+            statusPromotion: e.statusPromotion,
             image: e.image.split(','),
             idProduct: e.idProduct,
             idColor: e.idColor,

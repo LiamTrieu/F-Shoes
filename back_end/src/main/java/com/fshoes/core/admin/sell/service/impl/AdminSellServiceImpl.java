@@ -28,6 +28,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -220,7 +223,17 @@ public class AdminSellServiceImpl implements AdminSellService {
         bill.setType(request.getType());
         bill.setCustomerAmount(request.getCustomerAmount());
         bill.setDesiredReceiptDate(request.getDesiredReceiptDate());
-        bill.setStatus(7);
+        if (request.getType() == 0) {
+            bill.setStatus(7);
+        } else {
+            bill.setStatus(2);
+        }
+        if (request.getType() == 0) {
+            bill.setCompleteDate(Calendar.getInstance().getTimeInMillis());
+        } else {
+            bill.setCompleteDate(null);
+        }
+
         billRepository.save(bill);
 
         Transaction transaction = new Transaction();
@@ -237,7 +250,13 @@ public class AdminSellServiceImpl implements AdminSellService {
 
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill);
-        billHistory.setStatusBill(7);
+        if (request.getType() == 0) {
+
+            billHistory.setStatusBill(7);
+        } else {
+
+            billHistory.setStatusBill(2);
+        }
         billHistoryRepository.save(billHistory);
         messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
         return bill;
@@ -414,7 +433,6 @@ public class AdminSellServiceImpl implements AdminSellService {
             return false;
         }
     }
-
 
 
     @Override

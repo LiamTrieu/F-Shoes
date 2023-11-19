@@ -27,6 +27,8 @@ public interface ClientAccountService {
 
     List<ClientBillAccountResponse> getALlBill(ClientBillAccountRequest status);
 
+    List<ClientGetAllBillTableResponse> getALlBillTable(ClientBillAccountRequest status);
+
     List<ClientBillDetailResponse> getBillDetailsByBillId(String idBill);
 
     List<CLientBillHistoryResponse> getListBillHistoryByIdBill(String idBill);
