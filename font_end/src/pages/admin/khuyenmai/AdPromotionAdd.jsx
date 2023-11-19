@@ -215,6 +215,8 @@ export default function AdPromotionAdd() {
       timeEnd: '',
     }
 
+    const minBirthYear = 1900
+
     if (addPromotionRe.name.trim() === '') {
       errors.name = 'Vui lòng nhập tên khuyến mại'
     } else if (!isNaN(addPromotionRe.name)) {
@@ -223,6 +225,8 @@ export default function AdPromotionAdd() {
       errors.name = 'không được trùng tên khuyến mại'
     } else if (addPromotionRe.name.length > 50) {
       errors.name = 'Tên không được dài hơn 50 ký tự'
+    } else if (addPromotionRe.name.length < 5) {
+      errors.name = 'Tên không được bé hơn 5 ký tự'
     } else if (addPromotionRe.name !== addPromotionRe.name.trim()) {
       errors.name = 'Tên không được chứa khoảng trắng thừa'
     }
@@ -234,17 +238,26 @@ export default function AdPromotionAdd() {
     } else if (Number(addPromotionRe.value) < 0 || Number(addPromotionRe.value) > 100) {
       errors.value = 'Giá trị phải lớn hơn 0% và nhở hơn 100%'
     }
-
     if (addPromotionRe.timeStart === '') {
       errors.timeStart = 'Vui lòng nhập thời gian bắt đầu'
     } else if (timeStart.isAfter(timeEnd)) {
-      errors.timeEnd = 'Ngày bắt đầu phải bé hơn ngày kêt thúc'
+      errors.timeStart = 'Ngày bắt đầu phải bé hơn ngày kêt thúc'
+    } else if (
+      dayjs(addPromotionRe.timeStart, 'DD-MM-YYYY HH:mm:ss').isBefore(`${minBirthYear}-01-01`) ||
+      !dayjs(addPromotionRe.timeStart, 'DD-MM-YYYY HH:mm:ss').isValid()
+    ) {
+      errors.timeStart = 'Ngày bắt đầu không hợp lệ'
     }
 
     if (addPromotionRe.timeEnd === '') {
       errors.timeEnd = 'Vui lòng nhập thời gian kết thúc'
     } else if (timeEnd.isBefore(currentDate)) {
       errors.timeEnd = 'Ngày kết thúc phải lớn hơn ngày hiện tại'
+    } else if (
+      dayjs(addPromotionRe.timeEnd, 'DD-MM-YYYY HH:mm:ss').isBefore(`${minBirthYear}-01-01`) ||
+      !dayjs(addPromotionRe.timeEnd, 'DD-MM-YYYY HH:mm:ss').isValid()
+    ) {
+      errors.timeEnd = 'Ngày kết thúc không hợp lệ'
     }
 
     for (const key in errors) {
@@ -304,9 +317,13 @@ export default function AdPromotionAdd() {
                   size="small"
                   sx={{ width: '100%' }}
                   name="name"
-                  onChange={(e) => handleInputChange(e)}
+                  onChange={(e) => {
+                    handleInputChange(e)
+                    setErrorName('')
+                  }}
+                  error={Boolean(errorName)}
+                  helperText={errorName}
                 />
-                <span className="error">{errorName}</span>
               </div>
 
               <div style={{ marginBottom: '20px' }}>
@@ -321,9 +338,13 @@ export default function AdPromotionAdd() {
                   sx={{ width: '100%' }}
                   name="value"
                   type="number"
-                  onChange={(e) => handleInputChange(e)}
+                  onChange={(e) => {
+                    handleInputChange(e)
+                    setErrorValue('')
+                  }}
+                  error={Boolean(errorValue)}
+                  helperText={errorValue}
                 />
-                <span className="error">{errorValue}</span>
               </div>
               <div style={{ marginBottom: '20px' }}>
                 <Typography>
@@ -340,12 +361,13 @@ export default function AdPromotionAdd() {
                       minDateTime={dayjs()}
                       name="timeStart"
                       className="dateTimePro "
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setAddPromotionRe({
                           ...addPromotionRe,
                           timeStart: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                         })
-                      }
+                        settimeStart('')
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -371,6 +393,7 @@ export default function AdPromotionAdd() {
                           ...addPromotionRe,
                           timeEnd: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                         })
+                        setTimeend('')
                       }}
                     />
                   </DemoContainer>
