@@ -15,5 +15,5 @@ public class ClientBillAccountRequest {
 
     Integer status;
 
-    String nameProductSearch;
+    String code;
 }

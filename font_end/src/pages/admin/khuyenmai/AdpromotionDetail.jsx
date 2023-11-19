@@ -186,6 +186,7 @@ export default function AdPromotionDetail() {
       timeStart: '',
       timeEnd: '',
     }
+    const minBirthYear = 1900
 
     if (updatePromotion.name.trim() === '') {
       errors.name = 'Vui lòng nhập tên khuyến mại'
@@ -193,6 +194,8 @@ export default function AdPromotionDetail() {
       errors.name = 'Tên khuyến mại phải là chữ'
     } else if (updatePromotion.name.length > 50) {
       errors.name = 'Tên không được dài hơn 50 ký tự'
+    } else if (updatePromotion.name.length < 5) {
+      errors.name = 'Tên không được bé hơn 5 ký tự'
     } else if (updatePromotion.name !== updatePromotion.name.trim()) {
       errors.name = 'Tên không được chứa khoảng trắng thừa'
     }
@@ -212,10 +215,20 @@ export default function AdPromotionDetail() {
       errors.timeEnd = 'Vui lòng nhập thời gian kết thúc'
     } else if (timeEnd.isBefore(currentDate)) {
       errors.timeEnd = 'Ngày kết thúc phải lớn hơn ngày hiện tại'
+    } else if (
+      dayjs(updatePromotion.timeEnd, 'DD-MM-YYYY HH:mm:ss').isBefore(`${minBirthYear}-01-01`) ||
+      !dayjs(updatePromotion.timeEnd, 'DD-MM-YYYY HH:mm:ss').isValid()
+    ) {
+      errors.timeEnd = 'Ngày kết thúc không hợp lệ'
     }
 
     if (!timeStart.isValid() || !timeEnd.isValid() || timeStart.isAfter(timeEnd)) {
       errors.timeStart = 'Ngày bắt đầu phải bé hơn ngày kêt thúc'
+    } else if (
+      dayjs(updatePromotion.timeStart, 'DD-MM-YYYY HH:mm:ss').isBefore(`${minBirthYear}-01-01`) ||
+      !dayjs(updatePromotion.timeStart, 'DD-MM-YYYY HH:mm:ss').isValid()
+    ) {
+      errors.timeStart = 'Ngày bắt đầu không hợp lệ'
     }
 
     for (const key in errors) {
@@ -333,9 +346,13 @@ export default function AdPromotionDetail() {
                   sx={{ width: '100%' }}
                   name="name"
                   value={updatePromotion?.name}
-                  onChange={(e) => setUpdatePromotion({ ...updatePromotion, name: e.target.value })}
+                  onChange={(e) => {
+                    setUpdatePromotion({ ...updatePromotion, name: e.target.value })
+                    setErrorName('')
+                  }}
+                  error={Boolean(errorName)}
+                  helperText={errorName}
                 />
-                <span className="error">{errorName}</span>
               </div>
               <div style={{ marginBottom: '20px' }}>
                 <Typography>
@@ -350,11 +367,13 @@ export default function AdPromotionDetail() {
                   sx={{ width: '100%' }}
                   name="value"
                   value={updatePromotion?.value}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setUpdatePromotion({ ...updatePromotion, value: e.target.value })
-                  }
+                    setErrorValue('')
+                  }}
+                  error={Boolean(errorValue)}
+                  helperText={errorValue}
                 />
-                <span className="error">{errorValue}</span>
               </div>
               <div style={{ marginBottom: '20px' }}>
                 <Typography>
@@ -376,6 +395,7 @@ export default function AdPromotionDetail() {
                           ...updatePromotion,
                           timeStart: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                         })
+                        settimeStart('')
                       }}
                     />
                   </DemoContainer>
@@ -402,6 +422,7 @@ export default function AdPromotionDetail() {
                           ...updatePromotion,
                           timeEnd: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                         })
+                        setTimeend('')
                       }}
                     />
                   </DemoContainer>

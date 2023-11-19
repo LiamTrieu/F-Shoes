@@ -127,6 +127,7 @@ export default function DetailProduct() {
               priceBefort: e.price,
               priceAfter: e.price,
               promotion: e.promotion,
+              statusPromotion: e.statusPromotion,
               value: e.value,
               image: e.image.split(','),
               idProduct: e.idProduct,
@@ -194,6 +195,8 @@ export default function DetailProduct() {
 
   const productCart = useSelector(GetCart)
 
+  console.log(productCart + '==--==--=-=--=-=-=-=-=-=-=-=--=dddddddddddddddddd')
+
   const onChangeSL = (cart, num) => {
     const soluong = cart.soLuong + num
     if (soluong <= 0) {
@@ -224,6 +227,7 @@ export default function DetailProduct() {
       currency: 'VND',
     })
   }
+  const amountProduct = useSelector(GetCart).length
   return (
     <div className="detail-product">
       <Container maxWidth="xl">
@@ -250,10 +254,9 @@ export default function DetailProduct() {
                 {product.nameBrand}
               </div>
               <Typography variant="h5" fontFamily={'monospace'} fontWeight={'900'} color={'red'}>
-                {/* {product.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })} */}
                 <span>
                   {' '}
-                  {product.promotion ? (
+                  {product.promotion && product.statusPromotion === 1 ? (
                     <div style={{ display: 'flex' }}>
                       <div className="promotion-price">{`${product.price.toLocaleString('it-IT', {
                         style: 'currency',
@@ -455,7 +458,7 @@ export default function DetailProduct() {
                   color: '#333333',
                   textTransform: 'uppercase',
                 }}>
-                Giỏ hàng của bạn (10 sản phẩm)
+                Giỏ hàng của bạn ({amountProduct} sản phẩm)
               </Typography>
               <div style={{ maxHeight: '330px', overflow: 'auto' }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -493,7 +496,30 @@ export default function DetailProduct() {
                         <TableCell sx={{ fontWeight: 1000, width: '30%' }} align="center">
                           {cart.name}
                         </TableCell>
-                        <TableCell align="center">{formatPrice(cart.gia)}</TableCell>
+                        <TableCell align="center">
+                          {' '}
+                          <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
+                            <span>
+                              {' '}
+                              {product.promotion ? (
+                                <div>
+                                  <div className="promotion-price">{`${formatPrice(
+                                    cart.gia,
+                                  )} `}</div>{' '}
+                                  <div>
+                                    <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                      {`${formatPrice(
+                                        calculateDiscountedPrice(cart.gia, product.value),
+                                      )} `}
+                                    </span>{' '}
+                                  </div>
+                                </div>
+                              ) : (
+                                <span>{`${formatPrice(cart.gia)} `}</span>
+                              )}
+                            </span>
+                          </Typography>
+                        </TableCell>
                         <TableCell align="center">
                           {' '}
                           <div className="quantity-control">
@@ -509,7 +535,17 @@ export default function DetailProduct() {
                             <button onClick={() => onChangeSL(cart, 1)}>+</button>
                           </div>
                         </TableCell>
-                        <TableCell align="center">{formatPrice(cart.soLuong * cart.gia)}</TableCell>
+                        <TableCell align="center">
+                          {product.promotion ? (
+                            <div>
+                              {formatPrice(
+                                cart.soLuong * calculateDiscountedPrice(cart.gia, product.value),
+                              )}
+                            </div>
+                          ) : (
+                            <span>{`${formatPrice(cart.soLuong * cart.gia)} `}</span>
+                          )}
+                        </TableCell>
                         <TableCell align="center">
                           <DeleteForeverIcon
                             onClick={() => {

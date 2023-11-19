@@ -12,7 +12,7 @@
 .ck-pttt {
   border-top: none;
   height: 70px;
-  width: 270px;
+  width: 300px;
   border: 1px solid dimgrey;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -67,4 +67,8 @@
 }
 .input-voucher .MuiInputBase-root {
   padding-right: 0 !important;
+}
+.check-out .MuiContainer-root {
+  padding-left: 140px !important;
+  padding-right: 140px !important;
 }

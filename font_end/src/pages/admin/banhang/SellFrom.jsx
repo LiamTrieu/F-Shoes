@@ -55,6 +55,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import PaymentIcon from '@mui/icons-material/Payment'
+import { useZxing } from 'react-zxing'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -987,35 +988,137 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       desiredReceiptDate: timeShip ? timeShip : '',
     }
 
+    const title = 'Xác nhận đặt hàng ?'
+    const text = ''
+    confirmSatus(title, text, theme).then((result) => {
+      if (result.isConfirmed) {
+        sellApi.addBill(data, id).then((response) => {
+          toast.success(' xác nhận thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          getAllBillTaoDonHang()
+          setSelectBill('')
+        })
+      }
+    })
+
+    const titlePay = 'Xác nhận thanh toán ?'
+    const textPay = ''
+    confirmSatus(titlePay, textPay, theme).then((result) => {
+      if (result.isConfirmed) {
+        sellApi.payOrder(dataPay, id).then((response) => {
+          toast.success(' Thanh toán thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          getAllBillTaoDonHang()
+          setSelectBill('')
+        })
+      }
+    })
+  }
+
+  const addBillorder = (id) => {
+    const newErrors = {}
+    let checkAA = 0
     if (giaoHang) {
-      const title = 'Xác nhận đặt hàng ?'
-      const text = ''
-      confirmSatus(title, text, theme).then((result) => {
-        if (result.isConfirmed) {
-          sellApi.addBill(data, id).then((response) => {
-            toast.success(' xác nhận thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            getAllBillTaoDonHang()
-            setSelectBill('')
-          })
+      if (!detailDiaChi.name.trim()) {
+        newErrors.name = 'Tên người nhận không được để trống'
+        checkAA++
+      } else if (detailDiaChi.name.trim().length > 100) {
+        newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
+        checkAA++
+      } else {
+        newErrors.name = ''
+      }
+
+      if (!detailDiaChi.specificAddress.trim()) {
+        newErrors.specificAddress = 'Địa chỉ cụ thể không được để trống'
+        checkAA++
+      } else if (detailDiaChi.name.trim().length > 225) {
+        newErrors.specificAddress = 'Địa chỉ cụ thể không được quá 225 kí tự.'
+        checkAA++
+      } else {
+        newErrors.specificAddress = ''
+      }
+
+      if (!detailDiaChi.phoneNumber.trim()) {
+        newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+        checkAA++
+      } else {
+        const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+        if (!phoneNumberRegex.test(detailDiaChi.phoneNumber.trim())) {
+          newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+          checkAA++
+        } else {
+          newErrors.phoneNumber = ''
         }
-      })
-    } else {
-      const titlePay = 'Xác nhận thanh toán ?'
-      const textPay = ''
-      confirmSatus(titlePay, textPay, theme).then((result) => {
-        if (result.isConfirmed) {
-          sellApi.payOrder(dataPay, id).then((response) => {
-            toast.success(' Thanh toán thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            getAllBillTaoDonHang()
-            setSelectBill('')
-          })
-        }
-      })
+      }
+
+      if (!detailDiaChi.provinceId) {
+        newErrors.provinceId = 'Vui lòng chọn Tỉnh/Thành phố.'
+        checkAA++
+      } else {
+        newErrors.provinceId = ''
+      }
+
+      if (!detailDiaChi.districtId) {
+        newErrors.districtId = 'Vui lòng chọn Quận/Huyện.'
+        checkAA++
+      } else {
+        newErrors.districtId = ''
+      }
+
+      if (!detailDiaChi.wardId) {
+        newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+        checkAA++
+      } else {
+        newErrors.wardId = ''
+      }
+      if (checkAA > 0) {
+        setErrorAddBill(newErrors)
+        return
+      }
     }
+    if (listProductDetailBill.length === 0) {
+      toast.error('Giỏ hàng chưa có sản phẩm', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      return
+    }
+
+    const dataPay = {
+      fullName: detailDiaChi.name ? detailDiaChi.name : '',
+      phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
+      idVourcher: voucher.id ? voucher.id : null,
+      idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : null,
+      address: detailDiaChi.specificAddress
+        ? detailDiaChi.specificAddress + ', ' + xaName + ', ' + huyenName + ', ' + tinhName
+        : '',
+      note: khachHang.note ? khachHang.note : '',
+      moneyShip: giaoHang ? shipTotal : 0,
+      moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',
+      totalMoney: totalPriceCart ? totalPriceCart : '',
+      moneyAfter: totalPrice ? totalPrice : '',
+      type: giaoHang === true ? 1 : 0,
+      customerAmount: customerAmount,
+      transactionCode: transactionCode ? transactionCode : null,
+      paymentMethod: paymentMethod === '1' ? 1 : 0,
+      noteTransaction: noteTransaction ? noteTransaction : null,
+      desiredReceiptDate: timeShip ? timeShip : '',
+    }
+    const titlePay = 'Xác nhận thanh toán ?'
+    const textPay = ''
+    confirmSatus(titlePay, textPay, theme).then((result) => {
+      if (result.isConfirmed) {
+        sellApi.payOrder(dataPay, id).then((response) => {
+          toast.success(' Thanh toán thành công', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          getAllBillTaoDonHang()
+          setSelectBill('')
+        })
+      }
+    })
   }
 
   const totalSum = listProductDetailBill.reduce((sum, cart) => {
@@ -1037,6 +1140,52 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce
 
   const excessMoney = customerAmount - totalPrice
+  const [qrScannerVisible, setQrScannerVisible] = useState(false)
+  const handleOpenQRScanner = () => {
+    setQrScannerVisible(true)
+  }
+  const handleCloseQRScanner = () => {
+    setQrScannerVisible(false)
+  }
+  const styleModal = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+  const RenderVideo = () => {
+    const { ref } = useZxing({
+      onDecodeResult(result) {
+        handleScan(result)
+      },
+    })
+    return <video ref={ref} width="100%" />
+  }
+
+  const handleScan = (qrData) => {
+    if (qrData?.text) {
+      sellApi.getProduct(qrData.text).then((product) => {
+        if (product.data.success) {
+          console.log(product.data.data + '-----==---==--==-')
+
+          // Optionally, you can update the UI or show a notification
+          toast.success('Sản phẩm đã được thêm vào giỏ hàng')
+          // setIsShowProductDetail(true)
+          // hanldeAmountProduct(qrData.text)
+          // setSelectedProduct(product.data.data)
+          setQrScannerVisible(false)
+        } else {
+          toast.warning('Mã qr code không chính xác')
+        }
+      })
+    }
+  }
+
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -1060,6 +1209,21 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
             color="cam">
             <AddIcon fontSize="small" /> Thêm sản phẩm
           </Button>
+          <Button
+            sx={{
+              float: 'right',
+            }}
+            color="cam"
+            className="btnqr"
+            variant="outlined"
+            onClick={handleOpenQRScanner}>
+            Quét QR
+          </Button>
+          {qrScannerVisible && (
+            <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
+              {qrScannerVisible && <Box sx={styleModal}>{qrScannerVisible && <RenderVideo />}</Box>}
+            </Modal>
+          )}
         </Box>
 
         <ModelSell
@@ -2452,24 +2616,23 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   <b>{formatPrice(totalPrice)}</b>
                 </Typography>
               </Stack>
-              {!giaoHang && (
-                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                  <Typography>
-                    <b>Thanh toán ngay</b>
-                    <Button
-                      style={{
-                        color: 'black',
-                        border: '1px solid black',
-                        width: '25px',
-                        height: '30px',
-                        marginLeft: '30px',
-                      }}
-                      onClick={handleOpen}>
-                      <PaymentIcon />
-                    </Button>
-                  </Typography>
-                </Stack>
-              )}
+
+              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                <Typography>
+                  <b>Thanh toán ngay</b>
+                  <Button
+                    style={{
+                      color: 'black',
+                      border: '1px solid black',
+                      width: '25px',
+                      height: '30px',
+                      marginLeft: '30px',
+                    }}
+                    onClick={handleOpen}>
+                    <PaymentIcon />
+                  </Button>
+                </Typography>
+              </Stack>
             </Box>
           </Grid2>
         </Grid2>
@@ -2577,7 +2740,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   variant="contained"
                   sx={{ marginLeft: '20px' }}
                   color="success"
-                  onClick={() => addBill(idBill)}>
+                  onClick={() => addBillorder(idBill)}>
                   Thanh toán
                 </Button>
               </div>

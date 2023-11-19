@@ -290,92 +290,226 @@ export default function Cart() {
       setProductSelect([])
     }
   }
+  const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
+    const discountAmount = (discountPercentage / 100) * originalPrice
+    const discountedPrice = originalPrice - discountAmount
+    return discountedPrice
+  }
+  const formatPrice = (price) => {
+    return price.toLocaleString('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    })
+  }
+  const amountProduct = useSelector(GetCart).length
 
   return (
-    <Container maxWidth="lg">
-      <Grid2 container rowSpacing={1} columnSpacing={3}>
-        <Grid2 lg={8} width={'100%'}>
-          <TableContainer component={Paper} sx={{ mb: '10px' }}>
-            <Typography sx={{ fontSize: '20px', fontWeight: 700, ml: 3, mb: 3, mt: 2 }}>
-              Giỏ hàng của bạn
-            </Typography>
-            <Divider style={{ height: '1px', backgroundColor: 'black', marginBottom: '20px' }} />
+    <div className="cart">
+      <Container maxWidth="xl">
+        <Grid2 container rowSpacing={1} columnSpacing={3}>
+          <Grid2 lg={8} width={'100%'}>
+            <TableContainer
+              component={Paper}
+              sx={{ mb: '10px', maxHeight: '1000px', overflow: 'auto' }}>
+              <Typography sx={{ fontSize: '20px', fontWeight: 700, ml: 3, mb: 3, mt: 2 }}>
+                Giỏ hàng của bạn
+              </Typography>
+              <Divider style={{ height: '1px', backgroundColor: 'black', marginBottom: '20px' }} />
 
-            <Typography sx={{ fontSize: '17px', ml: 3, mb: 3, mt: 2 }}>
-              Bạn đang có <span style={{ fontWeight: 700 }}>5 sản phẩm</span> trong giỏ hàng
-            </Typography>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ display: { md: 'table-row', xs: 'none' } }}>
-                  <TableCell sx={{ px: 0 }} width={'1%'}>
-                    <Checkbox
-                      size="small"
-                      checked={productSelect.length === product.length}
-                      onClick={(e) => {
-                        checkAll(e.target.checked)
-                      }}
+              <Typography sx={{ fontSize: '17px', ml: 3, mb: 3, mt: 2 }}>
+                Bạn đang có <span style={{ fontWeight: 700 }}>{amountProduct} sản phẩm</span> trong
+                giỏ hàng
+              </Typography>
+              {/* <Table>
+                <TableHead>
+                  <TableRow sx={{ display: { md: 'table-row', xs: 'none' } }}>
+                    <TableCell sx={{ px: 0 }} width={'1%'}>
+                      <Checkbox
+                        size="small"
+                        checked={productSelect.length === product.length}
+                        onClick={(e) => {
+                          checkAll(e.target.checked)
+                        }}
+                      />
+                    </TableCell>
+                    <TableCellCustom
+                      className="table-custom"
+                      labels={['Sản phẩm', 'Giá', 'Số lượng', 'Tạm tính', 'Thao tác']}
+                      isCart={true}
                     />
-                  </TableCell>
-                  <TableCellCustom
-                    className="table-custom"
-                    labels={['Sản phẩm', 'Giá', 'Số lượng', 'Tạm tính', 'Thao tác']}
-                    isCart={true}
-                  />
-                </TableRow>
-                <TableRow sx={{ display: { md: 'none', xs: 'table-row' } }}>
-                  <TableCell sx={{ width: '1%', px: 0 }}>
-                    <Checkbox size="small" />
-                  </TableCell>
-                  <TableCellCustom labels={['Sản phẩm', 'Số lượng', '']} isCart={true} />
-                </TableRow>
-              </TableHead>
-              <TableBody>{RowDataCustom({ cartDatas: product })}</TableBody>
-            </Table>
-          </TableContainer>
-          <Button component={Link} to="/products" variant="outlined" color="cam">
-            <ArrowBackIcon />
-            <b>Tiếp tục mua hàng</b>
-          </Button>
-        </Grid2>
-        <Grid2 lg={4} xs={12}>
-          <Paper component={Container} variant="outlined" sx={{ minHeight: '54vh' }}>
-            <Typography
-              variant="h6"
-              sx={{ fontFamily: 'monospace', fontWeight: '900', mt: 4, mb: 4 }}>
-              THÔNG TIN ĐƠN HÀNG
-            </Typography>
-            <Table>
-              <TableFooter sx={NoBoder}>
-                <OrderCartFotter
-                  label="Tổng tiền"
-                  value={productSelect
-                    .reduce((tong, e) => tong + e.gia * e.soLuong, 0)
-                    .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
-                />
-              </TableFooter>
-            </Table>
-            <Divider style={{ height: '1px', backgroundColor: 'black', marginBottom: '20px' }} />
-            <Typography sx={{ fontSize: '14px' }}>
-              . Phí vận chuyển sẽ được tính ở trang thanh toán.
-            </Typography>
-            <Typography sx={{ fontSize: '14px', marginBottom: '20px' }}>
-              .Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.
-            </Typography>
-            <Button
-              component={Link}
-              to="/checkout"
-              onClick={() => {
-                dispatch(setCheckout(productSelect))
-              }}
-              size="sm"
-              variant="contained"
-              sx={{ minWidth: '100%', backgroundColor: '#333' }}>
-              <PaidRoundedIcon />
-              <b> Tiến hành thanh toán</b>
+                  </TableRow>
+                  <TableRow sx={{ display: { md: 'none', xs: 'table-row' } }}>
+                    <TableCell sx={{ width: '1%', px: 0 }}>
+                      <Checkbox size="small" />
+                    </TableCell>
+                    <TableCellCustom labels={['Sản phẩm', 'Số lượng', '']} isCart={true} />
+                  </TableRow>
+                </TableHead>
+                <TableBody>{RowDataCustom({ cartDatas: product })}</TableBody>
+              </Table> */}
+              <div style={{}}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead style={{ backgroundColor: '#333', color: 'white' }}>
+                    <TableRow>
+                      <TableCell width="4%">
+                        {' '}
+                        <Checkbox
+                          size="small"
+                          checked={productSelect.length === product.length}
+                          onClick={(e) => {
+                            checkAll(e.target.checked)
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell style={{ color: 'white' }} align="center">
+                        ẢNH SẢN PHẨM
+                      </TableCell>
+                      <TableCell style={{ color: 'white' }} align="center">
+                        TÊN SẢN PHẨM
+                      </TableCell>
+                      <TableCell style={{ color: 'white' }} align="center">
+                        ĐƠN GIÁ
+                      </TableCell>
+                      <TableCell style={{ color: 'white', width: '20%' }} align="center">
+                        SỐ LƯỢNG
+                      </TableCell>
+                      <TableCell style={{ color: 'white' }} align="center">
+                        THÀNH TIỀN
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {product.map((cart) => (
+                      <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        <TableCell>
+                          <Checkbox size="small" />
+                        </TableCell>
+
+                        <TableCell>
+                          <div style={{ position: 'relative', display: 'inline-block' }}>
+                            <img src={cart.image[0]} alt={cart.name} width={70} />
+                            <div
+                              className="delete-product-cart"
+                              onClick={() => {
+                                const updatedProduct = product.filter((item) => item.id !== cart.id)
+                                dispatch(setCart(updatedProduct))
+                              }}>
+                              xóa
+                            </div>
+                          </div>
+                        </TableCell>
+
+                        <TableCell sx={{ fontWeight: 1000, width: '30%' }} align="center">
+                          {cart.name}
+                        </TableCell>
+                        <TableCell align="center">
+                          {' '}
+                          <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
+                            <span>
+                              {' '}
+                              {product.promotion ? (
+                                <div>
+                                  <div className="promotion-price">{`${formatPrice(
+                                    cart.gia,
+                                  )} `}</div>{' '}
+                                  <div>
+                                    <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                      {`${formatPrice(
+                                        calculateDiscountedPrice(cart.gia, product.value),
+                                      )} `}
+                                    </span>{' '}
+                                  </div>
+                                </div>
+                              ) : (
+                                <span>{`${formatPrice(cart.gia)} `}</span>
+                              )}
+                            </span>
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          {' '}
+                          <div className="quantity-control">
+                            <button onClick={() => onChangeSL(cart, -1)}>-</button>
+                            <input
+                              onChange={(e) => {
+                                const newValue = Math.floor(Number(e.target.value))
+                                dispatch(updateCart({ ...cart, soLuong: newValue }))
+                              }}
+                              value={cart.soLuong}
+                              min="1"
+                            />
+                            <button onClick={() => onChangeSL(cart, 1)}>+</button>
+                          </div>
+                        </TableCell>
+                        <TableCell align="center">
+                          {product.promotion ? (
+                            <div>
+                              {formatPrice(
+                                cart.soLuong * calculateDiscountedPrice(cart.gia, product.value),
+                              )}
+                            </div>
+                          ) : (
+                            <span>{`${formatPrice(cart.soLuong * cart.gia)} `}</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </TableContainer>
+            <Button component={Link} to="/products" variant="outlined" color="cam">
+              <ArrowBackIcon />
+              <b>Tiếp tục mua hàng</b>
             </Button>
-          </Paper>
+          </Grid2>
+          <Grid2 lg={4} xs={12}>
+            <Paper variant="outlined" sx={{ minHeight: '54vh', padding: 4 }}>
+              <Typography
+                variant="h6"
+                sx={{ fontFamily: 'monospace', fontWeight: '900', mt: 4, mb: 4 }}>
+                THÔNG TIN ĐƠN HÀNG
+              </Typography>
+              <Table>
+                <TableFooter sx={NoBoder}>
+                  <OrderCartFotter
+                    label="Tổng tiền"
+                    value={productSelect
+                      .reduce((tong, e) => tong + e.gia * e.soLuong, 0)
+                      .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                  />
+                </TableFooter>
+              </Table>
+              <Divider style={{ height: '1px', backgroundColor: 'black', marginBottom: '20px' }} />
+              <Typography sx={{ fontSize: '14px' }}>
+                . Phí vận chuyển sẽ được tính ở trang thanh toán.
+              </Typography>
+              <Typography sx={{ fontSize: '14px', marginBottom: '20px' }}>
+                .Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.
+              </Typography>
+              <Button
+                component={Link}
+                to="/checkout"
+                onClick={() => {
+                  dispatch(setCheckout(productSelect))
+                }}
+                size="sm"
+                variant="contained"
+                sx={{
+                  minWidth: '100%',
+                  backgroundColor: '#333',
+                  ':hover': {
+                    backgroundColor: '#000',
+                  },
+                }}>
+                <PaidRoundedIcon />
+                <b> Tiến hành thanh toán</b>
+              </Button>
+            </Paper>
+          </Grid2>
         </Grid2>
-      </Grid2>
-    </Container>
+      </Container>
+    </div>
   )
 }

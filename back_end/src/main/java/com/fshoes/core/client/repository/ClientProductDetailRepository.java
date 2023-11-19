@@ -20,7 +20,9 @@ import java.util.List;
 public interface ClientProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
                 SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,MAX(pr.value) as value,
+                MAX( pr.id) as promotion ,
+                MAX( pr.status) as statusPromotion ,
+                MAX(pr.value) as value,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
@@ -69,7 +71,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
 
     @Query(value = """
                 SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,MAX(pr.value) as value,
+                MAX( pr.id) as promotion ,
+                MAX( pr.status) as statusPromotion ,MAX(pr.value) as value,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
@@ -120,7 +123,9 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
 
     @Query(value = """
                 SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,MAX(pr.value) as value,
+                MAX( pr.id) as promotion ,
+                MAX( pr.status) as statusPromotion ,
+                MAX(pr.value) as value,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
@@ -226,7 +231,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
 
     @Query(value = """
                 SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,MAX(pr.value) as value,
+                MAX( pr.id) as promotion ,
+                MAX( pr.status) as statusPromotion ,MAX(pr.value) as value,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
@@ -277,7 +283,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
 
     @Query(value = """
                 SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,MAX(pr.value) as value,
+                MAX( pr.id) as promotion ,
+                MAX( pr.status) as statusPromotion ,MAX(pr.value) as value,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
