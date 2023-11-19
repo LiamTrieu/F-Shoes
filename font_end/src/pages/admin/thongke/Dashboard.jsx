@@ -4,9 +4,7 @@ import {
   Button,
   Card,
   Container,
-  FormControl,
   Grid,
-  InputLabel,
   MenuItem,
   Pagination,
   Paper,
@@ -24,11 +22,14 @@ import AssessmentIcon from '@mui/icons-material/Assessment'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
-import dayjs from 'dayjs'
 import LineChartDashBoard from './LineChartDashBoard'
-import Empty from '../../../components/Empty'
 import thongKeApi from '../../../api/admin/thongke/thongKeApi'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import AutorenewIcon from '@mui/icons-material/Autorenew'
+import EqualizerIcon from '@mui/icons-material/Equalizer'
 import './Dashboard.css'
+import { formatCurrency } from '../../../services/common/formatCurrency '
 
 const DashboardCard = function ({ iconCart, title, total, product, order, color }) {
   return (
@@ -38,7 +39,7 @@ const DashboardCard = function ({ iconCart, title, total, product, order, color 
           {iconCart}
         </Box>
         <Typography mt={1} align="center" fontFamily={'monospace'} fontSize={'17px'}>
-          Đơn hàng {title}
+          {title}
         </Typography>
         <Typography
           my={1}
@@ -46,7 +47,7 @@ const DashboardCard = function ({ iconCart, title, total, product, order, color 
           align="center"
           fontSize={'20px'}
           fontFamily={'monospace'}>
-          {total} VND
+          {formatCurrency(total)}
         </Typography>
         <table
           style={{
@@ -75,15 +76,34 @@ const DashboardCard = function ({ iconCart, title, total, product, order, color 
 
 export default function Dashboard() {
   const [dataProductSelling, setDataProductSelling] = useState([])
+  const [dataProductTakeOut, setDataProductTakeOut] = useState([])
   const [indexButton, setIndexButton] = useState(1)
   const [doanhThu, setDoanhThu] = useState({})
+  const [doanhThuCu, setDoanhThuCu] = useState({})
   const [dataBieuDo, setDataBieuDo] = useState([])
   const [filter, setFilter] = useState({
     page: 1,
     size: 5,
   })
-
+  const [filterTakeOut, setFilterTakeOut] = useState({
+    page: 1,
+    size: 5,
+  })
+  const [tkDoanhThuNgay, setTkDoanhThuNgay] = useState(null)
+  const [tkDoanhThuTuan, setTkDoanhThuTuan] = useState(null)
+  const [tkDoanhThuThang, setTkDoanhThuThang] = useState(null)
+  const [tkDoanhThuNam, setTkDoanhThuNam] = useState(null)
+  const [tkDonHangNgay, setTkDonHangNgay] = useState(null)
+  const [tkDonHangTuan, setTkDonHangTuan] = useState(null)
+  const [tkDonHangThang, setTkDonHangThang] = useState(null)
+  const [tkDonHangNam, setTkDonHangNam] = useState(null)
+  const [tkSanPhamNgay, setTkSanPhamNgay] = useState(null)
+  const [tkSanPhamTuan, setTkSanPhamTuan] = useState(null)
+  const [tkSanPhamThang, setTkSanPhamThang] = useState(null)
+  const [tkSanPhamNam, setTkSanPhamNam] = useState(null)
   const [totalPages, setTotalPages] = useState(0)
+  const [totalPagesTakeOut, setTotalPagesTakeOut] = useState(0)
+
   const fecthDataDay = (filter) => {
     thongKeApi.getAllProductInDay(filter).then((response) => {
       setDataProductSelling(
@@ -134,11 +154,82 @@ export default function Dashboard() {
     })
   }
 
+  const fecthDoanhThuCu = () => {
+    thongKeApi.getDoanhThuCu().then((response) => {
+      setDoanhThuCu(response.data.data[0])
+    })
+  }
+
   const fetchThongKeDonHang = () => {
     thongKeApi.getThongKeDonHang().then((response) => {
       setDataBieuDo(response.data.data)
-      console.log(response.data.data)
     })
+  }
+
+  const fecthDataTakeOut = (filter) => {
+    thongKeApi.getProductTakeOut(filter).then((response) => {
+      setDataProductTakeOut(
+        response.data.data.data.map((e) => {
+          return { ...e, image: e.image.split(',') }
+        }),
+      )
+      setTotalPagesTakeOut(response.data.data.totalPages)
+    })
+  }
+
+  const handleRateCalculation = (a, b) => {
+    if (a === 0 && b === 0) {
+      return null
+    } else if (a === 0) {
+      return parseFloat((((0 - b) / 1) * 100).toFixed(2))
+    } else {
+      return parseFloat((((a - b) / a) * 100).toFixed(2))
+    }
+  }
+
+  const handleGrowthRate = () => {
+    const dateRevenue = handleRateCalculation(doanhThu.doanhSoNgay, doanhThuCu.doanhSoNgayTruoc)
+    const weekRevenue = handleRateCalculation(doanhThu.doanhSoTuanNay, doanhThuCu.doanhSoTuanTruoc)
+    const monthRevenue = handleRateCalculation(
+      doanhThu.doanhSoThangNay,
+      doanhThuCu.doanhSoThangTruoc,
+    )
+    const yearRevenue = handleRateCalculation(doanhThu.doanhSoNamNay, doanhThuCu.doanhSoNamTruoc)
+    const dateOrder = handleRateCalculation(doanhThu.soDonHangNgay, doanhThuCu.soDonNgayTruoc)
+    const weekOrder = handleRateCalculation(doanhThu.soDonHangTuanNay, doanhThuCu.soDonTuanTruoc)
+    const monthOrder = handleRateCalculation(doanhThu.soDonHangThangNay, doanhThuCu.soDonThangTruoc)
+    const yearOrder = handleRateCalculation(doanhThu.soDonHangNamNay, doanhThuCu.soDonNamTruoc)
+    const dateProduct = handleRateCalculation(
+      doanhThu.soLuongSanPhamNgay,
+      doanhThuCu.soLuongSanPhamNgayTruoc,
+    )
+    const weekProduct = handleRateCalculation(
+      doanhThu.soLuongSanPhamTuanNay,
+      doanhThuCu.soLuongSanPhamTuanTruoc,
+    )
+    const monthProduct = handleRateCalculation(
+      doanhThu.soLuongSanPhamThangNay,
+      doanhThuCu.soLuongSanPhamThangTruoc,
+    )
+    const yearProduct = handleRateCalculation(
+      doanhThu.soLuongSanPhamNamNay,
+      doanhThuCu.soLuongSanPhamNamTruoc,
+    )
+
+    setTkDoanhThuNgay(dateRevenue)
+    setTkDoanhThuTuan(weekRevenue)
+    setTkDoanhThuThang(monthRevenue)
+    setTkDoanhThuNam(yearRevenue)
+    setTkDonHangNgay(dateOrder)
+    setTkDonHangTuan(weekOrder)
+    setTkDonHangThang(monthOrder)
+    setTkDonHangNam(yearOrder)
+    setTkSanPhamNgay(dateProduct)
+    setTkSanPhamTuan(weekProduct)
+    setTkSanPhamThang(monthProduct)
+    setTkSanPhamNam(yearProduct)
+
+    console.log('=====' + handleRateCalculation(10, 1000))
   }
 
   useEffect(() => {
@@ -151,10 +242,12 @@ export default function Dashboard() {
     } else if (indexButton === 4) {
       fecthDataYear(filter)
     }
-  }, [filter, doanhThu, indexButton])
+    fecthDataTakeOut(filterTakeOut)
+  }, [filter, doanhThu, indexButton, filterTakeOut])
 
   useEffect(() => {
     fecthDoanhThu()
+    fecthDoanhThuCu()
   }, [])
 
   useEffect(() => {
@@ -200,8 +293,8 @@ export default function Dashboard() {
           color={'#0e9f6e'}
         />
       </Grid2>
-      {/* <Paper variant="outlined" sx={{ mb: 2 }}> */}
-      <Grid container spacing={2}>
+      {/* ------------------------------------------------------------------------- */}
+      <Grid container spacing={2} sx={{ marginBottom: '20px' }}>
         <Grid item xs={7}>
           <Paper elevation={3} className="paper-css">
             <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
@@ -249,7 +342,8 @@ export default function Dashboard() {
                 sx={{
                   backgroundColor: indexButton === 5 ? '#f26b16' : 'white',
                   color: indexButton === 5 ? 'white' : 'black',
-                }}>
+                }}
+                onClick={() => setIndexButton(5)}>
                 Tùy chỉnh
               </Button>
             </Grid>
@@ -257,32 +351,34 @@ export default function Dashboard() {
               <TableHead>
                 <TableRow>
                   <TableCell width="10%">Ảnh sản phẩm</TableCell>
-                  <TableCell>Tên sản phẩm</TableCell>
-                  <TableCell align="right">Số lượng</TableCell>
-                  <TableCell align="right">Giá tiền</TableCell>
-                  <TableCell align="right">Kích cỡ</TableCell>
+                  <TableCell width="50%">Tên sản phẩm</TableCell>
+                  <TableCell align="right" width="10%">
+                    Số lượng
+                  </TableCell>
+                  <TableCell align="right" width="20%">
+                    Giá tiền
+                  </TableCell>
+                  <TableCell align="right" width="10%">
+                    Kích cỡ
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {dataProductSelling.length > 0 ? (
-                  dataProductSelling.map((row) => (
-                    <TableRow
-                      key={row.name}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align="left" width={'20%'}>
-                        <img src={row.image[0]} width={'40%'} alt="error" />
-                      </TableCell>
-                      <TableCell component="th" scope="row">
-                        {row.nameProduct}
-                      </TableCell>
-                      <TableCell align="right">{row.quantity}</TableCell>
-                      <TableCell align="right">{row.price}</TableCell>
-                      <TableCell align="right">{row.size}</TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <Empty />
-                )}
+                {dataProductSelling.map((row) => (
+                  <TableRow
+                    key={row.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell align="left" width={'20%'}>
+                      <img src={row.image[0]} width={'40%'} alt="error" />
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.nameProduct}
+                    </TableCell>
+                    <TableCell align="right">{row.quantity}</TableCell>
+                    <TableCell align="right">{formatCurrency(row.price)}</TableCell>
+                    <TableCell align="right">{row.size}</TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
             <Stack
@@ -290,7 +386,8 @@ export default function Dashboard() {
               direction="row"
               justifyContent="space-between"
               alignItems="flex-start"
-              spacing={0}>
+              spacing={0}
+              className="stack-css">
               <Typography component="span" variant={'body2'} mt={0.5}>
                 <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
                 <Select
@@ -330,124 +427,361 @@ export default function Dashboard() {
           </Paper>
         </Grid>
       </Grid>
-      {/* <Typography fontWeight={'bold'} m={2}>
-          Biểu đồ thống kê
-        </Typography>
-        <Box m={2}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Grid2 container spacing={2}>
-              <Grid2 lg={3} md={4} xs={5}>
-                <DatePicker
-                  format="DD-MM-YYYY"
-                  label="Từ ngày"
-                  defaultValue={dayjs(new Date())}
-                  onChange={(e) =>
-                    setRequestBieuDo({
-                      ...requestBieuDo,
-                      startDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
-                    })
-                  }
-                />
-              </Grid2>
-              <Grid2 lg={3} md={4} xs={5}>
-                <DatePicker
-                  sx={{ mx: 2 }}
-                  format="DD-MM-YYYY"
-                  label="Đến ngày"
-                  defaultValue={dayjs(new Date())}
-                  onChange={(e) =>
-                    setRequestBieuDo({
-                      ...requestBieuDo,
-                      endDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
-                    })
-                  }
-                />
-              </Grid2>
-              <Grid2 lg={3} md={4} xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Giá trị hiện thị</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Giá trị hiện thị"
-                    onChange={(e) => setTypeBieuDo(e.target.value)}
-                    value={typeBieuDo}>
-                    <MenuItem value={1}>Đơn hàng</MenuItem>
-                    <MenuItem value={2}>Tổng tiền</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid2>
-            </Grid2>
-          </LocalizationProvider>
-          <LineChartDashBoard dataBieuDo={dataBieuDo} typeBieuDo={typeBieuDo} />
-        </Box> */}
-      {/* </Paper> */}
-      {/* <Typography variant="h6" fontWeight={'bold'} my={2}>
-        Danh sách sản phẩm bán chạy trong tháng
-      </Typography>
-      <Paper variant="outlined" sx={{ mb: 2 }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Ảnh sản phẩm</TableCell>
-              <TableCell>Tên sản phẩm</TableCell>
-              <TableCell align="right">Số lượng</TableCell>
-              <TableCell align="right">Giá tiền</TableCell>
-              <TableCell align="right">Kích cỡ</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {getProductInMounth.map((row) => (
-              <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align="left" width={'20%'}>
-                  <img src={row.image[0]} width={'40%'} alt="error" />
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  {row.nameProduct}
-                </TableCell>
-                <TableCell align="right">{row.quantity}</TableCell>
-                <TableCell align="right">{row.price}</TableCell>
-                <TableCell align="right">{row.size}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <Stack
-          mt={2}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="flex-start"
-          spacing={0}>
-          <Typography component="span" variant={'body2'} mt={0.5}>
-            <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
-            <Select
-              color="cam"
-              onChange={(e) => {
-                setFilter({ ...filter, size: e.target.value })
-              }}
-              sx={{ height: '25px', mx: 0.5 }}
-              size="small"
-              value={filter.size}>
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={15}>15</MenuItem>
-              <MenuItem value={20}>20</MenuItem>
-            </Select>
-            <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>sản phẩm</Typography>
-          </Typography>
-          <Pagination
-            variant="outlined"
-            color="cam"
-            count={totalPages}
-            page={filter.page}
-            onChange={(e, value) => {
-              e.preventDefault()
-              setFilter({ ...filter, page: value })
-            }}
-          />
-        </Stack> */}
-      {/* </Paper> */}
+      {/* ------------------------------------------------------------------------- */}
+      <Grid container spacing={2} sx={{ marginBottom: '20px' }}>
+        <Grid item xs={7}>
+          <Paper elevation={3} className="paper-css">
+            <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
+              Danh sách sản phẩm sắp hết hàng
+            </Typography>
+            <Table aria-label="simple table" className="table-css">
+              <TableHead>
+                <TableRow>
+                  <TableCell width="10%">Ảnh sản phẩm</TableCell>
+                  <TableCell width="50%">Tên sản phẩm</TableCell>
+                  <TableCell align="right" width="10%">
+                    Số lượng
+                  </TableCell>
+                  <TableCell align="right" width="20%">
+                    Giá tiền
+                  </TableCell>
+                  <TableCell align="right" width="10%">
+                    Kích cỡ
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {dataProductTakeOut.map((row) => (
+                  <TableRow
+                    key={row.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell align="left" width={'20%'}>
+                      <img src={row.image[0]} width={'40%'} alt="error" />
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.nameProduct}
+                    </TableCell>
+                    <TableCell align="right">{row.quantity}</TableCell>
+                    <TableCell align="right">{formatCurrency(row.price)}</TableCell>
+                    <TableCell align="right">{row.size}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <Stack
+              mt={2}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-start"
+              spacing={0}
+              className="stack-css">
+              <Typography component="span" variant={'body2'} mt={0.5}>
+                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+                <Select
+                  color="cam"
+                  onChange={(e) => {
+                    setFilterTakeOut({ ...filterTakeOut, size: e.target.value })
+                  }}
+                  sx={{ height: '25px', mx: 0.5 }}
+                  size="small"
+                  value={filterTakeOut.size}>
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={15}>15</MenuItem>
+                  <MenuItem value={20}>20</MenuItem>
+                </Select>
+                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                  sản phẩm
+                </Typography>
+              </Typography>
+              <Pagination
+                variant="outlined"
+                color="cam"
+                count={totalPagesTakeOut}
+                page={filterTakeOut.page}
+                onChange={(e, value) => {
+                  e.preventDefault()
+                  setFilterTakeOut({ ...filterTakeOut, page: value })
+                }}
+              />
+            </Stack>
+          </Paper>
+        </Grid>
+        <Grid item xs={5}>
+          <Paper elevation={3} className="paper-css-1">
+            <Stack
+              mt={2}
+              mb={2}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-start"
+              spacing={0}>
+              <Typography variant="h6" fontWeight={'bold'}>
+                Tốc độ tăng trưởng của cửa hàng
+              </Typography>
+              <Button
+                className="button-reload-css"
+                color="warning"
+                onClick={() => handleGrowthRate()}>
+                <AutorenewIcon />
+              </Button>
+            </Stack>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Doanh thu ngày
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {formatCurrency(doanhThu.doanhSoNgay)}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkDoanhThuNgay === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkDoanhThuNgay > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkDoanhThuNgay > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkDoanhThuNgay !== null ? tkDoanhThuNgay + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Doanh thu Tuần
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {formatCurrency(doanhThu.doanhSoTuanNay)}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkDoanhThuTuan === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkDoanhThuTuan > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkDoanhThuTuan > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkDoanhThuTuan !== null ? tkDoanhThuTuan + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Doanh thu Tháng
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {formatCurrency(doanhThu.doanhSoThangNay)}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkDoanhThuThang === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkDoanhThuThang > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkDoanhThuThang > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkDoanhThuThang !== null ? tkDoanhThuThang + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Doanh thu năm
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {formatCurrency(doanhThu.doanhSoNamNay)}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkDoanhThuNam === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkDoanhThuNam > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkDoanhThuNam > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkDoanhThuNam !== null ? tkDoanhThuNam + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Đơn hàng ngày
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {doanhThu.soDonHangNgay}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkDonHangNgay === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkDonHangNgay > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkDonHangNgay > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkDonHangNgay !== null ? tkDonHangNgay + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Đơn hàng tuần
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {doanhThu.soDonHangTuanNay}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkDonHangTuan === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkDonHangTuan > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkDonHangTuan > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkDonHangTuan !== null ? tkDonHangTuan + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Đơn hàng tháng
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {doanhThu.soDonHangThangNay}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkDonHangThang === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkDonHangThang > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkDonHangThang > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkDonHangThang !== null ? tkDonHangThang + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Đơn hàng năm
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {doanhThu.soDonHangNamNay}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkDonHangNam === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkDonHangNam > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkDonHangNam > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkDonHangNam !== null ? tkDonHangNam + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Sản phẩm ngày
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {doanhThu.soLuongSanPhamNgay}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkSanPhamNgay === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkSanPhamNgay > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkSanPhamNgay > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkSanPhamNgay !== null ? tkSanPhamNgay + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Sản phẩm tuần
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {doanhThu.soLuongSanPhamTuanNay}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkSanPhamTuan === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkSanPhamTuan > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkSanPhamTuan > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkSanPhamTuan !== null ? tkSanPhamTuan + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Sản phẩm tháng
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {doanhThu.soLuongSanPhamThangNay}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkSanPhamThang === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkSanPhamThang > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkSanPhamThang > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkSanPhamThang !== null ? tkSanPhamThang + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+            <Grid container className="grid-tang-truong">
+              <Grid item xs={5} className="grid-tang-truong-data">
+                <EqualizerIcon className="icon-css" />
+                Sản phẩm năm
+              </Grid>
+              <Grid item xs={4} className="grid-tang-truong-data">
+                {doanhThu.soLuongSanPhamNamNay}
+              </Grid>
+              <Grid item xs={3} className="grid-tang-truong-data">
+                {tkSanPhamNam === null ? (
+                  <span style={{ color: 'white' }}>---</span>
+                ) : tkSanPhamNam > 0 ? (
+                  <TrendingUpIcon className="icon-up-css" />
+                ) : (
+                  <TrendingDownIcon className="icon-down-css" />
+                )}
+                <span style={{ color: tkSanPhamNam > 0 ? '#00ff00' : '#ff0000' }}>
+                  {tkSanPhamNam !== null ? tkSanPhamNam + '%' : ''}
+                </span>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+      </Grid>
     </Container>
   )
 }

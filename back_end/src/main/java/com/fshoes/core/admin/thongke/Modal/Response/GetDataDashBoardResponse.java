@@ -1,13 +1,11 @@
 package com.fshoes.core.admin.thongke.Modal.Response;
 
 import com.fshoes.entity.base.IsIdentified;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
 
-public interface GetListProductInMonthResponse extends IsIdentified {
+public interface GetDataDashBoardResponse extends IsIdentified {
 
     BigDecimal getPrice();
 

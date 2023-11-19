@@ -26,9 +26,19 @@ const thongKeApi = {
     return axiosAdmin.get(urlGetAll)
   },
 
+  getDoanhThuCu: () => {
+    const urlGetAll = `/statistical/doanh-thu-cu`
+    return axiosAdmin.get(urlGetAll)
+  },
+
   getThongKeDonHang: () => {
     const urlGetAll = `/statistical/view/thong-ke-don-hang`
     return axiosAdmin.get(urlGetAll)
+  },
+
+  getProductTakeOut: (filter) => {
+    const urlGetAll = `/statistical/get-product-take-out`
+    return axiosAdmin.get(urlGetAll, { params: filter })
   },
 }
 export default thongKeApi

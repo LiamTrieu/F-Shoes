@@ -6,6 +6,51 @@
   padding-bottom: 10px !important;
 }
 
+.paper-css-1 {
+  background-color: rgb(49, 48, 48) !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  padding-top: 2px !important;
+  padding-bottom: 10px !important;
+  color: white !important;
+  height: 670px !important;
+}
+
+.grid-tang-truong {
+  height: 40px !important;
+  background-color: black !important;
+  border-radius: 7px !important;
+  margin-bottom: 10px !important;
+}
+
+.grid-tang-truong-data {
+  display: flex !important;
+  align-items: center !important;
+  padding-left: 7px !important;
+}
+
+.chip-css {
+  color: white !important;
+  width: 100% !important;
+  background-color: black !important;
+  margin-bottom: 10px !important;
+}
+
+.icon-css {
+  color: white !important;
+  margin-right: 5px !important;
+}
+
+.icon-up-css {
+  color: #00ff00 !important;
+  margin-right: 5px !important;
+}
+
+.icon-down-css {
+  color: #ff0000 !important;
+  margin-right: 5px !important;
+}
+
 .typography-css {
   text-align: center !important;
 }
@@ -24,9 +69,41 @@
 
 .table-css {
   background-color: white !important;
+  border-radius: 4px !important;
+  /* width: 100% !important;
+  height: 600px !important; */
 }
 
 .table-css .MuiTableHead-root .MuiTableRow-root > th {
-  background-color: #ff8a4c !important;
-  color: white !important;
+  background-color: #ffab91 !important;
+  color: black !important;
+  font-weight: 600 !important;
+}
+
+.stack-css {
+  background-color: white !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  border-radius: 4px !important;
+}
+
+.legend-container li {
+  width: 50%;
+}
+
+.button-reload-css {
+  background-color: white !important;
+  min-width: 40px !important;
+}
+
+.button-reload-css:hover {
+  background-color: rgb(182, 174, 174) !important;
+}
+
+.button-reload-css .MuiSvgIcon-root {
+  width: 20px !important;
+  height: 20px !important;
 }

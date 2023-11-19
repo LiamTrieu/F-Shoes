@@ -17,8 +17,9 @@ export default function LineChartDashBoard(props) {
     'rgba(255, 140, 0, 0.7)', // Dark Orange
     'rgba(255, 215, 0, 0.7)', // Gold
     'rgba(173, 255, 47, 0.7)', // Green-Yellow
-    'rgba(0, 128, 0, 0.7)', // Green
     'rgba(0, 255, 0, 0.7)', // Lime Green
+    'rgba(0, 191, 255, 0.7)', // Sky Blue
+    'rgba(0, 128, 0, 0.7)', // Green
   ]
 
   const data = {
@@ -40,7 +41,6 @@ export default function LineChartDashBoard(props) {
     display: true,
     position: 'bottom',
     align: 'start',
-    fullWith: true,
   }
 
   const options = {
@@ -59,9 +59,9 @@ export default function LineChartDashBoard(props) {
   return (
     <Box mt={2} width={'99%'} height={400}>
       <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
-        Danh sách sản phẩm bán chạy theo tháng
+        Trạng thái đơn hàng
       </Typography>
-      <Pie data={data} options={options} />
+      <Pie className="legend-container" data={data} options={options} />
     </Box>
   )
 }
