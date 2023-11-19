@@ -10,6 +10,7 @@ import com.fshoes.core.client.model.response.ClientBillAccountResponse;
 import com.fshoes.core.client.model.response.ClientBillDetailResponse;
 import com.fshoes.core.client.model.response.ClientBillResponse;
 import com.fshoes.core.client.model.response.ClientCustomerResponse;
+import com.fshoes.core.client.model.response.ClientGetAllBillTableResponse;
 import com.fshoes.core.client.model.response.ClientTransactionResponse;
 import com.fshoes.core.client.repository.ClientAccountRepository;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
@@ -94,6 +95,11 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     @Override
     public List<ClientBillAccountResponse> getALlBill(ClientBillAccountRequest status) {
         return billRepository.getALlBill(status, userLogin.getUserLogin().getId());
+    }
+
+    @Override
+    public List<ClientGetAllBillTableResponse> getALlBillTable(ClientBillAccountRequest status) {
+        return billRepository.getALlBillTable(status,userLogin.getUserLogin().getId());
     }
 
     @Override

@@ -398,389 +398,394 @@ export default function Checkout() {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 3 }}>
-      <Paper
-        sx={{
-          padding: '40px',
-          paddingTop: 0,
-          minHeight: '68vh',
-          py: 2,
-          backgroundColor: 'rgba(249, 249, 246, 0.985)',
-        }}>
-        <Grid container spacing={2}>
-          <Grid
-            item
-            lg={7}
-            sx={{ px: { lg: '40px' }, backgroundColor: 'white', mt: '20px' }}
-            width={'100%'}>
-            <div className="button-lbtt">
-              <span className="checkout-info-label">Thông tin giao hàng</span>
-              {userLogin && (
-                <Button
-                  style={{ float: 'right' }}
-                  size="small"
-                  variant="outlined"
-                  onClick={() => {
-                    setIsShowDiaChi(true)
-                    loadListAd()
-                  }}>
-                  <b>Chọn Địa chỉ</b>
-                </Button>
-              )}
-              <ModalAddress
-                open={isShowDiaChi}
-                setOpen={setIsShowDiaChi}
-                setRequest={setRequest}
-                setPhiShip={setPhiShip}
-                listAddress={listAddress}
-                setSelectedTinh={setSelectedTinh}
-                setSelectedHuyen={setSelectedHuyen}
-                setSelectedXa={setSelectedXa}
-                loadTinh={loadTinh}
-                loadHuyen={loadHuyen}
-                loadXa={loadXa}
-                arrData={arrData}
-                setTimeShip={setTimeShip}
-              />
-            </div>
-            <Grid container mt={0} spacing={3}>
-              <Grid item xs={6}>
-                <Typography>
-                  <span className="required"> *</span>Họ và tên
-                </Typography>
-                <TextField
-                  value={request.fullName}
-                  onChange={(e) => {
-                    setRequest({ ...request, fullName: e.target.value })
-                    setErrors({ ...errors, fullName: '' })
-                  }}
-                  size="small"
-                  fullWidth
-                  id="fullname"
-                  error={Boolean(errors.fullName)}
-                  helperText={errors.fullName}
+    <div className="check-out">
+      <Container maxWidth="xl" sx={{ mt: 3 }}>
+        <Paper
+          sx={{
+            padding: '40px',
+            paddingTop: 0,
+            minHeight: '68vh',
+            py: 2,
+            backgroundColor: 'rgba(249, 249, 246, 0.985)',
+          }}>
+          <Grid container spacing={2}>
+            <Grid
+              item
+              lg={7}
+              sx={{ px: { lg: '40px' }, backgroundColor: 'white', mt: '20px' }}
+              width={'100%'}>
+              <div className="button-lbtt">
+                <span className="checkout-info-label">Thông tin giao hàng</span>
+                {userLogin && (
+                  <Button
+                    style={{ float: 'right' }}
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      setIsShowDiaChi(true)
+                      loadListAd()
+                    }}>
+                    <b>Chọn Địa chỉ</b>
+                  </Button>
+                )}
+                <ModalAddress
+                  open={isShowDiaChi}
+                  setOpen={setIsShowDiaChi}
+                  setRequest={setRequest}
+                  setPhiShip={setPhiShip}
+                  listAddress={listAddress}
+                  setSelectedTinh={setSelectedTinh}
+                  setSelectedHuyen={setSelectedHuyen}
+                  setSelectedXa={setSelectedXa}
+                  loadTinh={loadTinh}
+                  loadHuyen={loadHuyen}
+                  loadXa={loadXa}
+                  arrData={arrData}
+                  setTimeShip={setTimeShip}
                 />
-              </Grid>
-              <Grid item xs={6}>
-                <Typography>
-                  <span className="required"> *</span>Số điện thoại
-                </Typography>
-                <TextField
-                  value={request.phone}
-                  onChange={(e) => {
-                    setRequest({ ...request, phone: e.target.value })
-                    setErrors({ ...errors, phone: '' })
-                  }}
-                  size="small"
-                  fullWidth
-                  id="phone"
-                  error={Boolean(errors.phone)}
-                  helperText={errors.phone}
-                />
-              </Grid>
-              {!userLogin && (
-                <Grid item xs={12}>
+              </div>
+              <Grid container mt={0} spacing={3}>
+                <Grid item xs={6}>
                   <Typography>
-                    <span className="required"> *</span>Email
+                    <span className="required"> *</span>Họ và tên
                   </Typography>
                   <TextField
-                    value={request.email}
+                    value={request.fullName}
                     onChange={(e) => {
-                      setRequest({ ...request, email: e.target.value })
-                      setErrors({ ...errors, email: '' })
+                      setRequest({ ...request, fullName: e.target.value })
+                      setErrors({ ...errors, fullName: '' })
                     }}
                     size="small"
                     fullWidth
-                    id="email"
+                    id="fullname"
+                    error={Boolean(errors.fullName)}
+                    helperText={errors.fullName}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography>
+                    <span className="required"> *</span>Số điện thoại
+                  </Typography>
+                  <TextField
+                    value={request.phone}
+                    onChange={(e) => {
+                      setRequest({ ...request, phone: e.target.value })
+                      setErrors({ ...errors, phone: '' })
+                    }}
+                    size="small"
+                    fullWidth
+                    id="phone"
+                    error={Boolean(errors.phone)}
+                    helperText={errors.phone}
+                  />
+                </Grid>
+                {!userLogin && (
+                  <Grid item xs={12}>
+                    <Typography>
+                      <span className="required"> *</span>Email
+                    </Typography>
+                    <TextField
+                      value={request.email}
+                      onChange={(e) => {
+                        setRequest({ ...request, email: e.target.value })
+                        setErrors({ ...errors, email: '' })
+                      }}
+                      size="small"
+                      fullWidth
+                      id="email"
+                    />
+                    <Typography variant="body2" color="error">
+                      {errors.email}
+                      {errors.email === 'Địa chỉ email đã tồn tại trong hệ thống.' && (
+                        <Typography
+                          style={{ textDecoration: 'none', fontWeight: 'bold' }}
+                          component={Link}
+                          to={'/login'}
+                          variant="body2"
+                          color="green">
+                          {' '}
+                          Đăng nhập ngay
+                        </Typography>
+                      )}
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
+              <Grid container mt={0} spacing={3}>
+                <Grid item xs={12} lg={4}>
+                  <Typography>
+                    <span className="required"> *</span>Tỉnh/thành phố
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    id="combo-box-demo"
+                    value={selectedTinh}
+                    onChange={handleTinhChange}
+                    options={tinh.map((item) => ({
+                      label: item.provinceName,
+                      id: item.provinceID,
+                    }))}
+                    getOptionLabel={(options) => options.label}
+                    renderInput={(params) => <TextField {...params} />}
                   />
                   <Typography variant="body2" color="error">
-                    {errors.email}
-                    {errors.email === 'Địa chỉ email đã tồn tại trong hệ thống.' && (
-                      <Typography
-                        style={{ textDecoration: 'none', fontWeight: 'bold' }}
-                        component={Link}
-                        to={'/login'}
-                        variant="body2"
-                        color="green">
-                        {' '}
-                        Đăng nhập ngay
-                      </Typography>
-                    )}
+                    {errors.provinceId}
                   </Typography>
                 </Grid>
-              )}
-            </Grid>
-            <Grid container mt={0} spacing={3}>
-              <Grid item xs={12} lg={4}>
+                <Grid item xs={12} lg={4}>
+                  <Typography>
+                    <span className="required"> *</span>Quận/huyện
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    className="search-field"
+                    id="combo-box-demo"
+                    value={selectedHuyen}
+                    onChange={handleHuyenChange}
+                    options={huyen.map((item) => ({
+                      label: item.districtName,
+                      id: item.districtID,
+                    }))}
+                    getOptionLabel={(options) => options.label}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                  <Typography variant="body2" color="error">
+                    {errors.districtId}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} lg={4}>
+                  <Typography>
+                    <span className="required"> *</span>Xã/thị trấn
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    className="search-field"
+                    id="combo-box-demo"
+                    value={selectedXa}
+                    onChange={handleXaChange}
+                    options={xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
+                    getOptionLabel={(options) => options.label}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                  <Typography variant="body2" color="error">
+                    {errors.wardId}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid sx={{ mt: 2 }}>
                 <Typography>
-                  <span className="required"> *</span>Tỉnh/thành phố
+                  <span className="required"> *</span>Địa chỉ cụ thể
                 </Typography>
-                <Autocomplete
-                  fullWidth
+                <TextField
+                  value={request.address}
+                  onChange={(e) => {
+                    setRequest({ ...request, address: e.target.value })
+                    setErrors({ ...errors, address: '' })
+                  }}
                   size="small"
-                  id="combo-box-demo"
-                  value={selectedTinh}
-                  onChange={handleTinhChange}
-                  options={tinh.map((item) => ({
-                    label: item.provinceName,
-                    id: item.provinceID,
-                  }))}
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => <TextField {...params} />}
+                  fullWidth
+                  id="dia-chi"
                 />
                 <Typography variant="body2" color="error">
-                  {errors.provinceId}
+                  {errors.address}
                 </Typography>
               </Grid>
-              <Grid item xs={12} lg={4}>
-                <Typography>
-                  <span className="required"> *</span>Quận/huyện
-                </Typography>
-                <Autocomplete
-                  fullWidth
+              <Grid sx={{ mt: 2 }}>
+                <Typography>Ghi chú</Typography>
+                <TextField
+                  onChange={(e) => {
+                    setRequest({ ...request, note: e.target.value })
+                  }}
                   size="small"
-                  className="search-field"
-                  id="combo-box-demo"
-                  value={selectedHuyen}
-                  onChange={handleHuyenChange}
-                  options={huyen.map((item) => ({
-                    label: item.districtName,
-                    id: item.districtID,
-                  }))}
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-                <Typography variant="body2" color="error">
-                  {errors.districtId}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} lg={4}>
-                <Typography>
-                  <span className="required"> *</span>Xã/thị trấn
-                </Typography>
-                <Autocomplete
                   fullWidth
-                  size="small"
-                  className="search-field"
-                  id="combo-box-demo"
-                  value={selectedXa}
-                  onChange={handleXaChange}
-                  options={xa.map((item) => ({ label: item.wardName, id: item.wardCode }))}
-                  getOptionLabel={(options) => options.label}
-                  renderInput={(params) => <TextField {...params} />}
+                  id="dia-chi"
                 />
-                <Typography variant="body2" color="error">
-                  {errors.wardId}
-                </Typography>
               </Grid>
-            </Grid>
-            <Grid sx={{ mt: 2 }}>
-              <Typography>
-                <span className="required"> *</span>Địa chỉ cụ thể
-              </Typography>
-              <TextField
-                value={request.address}
-                onChange={(e) => {
-                  setRequest({ ...request, address: e.target.value })
-                  setErrors({ ...errors, address: '' })
-                }}
-                size="small"
-                fullWidth
-                id="dia-chi"
-              />
-              <Typography variant="body2" color="error">
-                {errors.address}
-              </Typography>
-            </Grid>
-            <Grid sx={{ mt: 2 }}>
-              <Typography>Ghi chú</Typography>
-              <TextField
-                onChange={(e) => {
-                  setRequest({ ...request, note: e.target.value })
-                }}
-                size="small"
-                fullWidth
-                id="dia-chi"
-              />
-            </Grid>
-            <h3>Phương thức thanh toán</h3>
-            <FormControl sx={{ width: '100%' }}>
-              <RadioGroup
-                value={selectedValue}
-                aria-labelledby="demo-radio-buttons-group-label"
-                name="radio-buttons-group">
-                <div className="pay">
-                  <div className="ck-pttt">
-                    <label style={{ display: 'flex', alignItems: 'center' }}>
-                      <Radio size="small" onChange={handleRadioChange} value={'0'} />
-                      <img
-                        alt="error"
-                        src={require('../../assets/image/thanhtoan.jpg')}
-                        style={{
-                          maxWidth: '40px',
-                          maxHeight: '40px',
-                          verticalAlign: 'middle',
-                        }}
-                      />
-                      Thanh toán khi nhận hàng
-                    </label>
-                  </div>
-                  <div className="ck-pttt">
-                    <label style={{ display: 'flex', alignItems: 'center' }}>
-                      <Radio size="small" onChange={handleRadioChange} value={'1'} />
-                      <img
-                        alt="error"
-                        src={require('../../assets/image/vnpay.jpg')}
-                        style={{
-                          maxWidth: '70px',
-                          maxHeight: '70px',
-                          verticalAlign: 'middle',
-                        }}
-                      />
-                      Thanh toán ngay
-                    </label>
-                  </div>
-                </div>
-              </RadioGroup>
-            </FormControl>
-            <Button
-              onClick={() => {
-                finishCheckout()
-              }}
-              size="small"
-              variant="contained"
-              sx={{
-                width: '100%',
-                my: 2,
-                mr: 2,
-                height: '40px',
-                color: '#FF9900',
-                backgroundColor: 'black',
-              }}>
-              <b style={{ color: 'white' }}>Hoàn thành đặt hàng</b>
-            </Button>
-            <div>
-              <Link to="/cart" style={{ textDecoration: 'none' }}>
-                <ReplyIcon />
-                <b>Quay lại giỏ hàng</b>
-              </Link>
-            </div>
-          </Grid>
-          <Grid className="detail-checkout" item lg={5} width={'100%'}>
-            <Table>
-              {arrData.map((cart) => (
-                <TableBody>
-                  <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
-                    <div>
-                      <img src={cart.image[0]} alt={cart.name} className="image-ck" />
-                      <div className="quantity-badge">{cart.soLuong}</div>
+              <h3>Phương thức thanh toán</h3>
+              <FormControl sx={{ width: '100%' }}>
+                <RadioGroup
+                  value={selectedValue}
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  name="radio-buttons-group">
+                  <div className="pay">
+                    <div className="ck-pttt">
+                      <label style={{ display: 'flex', alignItems: 'center' }}>
+                        <Radio size="small" onChange={handleRadioChange} value={'0'} />
+                        <img
+                          alt="error"
+                          src={require('../../assets/image/thanhtoan.jpg')}
+                          style={{
+                            maxWidth: '40px',
+                            maxHeight: '40px',
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                        Thanh toán khi nhận hàng
+                      </label>
                     </div>
-                  </TableCell>
-                  <TableCell
-                    to={`/product/${cart.id}`}
-                    style={{ verticalAlign: 'middle' }}
-                    sx={{ px: 0 }}>
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        verticalAlign: 'middle',
-                        marginLeft: '10px',
-                      }}>
-                      <p style={{ margin: 0 }}>{cart.name}</p>
-                      <b style={{ margin: 0 }}>
-                        size:{' '}
-                        {parseFloat(cart.size) % 1 === 0
-                          ? parseFloat(cart.size).toFixed(0)
-                          : parseFloat(cart.size).toFixed(1)}
-                      </b>
-                    </span>
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      display: { md: 'table-cell', xs: 'none' },
-                      color: 'red',
-                      fontWeight: 'bold',
-                      textAlign: 'left',
-                    }}>
-                    {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
-                      style: 'currency',
-                      currency: 'VND',
-                    })}
-                  </TableCell>
-                </TableBody>
-              ))}
-            </Table>
-            <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
-              <TextField
-                sx={{ flex: 1, minWidth: '100px', width: '100%' }}
-                value={voucher === null ? 'Mã khuyễn mãi' : voucher.name}
-                size="small"
-                className="input-voucher"
-                disabled
-                InputProps={{
-                  endAdornment: (
-                    <Button
-                      variant="contained"
-                      onClick={() => handleFilterVoucher()}
-                      style={{ backgroundColor: 'black' }}>
-                      <b>Chọn </b>
-                    </Button>
-                  ),
+                    <div className="ck-pttt">
+                      <label style={{ display: 'flex', alignItems: 'center' }}>
+                        <Radio size="small" onChange={handleRadioChange} value={'1'} />
+                        <img
+                          alt="error"
+                          src={require('../../assets/image/vnpay.jpg')}
+                          style={{
+                            maxWidth: '70px',
+                            maxHeight: '70px',
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                        Thanh toán ngay
+                      </label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </FormControl>
+              <Button
+                onClick={() => {
+                  finishCheckout()
                 }}
-              />
-
-              <ModalVoucher
-                open={openModalVoucher}
-                setOpen={setOpenModalVoucher}
-                setVoucher={setVoucher}
-                arrData={arrData}
-                setGiamGia={setGiamGia}
-                voucherFilter={voucherFilter}
-              />
+                size="small"
+                variant="contained"
+                sx={{
+                  width: '100%',
+                  my: 2,
+                  mr: 2,
+                  height: '40px',
+                  color: '#FF9900',
+                  backgroundColor: '#333',
+                  ':hover': {
+                    backgroundColor: '#000',
+                  },
+                }}>
+                <b style={{ color: 'white' }}>Hoàn thành đặt hàng</b>
+              </Button>
+              <div>
+                <Link to="/cart" style={{ textDecoration: 'none' }}>
+                  <ReplyIcon />
+                  <b>Quay lại giỏ hàng</b>
+                </Link>
+              </div>
             </Grid>
-            <Box sx={{ m: 1, ml: 2, mr: 2 }}>
-              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                <Typography>Phí vận chuyển</Typography>
-                <Typography color={'red'}>
-                  <b className="ck-phi">
-                    {phiShip.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
-                  </b>
-                </Typography>
-              </Stack>
-              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                <Typography>Giảm giá</Typography>
-                <Typography color={'red'}>
-                  <b className="ck-phi">
-                    {giamGia
-                      ? giamGia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
-                      : 0}
-                  </b>
-                </Typography>
-              </Stack>
-              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                <Typography>Ngày nhận dự kiến: </Typography>
-                <Typography color={'red'}>
-                  <b className="ck-phi">{timeShip ? dayjs(timeShip).format('DD-MM-YYYY') : ''}</b>
-                </Typography>
-              </Stack>
-              <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
-                <Typography>
-                  <b className="ck-tong-tien">Tổng số tiền</b>
-                </Typography>
-                <Typography color={'red'}>
-                  <b className="ck-tong-tien">
-                    {(
-                      arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0) +
-                      phiShip -
-                      giamGia
-                    ).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
-                  </b>
-                </Typography>
-              </Stack>
-            </Box>
+            <Grid className="detail-checkout" item lg={5} width={'100%'}>
+              <Table>
+                {arrData.map((cart) => (
+                  <TableBody>
+                    <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
+                      <div>
+                        <img src={cart.image[0]} alt={cart.name} className="image-ck" />
+                        <div className="quantity-badge">{cart.soLuong}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell
+                      to={`/product/${cart.id}`}
+                      style={{ verticalAlign: 'middle' }}
+                      sx={{ px: 0 }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          verticalAlign: 'middle',
+                          marginLeft: '10px',
+                        }}>
+                        <p style={{ margin: 0 }}>{cart.name}</p>
+                        <b style={{ margin: 0 }}>
+                          size:{' '}
+                          {parseFloat(cart.size) % 1 === 0
+                            ? parseFloat(cart.size).toFixed(0)
+                            : parseFloat(cart.size).toFixed(1)}
+                        </b>
+                      </span>
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        display: { md: 'table-cell', xs: 'none' },
+                        color: 'red',
+                        fontWeight: 'bold',
+                        textAlign: 'left',
+                      }}>
+                      {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })}
+                    </TableCell>
+                  </TableBody>
+                ))}
+              </Table>
+              <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
+                <TextField
+                  sx={{ flex: 1, minWidth: '100px', width: '100%' }}
+                  value={voucher === null ? 'Mã khuyễn mãi' : voucher.name}
+                  size="small"
+                  className="input-voucher"
+                  disabled
+                  InputProps={{
+                    endAdornment: (
+                      <Button
+                        variant="contained"
+                        onClick={() => handleFilterVoucher()}
+                        style={{ backgroundColor: 'black' }}>
+                        <b>Chọn </b>
+                      </Button>
+                    ),
+                  }}
+                />
+
+                <ModalVoucher
+                  open={openModalVoucher}
+                  setOpen={setOpenModalVoucher}
+                  setVoucher={setVoucher}
+                  arrData={arrData}
+                  setGiamGia={setGiamGia}
+                  voucherFilter={voucherFilter}
+                />
+              </Grid>
+              <Box sx={{ m: 1, ml: 2, mr: 2 }}>
+                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                  <Typography>Phí vận chuyển</Typography>
+                  <Typography color={'red'}>
+                    <b className="ck-phi">
+                      {phiShip.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                    </b>
+                  </Typography>
+                </Stack>
+                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                  <Typography>Giảm giá</Typography>
+                  <Typography color={'red'}>
+                    <b className="ck-phi">
+                      {giamGia
+                        ? giamGia.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+                        : 0}
+                    </b>
+                  </Typography>
+                </Stack>
+                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                  <Typography>Ngày nhận dự kiến: </Typography>
+                  <Typography color={'red'}>
+                    <b className="ck-phi">{timeShip ? dayjs(timeShip).format('DD-MM-YYYY') : ''}</b>
+                  </Typography>
+                </Stack>
+                <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
+                  <Typography>
+                    <b className="ck-tong-tien">Tổng số tiền</b>
+                  </Typography>
+                  <Typography color={'red'}>
+                    <b className="ck-tong-tien">
+                      {(
+                        arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0) +
+                        phiShip -
+                        giamGia
+                      ).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                    </b>
+                  </Typography>
+                </Stack>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </Paper>
-    </Container>
+        </Paper>
+      </Container>
+    </div>
   )
 }

@@ -4,6 +4,7 @@ import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.core.client.model.request.ClientBillAccountRequest;
 import com.fshoes.core.client.model.response.ClientBillAccountResponse;
 import com.fshoes.core.client.model.response.ClientBillResponse;
+import com.fshoes.core.client.model.response.ClientGetAllBillTableResponse;
 import com.fshoes.repository.BillRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,11 +28,19 @@ public interface ClientBillRepository extends BillRepository {
               left join color c on c.id = pd.id_color
               left join image i on i.id_product_detail = pd.id
                WHERE (:#{#request.status} is null or bi.status = :#{#request.status}) 
-              AND (:#{#request.nameProductSearch} is null or p.name like %:#{#request.nameProductSearch}%) 
               AND bi.id_customer = :idAccount
               group by p.id, bi.id,bd.id, pd.id;
             """, nativeQuery = true)
     List<ClientBillAccountResponse> getALlBill(@Param("request") ClientBillAccountRequest request, String idAccount);
+
+    @Query(value = """
+            select id,code, id_customer , status , created_at, desired_receipt_date,complete_date
+             from bill 
+               WHERE (:#{#request.status} is null or status = :#{#request.status}) 
+               AND (:#{#request.code} is null or code like %:#{#request.code}%) 
+              AND id_customer = :idAccount
+            """, nativeQuery = true)
+    List<ClientGetAllBillTableResponse> getALlBillTable(@Param("request") ClientBillAccountRequest request, String idAccount);
 
     @Query(value = """
             SELECT b.id, b.code, c.full_name as fullName,
