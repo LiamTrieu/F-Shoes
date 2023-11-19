@@ -5,6 +5,7 @@ import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
 import com.fshoes.core.admin.nhanvien.model.respone.StaffRespone;
 import com.fshoes.core.admin.nhanvien.repository.StaffRepositorys;
 import com.fshoes.core.admin.nhanvien.service.StaffService;
+import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Account;
 import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
 import com.fshoes.infrastructure.constant.RoleAccount;
@@ -35,6 +36,9 @@ public class StaffServiceImpl implements StaffService {
     @Autowired
     private EmailSender emailSender;
 
+    @Autowired
+    UserLogin userLogin;
+
     @Override
     public List<Account> getAll() {
         return repo.findAll();
@@ -44,7 +48,7 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public Page<StaffRespone> searchStaff(SearchStaff searchStaff) {
         Pageable pageable = PageRequest.of(searchStaff.getPage() - 1, searchStaff.getSize());
-        return repo.searchStaff(searchStaff, pageable);
+        return repo.searchStaff(searchStaff, pageable,userLogin.getUserLogin().getId());
     }
 
     @Override

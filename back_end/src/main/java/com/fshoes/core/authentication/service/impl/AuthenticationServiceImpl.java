@@ -56,6 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserLoginResponse response = null;
         if (account != null) {
             response = new UserLoginResponse();
+            response.setId(account.getId());
             response.setEmail(account.getEmail());
             response.setName(account.getFullName());
             response.setAvatar(account.getAvatar());

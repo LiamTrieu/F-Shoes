@@ -4,21 +4,43 @@ import Drawer from '@mui/material/Drawer'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import AdminMenu from './AdminMenu'
-import { Avatar, Badge, IconButton, Tooltip } from '@mui/material'
+import { Avatar, Badge, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material'
 import { AiOutlineMenuFold } from 'react-icons/ai'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
 import '../assets/styles/admin.css'
 import { getCookie, removeCookie } from '../services/cookie'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import authenticationAPi from '../api/authentication/authenticationAPi'
+import { Logout } from '@mui/icons-material'
+import confirmSatus from '../components/comfirmSwal'
 
 const drawerWidth = '17vw'
 
 export default function AppBarAdmin({ children }) {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [openMenuProfile, setOpenMenuProfile] = useState(false)
   const token = getCookie('AdminToken')
+  const handleClick = (event) => {
+    anchorEl === null ? setAnchorEl(event.currentTarget) : setAnchorEl(null)
+    openMenuProfile === false ? setOpenMenuProfile(true) : setOpenMenuProfile(false)
+  }
+
+  function handleAccount() {
+    const title = 'Xác nhận đăng xuất tài khoản?'
+    if (user) {
+      confirmSatus(title, '').then((result) => {
+        if (result.isConfirmed) {
+          removeCookie('AdminToken')
+          navigate('/admin/login')
+        }
+      })
+    } else {
+      navigate('/login')
+    }
+  }
   useEffect(() => {
     if (token) {
       authenticationAPi.getAdmin().then((response) => {
@@ -26,6 +48,7 @@ export default function AppBarAdmin({ children }) {
       })
     }
   }, [token])
+
   return token ? (
     <Box
       sx={{ display: 'flex', backgroundColor: '#F0F2F5', minHeight: '100vh', maxWidth: '100vw' }}>
@@ -56,16 +79,67 @@ export default function AppBarAdmin({ children }) {
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Tooltip title={user ? user.name : 'Tài khoản'}>
-              <IconButton
-                size="small"
-                onClick={() => {
-                  removeCookie('AdminToken')
-                  navigate('/admin/login')
-                }}>
-                <Avatar src={user && user.avatar} sx={{ width: 35, height: 35 }} />
-              </IconButton>
-            </Tooltip>
+            <IconButton onClick={(event) => handleClick(event)} size="small">
+              <Avatar src={user && user.avatar} sx={{ width: 35, height: 35 }} />
+              <Menu
+                anchorEl={anchorEl}
+                open={openMenuProfile}
+                slotProps={{
+                  paper: {
+                    elevation: 0,
+                    sx: {
+                      overflow: 'visible',
+                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                      mt: 1.5,
+                      '& .MuiAvatar-root': {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      '&:before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: 'background.paper',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                      },
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
+                {user ? (
+                  <>
+                    {console.log(user)}
+                    <Link
+                      to={`/admin/staff/detail/${user.id}`}
+                      style={{ textDecoration: 'none', color: 'black' }}>
+                      <MenuItem>
+                        <Avatar /> Tài khoản của tôi
+                      </MenuItem>
+                    </Link>
+                    <MenuItem style={{ color: 'black' }} onClick={() => handleAccount()}>
+                      <ListItemIcon>
+                        <Logout fontSize="small" />
+                      </ListItemIcon>
+                      Đăng xuất
+                    </MenuItem>
+                  </>
+                ) : (
+                  <Link to={`/login`} style={{ textDecoration: 'none', color: 'black' }}>
+                    <MenuItem>
+                      <Avatar /> Đăng nhập
+                    </MenuItem>
+                  </Link>
+                )}
+              </Menu>
+            </IconButton>
           </Toolbar>
         </AppBar>
 
