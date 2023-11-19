@@ -33,14 +33,16 @@ import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import '../../../assets/styles/admin.css'
 import './voucher.css'
 import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
+import { formatCurrency } from '../../../services/common/formatCurrency '
 
-const listBreadcrumbs = [{ name: 'Khuyến mãi', link: '/admin/voucher' }]
+const listBreadcrumbs = [{ name: 'voucher', link: '/admin/voucher' }]
 
 export default function AdVoucherDetail() {
   const theme = useTheme()
   const { id } = useParams()
   const navigate = useNavigate()
   const [listCustomer, setListCustomer] = useState([])
+  const [allCustomer, setAllCustomer] = useState([])
   const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [dataFetched, setDataFetched] = useState(false)
@@ -77,11 +79,18 @@ export default function AdVoucherDetail() {
   const listName = []
   allNameVoucher.map((m) => listName.push(m.toLowerCase()))
 
+  const [valueDefault, setValueDefault] = useState(0)
+  const [maximumValueDefault, setMaximumValueDefault] = useState(0)
+  const [minimumvalueDefault, setMinimumValueDefault] = useState(0)
+  const [quantityDefault, setQuantityDefault] = useState(0)
+  const [isSelectVisible, setIsSelectVisible] = useState(false)
+
   useEffect(() => {
     fetchData(id)
     handelCustomeFill(initPage)
     haldleAllCodeVoucher()
     haldleAllNameVoucher()
+    haldleAllCustomer()
   }, [id, initPage])
 
   useEffect(() => {
@@ -103,10 +112,17 @@ export default function AdVoucherDetail() {
           ...response.data.data,
           startDate: formattedStartDate,
           endDate: formattedEndDate,
+          listIdCustomer: selectedCustomerIds,
         })
 
         setPrevCodeValue(response.data.data.code)
         setPrevNameValue(response.data.data.name)
+
+        setValueDefault(response.data.data.value)
+        setMaximumValueDefault(response.data.data.maximumValue)
+        setMinimumValueDefault(response.data.data.minimumAmount)
+        setQuantityDefault(response.data.data.quantity)
+        setIsSelectVisible(response.data.data.type === 0 ? true : false)
       })
       .catch(() => {
         alert('Error: Không tải được dữ liệu API')
@@ -119,9 +135,7 @@ export default function AdVoucherDetail() {
       .then((response) => {
         setSelectedCustomerIds(response.data.data)
       })
-      .catch(() => {
-        console.log('NULL')
-      })
+      .catch(() => {})
   }
 
   const haldleAllCodeVoucher = () => {
@@ -134,6 +148,38 @@ export default function AdVoucherDetail() {
     voucherApi.getAllNameVoucher().then((response) => {
       setAllNameVoucher(response.data.data)
     })
+  }
+
+  const haldleAllCustomer = () => {
+    voucherApi
+      .getAllCustomer()
+      .then((response) => {
+        setAllCustomer(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const handleSetValue = (value) => {
+    if (voucherDetail.typeValue === 0) {
+      setVoucherDetail({
+        ...voucherDetail,
+        value: formatCurrency(value).replace(/\D/g, ''),
+      })
+      setValueDefault(formatCurrency(value).replace(/\D/g, ''))
+    } else {
+      setVoucherDetail({
+        ...voucherDetail,
+        value: formatCurrency(value).replace(/\D/g, ''),
+        maximumValue: formatCurrency(value).replace(/\D/g, ''),
+      })
+      setValueDefault(formatCurrency(value))
+      setMaximumValueDefault(formatCurrency(value))
+    }
+    setErrorValue('')
   }
 
   const handleValidation = () => {
@@ -188,7 +234,7 @@ export default function AdVoucherDetail() {
     if (voucherDetail.typeValue === 0) {
       if (voucherDetail.value === null) {
         errors.value = 'Giá trị không được để trống'
-      } else if (!Number.isInteger(voucherDetail.value)) {
+      } else if (!Number.isInteger(parseInt(voucherDetail.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherDetail.value < 1) {
         errors.value = 'giá trị tối thiểu 1%'
@@ -198,7 +244,7 @@ export default function AdVoucherDetail() {
     } else {
       if (voucherDetail.value === null) {
         errors.value = 'Giá trị không được để trống'
-      } else if (!Number.isInteger(voucherDetail.value)) {
+      } else if (!Number.isInteger(parseInt(voucherDetail.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherDetail.value < 1) {
         errors.value = 'giá trị tối thiểu 1 VNĐ'
@@ -207,7 +253,7 @@ export default function AdVoucherDetail() {
 
     if (voucherDetail.maximumValue === null) {
       errors.maximumValue = 'Giá trị tối đa không được để trống'
-    } else if (!Number.isInteger(voucherDetail.maximumValue)) {
+    } else if (!Number.isInteger(parseInt(voucherDetail.maximumValue))) {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
     } else if (voucherDetail.maximumValue < 1) {
       errors.maximumValue = 'giá trị tối đa tối thiểu 1 (vnđ)'
@@ -215,7 +261,7 @@ export default function AdVoucherDetail() {
 
     if (voucherDetail.quantity === null) {
       errors.quantity = 'Số lượng không được để trống'
-    } else if (!Number.isInteger(voucherDetail.quantity)) {
+    } else if (!Number.isInteger(parseInt(voucherDetail.quantity))) {
       errors.quantity = 'Số lượng chỉ được nhập số nguyên'
     } else if (voucherDetail.quantity < 1) {
       errors.quantity = 'Số lượng tối thiểu 1'
@@ -223,7 +269,7 @@ export default function AdVoucherDetail() {
 
     if (voucherDetail.minimumAmount === null) {
       errors.minimumAmount = 'Điều kiện không được để trống'
-    } else if (!Number.isInteger(voucherDetail.minimumAmount)) {
+    } else if (!Number.isInteger(parseInt(voucherDetail.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
     } else if (voucherDetail.minimumAmount < 1) {
       errors.minimumAmount = 'Điều kiện tối thiểu 1 (vnđ)'
@@ -295,7 +341,7 @@ export default function AdVoucherDetail() {
         }
       })
     } else {
-      toast.error('Không thể cập nhật khuyến mãi', {
+      toast.error('Không thể cập nhật voucher', {
         position: toast.POSITION.TOP_RIGHT,
       })
     }
@@ -316,11 +362,11 @@ export default function AdVoucherDetail() {
 
   const handelOnchangePage = (page) => {
     setInitPage(page)
-    handelCustomeFill(page - 1)
+    handelCustomeFill(page)
   }
 
   const handleSelectAllChange = (event) => {
-    const selectedIds = event.target.checked ? listCustomer.map((row) => row.id) : []
+    const selectedIds = event.target.checked ? allCustomer.map((row) => row.id) : []
     setSelectedCustomerIds(selectedIds)
     setSelectAll(event.target.checked)
   }
@@ -339,12 +385,12 @@ export default function AdVoucherDetail() {
     }
 
     setSelectedCustomerIds(newSelectedIds)
-    setSelectAll(newSelectedIds.length === listCustomer.length)
+    setSelectAll(newSelectedIds.length === allCustomer.length)
   }
 
   return (
     <div className="voucher-detail">
-      <BreadcrumbsCustom nameHere={'Chi tiết khuyến mãi'} listLink={listBreadcrumbs} />
+      <BreadcrumbsCustom nameHere={'Chi tiết voucher'} listLink={listBreadcrumbs} />
       <Paper sx={{ p: 2 }}>
         <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
           <Grid item xs={5}>
@@ -402,16 +448,9 @@ export default function AdVoucherDetail() {
                 <TextField
                   className="input-css"
                   label="Giá trị"
-                  type="number"
                   size="small"
-                  value={voucherDetail?.value}
-                  onChange={(e) => {
-                    setVoucherDetail({
-                      ...voucherDetail,
-                      value: Number(e.target.value),
-                    })
-                    setErrorValue('')
-                  }}
+                  value={valueDefault}
+                  onChange={(e) => handleSetValue(e.target.value)}
                   fullWidth
                   InputLabelProps={{
                     shrink: true,
@@ -422,12 +461,19 @@ export default function AdVoucherDetail() {
                         <AiOutlinePercentage
                           color={voucherDetail.typeValue === 0 ? '#fc7c27' : ''}
                           className="icons-css"
-                          onClick={() => setVoucherDetail({ ...voucherDetail, typeValue: 0 })}
+                          onClick={() => {
+                            setVoucherDetail({ ...voucherDetail, typeValue: 0, value: 0 })
+                            setValueDefault(0)
+                          }}
                         />
                         <AiOutlineDollar
                           color={voucherDetail.typeValue === 1 ? '#fc7c27' : ''}
                           className="icons-css"
-                          onClick={() => setVoucherDetail({ ...voucherDetail, typeValue: 1 })}
+                          onClick={() => {
+                            setVoucherDetail({ ...voucherDetail, typeValue: 1, value: 0 })
+                            setErrorValue('')
+                            setValueDefault(formatCurrency(0))
+                          }}
                         />
                       </InputAdornment>
                     ),
@@ -439,17 +485,18 @@ export default function AdVoucherDetail() {
               {/* -------------------------------------------------------------------------------------------------------- */}
               <div>
                 <TextField
+                  disabled={voucherDetail.typeValue === 1 ? true : false}
                   className="input-css"
                   label="Giá trị tối đa"
-                  type="number"
                   size="small"
-                  value={voucherDetail?.maximumValue}
+                  value={formatCurrency(maximumValueDefault)}
                   onChange={(e) => {
                     setVoucherDetail({
                       ...voucherDetail,
-                      maximumValue: Number(e.target.value),
+                      maximumValue: formatCurrency(e.target.value).replace(/\D/g, ''),
                     })
                     setErrorMaximumValue('')
+                    setMaximumValueDefault(formatCurrency(e.target.value))
                   }}
                   fullWidth
                   InputLabelProps={{
@@ -476,16 +523,16 @@ export default function AdVoucherDetail() {
                 <TextField
                   className="input-css"
                   label="Số lượng"
-                  type="number"
                   variant="outlined"
                   size="small"
-                  value={voucherDetail?.quantity}
+                  value={quantityDefault}
                   onChange={(e) => {
                     setVoucherDetail({
                       ...voucherDetail,
-                      quantity: Number(e.target.value),
+                      quantity: formatCurrency(e.target.value).replace(/\D/g, ''),
                     })
                     setErrorQuantity('')
+                    setQuantityDefault(formatCurrency(e.target.value).replace(/\D/g, ''))
                   }}
                   fullWidth
                   InputLabelProps={{
@@ -507,15 +554,15 @@ export default function AdVoucherDetail() {
                 <TextField
                   className="input-css"
                   label="Điều kiện"
-                  type="number"
                   size="small"
-                  value={voucherDetail?.minimumAmount}
+                  value={formatCurrency(minimumvalueDefault)}
                   onChange={(e) => {
                     setVoucherDetail({
                       ...voucherDetail,
-                      minimumAmount: Number(e.target.value),
+                      minimumAmount: formatCurrency(e.target.value).replace(/\D/g, ''),
                     })
                     setErrorMinimumAmount('')
+                    setMinimumValueDefault(formatCurrency(e.target.value))
                   }}
                   fullWidth
                   InputLabelProps={{
@@ -598,14 +645,23 @@ export default function AdVoucherDetail() {
                     value={0}
                     control={<Radio />}
                     label="Công khai"
-                    onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
+                    onChange={(e) => {
+                      setVoucherDetail({
+                        ...voucherDetail,
+                        type: e.target.value,
+                      })
+                      setIsSelectVisible(true)
+                    }}
                   />
                   <FormControlLabel
                     name="typeUpdate"
                     value={1}
                     control={<Radio />}
                     label="Cá nhân"
-                    onChange={(e) => setVoucherDetail({ ...voucherDetail, type: e.target.value })}
+                    onChange={(e) => {
+                      setVoucherDetail({ ...voucherDetail, type: e.target.value })
+                      setIsSelectVisible(false)
+                    }}
                   />
                 </RadioGroup>
               </FormControl>
@@ -618,7 +674,7 @@ export default function AdVoucherDetail() {
                   <TableRow>
                     <TableCell width={'5%'}>
                       <Checkbox
-                        disabled={voucherDetail.type === 0 ? true : false}
+                        disabled={isSelectVisible}
                         name="tất cả"
                         checked={selectAll}
                         onChange={handleSelectAllChange}
@@ -643,7 +699,7 @@ export default function AdVoucherDetail() {
                     <TableRow key={row.id}>
                       <TableCell>
                         <Checkbox
-                          disabled={voucherDetail.type === 0 ? true : false}
+                          disabled={isSelectVisible}
                           key={row.id}
                           checked={selectedCustomerIds.indexOf(row.id) !== -1}
                           onChange={(event) => handleRowCheckboxChange(event, row.id)}

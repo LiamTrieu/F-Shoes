@@ -29,7 +29,6 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import AutorenewIcon from '@mui/icons-material/Autorenew'
 import EqualizerIcon from '@mui/icons-material/Equalizer'
 import './Dashboard.css'
-import Empty from '../../../components/Empty'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -284,7 +283,7 @@ export default function Dashboard() {
       <Grid2 container spacing={2} mb={2}>
         <DashboardCard
           iconCart={<EventNoteIcon />}
-          title={'hôm nay'}
+          title={'Hôm nay'}
           total={doanhThu.doanhSoNgay}
           product={doanhThu.soLuongSanPhamNgay}
           order={doanhThu.soDonHangNgay}
@@ -300,7 +299,7 @@ export default function Dashboard() {
         />
         <DashboardCard
           iconCart={<AssignmentIcon />}
-          title={'tháng này'}
+          title={'Tháng này'}
           total={doanhThu.doanhSoThangNay}
           product={doanhThu.soLuongSanPhamThangNay}
           order={doanhThu.soDonHangThangNay}
@@ -308,7 +307,7 @@ export default function Dashboard() {
         />
         <DashboardCard
           iconCart={<AssessmentIcon />}
-          title={'năm nay'}
+          title={'Năm nay'}
           total={doanhThu.doanhSoNamNay}
           product={doanhThu.soLuongSanPhamNamNay}
           order={doanhThu.soDonHangNamNay}
