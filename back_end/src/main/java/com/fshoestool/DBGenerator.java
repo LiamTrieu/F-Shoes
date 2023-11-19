@@ -864,5 +864,9 @@ public class DBGenerator implements CommandLineRunner {
                 .build();
         accountRepository.save(accountAdmin);
         accountRepository.save(accountClient);
+        Address address11 = Address.builder().name("Địa chỉ 11").phoneNumber("0563728192").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(accountAdmin).build();
+        address11.setId(addressRepository.save(address11).getId());
+        Address address12 = Address.builder().name("Địa chỉ 12").phoneNumber("0473029182").wardId("140207").districtId("2204").provinceId("266").specificAddress("aaaaa, Xã Mường Giàng, Huyện Quỳnh Nhai, Sơn La").type(true).account(accountClient).build();
+        address12.setId(addressRepository.save(address12).getId());
     }
 }

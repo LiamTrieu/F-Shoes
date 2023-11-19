@@ -135,6 +135,7 @@ export default function AdStaffDetail() {
     const newErrors = {}
     const currentDate = dayjs()
     const dateBirth = dayjs(staffDetail.dateBirth, 'DD/MM/YYYY')
+    const minBirthYear = 1900
     let check = 0
 
     if (!staffDetail.fullName.trim()) {
@@ -208,14 +209,19 @@ export default function AdStaffDetail() {
     }
 
     if (!staffDetail.dateBirth) {
-      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      newErrors.dateBirth = 'Ngày sinh không được để trống.'
       check++
     } else {
-      if (dateBirth.isAfter(currentDate)) {
-        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+      if (dateBirth.isBefore(`${minBirthYear}-01-01`) || !dateBirth.isValid()) {
+        newErrors.dateBirth = 'Ngày sinh không hợp lệ.'
         check++
       } else {
-        newErrors.dateBirth = ''
+        if (dateBirth.isAfter(currentDate)) {
+          newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+          check++
+        } else {
+          newErrors.dateBirth = ''
+        }
       }
     }
 
@@ -428,7 +434,7 @@ export default function AdStaffDetail() {
       <BreadcrumbsCustom nameHere={'Chi tiết nhân viên'} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={5}>
+          <Grid item xs={4}>
             <h3>Thông tin nhân viên</h3>
             <hr />
             <div
@@ -472,10 +478,9 @@ export default function AdStaffDetail() {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={Boolean(errors.fullName)}
+                helperText={errors.fullName}
               />
-              <Typography variant="body2" color="error">
-                {errors.fullName}
-              </Typography>
             </Grid>
             <Grid sx={{ mb: 3 }}>
               <Typography>
@@ -496,10 +501,9 @@ export default function AdStaffDetail() {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={Boolean(errors.citizenId)}
+                helperText={errors.citizenId}
               />
-              <Typography variant="body2" color="error">
-                {errors.citizenId}
-              </Typography>
             </Grid>
             <Grid sx={{ mb: 3 }}>
               <Typography>
@@ -520,10 +524,9 @@ export default function AdStaffDetail() {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={Boolean(errors.email)}
+                helperText={errors.email}
               />
-              <Typography variant="body2" color="error">
-                {errors.email}
-              </Typography>
             </Grid>
             <Grid sx={{ mb: 3 }}>
               <Typography>
@@ -544,10 +547,9 @@ export default function AdStaffDetail() {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={Boolean(errors.phoneNumber)}
+                helperText={errors.phoneNumber}
               />
-              <Typography variant="body2" color="error">
-                {errors.phoneNumber}
-              </Typography>
             </Grid>
             <Typography>
               <span className="required"> *</span>Ngày sinh
@@ -603,7 +605,7 @@ export default function AdStaffDetail() {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={7}>
+          <Grid item xs={8}>
             <h3>Thông tin địa chỉ</h3>
             <hr />
             {diaChi.map((item, index) => (
@@ -632,10 +634,9 @@ export default function AdStaffDetail() {
                           onChange={(e) => {
                             setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
                           }}
+                          error={Boolean(errors.name)}
+                          helperText={errors.name}
                         />
-                        <Typography variant="body2" color="error">
-                          {errors.name}
-                        </Typography>
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <Typography>
@@ -652,10 +653,9 @@ export default function AdStaffDetail() {
                           onChange={(e) => {
                             setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
                           }}
+                          error={Boolean(errors.phoneNumberAd)}
+                          helperText={errors.phoneNumberAd}
                         />
-                        <Typography variant="body2" color="error">
-                          {errors.phoneNumberAd}
-                        </Typography>
                       </Grid>
                     </Grid>
                     <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -764,10 +764,9 @@ export default function AdStaffDetail() {
                             setDetailDiaChi(updatedDetailDiaChi)
                             setErrors({ ...errors, specificAddress: '' })
                           }}
+                          error={Boolean(errors.specificAddress)}
+                          helperText={errors.specificAddress}
                         />
-                        <Typography variant="body2" color="error">
-                          {errors.specificAddress}
-                        </Typography>
                       </Grid>
                     </Grid>
                   </AccordionDetails>

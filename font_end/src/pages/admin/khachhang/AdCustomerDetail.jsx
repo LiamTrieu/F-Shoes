@@ -174,6 +174,7 @@ export default function AdCustomerDetail() {
     const newErrors = {}
     const currentDate = dayjs()
     const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
+    const minBirthYear = 1900
     let check = 0
 
     const cleanedFullName = khachHang.fullName.trim()
@@ -233,14 +234,19 @@ export default function AdCustomerDetail() {
     }
 
     if (!khachHang.dateBirth) {
-      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      newErrors.dateBirth = 'Ngày sinh không được để trống.'
       check++
     } else {
-      if (dateBirth.isAfter(currentDate)) {
-        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+      if (dateBirth.isBefore(`${minBirthYear}-01-01`) || !dateBirth.isValid()) {
+        newErrors.dateBirth = 'Ngày sinh không hợp lệ.'
         check++
       } else {
-        newErrors.dateBirth = ''
+        if (dateBirth.isAfter(currentDate)) {
+          newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+          check++
+        } else {
+          newErrors.dateBirth = ''
+        }
       }
     }
 
@@ -333,6 +339,7 @@ export default function AdCustomerDetail() {
       setNewDiaChi({ ...newDiaChi, districtId: { id: newValue.id, label: newValue.label } })
       preDiaChi[index] = { ...preDiaChi[index], districtId: newValue.id, huyen: newValue.label }
       preDiaChi[index] = { ...preDiaChi[index], wardId: '', xa: '' }
+      setXa([])
       setDiaChi(preDiaChi)
 
       let preErrorsDiaChi = [...errorsDiaChi]
@@ -593,11 +600,13 @@ export default function AdCustomerDetail() {
                   fullWidth
                   name="fullName"
                   value={khachHang.fullName}
-                  onChange={(e) => updateKhachHang(e)}
+                  onChange={(e) => {
+                    updateKhachHang(e)
+                    setErrorsKH({ ...errorsKH, fullName: '' })
+                  }}
+                  error={Boolean(errorsKH.fullName)}
+                  helperText={errorsKH.fullName}
                 />
-                <Typography variant="body2" color="error">
-                  {errorsKH.fullName}
-                </Typography>
               </Grid>
               <Grid item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
                 <Typography>
@@ -611,11 +620,13 @@ export default function AdCustomerDetail() {
                   fullWidth
                   name="email"
                   value={khachHang.email}
-                  onChange={(e) => updateKhachHang(e)}
+                  onChange={(e) => {
+                    updateKhachHang(e)
+                    setErrorsKH({ ...errorsKH, email: '' })
+                  }}
+                  error={Boolean(errorsKH.email)}
+                  helperText={errorsKH.email}
                 />
-                <Typography variant="body2" color="error">
-                  {errorsKH.email}
-                </Typography>
               </Grid>
               <Grid item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
                 <Typography>
@@ -629,11 +640,13 @@ export default function AdCustomerDetail() {
                   fullWidth
                   name="phoneNumber"
                   value={khachHang.phoneNumber}
-                  onChange={(e) => updateKhachHang(e)}
+                  onChange={(e) => {
+                    updateKhachHang(e)
+                    setErrorsKH({ ...errorsKH, phoneNumber: '' })
+                  }}
+                  error={Boolean(errorsKH.phoneNumber)}
+                  helperText={errorsKH.phoneNumber}
                 />
-                <Typography variant="body2" color="error">
-                  {errorsKH.phoneNumber}
-                </Typography>
               </Grid>
               <Grid item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
                 <Typography>
@@ -646,14 +659,15 @@ export default function AdCustomerDetail() {
                       format="DD-MM-YYYY"
                       name="dateBirth"
                       value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')}
-                      onChange={(date) =>
+                      onChange={(date) => {
                         updateKhachHang({
                           target: {
                             name: 'dateBirth',
                             value: date ? dayjs(date).format('DD-MM-YYYY') : null,
                           },
                         })
-                      }
+                        setErrorsKH({ ...errorsKH, dateBirth: '' })
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -670,7 +684,10 @@ export default function AdCustomerDetail() {
                     row
                     name="gender"
                     value={khachHang.gender}
-                    onChange={(e) => updateKhachHang(e)}>
+                    onChange={(e) => {
+                      updateKhachHang(e)
+                      setErrorsKH({ ...errorsKH, gender: '' })
+                    }}>
                     <FormControlLabel value="true" control={<Radio />} label="Nam" />
                     <FormControlLabel value="false" control={<Radio />} label="Nữ" />
                   </RadioGroup>
@@ -746,14 +763,17 @@ export default function AdCustomerDetail() {
                               onChange={(e) => {
                                 const updatedDiaChi = [...diaChi]
                                 updatedDiaChi[index].name = e.target.value
+                                if (e.target.value.trim() !== '') {
+                                  const updatedErrors = [...errorsDiaChi]
+                                  updatedErrors[index].name = ''
+                                  setErrorsDiaChi(updatedErrors)
+                                }
+
                                 setDiaChi(updatedDiaChi)
                               }}
+                              error={Boolean(errorsDiaChi[index]?.name)}
+                              helperText={errorsDiaChi[index]?.name || ' '}
                             />
-                            {errorsDiaChi[index]?.name && (
-                              <Typography variant="body2" color="error">
-                                {errorsDiaChi[index].name}
-                              </Typography>
-                            )}
                           </Grid>
                           <Grid item xs={12} md={6}>
                             <Typography>
@@ -770,14 +790,17 @@ export default function AdCustomerDetail() {
                               onChange={(e) => {
                                 const updatedDiaChi = [...diaChi]
                                 updatedDiaChi[index].phoneNumber = e.target.value
+                                if (e.target.value.trim() !== '') {
+                                  const updatedErrors = [...errorsDiaChi]
+                                  updatedErrors[index].phoneNumber = ''
+                                  setErrorsDiaChi(updatedErrors)
+                                }
+
                                 setDiaChi(updatedDiaChi)
                               }}
+                              error={Boolean(errorsDiaChi[index]?.phoneNumber)}
+                              helperText={errorsDiaChi[index]?.phoneNumber || ' '}
                             />
-                            {errorsDiaChi[index]?.phoneNumber && (
-                              <Typography variant="body2" color="error">
-                                {errorsDiaChi[index].phoneNumber}
-                              </Typography>
-                            )}
                           </Grid>
                         </Grid>
                         <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -787,6 +810,7 @@ export default function AdCustomerDetail() {
                                 <span className="required"> *</span>Tỉnh/thành phố
                               </Typography>
                               <Autocomplete
+                                clearIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -832,6 +856,7 @@ export default function AdCustomerDetail() {
                                 <span className="required"> *</span>Quận/huyện
                               </Typography>
                               <Autocomplete
+                                clearIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -871,6 +896,7 @@ export default function AdCustomerDetail() {
                                 <span className="required"> *</span>Xã/phường/thị trấn
                               </Typography>
                               <Autocomplete
+                                clearIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -916,14 +942,17 @@ export default function AdCustomerDetail() {
                               onChange={(e) => {
                                 const updatedDiaChi = [...diaChi]
                                 updatedDiaChi[index].specificAddress = e.target.value
+                                if (e.target.value.trim() !== '') {
+                                  const updatedErrors = [...errorsDiaChi]
+                                  updatedErrors[index].specificAddress = ''
+                                  setErrorsDiaChi(updatedErrors)
+                                }
+
                                 setDiaChi(updatedDiaChi)
                               }}
+                              error={Boolean(errorsDiaChi[index]?.specificAddress)}
+                              helperText={errorsDiaChi[index]?.specificAddress || ' '}
                             />
-                            {errorsDiaChi[index]?.specificAddress && (
-                              <Typography variant="body2" color="error">
-                                {errorsDiaChi[index].specificAddress}
-                              </Typography>
-                            )}
                           </Grid>
                         </Grid>
                         <IconButton

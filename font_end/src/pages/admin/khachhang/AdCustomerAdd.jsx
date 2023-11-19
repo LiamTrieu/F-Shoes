@@ -379,10 +379,9 @@ export default function AdCustomerAdd() {
                   updateDiaChi()
                   setErrors({ ...errors, fullName: '' })
                 }}
+                error={Boolean(errors.fullName)}
+                helperText={errors.fullName}
               />
-              <Typography variant="body2" color="error">
-                {errors.fullName}
-              </Typography>
 
               <FormControl sx={{ mt: 3 }} size="small">
                 <Typography>
@@ -426,10 +425,9 @@ export default function AdCustomerAdd() {
                       updateDiaChi()
                       setErrors({ ...errors, email: '' })
                     }}
+                    error={Boolean(errors.email)}
+                    helperText={errors.email}
                   />
-                  <Typography variant="body2" color="error">
-                    {errors.email}
-                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography>
@@ -446,10 +444,9 @@ export default function AdCustomerAdd() {
                       updateDiaChi()
                       setErrors({ ...errors, phoneNumber: '' })
                     }}
+                    error={Boolean(errors.phoneNumber)}
+                    helperText={errors.phoneNumber}
                   />
-                  <Typography variant="body2" color="error">
-                    {errors.phoneNumber}
-                  </Typography>
                 </Grid>
               </Grid>
               <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -459,6 +456,7 @@ export default function AdCustomerAdd() {
                   </Typography>
                   <Box sx={{ minWidth: 120 }}>
                     <Autocomplete
+                      clearIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"
@@ -485,6 +483,7 @@ export default function AdCustomerAdd() {
                   </Typography>
                   <Box sx={{ minWidth: 120 }}>
                     <Autocomplete
+                      clearIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"
@@ -511,6 +510,7 @@ export default function AdCustomerAdd() {
                   </Typography>
                   <Box sx={{ minWidth: 120 }}>
                     <Autocomplete
+                      clearIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"
@@ -575,11 +575,9 @@ export default function AdCustomerAdd() {
                       })
                       setErrors({ ...errors, specificAddress: '' })
                     }}
-                    disabled={!selectedXa}
+                    error={Boolean(errors.specificAddress)}
+                    helperText={errors.specificAddress}
                   />
-                  <Typography variant="body2" color="error">
-                    {errors.specificAddress}
-                  </Typography>
                 </Grid>
               </Grid>
             </Grid>

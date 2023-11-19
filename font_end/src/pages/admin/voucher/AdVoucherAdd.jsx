@@ -124,12 +124,16 @@ export default function AdVoucherAdd() {
       // listIdCustomer: '',
     }
 
+    const minBirthYear = 1900
+
     if (voucherAdd.code.trim() === '') {
       errors.code = 'Mã không được để trống'
     } else if (voucherAdd.code !== voucherAdd.code.trim()) {
       errors.code = 'Mã không được chứa khoảng trắng thừa'
     } else if (voucherAdd.code.length > 30) {
       errors.code = 'Mã không được dài hơn 30 ký tự'
+    } else if (voucherAdd.code.length < 5) {
+      errors.code = 'Mã không được bé hơn 5 ký tự'
     } else if (listCode.includes(voucherAdd.code.toLowerCase())) {
       errors.code = 'Mã đã tồn tại'
     } else if (/[^a-zA-Z0-9_\s]+/.test(voucherAdd.code)) {
@@ -142,6 +146,8 @@ export default function AdVoucherAdd() {
       errors.name = 'Tên không được chứa khoảng trắng thừa'
     } else if (voucherAdd.name.length > 100) {
       errors.name = 'Tên không được dài hơn 100 ký tự'
+    } else if (voucherAdd.name.length < 5) {
+      errors.name = 'Tên không được bé hơn 5 ký tự'
     } else if (listName.includes(voucherAdd.name.toLowerCase())) {
       errors.name = 'Tên đã tồn tại'
     } else if (/[^a-zA-Z0-9_\s]+/.test(voucherAdd.name)) {
@@ -200,10 +206,20 @@ export default function AdVoucherAdd() {
       )
     ) {
       errors.startDate = 'Ngày bắt đầu không được lớn hơn ngày kết thúc'
+    } else if (
+      dayjs(voucherAdd.startDate, 'DD-MM-YYYY HH:mm:ss').isBefore(`${minBirthYear}-01-01`) ||
+      !dayjs(voucherAdd.startDate, 'DD-MM-YYYY HH:mm:ss').isValid()
+    ) {
+      errors.startDate = 'Ngày bắt đầu không hợp lệ'
     }
 
     if (voucherAdd.endDate.trim() === '') {
       errors.endDate = 'Ngày kết thúc không được để trống'
+    } else if (
+      dayjs(voucherAdd.endDate, 'DD-MM-YYYY HH:mm:ss').isBefore(`${minBirthYear}-01-01`) ||
+      !dayjs(voucherAdd.endDate, 'DD-MM-YYYY HH:mm:ss').isValid()
+    ) {
+      errors.endDate = 'Ngày kết thúc không hợp lệ'
     }
 
     // if (voucherAdd.type === 1 && selectedCustomerIds.length > Number(voucherAdd.quantity)) {
@@ -281,7 +297,9 @@ export default function AdVoucherAdd() {
   }
 
   const handleSelectAllChange = (event) => {
-    const selectedIds = event.target.checked ? listCustomer.map((row) => row.id) : []
+    const allCustomerIds = listCustomer.map((row) => row.id)
+    const selectedIds = event.target.checked ? [...selectedCustomerIds, ...allCustomerIds] : []
+
     setSelectedCustomerIds(selectedIds)
     setSelectAll(event.target.checked)
   }
@@ -316,9 +334,13 @@ export default function AdVoucherAdd() {
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) => setVoucherAdd({ ...voucherAdd, code: e.target.value })}
+                onChange={(e) => {
+                  setVoucherAdd({ ...voucherAdd, code: e.target.value })
+                  setErrorCode('')
+                }}
+                error={Boolean(errorCode)}
+                helperText={errorCode}
               />
-              <span className="error">{errorCode}</span>
             </div>
             {/* -------------------------------------------------------------------------------------------------------- */}
             <div style={{ marginBottom: '16px' }}>
@@ -328,9 +350,13 @@ export default function AdVoucherAdd() {
                 type="text"
                 size="small"
                 fullWidth
-                onChange={(e) => setVoucherAdd({ ...voucherAdd, name: e.target.value })}
+                onChange={(e) => {
+                  setVoucherAdd({ ...voucherAdd, name: e.target.value })
+                  setErrorName('')
+                }}
+                error={Boolean(errorName)}
+                helperText={errorName}
               />
-              <span className="error">{errorName}</span>
             </div>
             {/* -------------------------------------------------------------------------------------------------------- */}
             <Stack
@@ -357,13 +383,17 @@ export default function AdVoucherAdd() {
                         <AiOutlineDollar
                           color={voucherAdd.typeValue === 1 ? '#fc7c27' : ''}
                           className="icons-css"
-                          onClick={() => setVoucherAdd({ ...voucherAdd, typeValue: 1 })}
+                          onClick={() => {
+                            setVoucherAdd({ ...voucherAdd, typeValue: 1 })
+                            setErrorValue('')
+                          }}
                         />
                       </InputAdornment>
                     ),
                   }}
+                  error={Boolean(errorValue)}
+                  helperText={errorValue}
                 />
-                <span className="error">{errorValue}</span>
               </div>
               {/* -------------------------------------------------------------------------------------------------------- */}
               <div>
@@ -374,12 +404,13 @@ export default function AdVoucherAdd() {
                   size="small"
                   fullWidth
                   defaultValue={0}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setVoucherAdd({
                       ...voucherAdd,
                       maximumValue: Number(e.target.value),
                     })
-                  }
+                    setErrorMaximumValue('')
+                  }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -387,8 +418,9 @@ export default function AdVoucherAdd() {
                       </InputAdornment>
                     ),
                   }}
+                  error={Boolean(errorMaximumValue)}
+                  helperText={errorMaximumValue}
                 />
-                <span className="error">{errorMaximumValue}</span>
               </div>
             </Stack>
             {/* -------------------------------------------------------------------------------------------------------- */}
@@ -405,12 +437,13 @@ export default function AdVoucherAdd() {
                   size="small"
                   fullWidth
                   defaultValue={0}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setVoucherAdd({
                       ...voucherAdd,
                       quantity: Number(e.target.value),
                     })
-                  }
+                    setErrorQuantity('')
+                  }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -418,8 +451,9 @@ export default function AdVoucherAdd() {
                       </InputAdornment>
                     ),
                   }}
+                  error={Boolean(errorQuantity)}
+                  helperText={errorQuantity}
                 />
-                <span className="error">{errorQuantity}</span>
               </div>
               {/* -------------------------------------------------------------------------------------------------------- */}
               <div>
@@ -430,12 +464,13 @@ export default function AdVoucherAdd() {
                   size="small"
                   fullWidth
                   defaultValue={0}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setVoucherAdd({
                       ...voucherAdd,
                       minimumAmount: Number(e.target.value),
                     })
-                  }
+                    setErrorMinimumAmount('')
+                  }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -443,8 +478,9 @@ export default function AdVoucherAdd() {
                       </InputAdornment>
                     ),
                   }}
+                  error={Boolean(errorMinimumAmount)}
+                  helperText={errorMinimumAmount}
                 />
-                <span className="error">{errorMinimumAmount}</span>
               </div>
             </Stack>
             {/* -------------------------------------------------------------------------------------------------------- */}
@@ -453,12 +489,13 @@ export default function AdVoucherAdd() {
                 <DateTimePicker
                   className="dateTime"
                   format={'DD-MM-YYYY HH:mm:ss'}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setVoucherAdd({
                       ...voucherAdd,
                       startDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                     })
-                  }
+                    setErrorStartDate('')
+                  }}
                   ampm={false}
                   minutesStep={1}
                   minDateTime={dayjs()}
@@ -480,12 +517,13 @@ export default function AdVoucherAdd() {
                 <DateTimePicker
                   className="dateTime"
                   format={'DD-MM-YYYY HH:mm:ss'}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setVoucherAdd({
                       ...voucherAdd,
                       endDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                     })
-                  }
+                    setErrorEndDate('')
+                  }}
                   ampm={false}
                   minDateTime={dayjs()}
                   slotProps={{

@@ -125,29 +125,15 @@ export default function AdVoucherDetail() {
   }
 
   const haldleAllCodeVoucher = () => {
-    voucherApi
-      .getAllCodeVoucher()
-      .then((response) => {
-        setAllCodeVoucher(response.data.data)
-      })
-      .catch(() => {
-        toast.warning('Vui lòng f5 tải lại dữ liệu', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-      })
+    voucherApi.getAllCodeVoucher().then((response) => {
+      setAllCodeVoucher(response.data.data)
+    })
   }
 
   const haldleAllNameVoucher = () => {
-    voucherApi
-      .getAllNameVoucher()
-      .then((response) => {
-        setAllNameVoucher(response.data.data)
-      })
-      .catch(() => {
-        toast.warning('Vui lòng f5 tải lại dữ liệu', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-      })
+    voucherApi.getAllNameVoucher().then((response) => {
+      setAllNameVoucher(response.data.data)
+    })
   }
 
   const handleValidation = () => {
@@ -163,12 +149,16 @@ export default function AdVoucherDetail() {
       endDate: '',
     }
 
+    const minBirthYear = 1900
+
     if (voucherDetail.code.trim() === '') {
       errors.code = 'Mã không được để trống'
     } else if (voucherDetail.code !== voucherDetail.code.trim()) {
       errors.code = 'Mã không được chứa khoảng trắng thừa'
     } else if (voucherDetail.code.length > 30) {
       errors.code = 'Mã không được dài hơn 30 ký tự'
+    } else if (voucherDetail.code.length < 5) {
+      errors.code = 'Mã không được bé hơn 5 ký tự'
     } else if (
       prevCodeValue !== voucherDetail.code &&
       listCode.includes(voucherDetail.code.toLowerCase())
@@ -184,6 +174,8 @@ export default function AdVoucherDetail() {
       errors.name = 'Tên không được chứa khoảng trắng thừa'
     } else if (voucherDetail.name.length > 100) {
       errors.name = 'Tên không được dài hơn 100 ký tự'
+    } else if (voucherDetail.name.length < 5) {
+      errors.name = 'Tên không được bé hơn 5 ký tự'
     } else if (
       prevNameValue !== voucherDetail.name &&
       listName.includes(voucherDetail.name.toLowerCase())
@@ -239,10 +231,26 @@ export default function AdVoucherDetail() {
 
     if (voucherDetail.startDate.trim() === '') {
       errors.startDate = 'Ngày bắt đầu không được để trống'
+    } else if (
+      dayjs(voucherDetail.startDate, 'DD-MM-YYYY HH:mm:ss').isAfter(
+        dayjs(voucherDetail.endDate, 'DD-MM-YYYY HH:mm:ss'),
+      )
+    ) {
+      errors.startDate = 'Ngày bắt đầu không được lớn hơn ngày kết thúc'
+    } else if (
+      dayjs(voucherDetail.startDate, 'DD-MM-YYYY HH:mm:ss').isBefore(`${minBirthYear}-01-01`) ||
+      !dayjs(voucherDetail.startDate, 'DD-MM-YYYY HH:mm:ss').isValid()
+    ) {
+      errors.startDate = 'Ngày bắt đầu không hợp lệ'
     }
 
     if (voucherDetail.endDate.trim() === '') {
       errors.endDate = 'Ngày kết thúc không được để trống'
+    } else if (
+      dayjs(voucherDetail.endDate, 'DD-MM-YYYY HH:mm:ss').isBefore(`${minBirthYear}-01-01`) ||
+      !dayjs(voucherDetail.endDate, 'DD-MM-YYYY HH:mm:ss').isValid()
+    ) {
+      errors.endDate = 'Ngày kết thúc không hợp lệ'
     }
 
     for (const key in errors) {
@@ -303,9 +311,6 @@ export default function AdVoucherDetail() {
       })
       .catch(() => {
         setDataFetched(false)
-        toast.warning('Vui lòng f5 tải lại dữ liệu', {
-          position: toast.POSITION.TOP_CENTER,
-        })
       })
   }
 
@@ -355,13 +360,15 @@ export default function AdVoucherDetail() {
                     ...voucherDetail,
                     code: e.target.value,
                   })
+                  setErrorCode('')
                 }}
                 fullWidth
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={Boolean(errorCode)}
+                helperText={errorCode}
               />
-              <span className="error">{errorCode}</span>
             </div>
             {/* -------------------------------------------------------------------------------------------------------- */}
             <div style={{ marginBottom: '16px' }}>
@@ -376,13 +383,15 @@ export default function AdVoucherDetail() {
                     ...voucherDetail,
                     name: e.target.value,
                   })
+                  setErrorName('')
                 }}
                 fullWidth
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={Boolean(errorName)}
+                helperText={errorName}
               />
-              <span className="error">{errorName}</span>
             </div>
             {/* -------------------------------------------------------------------------------------------------------- */}
             <Stack
@@ -401,6 +410,7 @@ export default function AdVoucherDetail() {
                       ...voucherDetail,
                       value: Number(e.target.value),
                     })
+                    setErrorValue('')
                   }}
                   fullWidth
                   InputLabelProps={{
@@ -422,8 +432,9 @@ export default function AdVoucherDetail() {
                       </InputAdornment>
                     ),
                   }}
+                  error={Boolean(errorValue)}
+                  helperText={errorValue}
                 />
-                <span className="error">{errorValue}</span>
               </div>
               {/* -------------------------------------------------------------------------------------------------------- */}
               <div>
@@ -438,6 +449,7 @@ export default function AdVoucherDetail() {
                       ...voucherDetail,
                       maximumValue: Number(e.target.value),
                     })
+                    setErrorMaximumValue('')
                   }}
                   fullWidth
                   InputLabelProps={{
@@ -450,8 +462,9 @@ export default function AdVoucherDetail() {
                       </InputAdornment>
                     ),
                   }}
+                  error={Boolean(errorMaximumValue)}
+                  helperText={errorMaximumValue}
                 />
-                <span className="error">{errorMaximumValue}</span>
               </div>
             </Stack>
             {/* -------------------------------------------------------------------------------------------------------- */}
@@ -472,6 +485,7 @@ export default function AdVoucherDetail() {
                       ...voucherDetail,
                       quantity: Number(e.target.value),
                     })
+                    setErrorQuantity('')
                   }}
                   fullWidth
                   InputLabelProps={{
@@ -484,8 +498,9 @@ export default function AdVoucherDetail() {
                       </InputAdornment>
                     ),
                   }}
+                  error={Boolean(errorQuantity)}
+                  helperText={errorQuantity}
                 />
-                <span className="error">{errorQuantity}</span>
               </div>
               {/* -------------------------------------------------------------------------------------------------------- */}
               <div>
@@ -500,6 +515,7 @@ export default function AdVoucherDetail() {
                       ...voucherDetail,
                       minimumAmount: Number(e.target.value),
                     })
+                    setErrorMinimumAmount('')
                   }}
                   fullWidth
                   InputLabelProps={{
@@ -512,8 +528,9 @@ export default function AdVoucherDetail() {
                       </InputAdornment>
                     ),
                   }}
+                  error={Boolean(errorMinimumAmount)}
+                  helperText={errorMinimumAmount}
                 />
-                <span className="error">{errorMinimumAmount}</span>
               </div>
             </Stack>
             {/* -------------------------------------------------------------------------------------------------------- */}
@@ -528,6 +545,7 @@ export default function AdVoucherDetail() {
                       ...voucherDetail,
                       startDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                     })
+                    setErrorStartDate('')
                   }}
                   ampm={false}
                   minDateTime={dayjs()}
@@ -555,6 +573,7 @@ export default function AdVoucherDetail() {
                       ...voucherDetail,
                       endDate: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                     })
+                    setErrorEndDate('')
                   }}
                   ampm={false}
                   minDateTime={dayjs()}

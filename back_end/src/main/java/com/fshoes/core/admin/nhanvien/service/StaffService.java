@@ -13,7 +13,7 @@ import java.util.List;
 public interface StaffService {
     List<Account> getAll();
 
-    Page<StaffRespone> searchStaff(SearchStaff searchStaff);
+    Page<StaffRespone> searchStaff(SearchStaff searchStaff );
 
     StaffRespone getOne(String id);
 

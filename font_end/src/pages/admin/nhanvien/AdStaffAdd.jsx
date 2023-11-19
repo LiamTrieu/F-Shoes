@@ -499,10 +499,9 @@ const AddStaff = () => {
                 updateDiaChi()
                 setErrors({ ...errors, fullName: '' })
               }}
+              error={Boolean(errors.fullName)}
+              helperText={errors.fullName}
             />
-            <Typography variant="body2" color="error">
-              {errors.fullName}
-            </Typography>
           </Grid>
           <Grid item xs={8}>
             <h3>Thông tin chi tiết</h3>
@@ -522,10 +521,9 @@ const AddStaff = () => {
                     setStaffAdd({ ...staffAdd, citizenId: e.target.value })
                     setErrors({ ...errors, citizenId: '' })
                   }}
+                  error={Boolean(errors.citizenId)}
+                  helperText={errors.citizenId}
                 />
-                <Typography variant="body2" color="error">
-                  {errors.citizenId}
-                </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography>
@@ -592,10 +590,9 @@ const AddStaff = () => {
                     setStaffAdd({ ...staffAdd, email: e.target.value })
                     setErrors({ ...errors, email: '' })
                   }}
+                  error={Boolean(errors.email)}
+                  helperText={errors.email}
                 />
-                <Typography variant="body2" color="error">
-                  {errors.email}
-                </Typography>
               </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -693,10 +690,9 @@ const AddStaff = () => {
                     updateDiaChi()
                     setErrors({ ...errors, phoneNumber: '' })
                   }}
+                  error={Boolean(errors.phoneNumber)}
+                  helperText={errors.phoneNumber}
                 />
-                <Typography variant="body2" color="error">
-                  {errors.phoneNumber}
-                </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography>
@@ -716,11 +712,9 @@ const AddStaff = () => {
                     })
                     setErrors({ ...errors, specificAddress: '' })
                   }}
-                  disabled={!selectedXa}
+                  error={Boolean(errors.specificAddress)}
+                  helperText={errors.specificAddress}
                 />
-                <Typography variant="body2" color="error">
-                  {errors.specificAddress}
-                </Typography>
               </Grid>
             </Grid>
           </Grid>
