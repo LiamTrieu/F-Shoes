@@ -47,6 +47,15 @@ export default function ModalAdBillUpdateAddress({
   const [timeShip, setTimeShip] = useState('')
   const [phiShip, setPhiShip] = useState()
   const [diaChiCuThe, setDiaChiCuThe] = useState('')
+  const [errorsAA, setErrorsAA] = useState({
+    name: '',
+    email: '',
+    phoneNumber: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    specificAddress: '',
+  })
 
   const [hdBillReq, setHdBillReq] = useState({
     fullName: billDetail ? billDetail.fullName : '',
@@ -136,6 +145,11 @@ export default function ModalAdBillUpdateAddress({
     setSelectedTinh(newValue)
     setSelectedTinhValue(newValue)
     setSelectedHuyen(null)
+    setHuyenName('')
+    setSelectedXa(null)
+    setXaName('')
+    setXa([])
+    setErrorsAA({ ...errorsAA, provinceId: '' })
     if (newValue) {
       loadHuyen(newValue.id)
       setTinhName(newValue.label)
@@ -149,6 +163,8 @@ export default function ModalAdBillUpdateAddress({
   const handleHuyenChange = (_, newValue) => {
     setSelectedHuyen(newValue)
     setSelectedXa(null)
+    setXaName('')
+    setErrorsAA({ ...errorsAA, districtId: '' })
     if (newValue) {
       loadXa(newValue.id)
       setHuyenName(newValue.label)
@@ -160,6 +176,7 @@ export default function ModalAdBillUpdateAddress({
   }
 
   const handleXaChange = (_, newValue) => {
+    setErrorsAA({ ...errorsAA, wardId: '' })
     if (newValue) {
       setSelectedXa(newValue)
       setXaName(newValue.label)
@@ -212,6 +229,58 @@ export default function ModalAdBillUpdateAddress({
   }
 
   const confirmUpdateBill = () => {
+    const newErrors = {}
+    let checkAA = 0
+
+    if (!hdBillReq.fullName.trim()) {
+      newErrors.name = 'Tên người nhận không được để trống'
+      checkAA++
+    } else if (hdBillReq.fullName.trim().length > 100) {
+      newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
+      checkAA++
+    } else {
+      newErrors.name = ''
+    }
+
+    if (!diaChiCuThe) {
+      newErrors.specificAddress = 'Địa chỉ cụ thể không được để trống'
+      checkAA++
+    } else if (diaChiCuThe.trim().length > 225) {
+      newErrors.specificAddress = 'Địa chỉ cụ thể không được quá 225 kí tự.'
+      checkAA++
+    } else {
+      newErrors.specificAddress = ''
+    }
+
+    if (!hdBillReq.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Vui lòng nhập Số điện thoại.'
+      checkAA++
+    } else {
+      const phoneNumberRegex = /^(0[1-9][0-9]{8})$/
+      if (!phoneNumberRegex.test(hdBillReq.phoneNumber.trim())) {
+        newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
+        checkAA++
+      } else {
+        newErrors.phoneNumber = ''
+      }
+    }
+
+    if (!tinhName) {
+      newErrors.provinceId = 'Vui lòng chọn tỉnh'
+      checkAA++
+    }
+    if (!huyenName) {
+      newErrors.districtId = 'Vui lòng chọn huyện'
+      checkAA++
+    }
+    if (!xaName) {
+      newErrors.wardId = 'Vui lòng chọn xã'
+      checkAA++
+    }
+    if (checkAA > 0) {
+      setErrorsAA(newErrors)
+      return
+    }
     const diaChi = diaChiCuThe + ', ' + xaName + ', ' + huyenName + ', ' + tinhName
     hdBillReq.address = diaChi
     console.log(hdBillReq)
@@ -266,42 +335,48 @@ export default function ModalAdBillUpdateAddress({
           </Toolbar>
           <Stack>
             <Box p={3} pt={0} pb={2}>
-              <TextField
-                id="bill_full_name"
-                sx={{ mt: 1, width: '48%', marginTop: 2 }}
-                color="cam"
-                label="Tên người nhận"
-                size="small"
-                value={hdBillReq.fullName}
-                onChange={(event) => {
-                  const newFullName = event.target.value
-                  setHdBillReq({ ...hdBillReq, fullName: newFullName })
-                }}
-              />
-
-              <TextField
-                color="cam"
-                variant="outlined"
-                label="Số điện thoại"
-                type="text"
-                size="small"
-                sx={{
-                  mt: 1,
-                  width: '48%',
-                  float: 'right',
-                }}
-                name="phoneNumber"
-                value={hdBillReq.phoneNumber}
-                onChange={(event) => {
-                  const newPhoneNum = event.target.value
-                  setHdBillReq({ ...hdBillReq, phoneNumber: newPhoneNum })
-                }}
-              />
-
-              <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid container spacing={2} sx={{ mt: 2 }}>
+                <Grid item xs={6}>
+                  <TextField
+                    id="bill_full_name"
+                    fullWidth
+                    color="cam"
+                    label="Tên người nhận"
+                    size="small"
+                    value={hdBillReq.fullName}
+                    onChange={(event) => {
+                      const newFullName = event.target.value
+                      setHdBillReq({ ...hdBillReq, fullName: newFullName })
+                      setErrorsAA({ ...errorsAA, name: '' })
+                    }}
+                    error={Boolean(errorsAA.name)}
+                    helperText={errorsAA.name}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    color="cam"
+                    variant="outlined"
+                    label="Số điện thoại"
+                    type="text"
+                    size="small"
+                    fullWidth
+                    name="phoneNumber"
+                    value={hdBillReq.phoneNumber}
+                    onChange={(event) => {
+                      const newPhoneNum = event.target.value
+                      setHdBillReq({ ...hdBillReq, phoneNumber: newPhoneNum })
+                      setErrorsAA({ ...errorsAA, phoneNumber: '' })
+                    }}
+                    error={Boolean(errorsAA.phoneNumber)}
+                    helperText={errorsAA.phoneNumber}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={2} sx={{ mt: 2 }}>
                 <Grid item xs={4}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
@@ -325,10 +400,13 @@ export default function ModalAdBillUpdateAddress({
                       />
                     )}
                   />
+                  <Typography variant="body2" color="error">
+                    {errorsAA.provinceId}
+                  </Typography>
                 </Grid>
                 <Grid item xs={4}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
@@ -351,10 +429,13 @@ export default function ModalAdBillUpdateAddress({
                       />
                     )}
                   />
+                  <Typography variant="body2" color="error">
+                    {errorsAA.districtId}
+                  </Typography>
                 </Grid>
                 <Grid item xs={4}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
@@ -371,32 +452,45 @@ export default function ModalAdBillUpdateAddress({
                       />
                     )}
                   />
+                  <Typography variant="body2" color="error">
+                    {errorsAA.wardId}
+                  </Typography>
                 </Grid>
               </Grid>
-              <TextField
-                color="cam"
-                variant="outlined"
-                label="Địa chỉ cụ thể"
-                type="text"
-                size="small"
-                sx={{ mt: 1, width: '48%', marginTop: 2 }}
-                name="specificAddress"
-                value={diaChiCuThe}
-                onChange={(event) => setDiaChiCuThe(event.target.value)}
-              />
-
-              <TextField
-                id="bill_note"
-                sx={{ mt: 1, width: '48%', float: 'right', marginTop: 2 }}
-                color="cam"
-                label="Ghi chú"
-                size="small"
-                value={hdBillReq.note}
-                onChange={(event) => {
-                  const newNote = event.target.value
-                  setHdBillReq({ ...hdBillReq, note: newNote })
-                }}
-              />
+              <Grid container spacing={2} sx={{ mt: 2 }}>
+                <Grid item xs={6}>
+                  <TextField
+                    color="cam"
+                    variant="outlined"
+                    label="Địa chỉ cụ thể"
+                    type="text"
+                    size="small"
+                    fullWidth
+                    name="specificAddress"
+                    value={diaChiCuThe}
+                    onChange={(event) => {
+                      setDiaChiCuThe(event.target.value)
+                      setErrorsAA({ ...errorsAA, specificAddress: '' })
+                    }}
+                    error={Boolean(errorsAA.specificAddress)}
+                    helperText={errorsAA.specificAddress}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    id="bill_note"
+                    color="cam"
+                    fullWidth
+                    label="Ghi chú"
+                    size="small"
+                    value={hdBillReq.note}
+                    onChange={(event) => {
+                      const newNote = event.target.value
+                      setHdBillReq({ ...hdBillReq, note: newNote })
+                    }}
+                  />
+                </Grid>
+              </Grid>
             </Box>
             <Box display={'inline'} sx={{ marginLeft: 5 }}>
               <b>Giao hàng</b>

@@ -58,8 +58,6 @@ export default function ModalUpdateAddressBillClient({
   })
 
   useEffect(() => {
-    console.log('bill detail')
-    console.log(listBillDetail)
     loadTinh()
     if (billDetail && billDetail.address) {
       const addressParts = billDetail.address.split(', ')
