@@ -5,6 +5,10 @@ const voucherApi = {
     const urlGetAll = `/voucher/view/all`
     return axiosAdmin.get(urlGetAll)
   },
+  getAllCustomer: () => {
+    const urlGetAll = `/voucher/view/all-customer`
+    return axiosAdmin.get(urlGetAll)
+  },
   getOneVoucherById: (id) => {
     const urlOneVoucherById = `/voucher/view/one/${id}`
     return axiosAdmin.get(urlOneVoucherById)

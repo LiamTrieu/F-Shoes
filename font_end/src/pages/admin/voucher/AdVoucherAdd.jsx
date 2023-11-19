@@ -68,10 +68,10 @@ export default function AdVoucherAdd() {
   const [errorQuantity, setErrorQuantity] = useState('')
   const [errorStartDate, setErrorStartDate] = useState('')
   const [errorEndDate, setErrorEndDate] = useState('')
-  // const [errorListIdCustomer, setErrorListIdCustomer] = useState('')
   const [allCodeVoucher, setAllCodeVoucher] = useState([])
   const [allNameVoucher, setAllNameVoucher] = useState([])
   const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
+  const [allCustomer, setAllCustomer] = useState([])
 
   const listCode = []
   allCodeVoucher.map((m) => listCode.push(m.toLowerCase()))
@@ -82,6 +82,7 @@ export default function AdVoucherAdd() {
     handelCustomeFill(initPage)
     haldleAllCodeVoucher()
     haldleAllNameVoucher()
+    haldleAllCustomer()
   }, [initPage])
 
   const haldleAllCodeVoucher = () => {
@@ -89,6 +90,19 @@ export default function AdVoucherAdd() {
       .getAllCodeVoucher()
       .then((response) => {
         setAllCodeVoucher(response.data.data)
+      })
+      .catch(() => {
+        toast.warning('Vui lòng f5 tải lại dữ liệu', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const haldleAllCustomer = () => {
+    voucherApi
+      .getAllCustomer()
+      .then((response) => {
+        setAllCustomer(response.data.data)
       })
       .catch(() => {
         toast.warning('Vui lòng f5 tải lại dữ liệu', {
@@ -121,7 +135,6 @@ export default function AdVoucherAdd() {
       minimumAmount: '',
       startDate: '',
       endDate: '',
-      // listIdCustomer: '',
     }
 
     const minBirthYear = 1900
@@ -180,6 +193,8 @@ export default function AdVoucherAdd() {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
     } else if (voucherAdd.maximumValue < 1) {
       errors.maximumValue = 'giá trị tối đa tối thiểu 1 (vnđ)'
+    } else if (voucherAdd.typeValue === 1 && voucherAdd.maximumValue !== voucherAdd.value) {
+      errors.maximumValue = 'giá trị tối đa phải bằng giá trị'
     }
 
     if (voucherAdd.quantity === null) {
@@ -297,7 +312,7 @@ export default function AdVoucherAdd() {
   }
 
   const handleSelectAllChange = (event) => {
-    const allCustomerIds = listCustomer.map((row) => row.id)
+    const allCustomerIds = allCustomer.map((row) => row.id)
     const selectedIds = event.target.checked ? [...selectedCustomerIds, ...allCustomerIds] : []
 
     setSelectedCustomerIds(selectedIds)
@@ -570,7 +585,6 @@ export default function AdVoucherAdd() {
             </div>
           </Grid>
           <Grid item xs={7}>
-            {/* <span className="error">{errorListIdCustomer}</span> */}
             {dataFetched && (
               <Table className="tableCss" aria-label="simple table">
                 <TableHead>
@@ -581,7 +595,6 @@ export default function AdVoucherAdd() {
                         name="tất cả"
                         checked={selectAll}
                         onChange={handleSelectAllChange}
-                        // style={{ color: 'white' }}
                       />
                     </TableCell>
                     <TableCell width={'25%'}>Tên</TableCell>

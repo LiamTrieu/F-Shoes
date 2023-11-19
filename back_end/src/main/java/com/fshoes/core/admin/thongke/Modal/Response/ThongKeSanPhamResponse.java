@@ -3,9 +3,9 @@ package com.fshoes.core.admin.thongke.Modal.Response;
 import org.springframework.beans.factory.annotation.Value;
 
 public interface ThongKeSanPhamResponse {
-    @Value("#{target.ngay}")
-    Long getNgay();
+    @Value("#{target.status}")
+    Long getStatus();
 
-    @Value("#{target.giaTri}")
-    Float getGiaTri();
+    @Value("#{target.soLuong}")
+    Long getSoLuong();
 }

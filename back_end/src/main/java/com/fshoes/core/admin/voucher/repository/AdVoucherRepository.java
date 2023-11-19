@@ -1,10 +1,12 @@
 package com.fshoes.core.admin.voucher.repository;
 
+import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
 import com.fshoes.core.admin.voucher.model.respone.AdFindCustomerRespone;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
+import com.fshoes.entity.Account;
 import com.fshoes.entity.Voucher;
 import com.fshoes.repository.VoucherRepository;
 import org.springframework.data.domain.Page;
@@ -121,4 +123,11 @@ public interface AdVoucherRepository extends VoucherRepository {
             or ((v.startDate <= :dateNow and v.endDate > :dateNow) and v.status != 1)
             """)
     List<Voucher> getAllVoucherWrong(Long dateNow);
+
+    @Query(value = """
+                select  ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, avatar, email,
+                 full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber,
+                 gender, created_at as createdAt, status from account WHERE role = 2
+            """, nativeQuery = true)
+    List<KhachHangRespone> getAllCustomer();
 }

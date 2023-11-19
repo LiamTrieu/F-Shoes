@@ -23,6 +23,11 @@ public class AdVoucherController {
         return new ObjectRespone(voucherService.getAllVoucher());
     }
 
+    @GetMapping("/view/all-customer")
+    public ObjectRespone getAllCustomer() {
+        return new ObjectRespone(voucherService.getAllCustomer());
+    }
+
     @GetMapping("/view/one/{id}")
     public ObjectRespone getOneVoucherById(@PathVariable String id) {
         return new ObjectRespone(voucherService.getVoucherById(id));
