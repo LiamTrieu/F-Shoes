@@ -61,6 +61,9 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
     @Autowired
     private AuthenticationService authenticationService;
 
+    @Autowired
+    private UserLogin userLogin;
+
     @Override
     public Bill thanhToan(ClientCheckoutRequest request, UserLogin userLogin) {
         Bill newBill = new Bill();
@@ -100,7 +103,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
              account = authenticationService.checkMail(userLogin.getUserLogin().getEmail());
         }
         else {
-             account = null;
+             account = authenticationService.checkMail(request.getEmail());
         }
         if (account == null) {
             account = new Account();
@@ -252,11 +255,20 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 Bill bill = billRepository.findById((String) fields.get("vnp_OrderInfo")).orElse(null);
                 if (bill != null && bill.getStatus() == 8) {
                     bill.setStatus(1);
-                    Account account = authenticationService.checkMail(bill.getEmail());
+                    Account account;
+                    if( userLogin.getUserLogin() != null) {
+                        account = authenticationService.checkMail(userLogin.getUserLogin().getEmail());
+                    }
+                    else {
+                        account = authenticationService.checkMail(bill.getEmail());
+                    }
 
                     if (account == null) {
                         account = new Account();
                         account.setRole(2);
+                        account.setGender(true);
+                        account.setPhoneNumber(bill.getPhoneNumber());
+                        account.setDateBirth(631126800000L);
                         account.setFullName(bill.getFullName());
                         account.setEmail(bill.getEmail());
                         account.setPassword(MD5Util.getMD5(password));

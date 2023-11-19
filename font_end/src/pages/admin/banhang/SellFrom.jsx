@@ -74,7 +74,7 @@ const styleModalAddCustomer = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: { xs: '85vw', sm: '65vw', md: '55vw', lg: '45vw' },
-  height: '650px',
+  height: 'auto',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
@@ -85,7 +85,7 @@ const styleCustomerPays = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  height: 550,
+  height: 580,
   bgcolor: 'background.paper',
   borderRadius: '8px',
   boxShadow: 24,
@@ -120,7 +120,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
 
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  const handleClose = () => {
+    setOpen(false)
+    setErrorAddBill({ customerAmount: '', payMent: '' })
+  }
   const [paymentMethod, setPaymentMethod] = useState('0')
   const [transactionCode, setTransactionCode] = useState('')
   const [isTextFieldDisabled, setIsTextFieldDisabled] = useState(false)
@@ -178,6 +181,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     districtId: '',
     wardId: '',
     specificAddress: '',
+    gender: '',
   })
   const [selectedProductIds, setSelectedProductIds] = useState([])
 
@@ -358,9 +362,17 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const [selectedXa, setSelectedXa] = useState(null)
   const handleTinhChange = (_, newValue) => {
     setErrorAddBill({ ...errorAddBill, provinceId: '' })
+    setErrors({ ...errors, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
     setSelectedXa(null)
+    setHuyenName('')
+    setXaName('')
+    setNewDiaChi({ ...newDiaChi, districtId: { id: '', label: '' } })
+    setDetailDiaChi({ ...detailDiaChi, districtId: '' })
+    setDetailDiaChi({ ...detailDiaChi, wardId: '' })
+    setNewDiaChi({ ...newDiaChi, wardId: { id: '', label: '' } })
+    setXa([])
     if (newValue) {
       loadHuyen(newValue.id)
       setTinhName(newValue.label)
@@ -377,9 +389,12 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
 
   const handleHuyenChange = (_, newValue) => {
     setErrorAddBill({ ...errorAddBill, districtId: '' })
+    setErrors({ ...errors, districtId: '' })
     setSelectedHuyen(newValue)
     setSelectedXa(null)
-
+    setXaName('')
+    setDetailDiaChi({ ...detailDiaChi, wardId: '' })
+    setNewDiaChi({ ...newDiaChi, wardId: { id: '', label: '' } })
     if (newValue) {
       loadXa(newValue.id)
       setDiaChi({ ...diaChi, districtId: newValue.id })
@@ -395,6 +410,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
 
   const handleXaChange = (_, newValue) => {
     setErrorAddBill({ ...errorAddBill, wardId: '' })
+    setErrors({ ...errors, wardId: '' })
     if (newValue) {
       setSelectedXa(newValue)
       setDiaChi({ ...diaChi, wardId: newValue?.id })
@@ -441,6 +457,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setSelectedTinh(null)
     setSelectedHuyen(null)
     setSelectedXa(null)
+    setHuyen([])
+    setXa([])
   }
   const updateDiaChi = () => {
     setDiaChi({
@@ -451,6 +469,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     })
   }
   const handleGenderChange = (event) => {
+    setErrors({ ...errors, gender: '' })
     setKhachHang({ ...khachHang, gender: event.target.value })
   }
 
@@ -478,12 +497,22 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const onSubmit = (khachHang) => {
     const newErrors = {}
     let check = 0
+    const currentDate = dayjs()
+    const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
+    const minBirthYear = 1900
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
 
     if (!khachHang.fullName) {
       newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
       check++
     } else if (khachHang.fullName.length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
+      check++
+    } else if (khachHang.fullName.length < 5) {
+      newErrors.fullName = 'Họ và Tên không được bé hơn 5 kí tự.'
+      check++
+    } else if (specialCharsRegex.test(khachHang.fullName)) {
+      newErrors.fullName = 'Họ và Tên không được có kí tự đặc biệt.'
       check++
     } else {
       newErrors.fullName = ''
@@ -526,9 +555,42 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
 
     if (!khachHang.dateBirth) {
       newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      console.log('đúng rồi')
       check++
     } else {
-      newErrors.dateBirth = ''
+      if (dateBirth.isBefore(`${minBirthYear}-01-01`) || !dateBirth.isValid()) {
+        newErrors.dateBirth = 'Ngày sinh không hợp lệ.'
+        check++
+      } else {
+        if (dateBirth.isAfter(currentDate)) {
+          newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+          check++
+        } else {
+          newErrors.dateBirth = ''
+        }
+      }
+    }
+
+    if (!khachHang.gender) {
+      newErrors.gender = 'Vui lòng chọn Giới tính.'
+      check++
+    } else {
+      newErrors.gender = ''
+    }
+
+    const specificAddressParts = diaChi.specificAddress.split(', ')
+    const [diaChiCuThe] = specificAddressParts
+    if (!diaChi.specificAddress.trim()) {
+      newErrors.specificAddress = 'Vui lòng nhập địa chỉ cụ thể.'
+      check++
+    } else if (diaChi.specificAddress.length > 225) {
+      newErrors.specificAddress = 'Địa chỉ không được quá 225 kí tự.'
+      check++
+    } else if (diaChiCuThe.length < 5) {
+      newErrors.specificAddress = 'Địa chỉ không được ít hơn 5 kí tự.'
+      check++
+    } else {
+      newErrors.specificAddress = ''
     }
 
     if (!selectedTinh) {
@@ -546,7 +608,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     }
 
     if (!selectedXa) {
-      newErrors.wardId = 'Vui lòng chọn Xã/Phường/Thị trấn.'
+      newErrors.wardId = 'Vui lòng chọn Xã/Thị trấn.'
       check++
     } else {
       newErrors.wardId = ''
@@ -761,20 +823,48 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       ...newDiaChi,
       idCustomer: idCustomer,
     })
+    setErrorAddBill({
+      name: '',
+      email: '',
+      phoneNumber: '',
+      provinceId: '',
+      districtId: '',
+      wardId: '',
+      specificAddress: '',
+    })
   }
 
   const onCreateDiaChi = (newDiaChi) => {
     const newErrors = {}
     let checkAA = 0
-
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     if (!newDiaChi.name.trim()) {
       newErrors.name = 'Tên người nhận không được để trống'
       checkAA++
     } else if (newDiaChi.name.trim().length > 100) {
       newErrors.fullName = 'Tên người nhận không được quá 100 kí tự.'
       checkAA++
+    } else if (newDiaChi.name.trim().length < 5) {
+      newErrors.fullName = 'Tên người nhận không được bé hơn 5 kí tự.'
+      checkAA++
+    } else if (specialCharsRegex.test(newDiaChi.name)) {
+      newErrors.fullName = 'Tên người nhận không được có kí tự đặc biệt.'
+      checkAA++
     } else {
       newErrors.name = ''
+    }
+
+    if (!newDiaChi.specificAddress.trim()) {
+      newErrors.specificAddress = 'Vui lòng nhập địa chỉ cụ thể.'
+      checkAA++
+    } else if (newDiaChi.specificAddress.length > 225) {
+      newErrors.specificAddress = 'Địa chỉ không được quá 225 kí tự.'
+      checkAA++
+    } else if (newDiaChi.specificAddress.length < 5) {
+      newErrors.specificAddress = 'Địa chỉ không được ít hơn 5 kí tự.'
+      checkAA++
+    } else {
+      newErrors.specificAddress = ''
     }
 
     if (!newDiaChi.phoneNumber.trim()) {
@@ -881,17 +971,26 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     districtId: '',
     wardId: '',
     specificAddress: '',
+    customerAmount: '',
+    payMent: '',
   })
 
   const addBill = (id) => {
     const newErrors = {}
     let checkAA = 0
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     if (giaoHang) {
       if (!detailDiaChi.name.trim()) {
         newErrors.name = 'Tên người nhận không được để trống'
         checkAA++
       } else if (detailDiaChi.name.trim().length > 100) {
         newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
+        checkAA++
+      } else if (detailDiaChi.name.trim().length < 5) {
+        newErrors.name = 'Tên người nhận không được bé hơn 5 kí tự.'
+        checkAA++
+      } else if (specialCharsRegex.test(detailDiaChi.name)) {
+        newErrors.name = 'Tên người nhận không được có kí tự đặc biệt.'
         checkAA++
       } else {
         newErrors.name = ''
@@ -1020,12 +1119,39 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const addBillorder = (id) => {
     const newErrors = {}
     let checkAA = 0
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
+    if (!customerAmount) {
+      newErrors.customerAmount = 'Tiền khách đưa không được để trống'
+      checkAA++
+    } else if (customerAmount < 0) {
+      newErrors.customerAmount = 'Tiền khách đưa phải lớn hơn 0'
+      checkAA++
+    } else if (customerAmount < totalPrice) {
+      newErrors.customerAmount = 'Tiền khách đưa không được bé hơn tổng tiền'
+      checkAA++
+    } else {
+      newErrors.customerAmount = ''
+    }
+
+    if (paymentMethod === '0' && !transactionCode) {
+      newErrors.payMent = 'Vui lòng nhập mã giao dịch'
+      checkAA++
+    } else {
+      newErrors.payMent = ''
+    }
+
     if (giaoHang) {
       if (!detailDiaChi.name.trim()) {
         newErrors.name = 'Tên người nhận không được để trống'
         checkAA++
       } else if (detailDiaChi.name.trim().length > 100) {
         newErrors.name = 'Tên người nhận không được quá 100 kí tự.'
+        checkAA++
+      } else if (detailDiaChi.name.trim().length < 5) {
+        newErrors.name = 'Tên người nhận không được bé hơn 5 kí tự.'
+        checkAA++
+      } else if (specialCharsRegex.test(detailDiaChi.name)) {
+        newErrors.name = 'Tên người nhận không được có kí tự đặc biệt.'
         checkAA++
       } else {
         newErrors.name = ''
@@ -1171,8 +1297,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     if (qrData?.text) {
       sellApi.getProduct(qrData.text).then((product) => {
         if (product.data.success) {
-          console.log(product.data.data + '-----==---==--==-')
-
           // Optionally, you can update the UI or show a notification
           toast.success('Sản phẩm đã được thêm vào giỏ hàng')
           // setIsShowProductDetail(true)
@@ -1529,10 +1653,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                           updateDiaChi()
                           setErrors({ ...errors, fullName: '' })
                         }}
+                        error={Boolean(errors.fullName)}
+                        helperText={errors.fullName}
                       />
-                      <Typography variant="body2" color="error">
-                        {errors.fullName}
-                      </Typography>
                       <TextField
                         sx={{ mt: 2 }}
                         label="Email"
@@ -1546,10 +1669,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                           updateDiaChi()
                           setErrors({ ...errors, email: '' })
                         }}
+                        error={Boolean(errors.email)}
+                        helperText={errors.email}
                       />
-                      <Typography variant="body2" color="error">
-                        {errors.email}
-                      </Typography>
                       <TextField
                         sx={{ mt: 2 }}
                         label="Số điện thoại"
@@ -1563,25 +1685,26 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                           updateDiaChi()
                           setErrors({ ...errors, phoneNumber: '' })
                         }}
+                        error={Boolean(errors.phoneNumber)}
+                        helperText={errors.phoneNumber}
                       />
-                      <Typography variant="body2" color="error">
-                        {errors.phoneNumber}
-                      </Typography>
 
                       <Grid container spacing={2} sx={{ mt: 2 }}>
                         <Grid item xs={8}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer components={['DatePicker']}>
                               <DatePicker
+                                format={'DD-MM-YYYY'}
                                 label="Ngày sinh"
                                 sx={{ width: '100%' }}
                                 className="small-datepicker"
-                                onChange={(e) =>
+                                onChange={(e) => {
                                   setKhachHang({
                                     ...khachHang,
                                     dateBirth: dayjs(e).format('DD-MM-YYYY'),
                                   })
-                                }
+                                  setErrors({ ...errors, dateBirth: '' })
+                                }}
                               />
                             </DemoContainer>
                           </LocalizationProvider>
@@ -1619,7 +1742,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         <Grid item xs={4}>
                           <Box sx={{ minWidth: 120 }}>
                             <Autocomplete
-                              popupIcon={null}
+                              clearIcon={null}
                               fullWidth
                               size="small"
                               className="search-field"
@@ -1643,7 +1766,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         <Grid item xs={4}>
                           <Box sx={{ minWidth: 120 }}>
                             <Autocomplete
-                              popupIcon={null}
+                              clearIcon={null}
                               fullWidth
                               size="small"
                               className="search-field"
@@ -1667,7 +1790,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         <Grid item xs={4}>
                           <Box sx={{ minWidth: 120 }}>
                             <Autocomplete
-                              popupIcon={null}
+                              clearIcon={null}
                               fullWidth
                               size="small"
                               className="search-field"
@@ -1701,7 +1824,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         type="text"
                         size="small"
                         fullWidth
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setDiaChi({
                             ...diaChi,
                             specificAddress:
@@ -1713,8 +1836,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                               ', ' +
                               selectedTinh.label,
                           })
-                        }
-                        disabled={!selectedXa}
+                          setErrors({ ...errors, specificAddress: '' })
+                        }}
+                        error={Boolean(errors.specificAddress)}
+                        helperText={errors.specificAddress}
                       />
                       <Stack
                         mt={2}
@@ -1868,7 +1993,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   }}>
                   {nameCustomer !== '' ? nameCustomer : 'khách lẻ'}
                 </span>
-                {console.log(btnad)}
                 <Button
                   sx={{ py: '6.7px', ml: 1 }}
                   color="cam"
@@ -1968,6 +2092,16 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                     sx={{ mt: 3 }}
                     onClick={() => {
                       setIsShowAddDiaChi(true)
+                      setErrorsAA({
+                        name: '',
+                        email: '',
+                        phoneNumber: '',
+                        provinceId: '',
+                        districtId: '',
+                        wardId: '',
+                        specificAddress: '',
+                      })
+                      clearSelectAddress()
                     }}>
                     Thêm địa chỉ
                   </Button>
@@ -1996,16 +2130,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                         <IconButton
                           onClick={() => {
                             setIsShowAddDiaChi(false)
-                            setErrorsAA({
-                              name: '',
-                              email: '',
-                              phoneNumber: '',
-                              provinceId: '',
-                              districtId: '',
-                              wardId: '',
-                              specificAddress: '',
-                            })
-                            clearSelectAddress()
                           }}
                           aria-label="close"
                           color="error"
@@ -2030,11 +2154,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                               fullWidth
                               onChange={(e) => {
                                 setNewDiaChi({ ...newDiaChi, name: e.target.value })
+                                setErrorsAA({ ...errorsAA, name: '' })
                               }}
+                              error={Boolean(errorsAA.name)}
+                              helperText={errorsAA.name}
                             />
-                            <Typography variant="body2" color="error">
-                              {errorsAA.name}
-                            </Typography>
                           </Grid>
                           <Grid item xs={12} md={6}>
                             <Typography>
@@ -2049,11 +2173,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                               fullWidth
                               onChange={(e) => {
                                 setNewDiaChi({ ...newDiaChi, phoneNumber: e.target.value })
+                                setErrorsAA({ ...errorsAA, phoneNumber: '' })
                               }}
+                              error={Boolean(errorsAA.phoneNumber)}
+                              helperText={errorsAA.phoneNumber}
                             />
-                            <Typography variant="body2" color="error">
-                              {errorsAA.phoneNumber}
-                            </Typography>
                           </Grid>
                         </Grid>
                         <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -2063,7 +2187,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                             </Typography>
                             <Box sx={{ minWidth: 120 }}>
                               <Autocomplete
-                                popupIcon={null}
+                                clearIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -2094,7 +2218,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                             </Typography>
                             <Box sx={{ minWidth: 120 }}>
                               <Autocomplete
-                                popupIcon={null}
+                                clearIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -2124,7 +2248,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                             </Typography>
                             <Box sx={{ minWidth: 120 }}>
                               <Autocomplete
-                                popupIcon={null}
+                                clearIcon={null}
                                 fullWidth
                                 size="small"
                                 className="search-field"
@@ -2157,13 +2281,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                               type="text"
                               size="small"
                               fullWidth
-                              onChange={(e) =>
+                              onChange={(e) => {
                                 setNewDiaChi({
                                   ...newDiaChi,
                                   specificAddress: e.target.value,
                                 })
-                              }
-                              disabled={!selectedXa}
+                                setErrorsAA({ ...errorsAA, specificAddress: '' })
+                              }}
+                              error={Boolean(errorsAA.specificAddress)}
+                              helperText={errorsAA.specificAddress}
                             />
                           </Grid>
                         </Grid>
@@ -2189,7 +2315,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         </Box>
         <Grid2 container spacing={2}>
           <Grid2 md={7} xs={12} p={0}>
-            <Box p={3} pt={0} pb={2}>
+            <Box p={3} pt={0} pb={2} sx={{ display: !giaoHang ? 'none' : 'block' }}>
               <Grid container spacing={2} sx={{ mb: 3, mt: 1 }}>
                 <Grid item xs={6}>
                   <TextField
@@ -2205,10 +2331,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                       setDetailDiaChi({ ...detailDiaChi, name: e.target.value })
                       setErrorAddBill({ ...errorAddBill, name: '' })
                     }}
+                    error={Boolean(errorAddBill.name)}
+                    helperText={errorAddBill.name}
                   />
-                  <Typography variant="body2" color="error">
-                    {errorAddBill.name}
-                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
@@ -2224,16 +2349,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                       setDetailDiaChi({ ...detailDiaChi, phoneNumber: e.target.value })
                       setErrorAddBill({ ...errorAddBill, phoneNumber: '' })
                     }}
+                    error={Boolean(errorAddBill.phoneNumber)}
+                    helperText={errorAddBill.phoneNumber}
                   />
-                  <Typography variant="body2" color="error">
-                    {errorAddBill.phoneNumber}
-                  </Typography>
                 </Grid>
               </Grid>
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={4}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
@@ -2263,7 +2387,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 </Grid>
                 <Grid item xs={4}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
@@ -2292,7 +2416,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 </Grid>
                 <Grid item xs={4}>
                   <Autocomplete
-                    popupIcon={null}
+                    clearIcon={null}
                     sx={{ mt: 1, width: '100%' }}
                     size="small"
                     className="search-field"
@@ -2331,10 +2455,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                       setDetailDiaChi(updatedDetailDiaChi)
                       setErrorAddBill({ ...errorAddBill, specificAddress: '' })
                     }}
+                    error={Boolean(errorAddBill.specificAddress)}
+                    helperText={errorAddBill.specificAddress}
                   />
-                  <Typography variant="body2" color="error">
-                    {errorAddBill.specificAddress}
-                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
@@ -2348,7 +2471,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
               </Grid>
             </Box>
             <Grid container>
-              <Grid item xs={6}>
+              <Grid item xs={6} sx={{ display: !giaoHang ? 'none' : 'block' }}>
                 <Box ml={3} color={!giaoHang ? '#E0E0E0' : ''}>
                   <LocalShipping sx={{ mb: '-5px', mr: '5px' }} />
                   <b>Đơn vị vận chuyển: </b>
@@ -2661,10 +2784,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 label="Tiền khách đưa"
                 type="number"
                 variant="outlined"
-                onChange={(e) => setCustomerAmount(e.target.value)}
+                onChange={(e) => {
+                  setCustomerAmount(e.target.value)
+                  setErrorAddBill({ ...errorAddBill, customerAmount: '' })
+                }}
                 sx={{ width: '330px', marginTop: '10px' }}
                 value={customerAmount}
                 size="small"
+                error={Boolean(errorAddBill.customerAmount)}
+                helperText={errorAddBill.customerAmount}
               />
               <TextField
                 id="outlined-basic"
@@ -2709,19 +2837,22 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 color="cam"
                 placeholder="Mã giao dịch"
                 variant="outlined"
-                sx={{ width: '330px', marginTop: '10px' }}
+                sx={{
+                  width: '330px',
+                  marginTop: '10px',
+                  display: paymentMethod === '0' ? 'block' : 'none',
+                }}
                 size="small"
                 value={transactionCode}
-                onChange={(e) => setTransactionCode(e.target.value)}
+                onChange={(e) => {
+                  setTransactionCode(e.target.value)
+                  setErrorAddBill({ ...errorAddBill, payMent: '' })
+                }}
+                error={Boolean(errorAddBill.payMent)}
+                helperText={errorAddBill.payMent}
                 // disabled={isTextFieldDisabled}
-                disabled={paymentMethod !== '0'}
-                required={paymentMethod === '0'}
               />
-              {paymentMethod === '0' && transactionCode.trim() === '' && (
-                <span style={{ color: 'red', marginBottom: '5px' }}>
-                  Vui lòng nhập mã giao dịch
-                </span>
-              )}
+
               <div
                 style={{
                   display: 'flex',

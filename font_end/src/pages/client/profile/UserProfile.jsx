@@ -96,16 +96,28 @@ export default function UserProfile() {
     const newErrors = {}
     const currentDate = dayjs()
     const dateBirth = dayjs(khachHang.dateBirth, 'DD/MM/YYYY')
+    const minBirthYear = 1900
     let check = 0
 
-    if (!khachHang.fullName.trim()) {
+    const cleanedFullName = khachHang.fullName.trim()
+
+    if (!cleanedFullName) {
       newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
       check++
-    } else if (khachHang.fullName.trim().length > 100) {
+    } else if (cleanedFullName.length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
       check++
+    } else if (cleanedFullName.length < 5) {
+      newErrors.fullName = 'Họ và Tên không được ít hơn 5 kí tự.'
+      check++
     } else {
-      newErrors.fullName = ''
+      const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
+      if (specialCharsRegex.test(cleanedFullName)) {
+        newErrors.fullName = 'Họ và Tên không được chứa kí tự đặc biệt.'
+        check++
+      } else {
+        newErrors.fullName = ''
+      }
     }
 
     if (!khachHang.email.trim()) {
@@ -116,11 +128,11 @@ export default function UserProfile() {
       if (!emailRegex.test(khachHang.email.trim())) {
         newErrors.email = 'Vui lòng nhập một địa chỉ email hợp lệ.'
         check++
+      } else if (isEmailDuplicate(khachHang.email, khachHang.id)) {
+        newErrors.email = 'Email đã tồn tại trong danh sách.'
+        check++
       } else if (khachHang.email.trim().length > 50) {
         newErrors.email = 'Email không được quá 50 kí tự.'
-        check++
-      } else if (isEmailDuplicate(khachHang.email, khachHang.id)) {
-        newErrors.email = 'Email đã tồn tại.'
         check++
       } else {
         newErrors.email = ''
@@ -136,7 +148,7 @@ export default function UserProfile() {
         newErrors.phoneNumber = 'Vui lòng nhập một số điện thoại hợp lệ (VD: 0987654321).'
         check++
       } else if (isPhoneNumberDuplicate(khachHang.phoneNumber, khachHang.id)) {
-        newErrors.phoneNumber = 'Số điện thoại đã tồn tại.'
+        newErrors.phoneNumber = 'Số điện thoại đã tồn tại trong danh sách.'
         check++
       } else {
         newErrors.phoneNumber = ''
@@ -144,19 +156,31 @@ export default function UserProfile() {
     }
 
     if (!khachHang.dateBirth) {
-      newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
+      newErrors.dateBirth = 'Ngày sinh không được để trống.'
       check++
     } else {
-      if (dateBirth.isAfter(currentDate)) {
-        newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+      if (dateBirth.isBefore(`${minBirthYear}-01-01`) || !dateBirth.isValid()) {
+        newErrors.dateBirth = 'Ngày sinh không hợp lệ.'
         check++
       } else {
-        newErrors.dateBirth = ''
+        if (dateBirth.isAfter(currentDate)) {
+          newErrors.dateBirth = 'Ngày sinh không được lớn hơn ngày hiện tại.'
+          check++
+        } else {
+          newErrors.dateBirth = ''
+        }
       }
     }
 
+    if (khachHang.gender === null) {
+      newErrors.gender = 'Vui lòng chọn Giới tính.'
+      check++
+    } else {
+      newErrors.gender = ''
+    }
+
     if (check > 0) {
-      errorsKH(newErrors)
+      setErrorsKH(newErrors)
       return
     }
     const title = 'Xác nhận cập nhật thông tin?'
@@ -207,11 +231,11 @@ export default function UserProfile() {
                 value={khachHang.fullName || ''}
                 onChange={(e) => {
                   setKhachHang({ ...khachHang, fullName: e.target.value })
+                  setErrorsKH({ ...errorsKH, fullName: '' })
                 }}
+                error={Boolean(errorsKH.fullName)}
+                helperText={errorsKH.fullName}
               />
-              <Typography variant="body2" color="error">
-                {errorsKH.fullName}
-              </Typography>
             </Grid>
             <Grid item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
               <Typography>
@@ -227,11 +251,11 @@ export default function UserProfile() {
                 value={khachHang.email || ''}
                 onChange={(e) => {
                   setKhachHang({ ...khachHang, email: e.target.value })
+                  setErrorsKH({ ...errorsKH, email: '' })
                 }}
+                error={Boolean(errorsKH.email)}
+                helperText={errorsKH.email}
               />
-              <Typography variant="body2" color="error">
-                {errorsKH.email}
-              </Typography>
             </Grid>
             <Grid item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
               <Typography>
@@ -247,7 +271,10 @@ export default function UserProfile() {
                 value={khachHang.phoneNumber || ''}
                 onChange={(e) => {
                   setKhachHang({ ...khachHang, phoneNumber: e.target.value })
+                  setErrorsKH({ ...errorsKH, phoneNumber: '' })
                 }}
+                error={Boolean(errorsKH.phoneNumber)}
+                helperText={errorsKH.phoneNumber}
               />
               <Typography variant="body2" color="error">
                 {errorsKH.phoneNumber}
@@ -260,15 +287,17 @@ export default function UserProfile() {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
                   <DatePicker
+                    format={'DD-MM-YYYY'}
                     className="small-datepicker"
                     name="dateBirth"
                     value={dayjs(khachHang.dateBirth, 'DD-MM-YYYY')}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setKhachHang({
                         ...khachHang,
                         dateBirth: dayjs(e).format('DD-MM-YYYY'),
                       })
-                    }
+                      setErrorsKH({ ...errorsKH, dateBirth: '' })
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
