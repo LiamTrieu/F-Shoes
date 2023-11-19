@@ -32,8 +32,9 @@ import './voucher.css'
 import Empty from '../../../components/Empty'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
+import { formatCurrency } from '../../../services/common/formatCurrency '
 
-const listBreadcrumbs = [{ name: 'Khuyến mãi', link: '/admin/voucher' }]
+const listBreadcrumbs = [{ name: 'voucher', link: '/admin/voucher' }]
 
 const initialVoucher = {
   code: '',
@@ -77,6 +78,11 @@ export default function AdVoucherAdd() {
   allCodeVoucher.map((m) => listCode.push(m.toLowerCase()))
   const listName = []
   allNameVoucher.map((m) => listName.push(m.toLowerCase()))
+
+  const [valueDefault, setValueDefault] = useState(0)
+  const [maximumValueDefault, setMaximumValueDefault] = useState(0)
+  const [minimumvalueDefault, setMinimumValueDefault] = useState(0)
+  const [quantityDefault, setQuantityDefault] = useState(0)
 
   useEffect(() => {
     handelCustomeFill(initPage)
@@ -122,6 +128,25 @@ export default function AdVoucherAdd() {
           position: toast.POSITION.TOP_CENTER,
         })
       })
+  }
+
+  const handleSetValue = (value) => {
+    if (voucherAdd.typeValue === 0) {
+      setVoucherAdd({
+        ...voucherAdd,
+        value: formatCurrency(value).replace(/\D/g, ''),
+      })
+      setValueDefault(formatCurrency(value).replace(/\D/g, ''))
+    } else {
+      setVoucherAdd({
+        ...voucherAdd,
+        value: formatCurrency(value).replace(/\D/g, ''),
+        maximumValue: formatCurrency(value).replace(/\D/g, ''),
+      })
+      setValueDefault(formatCurrency(value))
+      setMaximumValueDefault(formatCurrency(value))
+    }
+    setErrorValue('')
   }
 
   const handleValidation = () => {
@@ -170,7 +195,7 @@ export default function AdVoucherAdd() {
     if (voucherAdd.typeValue === 0) {
       if (voucherAdd.value === null) {
         setVoucherAdd({ ...voucherAdd, value: 0 })
-      } else if (!Number.isInteger(voucherAdd.value)) {
+      } else if (!Number.isInteger(parseInt(voucherAdd.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherAdd.value < 1) {
         errors.value = 'giá trị tối thiểu 1%'
@@ -180,7 +205,7 @@ export default function AdVoucherAdd() {
     } else {
       if (voucherAdd.value === null) {
         setVoucherAdd({ ...voucherAdd, value: 0 })
-      } else if (!Number.isInteger(voucherAdd.value)) {
+      } else if (!Number.isInteger(parseInt(voucherAdd.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherAdd.value < 1) {
         errors.value = 'giá trị tối thiểu 1 VNĐ'
@@ -189,7 +214,7 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.maximumValue === null) {
       setVoucherAdd({ ...voucherAdd, maximumValue: 0 })
-    } else if (!Number.isInteger(voucherAdd.maximumValue)) {
+    } else if (!Number.isInteger(parseInt(voucherAdd.maximumValue))) {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
     } else if (voucherAdd.maximumValue < 1) {
       errors.maximumValue = 'giá trị tối đa tối thiểu 1 (vnđ)'
@@ -199,7 +224,7 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.quantity === null) {
       setVoucherAdd({ ...voucherAdd, quantity: 0 })
-    } else if (!Number.isInteger(voucherAdd.quantity)) {
+    } else if (!Number.isInteger(parseInt(voucherAdd.quantity))) {
       errors.quantity = 'Số lượng chỉ được nhập số nguyên'
     } else if (voucherAdd.quantity < 1) {
       errors.quantity = 'Số lượng tối thiểu 1'
@@ -207,7 +232,7 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.minimumAmount === null) {
       setVoucherAdd({ ...voucherAdd, minimumAmount: 0 })
-    } else if (!Number.isInteger(voucherAdd.minimumAmount)) {
+    } else if (!Number.isInteger(parseInt(voucherAdd.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
     } else if (voucherAdd.minimumAmount < 1) {
       errors.minimumAmount = 'Điều kiện tối thiểu 1 (vnđ)'
@@ -237,10 +262,6 @@ export default function AdVoucherAdd() {
       errors.endDate = 'Ngày kết thúc không hợp lệ'
     }
 
-    // if (voucherAdd.type === 1 && selectedCustomerIds.length > Number(voucherAdd.quantity)) {
-    //   errors.listIdCustomer = 'Số lượng khách hàng không được lớn hơn số lượng mã giảm giá'
-    // }
-
     for (const key in errors) {
       if (errors[key]) {
         check++
@@ -255,7 +276,6 @@ export default function AdVoucherAdd() {
     setErrorQuantity(errors.quantity)
     setErrorStartDate(errors.startDate)
     setErrorEndDate(errors.endDate)
-    // setErrorListIdCustomer(errors.listIdCustomer)
     return check
   }
 
@@ -263,7 +283,7 @@ export default function AdVoucherAdd() {
     const check = handleValidation()
 
     if (check < 1) {
-      const title = 'Xác nhận thêm mới khuyễn mãi?'
+      const title = 'Xác nhận thêm mới voucher?'
       const text = ''
       confirmSatus(title, text, theme).then((result) => {
         if (result.isConfirmed) {
@@ -271,20 +291,20 @@ export default function AdVoucherAdd() {
           voucherApi
             .addVoucher(updatedVoucherAdd)
             .then(() => {
-              toast.success('Thêm mới khuyễn mãi thành công', {
+              toast.success('Thêm mới voucher thành công', {
                 position: toast.POSITION.TOP_RIGHT,
               })
               navigate('/admin/voucher')
             })
             .catch(() => {
-              toast.error('Thêm mới khuyễn mãi thất bại', {
+              toast.error('Thêm mới voucher thất bại', {
                 position: toast.POSITION.TOP_RIGHT,
               })
             })
         }
       })
     } else {
-      toast.error('Không thể thêm mới khuyến mãi', {
+      toast.error('Không thể thêm mới voucher', {
         position: toast.POSITION.TOP_RIGHT,
       })
     }
@@ -333,19 +353,19 @@ export default function AdVoucherAdd() {
     }
 
     setSelectedCustomerIds(newSelectedIds)
-    setSelectAll(newSelectedIds.length === listCustomer.length)
+    setSelectAll(newSelectedIds.length === allCustomer.length)
   }
 
   return (
     <div className="voucher-add">
-      <BreadcrumbsCustom nameHere={'Thêm khuyến mãi'} listLink={listBreadcrumbs} />
+      <BreadcrumbsCustom nameHere={'Thêm voucher'} listLink={listBreadcrumbs} />
       <Paper sx={{ p: 2 }}>
         <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
           <Grid item xs={5}>
             <div style={{ marginBottom: '16px' }}>
               <TextField
                 className="input-css"
-                label="Mã khuyến mãi"
+                label="Mã voucher"
                 type="text"
                 size="small"
                 fullWidth
@@ -361,7 +381,7 @@ export default function AdVoucherAdd() {
             <div style={{ marginBottom: '16px' }}>
               <TextField
                 className="input-css"
-                label="Tên khuyến mãi"
+                label="Tên voucher"
                 type="text"
                 size="small"
                 fullWidth
@@ -382,25 +402,28 @@ export default function AdVoucherAdd() {
                 <TextField
                   className="input-css"
                   label="Giá trị"
-                  type="number"
                   size="small"
                   fullWidth
-                  defaultValue={0}
-                  onChange={(e) => setVoucherAdd({ ...voucherAdd, value: Number(e.target.value) })}
+                  value={valueDefault}
+                  onChange={(e) => handleSetValue(e.target.value)}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
                         <AiOutlinePercentage
                           color={voucherAdd.typeValue === 0 ? '#fc7c27' : ''}
                           className="icons-css"
-                          onClick={() => setVoucherAdd({ ...voucherAdd, typeValue: 0 })}
+                          onClick={() => {
+                            setVoucherAdd({ ...voucherAdd, typeValue: 0, value: 0 })
+                            setValueDefault(0)
+                          }}
                         />
                         <AiOutlineDollar
                           color={voucherAdd.typeValue === 1 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => {
-                            setVoucherAdd({ ...voucherAdd, typeValue: 1 })
+                            setVoucherAdd({ ...voucherAdd, typeValue: 1, value: 0 })
                             setErrorValue('')
+                            setValueDefault(formatCurrency(0))
                           }}
                         />
                       </InputAdornment>
@@ -413,18 +436,19 @@ export default function AdVoucherAdd() {
               {/* -------------------------------------------------------------------------------------------------------- */}
               <div>
                 <TextField
+                  disabled={voucherAdd.typeValue === 1 ? true : false}
                   className="input-css"
                   label="Giá trị tối đa"
-                  type="number"
                   size="small"
                   fullWidth
-                  defaultValue={0}
+                  value={formatCurrency(maximumValueDefault)}
                   onChange={(e) => {
                     setVoucherAdd({
                       ...voucherAdd,
-                      maximumValue: Number(e.target.value),
+                      maximumValue: formatCurrency(e.target.value).replace(/\D/g, ''),
                     })
                     setErrorMaximumValue('')
+                    setMaximumValueDefault(formatCurrency(e.target.value))
                   }}
                   InputProps={{
                     endAdornment: (
@@ -447,17 +471,17 @@ export default function AdVoucherAdd() {
                 <TextField
                   className="input-css"
                   label="Số lượng"
-                  type="number"
                   variant="outlined"
                   size="small"
                   fullWidth
-                  defaultValue={0}
+                  value={quantityDefault}
                   onChange={(e) => {
                     setVoucherAdd({
                       ...voucherAdd,
-                      quantity: Number(e.target.value),
+                      quantity: formatCurrency(e.target.value).replace(/\D/g, ''),
                     })
                     setErrorQuantity('')
+                    setQuantityDefault(formatCurrency(e.target.value).replace(/\D/g, ''))
                   }}
                   InputProps={{
                     endAdornment: (
@@ -475,16 +499,16 @@ export default function AdVoucherAdd() {
                 <TextField
                   className="input-css"
                   label="Điều kiện"
-                  type="number"
                   size="small"
                   fullWidth
-                  defaultValue={0}
+                  value={formatCurrency(minimumvalueDefault)}
                   onChange={(e) => {
                     setVoucherAdd({
                       ...voucherAdd,
-                      minimumAmount: Number(e.target.value),
+                      minimumAmount: formatCurrency(e.target.value).replace(/\D/g, ''),
                     })
                     setErrorMinimumAmount('')
+                    setMinimumValueDefault(formatCurrency(e.target.value))
                   }}
                   InputProps={{
                     endAdornment: (
@@ -555,7 +579,7 @@ export default function AdVoucherAdd() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
               <FormLabel>Kiểu</FormLabel>
-              <FormControl size="small" sx={{ flex: 1 }}>
+              <FormControl size="small" sx={{ flex: 1, ml: 2 }}>
                 <RadioGroup row>
                   <FormControlLabel
                     name="typeAdd"

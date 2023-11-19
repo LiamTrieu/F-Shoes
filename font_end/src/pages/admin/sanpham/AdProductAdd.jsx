@@ -35,9 +35,11 @@ import { spButton } from '../sanpham/sanPhamStyle'
 import { RiDeleteBin2Line } from 'react-icons/ri'
 import { MdImageSearch } from 'react-icons/md'
 import { RiImageAddFill } from 'react-icons/ri'
+import AddIcon from '@mui/icons-material/Add'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import { hover } from '@testing-library/user-event/dist/hover'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 
@@ -66,6 +68,9 @@ export default function AdProductAdd() {
   const [images, setImages] = useState([])
   const [loadImage, setLoadImage] = useState(false)
   const [openModalColor, setOpenModalColor] = useState(false)
+  const [openModalAddColor, setOpenModalAddColor] = useState(false)
+  const [openModalSize, setOpenModalSize] = useState(false)
+  const [openModalAddSize, setOpenModalAddSize] = useState(false)
 
   const [newCategory, setNewCategory] = useState({ name: '' })
   const [newBrand, setNewBrand] = useState({ name: '' })
@@ -632,7 +637,8 @@ export default function AdProductAdd() {
         })
         fetchListColor()
       }
-      setOpenModalColor(false)
+      setOpenModalAddColor(false)
+      setOpenModalColor(true)
     } catch (error) {
       toast.error('Thêm màu sắc thất bại', {
         position: toast.POSITION.TOP_RIGHT,
@@ -673,11 +679,46 @@ export default function AdProductAdd() {
         })
         fetchListSize()
       }
+      setOpenModalAddSize(false)
+      setOpenModalSize(true)
     } catch (error) {
       toast.error('Thêm kích cỡ thất bại', {
         position: toast.POSITION.TOP_RIGHT,
       })
     }
+  }
+
+  const [selectColor, setSelectColor] = useState([])
+  const handleSelectColor = ({ label, value, code }) => {
+    const selectedIndex = selectColor.findIndex((color) => color.value === value)
+    let newSelectedIds = []
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectColor, { label, value, code }]
+    } else {
+      newSelectedIds = [
+        ...selectColor.slice(0, selectedIndex),
+        ...selectColor.slice(selectedIndex + 1),
+      ]
+    }
+    setSelectColor(newSelectedIds)
+    genNewProductDetail({ ...newProducts, color: newSelectedIds })
+  }
+
+  const [selectSize, setSelectSize] = useState([])
+  const handleSelectSize = ({ label, value }) => {
+    const selectedIndex = selectSize.findIndex((s) => s.value === value)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectSize, { label, value }]
+    } else {
+      newSelectedIds = [
+        ...selectSize.slice(0, selectedIndex),
+        ...selectSize.slice(selectedIndex + 1),
+      ]
+    }
+    setSelectSize(newSelectedIds)
+    genNewProductDetail({ ...newProducts, size: newSelectedIds })
   }
 
   return (
@@ -903,63 +944,91 @@ export default function AdProductAdd() {
             color={'GrayText'}>
             Màu sắc & kích cỡ
           </Typography>
-          <Stack className="mt-3 mb-3" spacing={1}>
-            <div style={{ width: '100%' }}>
-              <b>
-                <span style={{ color: 'red' }}>*</span>Màu sắc
-              </b>
-              <Autocomplete
-                noOptionsText={
-                  <Button
-                    size="small"
-                    fullWidth
-                    color="cam"
-                    onClick={() => setOpenModalColor(true)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
-                multiple
-                size="small"
-                value={newProducts.color}
-                isOptionEqualToValue={(option, value) => option.value === value.value}
-                fullWidth
-                onChange={(_, e) => {
-                  genNewProductDetail({ ...newProducts, color: e })
-                }}
-                className="search-field"
-                id="combo-box-color"
-                options={colors.map((color) => {
-                  return { label: color.name, value: color.id, code: color.code }
-                })}
-                renderOption={(props, option) => (
-                  <li key={`color${option.value}`} {...props}>
-                    <div
-                      style={{
-                        borderRadius: '50%',
-                        width: '15px',
-                        height: '15px',
-                        backgroundColor: option.code,
-                        marginRight: '5px',
-                      }}
-                    />
-                    {option.label}
-                  </li>
+          <div className="div-color-size">
+            <Grid container spacing={2}>
+              <Grid item xs={2}>
+                <b>
+                  <span style={{ color: 'red' }}>*</span>Màu sắc :
+                </b>
+              </Grid>
+              {selectColor.length > 0 && (
+                <Grid item xs={9}>
+                  <Grid container spacing={2}>
+                    {selectColor.map((s) => (
+                      <Grid item xs={2}>
+                        <Button
+                          disabled
+                          sx={{
+                            width: '20px',
+                            height: '30px',
+                            backgroundColor: `${s.code}`,
+                            border: `1px solid ${s.code}`,
+                          }}></Button>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Grid>
+              )}
+              <Grid item xs={1}>
+                <Button className="button-color-size" onClick={() => setOpenModalColor(true)}>
+                  <AddIcon className="add-icon-color-size" />
+                </Button>
+                {openModalColor && (
+                  <DialogAddUpdate
+                    open={openModalColor}
+                    setOpen={setOpenModalColor}
+                    title={'Chọn màu sắc'}
+                    buttonSubmit={
+                      <Button
+                        onClick={() => {
+                          setOpenModalColor(false)
+                          setOpenModalAddColor(true)
+                        }}
+                        color="primary"
+                        disableElevation
+                        sx={{ ...spButton }}
+                        variant="contained">
+                        Thêm mới
+                      </Button>
+                    }>
+                    <Grid container spacing={2}>
+                      {colors.map((c) => (
+                        <Grid item xs={3}>
+                          <Button
+                            fullWidth
+                            sx={{
+                              backgroundColor:
+                                selectColor.findIndex(
+                                  (selectedColor) => selectedColor.value === c.id,
+                                ) !== -1
+                                  ? 'white'
+                                  : c.code,
+                              border:
+                                c.code === '#ffffff' ? `1px solid #000000` : `1px solid ${c.code}`,
+                              height: '30px',
+                            }}
+                            onClick={() =>
+                              handleSelectColor({ label: c.name, value: c.id, code: c.code })
+                            }>
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                color: c.code === '#000000' ? 'white' : 'black',
+                              }}>
+                              {c.code}
+                            </span>
+                          </Button>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </DialogAddUpdate>
                 )}
-                renderInput={(params) => (
-                  <TextField
-                    color="cam"
-                    onChange={(e) => setNewColor({ ...newColor, name: e.target.value })}
-                    {...params}
-                    placeholder={newProducts.color.length > 0 ? '' : 'Chọn màu sắc'}
-                  />
-                )}
-              />
-              {openModalColor && (
+              </Grid>
+              {openModalAddColor && (
                 <DialogAddUpdate
-                  open={openModalColor}
-                  setOpen={setOpenModalColor}
-                  title={'Chọn màu sắc'}
+                  open={openModalAddColor}
+                  setOpen={setOpenModalAddColor}
+                  title={'Thêm mới màu sắc'}
                   buttonSubmit={
                     <Button
                       onClick={() => {
@@ -972,6 +1041,20 @@ export default function AdProductAdd() {
                       Thêm
                     </Button>
                   }>
+                  <TextField
+                    sx={{ mb: 2 }}
+                    id={'nameInputAdd'}
+                    onChange={(e) => {
+                      setNewColor({ ...newColor, name: e.target.value })
+                    }}
+                    defaultValue={''}
+                    fullWidth
+                    inputProps={{
+                      required: true,
+                    }}
+                    size="small"
+                    placeholder="Nhập tên màu"
+                  />
                   <TextField
                     type="color"
                     id={'nameInputAdd'}
@@ -987,8 +1070,197 @@ export default function AdProductAdd() {
                   />
                 </DialogAddUpdate>
               )}
-            </div>
-            <div style={{ width: '100%' }}>
+            </Grid>
+          </div>
+          <div className="div-color-size">
+            <Grid container spacing={2}>
+              <Grid item xs={2}>
+                <b>
+                  <span style={{ color: 'red' }}>*</span>Kích cỡ :
+                </b>
+              </Grid>
+              {selectSize.length > 0 && (
+                <Grid item xs={9}>
+                  <Grid container spacing={2}>
+                    {selectSize.map((s) => (
+                      <Grid item xs={2}>
+                        <Button
+                          disabled
+                          sx={{
+                            width: '20px',
+                            height: '30px',
+                            backgroundColor: `white`,
+                            border: `1px solid black`,
+                          }}>
+                          <span style={{ color: 'black' }}>{s.label}</span>
+                        </Button>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Grid>
+              )}
+              <Grid item xs={1}>
+                <Button className="button-color-size" onClick={() => setOpenModalSize(true)}>
+                  <AddIcon className="add-icon-color-size" />
+                </Button>
+                {openModalSize && (
+                  <DialogAddUpdate
+                    open={openModalSize}
+                    setOpen={setOpenModalSize}
+                    title={'Chọn kích cỡ'}
+                    buttonSubmit={
+                      <Button
+                        onClick={() => {
+                          setOpenModalSize(false)
+                          setOpenModalAddSize(true)
+                        }}
+                        color="primary"
+                        disableElevation
+                        sx={{ ...spButton }}
+                        variant="contained">
+                        Thêm mới
+                      </Button>
+                    }>
+                    <Grid container spacing={2}>
+                      {sizes.map((s) => (
+                        <Grid item xs={3}>
+                          <Button
+                            fullWidth
+                            sx={{
+                              backgroundColor:
+                                selectSize.findIndex((select) => select.value === s.id) !== -1
+                                  ? 'gray'
+                                  : `white`,
+                              border: `1px solid #000000`,
+                              height: '30px',
+                            }}
+                            onClick={() => handleSelectSize({ label: s.size, value: s.id })}>
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                color: 'black',
+                              }}>
+                              {s.size}
+                            </span>
+                          </Button>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </DialogAddUpdate>
+                )}
+              </Grid>
+              {openModalAddSize && (
+                <DialogAddUpdate
+                  open={openModalAddSize}
+                  setOpen={setOpenModalAddSize}
+                  title={'Thêm mới kích cỡ'}
+                  buttonSubmit={
+                    <Button
+                      onClick={() => {
+                        handleAddSize(newSize)
+                      }}
+                      color="primary"
+                      disableElevation
+                      sx={{ ...spButton }}
+                      variant="contained">
+                      Thêm
+                    </Button>
+                  }>
+                  <TextField
+                    id={'nameInputAdd'}
+                    onChange={(e) => {
+                      setNewSize({ size: e.target.value })
+                    }}
+                    defaultValue={''}
+                    fullWidth
+                    inputProps={{
+                      required: true,
+                    }}
+                    size="small"
+                    placeholder="Nhập kích cỡ"
+                  />
+                </DialogAddUpdate>
+              )}
+            </Grid>
+          </div>
+          {/* <Autocomplete
+              noOptionsText={
+                <Button size="small" fullWidth color="cam" onClick={() => setOpenModalColor(true)}>
+                  <PlaylistAddIcon />
+                  Thêm mới
+                </Button>
+              }
+              multiple
+              size="small"
+              value={newProducts.color}
+              isOptionEqualToValue={(option, value) => option.value === value.value}
+              fullWidth
+              onChange={(_, e) => {
+                genNewProductDetail({ ...newProducts, color: e })
+              }}
+              className="search-field"
+              id="combo-box-color"
+              options={colors.map((color) => {
+                return { label: color.name, value: color.id, code: color.code }
+              })}
+              renderOption={(props, option) => (
+                <li key={`color${option.value}`} {...props}>
+                  <div
+                    style={{
+                      borderRadius: '50%',
+                      width: '15px',
+                      height: '15px',
+                      backgroundColor: option.code,
+                      marginRight: '5px',
+                    }}
+                  />
+                  {option.label}
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  color="cam"
+                  onChange={(e) => setNewColor({ ...newColor, name: e.target.value })}
+                  {...params}
+                  placeholder={newProducts.color.length > 0 ? '' : 'Chọn màu sắc'}
+                />
+              )}
+            />
+            {openModalColor && (
+              <DialogAddUpdate
+                open={openModalColor}
+                setOpen={setOpenModalColor}
+                title={'Chọn màu sắc'}
+                buttonSubmit={
+                  <Button
+                    onClick={() => {
+                      handleAddColor(newColor)
+                    }}
+                    color="primary"
+                    disableElevation
+                    sx={{ ...spButton }}
+                    variant="contained">
+                    Thêm
+                  </Button>
+                }>
+                <TextField
+                  type="color"
+                  id={'nameInputAdd'}
+                  onBlur={(e) => {
+                    setNewColor({ ...newColor, code: e.target.value })
+                  }}
+                  defaultValue={newColor.code}
+                  fullWidth
+                  inputProps={{
+                    required: true,
+                  }}
+                  size="small"
+                />
+              </DialogAddUpdate>
+            )} */}
+
+          <Stack className="mt-3 mb-3" spacing={1}>
+            {/* <div style={{ width: '100%' }}>
               <b>
                 <span style={{ color: 'red' }}>*</span>Kích cỡ
               </b>
@@ -1024,7 +1296,7 @@ export default function AdProductAdd() {
                   />
                 )}
               />
-            </div>
+            </div> */}
           </Stack>
         </Container>
       </Paper>

@@ -17,20 +17,19 @@
 }
 
 .san-pham .search-field .MuiInputBase-root:hover fieldset {
-  border-color: #F2741F !important;
+  border-color: #f2741f !important;
 }
 
 .san-pham .search-field .Mui-focused fieldset {
   border-width: 1px !important;
 }
 
-
 .san-pham2 .search-field .MuiInputBase-root {
   border-radius: 8px !important;
 }
 
 .san-pham2 .search-field .MuiInputBase-root:hover fieldset {
-  border-color: #F2741F !important;
+  border-color: #f2741f !important;
 }
 
 .san-pham2 .search-field .Mui-focused fieldset {
@@ -50,4 +49,31 @@
 .san-pham .container {
   padding-left: 20% !important;
   padding-right: 20% !important;
+}
+
+.san-pham .div-color-size {
+  width: 100% !important;
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+.san-pham .button-color-size {
+  background-color: #f2741f !important;
+  width: 20px !important;
+  height: 30px !important;
+  border: 1px solid #f2741f !important;
+}
+
+.san-pham .button-color-size:hover {
+  background-color: white !important;
+}
+
+.san-pham .add-icon-color-size {
+  color: white !important;
+  width: 60px !important;
+  height: 20px !important;
+}
+
+.san-pham .add-icon-color-size:hover {
+  color: #f2741f !important;
 }
