@@ -1,28 +1,67 @@
 import React from 'react'
-import { Bar, Line } from 'react-chartjs-2'
+import { Pie } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
-import { Box } from '@mui/material'
-import dayjs from 'dayjs'
+import { Box, Typography } from '@mui/material'
+import { getStatus } from '../../../services/constants/statusHoaDon'
+import './Dashboard.css'
 
 ChartJS.register()
 
 export default function LineChartDashBoard(props) {
-  const { dataBieuDo, typeBieuDo } = props
+  const { dataBieuDo } = props
+  const totalQuantity = dataBieuDo.reduce((total, item) => total + item.soLuong, 0)
 
-  const ngayArr = dataBieuDo.map((item) => dayjs(item.ngay).format('DD-MM-YYYY'))
-  const giaTriArr = dataBieuDo.map((item) => (typeBieuDo === 1 ? item.giaTri : item.giaTri * 1000))
+  const rainbowColors = [
+    'rgba(255, 0, 0, 0.7)', // Red
+    'rgba(255, 69, 0, 0.7)', // Red-Orange
+    'rgba(255, 140, 0, 0.7)', // Dark Orange
+    'rgba(255, 215, 0, 0.7)', // Gold
+    'rgba(173, 255, 47, 0.7)', // Green-Yellow
+    'rgba(0, 128, 0, 0.7)', // Green
+    'rgba(0, 255, 0, 0.7)', // Lime Green
+  ]
+
   const data = {
-    labels: ngayArr,
+    labels: dataBieuDo.map(
+      (d) => getStatus(d.status) + ' - ' + ((d.soLuong / totalQuantity) * 100).toFixed(2) + '% ',
+    ),
     datasets: [
       {
-        label: typeBieuDo === 1 ? 'Số lượng' : 'Tổng tiền (VNĐ)',
-        data: giaTriArr,
+        label: 'Số lượng',
+        data: dataBieuDo.map((d) => d.soLuong),
+        backgroundColor: rainbowColors,
+        borderColor: rainbowColors.map((color) => color.replace('0.7', '1')),
+        borderWidth: 1,
       },
     ],
   }
+
+  const legendOptions = {
+    display: true,
+    position: 'bottom',
+    align: 'start',
+    fullWith: true,
+  }
+
+  const options = {
+    plugins: {
+      legend: legendOptions,
+    },
+    layout: {
+      padding: {
+        bottom: 10,
+      },
+    },
+    aspectRatio: 1,
+    maintainAspectRatio: false,
+  }
+
   return (
-    <Box mt={2} width={'99%'}>
-      <Bar data={data} height={'100%'} />
+    <Box mt={2} width={'99%'} height={400}>
+      <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
+        Danh sách sản phẩm bán chạy theo tháng
+      </Typography>
+      <Pie data={data} options={options} />
     </Box>
   )
 }

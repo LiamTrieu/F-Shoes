@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import {
   Box,
+  Button,
   Card,
   Container,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
   Pagination,
@@ -23,11 +25,10 @@ import AssignmentIcon from '@mui/icons-material/Assignment'
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import dayjs from 'dayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import LineChartDashBoard from './LineChartDashBoard'
+import Empty from '../../../components/Empty'
 import thongKeApi from '../../../api/admin/thongke/thongKeApi'
+import './Dashboard.css'
 
 const DashboardCard = function ({ iconCart, title, total, product, order, color }) {
   return (
@@ -73,22 +74,52 @@ const DashboardCard = function ({ iconCart, title, total, product, order, color 
 }
 
 export default function Dashboard() {
-  const [getProductInMounth, setGetProductInMounth] = useState([])
+  const [dataProductSelling, setDataProductSelling] = useState([])
+  const [indexButton, setIndexButton] = useState(1)
   const [doanhThu, setDoanhThu] = useState({})
   const [dataBieuDo, setDataBieuDo] = useState([])
   const [filter, setFilter] = useState({
     page: 1,
     size: 5,
   })
-  const [requestBieuDo, setRequestBieuDo] = useState({
-    startDate: dayjs(new Date()).format('DD-MM-YYYY HH:mm:ss'),
-    endDate: dayjs(new Date()).format('DD-MM-YYYY HH:mm:ss'),
-  })
-  const [typeBieuDo, setTypeBieuDo] = useState(1)
+
   const [totalPages, setTotalPages] = useState(0)
-  const fecthData = (filter) => {
-    thongKeApi.getAllProductInMounth(filter).then((response) => {
-      setGetProductInMounth(
+  const fecthDataDay = (filter) => {
+    thongKeApi.getAllProductInDay(filter).then((response) => {
+      setDataProductSelling(
+        response.data.data.data.map((e) => {
+          return { ...e, image: e.image.split(',') }
+        }),
+      )
+      setTotalPages(response.data.data.totalPages)
+    })
+  }
+
+  const fecthDataWeek = (filter) => {
+    thongKeApi.getAllProductInWeek(filter).then((response) => {
+      setDataProductSelling(
+        response.data.data.data.map((e) => {
+          return { ...e, image: e.image.split(',') }
+        }),
+      )
+      setTotalPages(response.data.data.totalPages)
+    })
+  }
+
+  const fecthDataMonth = (filter) => {
+    thongKeApi.getAllProductInMonth(filter).then((response) => {
+      setDataProductSelling(
+        response.data.data.data.map((e) => {
+          return { ...e, image: e.image.split(',') }
+        }),
+      )
+      setTotalPages(response.data.data.totalPages)
+    })
+  }
+
+  const fecthDataYear = (filter) => {
+    thongKeApi.getAllProductInYear(filter).then((response) => {
+      setDataProductSelling(
         response.data.data.data.map((e) => {
           return { ...e, image: e.image.split(',') }
         }),
@@ -103,34 +134,32 @@ export default function Dashboard() {
     })
   }
 
-  const fetchThongKeTongTien = (requestBieuDo) => {
-    thongKeApi.getThongKeTongTien(requestBieuDo).then((response) => {
-      setDataBieuDo(response.data.data)
-    })
-  }
-
-  const fetchThongKeDonHang = (requestBieuDo) => {
-    thongKeApi.getThongKeDonHang(requestBieuDo).then((response) => {
+  const fetchThongKeDonHang = () => {
+    thongKeApi.getThongKeDonHang().then((response) => {
       setDataBieuDo(response.data.data)
       console.log(response.data.data)
     })
   }
 
   useEffect(() => {
-    fecthData(filter)
-  }, [filter, doanhThu])
+    if (indexButton === 1) {
+      fecthDataDay(filter)
+    } else if (indexButton === 2) {
+      fecthDataWeek(filter)
+    } else if (indexButton === 3) {
+      fecthDataMonth(filter)
+    } else if (indexButton === 4) {
+      fecthDataYear(filter)
+    }
+  }, [filter, doanhThu, indexButton])
 
   useEffect(() => {
     fecthDoanhThu()
   }, [])
 
   useEffect(() => {
-    if (typeBieuDo === 1) {
-      fetchThongKeDonHang(requestBieuDo)
-    } else {
-      fetchThongKeTongTien(requestBieuDo)
-    }
-  }, [typeBieuDo, requestBieuDo])
+    fetchThongKeDonHang()
+  }, [])
 
   return (
     <Container maxWidth="lg" sx={{ mb: 5 }}>
@@ -148,10 +177,10 @@ export default function Dashboard() {
         />
         <DashboardCard
           iconCart={<AutoAwesomeMotionIcon />}
-          title={'hôm qua'}
-          total={doanhThu.doanhSoHomQua}
-          product={doanhThu.soLuongSanPhamHomQua}
-          order={doanhThu.soDonHangHomQua}
+          title={'Tuần này'}
+          total={doanhThu.doanhSoTuanNay}
+          product={doanhThu.soLuongSanPhamTuanNay}
+          order={doanhThu.soDonHangTuanNay}
           color={'#ff8a4c'}
         />
         <DashboardCard
@@ -171,8 +200,137 @@ export default function Dashboard() {
           color={'#0e9f6e'}
         />
       </Grid2>
-      <Paper variant="outlined" sx={{ mb: 2 }}>
-        <Typography fontWeight={'bold'} m={2}>
+      {/* <Paper variant="outlined" sx={{ mb: 2 }}> */}
+      <Grid container spacing={2}>
+        <Grid item xs={7}>
+          <Paper elevation={3} className="paper-css">
+            <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
+              Danh sách sản phẩm bán chạy theo tháng
+            </Typography>
+            <Grid>
+              <Button
+                className="button-css"
+                sx={{
+                  backgroundColor: indexButton === 1 ? '#f26b16' : 'white',
+                  color: indexButton === 1 ? 'white' : 'black',
+                }}
+                onClick={() => setIndexButton(1)}>
+                Ngày
+              </Button>
+              <Button
+                className="button-css"
+                sx={{
+                  backgroundColor: indexButton === 2 ? '#f26b16' : 'white',
+                  color: indexButton === 2 ? 'white' : 'black',
+                }}
+                onClick={() => setIndexButton(2)}>
+                Tuần
+              </Button>
+              <Button
+                className="button-css"
+                sx={{
+                  backgroundColor: indexButton === 3 ? '#f26b16' : 'white',
+                  color: indexButton === 3 ? 'white' : 'black',
+                }}
+                onClick={() => setIndexButton(3)}>
+                Tháng
+              </Button>
+              <Button
+                className="button-css"
+                sx={{
+                  backgroundColor: indexButton === 4 ? '#f26b16' : 'white',
+                  color: indexButton === 4 ? 'white' : 'black',
+                }}
+                onClick={() => setIndexButton(4)}>
+                Năm
+              </Button>
+              <Button
+                className="button-css"
+                sx={{
+                  backgroundColor: indexButton === 5 ? '#f26b16' : 'white',
+                  color: indexButton === 5 ? 'white' : 'black',
+                }}>
+                Tùy chỉnh
+              </Button>
+            </Grid>
+            <Table aria-label="simple table" className="table-css">
+              <TableHead>
+                <TableRow>
+                  <TableCell width="10%">Ảnh sản phẩm</TableCell>
+                  <TableCell>Tên sản phẩm</TableCell>
+                  <TableCell align="right">Số lượng</TableCell>
+                  <TableCell align="right">Giá tiền</TableCell>
+                  <TableCell align="right">Kích cỡ</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {dataProductSelling.length > 0 ? (
+                  dataProductSelling.map((row) => (
+                    <TableRow
+                      key={row.name}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell align="left" width={'20%'}>
+                        <img src={row.image[0]} width={'40%'} alt="error" />
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {row.nameProduct}
+                      </TableCell>
+                      <TableCell align="right">{row.quantity}</TableCell>
+                      <TableCell align="right">{row.price}</TableCell>
+                      <TableCell align="right">{row.size}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <Empty />
+                )}
+              </TableBody>
+            </Table>
+            <Stack
+              mt={2}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-start"
+              spacing={0}>
+              <Typography component="span" variant={'body2'} mt={0.5}>
+                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+                <Select
+                  color="cam"
+                  onChange={(e) => {
+                    setFilter({ ...filter, size: e.target.value })
+                  }}
+                  sx={{ height: '25px', mx: 0.5 }}
+                  size="small"
+                  value={filter.size}>
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={15}>15</MenuItem>
+                  <MenuItem value={20}>20</MenuItem>
+                </Select>
+                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                  sản phẩm
+                </Typography>
+              </Typography>
+              <Pagination
+                variant="outlined"
+                color="cam"
+                count={totalPages}
+                page={filter.page}
+                onChange={(e, value) => {
+                  e.preventDefault()
+                  setFilter({ ...filter, page: value })
+                }}
+              />
+            </Stack>
+          </Paper>
+        </Grid>
+        <Grid item xs={5}>
+          <Paper elevation={3} className="paper-css" sx={{ height: '460px' }}>
+            <LineChartDashBoard dataBieuDo={dataBieuDo} />
+          </Paper>
+        </Grid>
+      </Grid>
+      {/* <Typography fontWeight={'bold'} m={2}>
           Biểu đồ thống kê
         </Typography>
         <Box m={2}>
@@ -222,9 +380,9 @@ export default function Dashboard() {
             </Grid2>
           </LocalizationProvider>
           <LineChartDashBoard dataBieuDo={dataBieuDo} typeBieuDo={typeBieuDo} />
-        </Box>
-      </Paper>
-      <Typography variant="h6" fontWeight={'bold'} my={2}>
+        </Box> */}
+      {/* </Paper> */}
+      {/* <Typography variant="h6" fontWeight={'bold'} my={2}>
         Danh sách sản phẩm bán chạy trong tháng
       </Typography>
       <Paper variant="outlined" sx={{ mb: 2 }}>
@@ -288,8 +446,8 @@ export default function Dashboard() {
               setFilter({ ...filter, page: value })
             }}
           />
-        </Stack>
-      </Paper>
+        </Stack> */}
+      {/* </Paper> */}
     </Container>
   )
 }

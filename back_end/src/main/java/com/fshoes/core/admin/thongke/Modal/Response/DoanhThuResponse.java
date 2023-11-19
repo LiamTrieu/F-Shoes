@@ -9,13 +9,13 @@ public interface DoanhThuResponse {
 
     Integer getSoLuongSanPhamNgay();
 
-    String getHomQua();
+    String getTuanNay();
 
-    Integer getDoanhSoHomQua();
+    Integer getDoanhSoTuanNay();
 
-    Integer getSoDonHangHomQua();
+    Integer getSoDonHangTuanNay();
 
-    Integer getSoLuongSanPhamHomQua();
+    Integer getSoLuongSanPhamTuanNay();
 
     String getThangNay();
 

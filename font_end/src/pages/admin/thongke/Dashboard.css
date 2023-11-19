@@ -1,0 +1,32 @@
+.paper-css {
+  background-color: rgb(224, 223, 223) !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  padding-top: 2px !important;
+  padding-bottom: 10px !important;
+}
+
+.typography-css {
+  text-align: center !important;
+}
+
+.button-css {
+  margin-right: 10px !important;
+  text-align: center !important;
+  justify-content: center !important;
+  margin-bottom: 20px !important;
+}
+
+.button-css:hover {
+  background-color: #f26b16 !important;
+  color: white !important;
+}
+
+.table-css {
+  background-color: white !important;
+}
+
+.table-css .MuiTableHead-root .MuiTableRow-root > th {
+  background-color: #ff8a4c !important;
+  color: white !important;
+}
