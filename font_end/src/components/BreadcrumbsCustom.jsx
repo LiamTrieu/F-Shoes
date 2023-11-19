@@ -15,7 +15,7 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
             sx={{
               color: 'black',
               textDecoration: 'none',
-              fontWeight: '500 !important',
+              fontWeight: '600 !important',
               fontSize: 'calc(0.9rem + 0.15vw) !important',
             }}
             component={e.link != null ? Link : ''}
@@ -45,7 +45,7 @@ export default function BreadcrumbsCustom({ listLink, nameHere }) {
           sx={{
             fontSize: 'calc(0.9rem + 0.15vw) !important',
           }}>
-          /
+          {nameHere && '/'}
         </Typography>
       }
       sx={{ mb: 1 }}
