@@ -13,6 +13,7 @@ import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
+import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Account;
 import com.fshoes.entity.Bill;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -71,6 +73,13 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Autowired
     private UserLogin userLogin;
+
+
+    @Autowired
+    private ClientProductDetailRepository clientProductDetailRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     public Page<HDBillResponse> filterBill(BillFilterRequest billFilterRequest) {
@@ -221,6 +230,8 @@ public class HDBillServiceImpl implements HDBillService {
                             billDetail.setStatus(hdBillDetailRequest.getStatus());
                             productDetail.setAmount(productDetail.getAmount() - hdBillDetailRequest.getQuantity());
                             productDetailRepository.save(productDetail);
+                            messagingTemplate.convertAndSend("/topic/realtime-san-pham-client",
+                                    clientProductDetailRepository.updateRealTime(productDetail.getId()));
                             return billDetail;
                         } else {
                             return null;

@@ -88,4 +88,6 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
             """, nativeQuery = true)
     ProductMaxPriceResponse getProductMaxPrice(@Param("id") String id);
 
+
+
 }

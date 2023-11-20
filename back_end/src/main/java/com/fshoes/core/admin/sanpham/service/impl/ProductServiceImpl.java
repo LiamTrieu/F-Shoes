@@ -11,6 +11,7 @@ import com.fshoes.core.admin.sanpham.repository.AdImageRepository;
 import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
 import com.fshoes.core.admin.sanpham.repository.AdProductRepository;
 import com.fshoes.core.admin.sanpham.service.ProductService;
+import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.Image;
 import com.fshoes.entity.Product;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -44,6 +46,11 @@ public class ProductServiceImpl implements ProductService {
     private AdImageRepository imageRepository;
     @Autowired
     private CloudinaryImage cloudinaryImage;
+    @Autowired
+    private ClientProductDetailRepository clientProductDetailRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     public Page<ProductResponse> getProduct(ProductFilterRequest filter) {
@@ -144,6 +151,8 @@ public class ProductServiceImpl implements ProductService {
                 .forEach(index -> images.get(index).setUrl(request.getListImage().get(index)));
         imageRepository.saveAll(images);
         productDetailRepository.save(request.tranDetail(productDetail));
+        messagingTemplate.convertAndSend("/topic/realtime-san-pham-client",
+                clientProductDetailRepository.updateRealTime(productDetail.getId()));
     }
 
     @Override
