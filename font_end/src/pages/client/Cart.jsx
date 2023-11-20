@@ -37,7 +37,11 @@ import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/
 import { setCheckout } from '../../services/slices/checkoutSlice'
 
 import clientProductApi from '../../api/client/clientProductApi'
+import { formatCurrency } from '../../services/common/formatCurrency '
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function Cart() {
   const [productSelect, setProductSelect] = useState([])
   const dispatch = useDispatch()
@@ -62,6 +66,35 @@ export default function Cart() {
   }
 
   const product = useSelector(GetCart)
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [product])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-cart', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductCart(data)
+      }
+    })
+  }
+
+  function updateRealTimeProductCart(data) {
+    const preProduct = [...product]
+    const index = preProduct.findIndex((p) => p.id === data.id)
+    const sl = preProduct[index].soLuong
+    if (index !== -1) {
+      preProduct[index] = { ...data, gia: data.price, soLuong: sl, image: data.image.split(',') }
+      dispatch(setCart(preProduct))
+    }
+  }
 
   const onChangeCheck = (cart, checked) => {
     const preProductSelect = [...productSelect]
@@ -117,6 +150,7 @@ export default function Cart() {
       const discountedPrice = originalPrice - discountAmount
       return discountedPrice
     }
+
     return cartDatas.map((cart) => {
       return (
         <TableRow sx={{ border: 0 }} key={cart.id}>
@@ -196,24 +230,15 @@ export default function Cart() {
               {' '}
               {cart.promotion ? (
                 <div style={{ display: 'flex' }}>
-                  <div className="promotion-price">{`${cart.gia.toLocaleString('it-IT', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })} `}</div>{' '}
+                  <div className="promotion-price">{formatCurrency(cart.gia)}</div>{' '}
                   <div>
                     <span style={{ color: 'red', fontWeight: 'bold' }}>
-                      {`${calculateDiscountedPrice(cart.gia, cart.value).toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'VND',
-                      })} `}
+                      {formatCurrency(calculateDiscountedPrice(cart.gia, cart.value))}
                     </span>{' '}
                   </div>
                 </div>
               ) : (
-                <span>{`${cart.gia.toLocaleString('it-IT', {
-                  style: 'currency',
-                  currency: 'VND',
-                })} `}</span>
+                <span>{formatCurrency(cart.gia)}</span>
               )}
             </span>
           </TableCell>
@@ -258,10 +283,7 @@ export default function Cart() {
               color: 'red',
               fontWeight: 'bold',
             }}>
-            {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
-              style: 'currency',
-              currency: 'VND',
-            })}
+            {formatCurrency(cart.gia * cart.soLuong)}
           </TableCell>
           <TableCell>
             <Button
@@ -296,10 +318,7 @@ export default function Cart() {
     return discountedPrice
   }
   const formatPrice = (price) => {
-    return price.toLocaleString('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    })
+    return formatCurrency(price)
   }
   const amountProduct = useSelector(GetCart).length
 
@@ -475,9 +494,9 @@ export default function Cart() {
                 <TableFooter sx={NoBoder}>
                   <OrderCartFotter
                     label="Tổng tiền"
-                    value={productSelect
-                      .reduce((tong, e) => tong + e.gia * e.soLuong, 0)
-                      .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                    value={formatCurrency(
+                      productSelect.reduce((tong, e) => tong + e.gia * e.soLuong, 0),
+                    )}
                   />
                 </TableFooter>
               </Table>

@@ -210,6 +210,8 @@ public class AdVoucherServiceImpl implements AdVoucherService {
         if (optionalVoucher.isPresent()) {
             Voucher voucher = optionalVoucher.get();
             Voucher voucherUpdate = adVoucherRepository.save(voucherRequest.newVoucher(voucher));
+            messagingTemplate.convertAndSend("/topic/my-voucher-realtime",
+                    clientVoucherRepository.getVoucherReal(voucherUpdate.getId()));
             List<CustomerVoucher> customerVoucherList = new ArrayList<>();
             if (voucherRequest.getType() == 0) {
                 return voucherUpdate;
@@ -315,11 +317,6 @@ public class AdVoucherServiceImpl implements AdVoucherService {
             List<Voucher> listVoucher = new ArrayList<>();
             listVoucher.add(voucherUpdate);
             messagingTemplate.convertAndSend("/topic/voucherUpdates", listVoucher);
-
-
-            messagingTemplate.convertAndSend("/topic/my-voucher-realtime",
-                    clientVoucherRepository.getVoucherReal(voucherUpdate.getId()));
-
             return voucherUpdate;
         } else {
             return null;

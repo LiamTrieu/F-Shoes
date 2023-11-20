@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react'
 import ghnAPI from '../../api/admin/ghn/ghnApi'
 import './Checkout.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { GetCheckout } from '../../services/slices/checkoutSlice'
+import { GetCheckout, setCheckout } from '../../services/slices/checkoutSlice'
 import { Link, useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import clientCheckoutApi from '../../api/client/clientCheckoutApi'
@@ -33,7 +33,10 @@ import ClientAddressApi from '../../api/client/clientAddressApi'
 import authenticationAPi from '../../api/authentication/authenticationAPi'
 import { GetUser } from '../../services/slices/userSlice'
 import ReplyIcon from '@mui/icons-material/Reply'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function Checkout() {
   const userLogin = useSelector(GetUser)
   const [request, setRequest] = useState({
@@ -395,6 +398,35 @@ export default function Checkout() {
       condition: arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0),
     })
     setOpenModalVoucher(true)
+  }
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [arrData])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-checkout', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductCart(data)
+      }
+    })
+  }
+
+  function updateRealTimeProductCart(data) {
+    const preProduct = [...arrData]
+    const index = preProduct.findIndex((p) => p.id === data.id)
+    const sl = preProduct[index].soLuong
+    if (index !== -1) {
+      preProduct[index] = { ...data, gia: data.price, soLuong: sl, image: data.image.split(',') }
+      dispatch(setCheckout(preProduct))
+    }
   }
 
   return (

@@ -3,6 +3,7 @@ import { Grid, Card, CardMedia, CardContent, Typography, Box, Button } from '@mu
 import { Link } from 'react-router-dom'
 import './productHome.css'
 import Carousel from 'react-material-ui-carousel'
+import { formatCurrency } from '../../services/common/formatCurrency '
 
 export default function CartProductHome({ products, colmd, collg }) {
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
@@ -97,27 +98,17 @@ export default function CartProductHome({ products, colmd, collg }) {
                     {' '}
                     {product.promotion && product.statusPromotion === 1 ? (
                       <div style={{ display: 'flex' }}>
-                        <div className="promotion-price">{`${product.priceBefort.toLocaleString(
-                          'it-IT',
-                          { style: 'currency', currency: 'VND' },
-                        )} `}</div>{' '}
+                        <div className="promotion-price">{formatCurrency(product.priceBefort)}</div>{' '}
                         <div>
                           <span style={{ color: 'red', fontWeight: 'bold' }}>
-                            {`${calculateDiscountedPrice(
-                              product.priceBefort,
-                              product.value,
-                            ).toLocaleString('it-IT', {
-                              style: 'currency',
-                              currency: 'VND',
-                            })} `}
+                            {formatCurrency(
+                              calculateDiscountedPrice(product.priceBefort, product.value),
+                            )}
                           </span>{' '}
                         </div>
                       </div>
                     ) : (
-                      <span>{`${product.priceBefort.toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'VND',
-                      })} `}</span>
+                      <span> {formatCurrency(product.priceBefort)}</span>
                     )}
                   </span>
                 </Typography>
