@@ -1,32 +1,26 @@
-# Sử dụng image chứa Node.js phiên bản 18 để xây dựng ứng dụng
-FROM node:18 as builder
-
-# Thiết lập thư mục làm việc
-WORKDIR /app
-
-# Thêm NODE_OPTIONS vào môi trường
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-
-# Copy file package.json và package-lock.json để tận dụng Docker caching
-COPY package*.json ./
-
-# Tải các dependencies Node.js
-RUN npm install
-
-# Copy mã nguồn vào thư mục làm việc
-COPY . .
-
-# Chia nhỏ lệnh xây dựng thành các bước nhỏ hơn
-RUN npm run build
-
-# Sử dụng image chứa Nginx để triển khai ứng dụng
-FROM nginx:latest
-
-# Thiết lập thư mục làm việc
-WORKDIR /usr/share/nginx/html
-
-# Copy các file từ image builder vào image triển khai
-COPY --from=builder /app/build .
-
-# Thiết lập lệnh chạy khi container được khởi động
-CMD ["nginx", "-g", "daemon off;"]
+    # 1. For build React app
+    FROM node:lts AS development
+    # Set working directory
+    WORKDIR /app
+    #
+    COPY package.json /app/package.json
+    COPY package-lock.json /app/package-lock.json
+    # Same as npm install
+    RUN npm ci
+    COPY . /app
+    ENV CI=true
+    ENV PORT=3000
+    CMD [ "npm", "start" ]
+    FROM development AS build
+    RUN npm run build
+    # 2. For Nginx setup
+    FROM nginx:alpine
+    # Copy config nginx
+    COPY --from=build ./nginx.conf /etc/nginx/conf.d/default.conf
+    WORKDIR /usr/share/nginx/html
+    # Remove default nginx static assets
+    RUN rm -rf ./*
+    # Copy static assets from builder stage
+    COPY --from=build /app/build .
+    # Containers run nginx with global directives and daemon off
+    ENTRYPOINT ["nginx", "-g", "daemon off;"]

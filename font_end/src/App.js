@@ -19,7 +19,7 @@ function App() {
         <Loading />
       </Backdrop>
       <Toast />
-      <RouterProvider router={router} />
+      <RouterProvider router={router}/>
     </div>
   )
 }

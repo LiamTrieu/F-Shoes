@@ -25,6 +25,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import PersonIcon from '@mui/icons-material/Person'
 import Carousel from 'react-material-ui-carousel'
 import { toast } from 'react-toastify'
+import confirmSatus from '../../../components/comfirmSwal'
 
 const listBreadcrumbs = [{ name: 'Trả hàng', link: '/admin/return-order/0' }]
 export default function ReturnOrderBill() {
@@ -121,17 +122,22 @@ export default function ReturnOrderBill() {
       fee: phi,
       listDetail: detail,
     }
-    returnApi.accept(returnBill).then(
-      (res) => {
-        if (res.data.success) {
-          toast.success('Trả hàng thành công!')
-          navigate('/admin/return-order/3')
-        } else {
-          navigate(-1)
-        }
-      },
-      () => {},
-    )
+    const title = 'Xác nhận hoàn trả sản phẩm?'
+    confirmSatus(title, '').then((result) => {
+      if (result.isConfirmed) {
+        returnApi.accept(returnBill).then(
+          (res) => {
+            if (res.data.success) {
+              toast.success('Trả hàng thành công!')
+              navigate('/admin/return-order/3')
+            } else {
+              navigate(-1)
+            }
+          },
+          () => {},
+        )
+      }
+    })
   }
 
   return (

@@ -171,7 +171,7 @@ export default function ReturnOrderDetail() {
               <PersonIcon style={{ marginRight: '5px' }} />
               <b>
                 {returnDetail?.customer} -{' '}
-                <Link to={`/admin/bill-detail/bill/${returnDetail?.idBill}`}>
+                <Link to={`/admin/bill-detail/${returnDetail?.idBill}`}>
                   {returnDetail?.codeBill}
                 </Link>
               </b>
