@@ -84,7 +84,7 @@ const styleCustomerPays = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 500,
   height: 580,
   bgcolor: 'background.paper',
   borderRadius: '8px',
@@ -1066,26 +1066,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       moneyAfter: totalPrice ? totalPrice : '',
       type: giaoHang === true ? 1 : 0,
     }
-    const dataPay = {
-      fullName: detailDiaChi.name ? detailDiaChi.name : '',
-      phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
-      idVourcher: voucher.id ? voucher.id : null,
-      idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : null,
-      address: detailDiaChi.specificAddress
-        ? detailDiaChi.specificAddress + ', ' + xaName + ', ' + huyenName + ', ' + tinhName
-        : '',
-      note: khachHang.note ? khachHang.note : '',
-      moneyShip: giaoHang ? shipTotal : 0,
-      moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',
-      totalMoney: totalPriceCart ? totalPriceCart : '',
-      moneyAfter: totalPrice ? totalPrice : '',
-      type: giaoHang === true ? 1 : 0,
-      customerAmount: customerAmount,
-      transactionCode: transactionCode ? transactionCode : null,
-      paymentMethod: paymentMethod === '1' ? 1 : 0,
-      noteTransaction: noteTransaction ? noteTransaction : null,
-      desiredReceiptDate: timeShip ? timeShip : '',
-    }
 
     const title = 'Xác nhận đặt hàng ?'
     const text = ''
@@ -1093,20 +1073,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       if (result.isConfirmed) {
         sellApi.addBill(data, id).then((response) => {
           toast.success(' xác nhận thành công', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          getAllBillTaoDonHang()
-          setSelectBill('')
-        })
-      }
-    })
-
-    const titlePay = 'Xác nhận thanh toán ?'
-    const textPay = ''
-    confirmSatus(titlePay, textPay, theme).then((result) => {
-      if (result.isConfirmed) {
-        sellApi.payOrder(dataPay, id).then((response) => {
-          toast.success(' Thanh toán thành công', {
             position: toast.POSITION.TOP_RIGHT,
           })
           getAllBillTaoDonHang()

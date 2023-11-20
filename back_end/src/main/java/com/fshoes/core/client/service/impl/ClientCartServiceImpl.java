@@ -2,6 +2,8 @@ package com.fshoes.core.client.service.impl;
 
 import com.fshoes.core.client.model.request.ClientAddCartRequest;
 import com.fshoes.core.client.model.response.ClientCartResponse;
+import com.fshoes.core.client.model.response.ClientPromotionResponse;
+import com.fshoes.core.client.repository.CLientPromotionRepository;
 import com.fshoes.core.client.repository.ClientCartRepository;
 import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.client.service.ClientCartService;
@@ -23,6 +25,9 @@ public class ClientCartServiceImpl implements ClientCartService {
     private ClientCartRepository cartRepository;
     @Autowired
     ClientProductDetailRepository productDetailRepository;
+
+    @Autowired
+    CLientPromotionRepository promotionRepository;
 
     @Override
     public List<ClientCartResponse> getCart() {
@@ -80,5 +85,10 @@ public class ClientCartServiceImpl implements ClientCartService {
             throw new RestApiException(Message.API_ERROR);
         }
         return null;
+    }
+
+    @Override
+    public List<ClientPromotionResponse> getPromotionByProductDetail(List<String> idProductDetail) {
+        return promotionRepository.getPromotionByProductDetail(idProductDetail);
     }
 }

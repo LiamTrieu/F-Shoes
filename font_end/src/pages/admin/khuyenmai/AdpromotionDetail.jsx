@@ -157,6 +157,7 @@ export default function AdPromotionDetail() {
     setSelectedProductIds(selectedProductIds)
   }
   const getProductDetailById = (filterProductDetail, selectedProductIds) => {
+    console.log(selectedProductIds)
     if (selectedProductIds.length > 0) {
       khuyenMaiApi
         .getAllProductDetailByProduct(filterProductDetail, selectedProductIds)

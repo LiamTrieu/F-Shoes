@@ -5,6 +5,10 @@ const clientCartApi = {
     const url = `/client/cart`
     return axiosApi.get(url)
   },
+  getPromotionByProductDetail: (idProductDetail) => {
+    const url = `/client/cart/get-promotion-by-product-detail/${idProductDetail}`
+    return axiosApi.get(url)
+  },
   add: (cart) => {
     const url = `/client/cart/add`
     return axiosApi.post(url, { idProduct: cart.id, amount: cart.soLuong })

@@ -139,14 +139,14 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                     </TableCell>
                     <TableCell align="center">
                       <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
-                        <span>
-                          {product.promotion ? (
+                        {/* <span>
+                          {cart.promotion && cart.statusPromotion === 1 ? (
                             <div>
                               <div className="promotion-price">{`${formatPrice(cart.gia)} `}</div>
                               <div>
                                 <span style={{ color: 'red', fontWeight: 'bold' }}>
                                   {`${formatPrice(
-                                    calculateDiscountedPrice(cart.gia, product.value),
+                                    calculateDiscountedPrice(cart.gia, cart.value),
                                   )} `}
                                 </span>
                               </div>
@@ -154,7 +154,8 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                           ) : (
                             <span>{`${formatPrice(cart.gia)} `}</span>
                           )}
-                        </span>
+                        </span> */}
+                        <span>{`${formatPrice(cart.gia)} `}</span>
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
