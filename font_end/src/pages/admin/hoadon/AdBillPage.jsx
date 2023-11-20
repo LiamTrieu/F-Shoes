@@ -20,6 +20,9 @@ import {
   Typography,
   Tabs,
   Box,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from '@mui/material'
 import Tab from '@mui/material/Tab'
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
@@ -193,71 +196,84 @@ export default function AdBillPage() {
         </Stack>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="flex-start"
-          spacing={1}
+          justifyContent="flex-start"
+          alignItems="center"
+          spacing={2}
           style={{ marginTop: '10px' }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs} style={{ flexBasis: '40%' }}>
-            <DemoContainer components={['DatePicker', 'DatePicker']}>
-              <div style={{ marginBottom: '10px' }}>
-                <DatePicker
-                  id="start-date"
-                  value={startDate}
-                  onChange={handleStartDateChange}
-                  slotProps={{
-                    actionBar: {
-                      actions: ['clear'],
-                    },
-                  }}
-                  style={{
-                    borderRadius: '5px',
-                    width: '100%',
-                  }}
-                  className="dateTime"
-                  label="Từ ngày"
-                />
-              </div>
-              <div>
-                <DatePicker
-                  id="end-date"
-                  value={endDate}
-                  onChange={handleEndDateChange}
-                  slotProps={{
-                    actionBar: {
-                      actions: ['clear'],
-                    },
-                  }}
-                  style={{
-                    borderRadius: '5px',
-                    width: '100%',
-                  }}
-                  className="dateTime"
-                  label="Đến ngày"
-                />
-              </div>
-            </DemoContainer>
-          </LocalizationProvider>
+          <div>
+            <LocalizationProvider dateAdapter={AdapterDayjs} style={{ flexBasis: '40%' }}>
+              <DemoContainer components={['DatePicker', 'DatePicker']}>
+                <div style={{ marginBottom: '10px' }}>
+                  <DatePicker
+                    id="start-date"
+                    value={startDate}
+                    onChange={handleStartDateChange}
+                    slotProps={{
+                      actionBar: {
+                        actions: ['clear'],
+                      },
+                    }}
+                    style={{
+                      borderRadius: '5px',
+                      width: '100%',
+                    }}
+                    className="dateTime"
+                    label="Từ ngày"
+                  />
+                </div>
+                <div>
+                  <DatePicker
+                    id="end-date"
+                    value={endDate}
+                    onChange={handleEndDateChange}
+                    slotProps={{
+                      actionBar: {
+                        actions: ['clear'],
+                      },
+                    }}
+                    style={{
+                      borderRadius: '5px',
+                      width: '100%',
+                    }}
+                    className="dateTime"
+                    label="Đến ngày"
+                  />
+                </div>
+              </DemoContainer>
+            </LocalizationProvider>
+          </div>
 
-          <FormControl>
+          <div
+            my={2}
+            direction="row"
+            style={{ justifyContent: 'flex-start', display: 'flex', alignItems: 'center' }}
+            spacing={2}>
             <div className="filter">
-              <b>Loại:</b>
-              <Select
-                displayEmpty
-                size="small"
-                value={typeBill}
-                onChange={handleChangeSelectTypeBill}>
-                <MenuItem value="all">Tất cả</MenuItem>
-                {[
-                  { id: true, name: 'Trực tuyến' },
-                  { id: false, name: 'Tại quầy' },
-                ]?.map((item) => (
-                  <MenuItem key={item?.id} value={item?.id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </Select>
+              <b style={{ marginRight: '10px' }}>Loại:</b>
             </div>
-          </FormControl>
+            <RadioGroup
+              row
+              aria-label="status"
+              name="status"
+              value={typeBill}
+              onChange={handleChangeSelectTypeBill}>
+              <FormControlLabel
+                value={'all'}
+                control={<Radio color="cam" size="small" />}
+                label="Tất cả"
+              />
+              <FormControlLabel
+                value={true}
+                control={<Radio color="cam" size="small" />}
+                label="Trực tuyến"
+              />
+              <FormControlLabel
+                value={false}
+                control={<Radio color="cam" size="small" />}
+                label="Tại quầy"
+              />
+            </RadioGroup>
+          </div>
         </Stack>
       </Paper>
 

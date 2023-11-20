@@ -9,13 +9,12 @@ import {
   IconButton,
 } from '@mui/material'
 import { toast } from 'react-toastify'
-import authenticationAPi from '../../../api/authentication/authenticationAPi'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { getCookie } from '../../../services/cookie'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-
-const ChangePassword = () => {
+import authenticationAPi from '../../api/authentication/authenticationAPi'
+import { getCookie } from '../../services/cookie'
+export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
@@ -77,11 +76,11 @@ const ChangePassword = () => {
     }
 
     try {
-      const response = await authenticationAPi.changePassword(currentPassword, newPassword)
+      const response = await authenticationAPi.changePasswordAdmin(currentPassword, newPassword)
 
       if (response.data.success) {
         toast.success('Đổi mật khẩu thành công')
-        navigate('/profile/user')
+        navigate('/admin')
       } else {
         toast.error('Đổi mật khẩu không thành công. Vui lòng kiểm tra lại mật khẩu cũ.')
       }
@@ -90,10 +89,9 @@ const ChangePassword = () => {
     }
   }
 
-  const token = getCookie('ClientToken')
-
+  const token = getCookie('AdminToken')
   return !token ? (
-    <Navigate to={'/home'} />
+    <Navigate to={'/admin'} />
   ) : (
     <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '450px', mx: 'auto' }}>
       <p className="hs-user">Đổi mật khẩu</p>
@@ -206,5 +204,3 @@ const ChangePassword = () => {
     </Paper>
   )
 }
-
-export default ChangePassword
