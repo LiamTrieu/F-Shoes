@@ -16,6 +16,9 @@ public interface ClientCartRepository extends CartRepository {
             SELECT MAX(pd.id) as id,
             CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', co.name,'"') AS name,
             MAX(pd.price) as gia,
+            MAX(pr.id) as promotion,
+            MAX(pr.status) as statusPromotion,
+            MAX(pr.value) as value,
             MAX(pd.weight) as weight,
             MAX(c.quantity) as soLuong,
             MAX(si.size) as size,
@@ -23,6 +26,8 @@ public interface ClientCartRepository extends CartRepository {
             FROM cart c
             JOIN product_detail pd ON pd.id = c.id_product_detail
             JOIN product p ON p.id = pd.id_product
+            LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
+            LEFT JOIN promotion pr ON pr.id = pp.id_promotion
             JOIN color co ON co.id = pd.id_color
             JOIN category ca ON ca.id = pd.id_category
             JOIN brand b ON b.id = pd.id_brand

@@ -1,30 +1,29 @@
 import {
   Box,
-  Container,
+  Button,
+  Chip,
   Divider,
   Grid,
   IconButton,
   InputAdornment,
   Paper,
+  Stack,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Tabs,
   TextField,
   Tooltip,
   Typography,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import SearchIcon from '@mui/icons-material/Search'
 import './Order.css'
 import ClientAccountApi from '../../../api/client/clientAccount'
 import { getStatus } from '../../../services/constants/statusHoaDon'
-import { Link } from 'react-router-dom'
 import { TbEyeEdit } from 'react-icons/tb'
 import dayjs from 'dayjs'
+import { getStatusStyle } from '../../admin/hoadon/getStatusStyle'
+import { getStatusProfile } from '../../../services/constants/statusHoaDonProfile'
 
 export default function Order() {
   const [getBill, setGetBill] = useState([])
@@ -57,14 +56,21 @@ export default function Order() {
   console.log(getBillTable + ' meifsidfnofjiwrqwpeqeqopwekwqpo')
 
   const data = Array.from({ length: 10 }).fill(null)
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    })
+  }
   return (
     <>
       <div className="order">
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: 'pink' }}>
           <Tabs value={valueTabHD} onChange={handleChangeTab} className="tabSttHD">
             <Tab label={'Tất cả'} key={'tabSttHd all'} value={'all'}></Tab>
             {listSttHD.map((row, i) => (
-              <Tab label={getStatus(row)} key={'tabSttHd' + i} value={row}></Tab>
+              <Tab label={getStatusProfile(row)} key={'tabSttHd' + i} value={row}></Tab>
             ))}
           </Tabs>
         </Box>
@@ -73,7 +79,7 @@ export default function Order() {
             width: '100%',
             marginTop: '20px',
             border: 'none',
-            backgroundColor: '#C0C0C0',
+            backgroundColor: 'white',
             marginBottom: '20px',
           }}
           placeholder="Tìm kiếm theo mã hóa đơn"
@@ -87,10 +93,10 @@ export default function Order() {
             ),
           }}
         />
-        <Paper elevation={3}>
-          <div style={{ maxHeight: '500px', overflow: 'auto' }}>
-            <Divider />
-            {/* {getBill.map((item, index) => (
+
+        <div style={{ maxHeight: '500px', overflow: 'auto' }}>
+          <Divider />
+          {/* {getBill.map((item, index) => (
             <React.Fragment key={index}>
               <Grid container spacing={2} style={{ marginTop: '5px', marginBottom: '20px' }}>
                 <Grid item xs={2}>
@@ -133,54 +139,80 @@ export default function Order() {
               {index < data.length - 1 && <Divider />}
             </React.Fragment>
           ))} */}
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead sx={{ backgroundColor: '#FC8434' }}>
-                <TableRow>
-                  <TableCell align="center">Mã hóa đơn</TableCell>
-                  <TableCell align="center">Ngày mua</TableCell>
-                  <TableCell align="center">Ngày dự kiến nhận</TableCell>
-                  <TableCell align="center">Ngày nhận</TableCell>
-                  <TableCell align="center">Trạng thái</TableCell>
-                  <TableCell align="center">Thao tác</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {getBillTable.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell component="th" scope="row">
-                      {row.code}
-                    </TableCell>
-                    <TableCell align="center">
-                      {dayjs(row.createdAt).format('DD/MM/YYYY')}
-                    </TableCell>
-                    <TableCell align="center">
-                      {' '}
-                      {dayjs(row.desiredReceiptDate).format('DD/MM/YYYY')}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.completeDate
-                        ? dayjs(row.completeDate).format('DD/MM/YYYY')
-                        : 'Chưa nhận hàng'}
-                    </TableCell>
-                    <TableCell align="center">{row.status}</TableCell>
-                    <TableCell align="center">
-                      {' '}
-                      <Link to={`/profile/get-by-idBill/${row.id}`}>
-                        <Tooltip title="Xem chi tiết đơn hàng">
-                          <IconButton sx={{ marginLeft: '30px' }} color="cam">
-                            <TbEyeEdit />
-                          </IconButton>
-                        </Tooltip>
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </Paper>
+          {getBillTable.map((item, index) => (
+            <React.Fragment key={index}>
+              <Grid container spacing={2} style={{ marginTop: '5px', paddingBottom: '20px' }}>
+                <Grid item xs={12}>
+                  <Paper elevation={3}>
+                    <div
+                      style={{
+                        height: '250px',
+                        backgroundColor: 'white',
+                      }}>
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}>
+                        <span style={{ paddingTop: '20px', paddingLeft: '20px' }}>{item.code}</span>
+                        <div style={{ paddingTop: '20px', paddingRight: '20px' }}>
+                          <Chip
+                            className={getStatusStyle(item.status)}
+                            label={getStatus(item.status)}
+                            size="small"
+                          />
+                        </div>
+                      </Stack>
+
+                      <Divider
+                        sx={{ height: '1px', backgroundColor: 'black', marginTop: '20px' }}
+                      />
+
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}>
+                        <div style={{ paddingTop: '20px', paddingLeft: '20px' }}>
+                          <Typography style={{ marginBottom: '20px' }}>
+                            Ngày đặt hàng: {dayjs(item.createdAt).format('DD/MM/YYYY')}
+                          </Typography>
+                          {item.completeDate ? (
+                            <Typography>
+                              Ngày Nhận hàng: {dayjs(item.completeDate).format('DD/MM/YYYY')}
+                            </Typography>
+                          ) : (
+                            <Typography>
+                              Ngày dự kiến nhận:{' '}
+                              {dayjs(item.desiredReceiptDate).format('DD/MM/YYYY')}
+                            </Typography>
+                          )}
+                          <Button
+                            sx={{ marginTop: '30px' }}
+                            component={Link}
+                            to={`/profile/get-by-idBill/${item.id}`}
+                            variant="outlined"
+                            color="cam">
+                            Thông tin chi tiết
+                          </Button>
+                        </div>
+                        <div style={{ paddingTop: '20px', paddingRight: '20px' }}>
+                          <Typography style={{ marginBottom: '20px' }}>
+                            Tiền ship: {formatPrice(item.moneyShip)}
+                          </Typography>
+                          <Typography>Tổng tiền: {formatPrice(item.moneyAfter)}</Typography>
+                          <Button sx={{ marginTop: '30px' }} variant="outlined" color="cam">
+                            Trả hàng
+                          </Button>
+                        </div>
+                      </Stack>
+                    </div>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
     </>
   )

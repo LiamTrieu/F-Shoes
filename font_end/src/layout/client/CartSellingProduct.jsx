@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Grid,
   Card,
@@ -9,16 +9,44 @@ import {
   Button,
   Stack,
   Rating,
+  Tooltip,
 } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './productHome.css'
 import Carousel from 'react-material-ui-carousel'
+import { useDispatch } from 'react-redux'
+import clientProductApi from '../../api/client/clientProductApi'
+import { addCart } from '../../services/slices/cartSlice'
+import { toast } from 'react-toastify'
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 
 export default function CartSellingProduct({ products, colmd, collg }) {
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
     const discountedPrice = originalPrice - discountAmount
     return discountedPrice
+  }
+  const [isCartHovered, setIsCartHovered] = useState(false)
+
+  let navigate = useNavigate()
+  const dispatch = useDispatch()
+  const addProductToCart = (id) => {
+    clientProductApi.getById(id).then((response) => {
+      console.log(response.data.data)
+      const newItem = {
+        id: id,
+        idProduct: response.data.data.idProduct,
+        name: response.data.data.name,
+        gia: response.data.data.price,
+        weight: response.data.data.weight,
+        image: response.data.data.image.split(','),
+        soLuong: parseInt(1),
+        size: response.data.data.size,
+      }
+      dispatch(addCart(newItem))
+      navigate('/cart')
+      toast.success('Thêm sản phẩm thành công')
+    })
   }
 
   return (
@@ -36,7 +64,16 @@ export default function CartSellingProduct({ products, colmd, collg }) {
             Math.round((1 - discountValue / 100) * green[2] + (discountValue / 100) * red[2]),
           ]
           return (
-            <Grid key={i} item xs={6} sm={6} md={colmd} lg={collg} width={'100%'}>
+            <Grid
+              key={i}
+              item
+              xs={6}
+              sm={6}
+              md={colmd}
+              lg={collg}
+              width={'100%'}
+              onMouseEnter={() => setIsCartHovered(i)}
+              onMouseLeave={() => setIsCartHovered(null)}>
               <Button
                 component={Link}
                 to={`/product/${product.id}`}
@@ -84,6 +121,24 @@ export default function CartSellingProduct({ products, colmd, collg }) {
                           />
                         ))}
                       </Carousel>
+                      {isCartHovered === i && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            zIndex: 2,
+                            top: '80%',
+                            left: '40%',
+                          }}>
+                          <Tooltip title="Mua ngay">
+                            <Button
+                              variant="contained"
+                              color="error"
+                              onClick={() => addProductToCart(product.id)}>
+                              <AddShoppingCartIcon />
+                            </Button>
+                          </Tooltip>
+                        </div>
+                      )}
                     </Box>
                   </Box>
 

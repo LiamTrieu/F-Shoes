@@ -10,16 +10,13 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import ReplyIcon from '@mui/icons-material/Reply'
 import { Link } from 'react-router-dom'
 import { setCheckout } from '../../services/slices/checkoutSlice'
-import { formatCurrency } from '../../services/common/formatCurrency '
-import SockJS from 'sockjs-client'
-import { Stomp } from '@stomp/stompjs'
 
 const styleModalCart = {
   position: 'absolute',
@@ -34,7 +31,10 @@ const styleModalCart = {
 }
 
 const formatPrice = (price) => {
-  return formatCurrency(price)
+  return price.toLocaleString('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  })
 }
 
 function calculateTotalPayment(cart) {
@@ -42,10 +42,9 @@ function calculateTotalPayment(cart) {
   cart.forEach((item) => {
     total += item.gia * item.soLuong
   })
-  return formatCurrency(total)
+  return total.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
 }
 
-var stompClient = null
 export default function ModalAddProductToCart({ openModal, handleCloseModal, product }) {
   const dispatch = useDispatch()
   const amountProduct = useSelector(GetCart).length
@@ -62,35 +61,6 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
       dispatch(removeCart(cart.id))
     } else {
       dispatch(updateCart({ ...cart, soLuong: soluong }))
-    }
-  }
-
-  useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
-    stompClient = Stomp.over(socket)
-    stompClient.connect({}, onConnect)
-
-    return () => {
-      stompClient.disconnect()
-    }
-  }, [productCart])
-
-  const onConnect = () => {
-    stompClient.subscribe('/topic/realtime-san-pham-modal-add-to-card', (message) => {
-      if (message.body) {
-        const data = JSON.parse(message.body)
-        updateRealTimeProductAddToCart(data)
-      }
-    })
-  }
-
-  function updateRealTimeProductAddToCart(data) {
-    const preProduct = [...productCart]
-    const index = preProduct.findIndex((product) => product.id === data.id)
-    const sl = preProduct[index].soLuong
-    if (index !== -1) {
-      preProduct[index] = { ...data, gia: data.price, soLuong: sl, image: data.image.split(',') }
-      dispatch(setCart(preProduct))
     }
   }
   return (
@@ -169,22 +139,23 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                     </TableCell>
                     <TableCell align="center">
                       <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
-                        <span>
-                          {product.promotion ? (
+                        {/* <span>
+                          {cart.promotion && cart.statusPromotion === 1 ? (
                             <div>
                               <div className="promotion-price">{`${formatPrice(cart.gia)} `}</div>
                               <div>
                                 <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                  {`${formatCurrency(
-                                    calculateDiscountedPrice(cart.gia, product.value),
+                                  {`${formatPrice(
+                                    calculateDiscountedPrice(cart.gia, cart.value),
                                   )} `}
                                 </span>
                               </div>
                             </div>
                           ) : (
-                            <span>{`${formatCurrency(cart.gia)} `}</span>
+                            <span>{`${formatPrice(cart.gia)} `}</span>
                           )}
-                        </span>
+                        </span> */}
+                        <span>{`${formatPrice(cart.gia)} `}</span>
                       </Typography>
                     </TableCell>
                     <TableCell align="center">

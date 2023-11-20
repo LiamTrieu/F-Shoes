@@ -163,6 +163,7 @@ export default function AdVoucherAdd() {
     }
 
     const minBirthYear = 1900
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
 
     if (voucherAdd.code.trim() === '') {
       errors.code = 'Mã không được để trống'
@@ -174,7 +175,7 @@ export default function AdVoucherAdd() {
       errors.code = 'Mã không được bé hơn 5 ký tự'
     } else if (listCode.includes(voucherAdd.code.toLowerCase())) {
       errors.code = 'Mã đã tồn tại'
-    } else if (/[^a-zA-Z0-9_\s]+/.test(voucherAdd.code)) {
+    } else if (specialCharsRegex.test(voucherAdd.code)) {
       errors.code = 'Mã không được chứa ký tự đặc biệt'
     }
 
@@ -188,7 +189,7 @@ export default function AdVoucherAdd() {
       errors.name = 'Tên không được bé hơn 5 ký tự'
     } else if (listName.includes(voucherAdd.name.toLowerCase())) {
       errors.name = 'Tên đã tồn tại'
-    } else if (/[^a-zA-Z0-9_\s]+/.test(voucherAdd.name)) {
+    } else if (specialCharsRegex.test(voucherAdd.name)) {
       errors.name = 'Tên không được chứa ký tự đặc biệt'
     }
 

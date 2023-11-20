@@ -1,15 +1,42 @@
-import React from 'react'
-import { Grid, Card, CardMedia, CardContent, Typography, Box, Button } from '@mui/material'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Grid, Card, CardMedia, CardContent, Typography, Box, Button, Tooltip } from '@mui/material'
+import { Link, useNavigate } from 'react-router-dom'
 import './productHome.css'
 import Carousel from 'react-material-ui-carousel'
-import { formatCurrency } from '../../services/common/formatCurrency '
+import { useDispatch } from 'react-redux'
+import clientProductApi from '../../api/client/clientProductApi'
+import { addCart } from '../../services/slices/cartSlice'
+import { toast } from 'react-toastify'
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 
 export default function CartProductHome({ products, colmd, collg }) {
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
     const discountedPrice = originalPrice - discountAmount
     return discountedPrice
+  }
+
+  const [isCartHovered, setIsCartHovered] = useState(false)
+
+  let navigate = useNavigate()
+  const dispatch = useDispatch()
+  const addProductToCart = (id) => {
+    clientProductApi.getById(id).then((response) => {
+      console.log(response.data.data)
+      const newItem = {
+        id: id,
+        idProduct: response.data.data.idProduct,
+        name: response.data.data.name,
+        gia: response.data.data.price,
+        weight: response.data.data.weight,
+        image: response.data.data.image.split(','),
+        soLuong: parseInt(1),
+        size: response.data.data.size,
+      }
+      dispatch(addCart(newItem))
+      navigate('/cart')
+      toast.success('Thêm sản phẩm thành công')
+    })
   }
 
   return (
@@ -41,12 +68,15 @@ export default function CartProductHome({ products, colmd, collg }) {
                   }}>{`${discountValue ? discountValue : ''}%`}</div>
               )}
               <Box
+                key={i}
                 sx={{
                   position: 'relative',
                   width: '100%',
                   paddingBottom: '100%',
                   overflow: 'hidden',
-                }}>
+                }}
+                onMouseEnter={() => setIsCartHovered(i)}
+                onMouseLeave={() => setIsCartHovered(null)}>
                 <Box
                   sx={{
                     position: 'absolute',
@@ -75,6 +105,24 @@ export default function CartProductHome({ products, colmd, collg }) {
                       />
                     ))}
                   </Carousel>
+                  {isCartHovered === i && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        zIndex: 2,
+                        top: '80%',
+                        left: '40%',
+                      }}>
+                      <Tooltip title="Mua ngay">
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => addProductToCart(product.id)}>
+                          <AddShoppingCartIcon />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  )}
                 </Box>
               </Box>
 
@@ -98,17 +146,27 @@ export default function CartProductHome({ products, colmd, collg }) {
                     {' '}
                     {product.promotion && product.statusPromotion === 1 ? (
                       <div style={{ display: 'flex' }}>
-                        <div className="promotion-price">{formatCurrency(product.priceBefort)}</div>{' '}
+                        <div className="promotion-price">{`${product.priceBefort.toLocaleString(
+                          'it-IT',
+                          { style: 'currency', currency: 'VND' },
+                        )} `}</div>{' '}
                         <div>
                           <span style={{ color: 'red', fontWeight: 'bold' }}>
-                            {formatCurrency(
-                              calculateDiscountedPrice(product.priceBefort, product.value),
-                            )}
+                            {`${calculateDiscountedPrice(
+                              product.priceBefort,
+                              product.value,
+                            ).toLocaleString('it-IT', {
+                              style: 'currency',
+                              currency: 'VND',
+                            })} `}
                           </span>{' '}
                         </div>
                       </div>
                     ) : (
-                      <span> {formatCurrency(product.priceBefort)}</span>
+                      <span>{`${product.priceBefort.toLocaleString('it-IT', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })} `}</span>
                     )}
                   </span>
                 </Typography>

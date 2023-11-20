@@ -34,11 +34,12 @@ public interface ClientBillRepository extends BillRepository {
     List<ClientBillAccountResponse> getALlBill(@Param("request") ClientBillAccountRequest request, String idAccount);
 
     @Query(value = """
-            select id,code, id_customer , status , created_at, desired_receipt_date,complete_date
+            select id,code, id_customer , status , created_at, desired_receipt_date,complete_date, money_ship, money_after
              from bill 
                WHERE (:#{#request.status} is null or status = :#{#request.status}) 
                AND (:#{#request.code} is null or code like %:#{#request.code}%) 
               AND id_customer = :idAccount
+              order by created_at desc 
             """, nativeQuery = true)
     List<ClientGetAllBillTableResponse> getALlBillTable(@Param("request") ClientBillAccountRequest request, String idAccount);
 

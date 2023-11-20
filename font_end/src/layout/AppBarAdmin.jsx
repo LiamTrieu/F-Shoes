@@ -14,6 +14,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import authenticationAPi from '../api/authentication/authenticationAPi'
 import { Logout } from '@mui/icons-material'
 import confirmSatus from '../components/comfirmSwal'
+import KeyIcon from '@mui/icons-material/Key'
 
 const drawerWidth = '17vw'
 
@@ -122,6 +123,14 @@ export default function AppBarAdmin({ children }) {
                       style={{ textDecoration: 'none', color: 'black' }}>
                       <MenuItem>
                         <Avatar /> Tài khoản của tôi
+                      </MenuItem>
+                    </Link>
+                    <Link
+                      to={`/admin/change-password`}
+                      style={{ textDecoration: 'none', color: 'black' }}>
+                      <MenuItem>
+                        <KeyIcon fontSize="small" sx={{ color: 'rgba(0, 0, 0, 0.54)', mr: 2 }} />{' '}
+                        Đổi mật khẩu
                       </MenuItem>
                     </Link>
                     <MenuItem style={{ color: 'black' }} onClick={() => handleAccount()}>
