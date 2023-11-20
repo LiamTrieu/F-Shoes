@@ -38,6 +38,8 @@ import { useParams } from 'react-router-dom'
 import { addCart } from '../../services/slices/cartSlice'
 import { useDispatch } from 'react-redux'
 import { formatCurrency } from '../../services/common/formatCurrency '
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -74,7 +76,10 @@ AirbnbThumbComponent.propTypes = {
   children: PropTypes.node,
 }
 
+var stompClient = null
 export default function Product() {
+  const [products, setProducts] = useState([])
+
   const [priceMax, setPriceMax] = useState(999999999)
   const [openCategory, setOpenCategory] = useState(false)
   const [openBrand, setOpenBrand] = useState(false)
@@ -82,7 +87,6 @@ export default function Product() {
   const [openSole, setOpenSole] = useState(false)
   const [openColor, setOpenColor] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false)
-  const [products, setProducts] = useState([])
   const [product, setProduct] = useState([])
   const [showMenuBar, setShowMenuBar] = useState(true)
   const [isMenuBarVisible, setIsMenuBarVisible] = useState(true)
@@ -148,6 +152,49 @@ export default function Product() {
       )
     })
   }, [filter])
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [products])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-client', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductClient(data)
+      }
+    })
+  }
+
+  function updateRealTimeProductClient(data) {
+    const preProduct = [...products]
+    const index = preProduct.findIndex((product) => product.id === data.id)
+    if (index !== -1) {
+      preProduct[index] = {
+        id: data.id,
+        title: data.name,
+        priceBefort: data.price,
+        priceAfter: data.price,
+        value: data.value,
+        promotion: data.promotion,
+        statusPromotion: data.statusPromotion,
+        image: data.image.split(','),
+        idProduct: data.idProduct,
+        idColor: data.idColor,
+        idMaterial: data.idMaterial,
+        idSole: data.idSole,
+        idCategory: data.idCategory,
+        idBrand: data.idBrand,
+      }
+      setProducts(preProduct)
+    }
+  }
 
   useEffect(() => {
     clientProductApi.getMinMaxPrice().then((response) => {
