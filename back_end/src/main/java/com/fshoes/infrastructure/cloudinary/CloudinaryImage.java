@@ -41,25 +41,43 @@ public class CloudinaryImage {
     }
 
     public List<String> listImagesInFolder(String folderName) {
-        try {
-            List<String> listUrl = new ArrayList<>();
-            ApiResponse result = cloudinary.api().resources(ObjectUtils.asMap(
-                    "type", "upload",
-                    "prefix", folderName + "/"
-            ));
+            try {
+                List<String> listUrl = new ArrayList<>();
+                int offset = 0;
 
-            List<?> list = (List<?>) result.get("resources");
-            for (Object o : list) {
-                listUrl.add((String) ((Map<?, ?>) o).get("url"));
+                while (true) {
+                    ApiResponse result = cloudinary.api().resources(ObjectUtils.asMap(
+                            "type", "upload",
+                            "prefix", folderName + "/",
+                            "max_results", 500, // Số lượng kết quả tối đa cho mỗi yêu cầu (tùy chọn)
+                            "offset", offset
+                    ));
+
+                    List<?> list = (List<?>) result.get("resources");
+                    if (list.isEmpty()) {
+                        break; // Không còn ảnh nào nữa
+                    }
+
+                    for (Object o : list) {
+                        listUrl.add((String) ((Map<?, ?>) o).get("url"));
+                    }
+
+                    offset += list.size(); // Tăng offset để lấy các trang tiếp theo
+
+                    if (list.size() < 500) {
+                        break; // Đã lấy hết tất cả ảnh trong thư mục
+                    }
+                }
+
+                return listUrl;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            return listUrl;
-        } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
-    }
 
-    public String uploadAvatar(MultipartFile imageFile) {
+
+        public String uploadAvatar(MultipartFile imageFile) {
         Map params = ObjectUtils.asMap(
                 "folder", "avatar",
                 "resource_type", "image"    
