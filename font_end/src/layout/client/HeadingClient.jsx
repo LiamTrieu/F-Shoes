@@ -241,7 +241,10 @@ export default function HeadingClient() {
             <ShoppingCartIcon />
           </Badge>
         </Button>
-        <IconButton onClick={(event) => handleClick(event)} color="inherit">
+        <IconButton
+          sx={{ borderRadius: '0px' }}
+          onClick={(event) => handleClick(event)}
+          color="inherit">
           <Avatar src={user && user.avatar} sx={{ width: 35, height: 35, mr: 1 }} />
           <Menu
             anchorEl={anchorEl}

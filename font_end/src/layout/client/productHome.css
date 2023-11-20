@@ -13,10 +13,10 @@
   color: red;
   font-weight: 700;
 }
-.discount-badge {
+.products-discount-badge {
   position: absolute;
   z-index: 2;
-  top: 15px;
+  top: 30px;
   left: 15px;
   color: white;
   padding: 4px 20px;

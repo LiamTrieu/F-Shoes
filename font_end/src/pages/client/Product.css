@@ -38,16 +38,10 @@
   color: #f2741f;
 }
 
-/* .container-portfolio {
-  padding-left: 4.5rem !important;
-  padding-right: 4.5rem !important;
-} */
-
 .container-portfolio .grid-drawer-portfolio {
   position: -webkit-sticky !important;
   position: sticky !important;
-  /* top: 0; */
-  margin-top: 40px;
+  margin-top: 1rem;
 }
 
 .container-portfolio .drawer-portfolio {
