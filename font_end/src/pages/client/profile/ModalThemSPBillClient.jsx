@@ -51,7 +51,7 @@ const styleAdBillModalThemSPDetail = {
   borderRadius: 1.5,
   boxShadow: 24,
 }
-export default function ClientModalThemSP({ open, setOPen, idBill }) {
+export default function ClientModalThemSP({ open, setOPen, idBill, load }) {
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
   const [listColor, setListColor] = useState([])
@@ -162,6 +162,7 @@ export default function ClientModalThemSP({ open, setOPen, idBill }) {
     ClientAccountApi.saveBillDetail(billDetailReq)
       .then((response) => {
         getBillByIdBill(idBill)
+        load(true)
         toast.success('Đã thêm sản phẩm', {
           position: toast.POSITION.TOP_RIGHT,
         })

@@ -11,6 +11,7 @@ import com.fshoes.core.client.model.response.ClientBillDetailResponse;
 import com.fshoes.core.client.model.response.ClientBillResponse;
 import com.fshoes.core.client.model.response.ClientCustomerResponse;
 import com.fshoes.core.client.model.response.ClientGetAllBillTableResponse;
+import com.fshoes.core.client.model.response.ClientProfileBillDetailResponse;
 import com.fshoes.core.client.model.response.ClientTransactionResponse;
 import com.fshoes.core.client.repository.ClientAccountRepository;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
@@ -99,7 +100,7 @@ public class ClientAccountServiceImpl implements ClientAccountService {
 
     @Override
     public List<ClientGetAllBillTableResponse> getALlBillTable(ClientBillAccountRequest status) {
-        return billRepository.getALlBillTable(status,userLogin.getUserLogin().getId());
+        return billRepository.getALlBillTable(status, userLogin.getUserLogin().getId());
     }
 
     @Override
@@ -263,6 +264,11 @@ public class ClientAccountServiceImpl implements ClientAccountService {
         } catch (Exception exception) {
             return false;
         }
+    }
+
+    @Override
+    public List<ClientProfileBillDetailResponse> getBillDetailsByBillIdAndStatus(String idBill, Integer status) {
+        return repository.getBillDetailsByBillIdAndStatus(idBill, status);
     }
 
 }

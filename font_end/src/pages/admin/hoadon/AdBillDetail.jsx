@@ -24,6 +24,7 @@ import {
   Switch,
   Modal,
   Toolbar,
+  TableHead,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -62,6 +63,7 @@ export default function AdBillDetail() {
   const [loadingTransaction, setLoadinTransaction] = useState(true)
   const [listBillDetail, setListBillDetail] = useState([])
   const [listBillDetailUnactive, setListBillDetailUnactive] = useState([])
+  const [lstBillDetailWaitingReturn, setLstBillDetailWaitingReturn] = useState([])
   const [loadingListBillDetail, setLoadingListBillDetail] = useState(true)
   const [openDialog, setOpenDialog] = useState(false)
   const [moneyAfter, setMoneyAfter] = useState(0)
@@ -1116,6 +1118,17 @@ export default function AdBillDetail() {
         console.error('Lỗi khi gửi yêu cầu API get bill detail by bill: ', error)
         setLoadingListBillDetail(false)
       })
+    const waitingSTT = 2
+    hoaDonChiTietApi
+      .getByIdBillAndStt(id, waitingSTT)
+      .then((response) => {
+        setLstBillDetailWaitingReturn(response.data.data)
+        setLoadingListBillDetail(false)
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API get bill detail by bill chờ trả hàng: ', error)
+        setLoadingListBillDetail(false)
+      })
   }
 
   const decrementQuantity = (idBillDetail) => {
@@ -1364,7 +1377,7 @@ export default function AdBillDetail() {
       )}
 
       {/* Hoá đơn chi tiết */}
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>
         <div>
           {billDetail && (
             <div>
@@ -1410,34 +1423,12 @@ export default function AdBillDetail() {
                                     </TableCell>
                                     <TableCell>
                                       {row.productName} <br></br>
-                                      {row.price !== row.productPrice ? (
-                                        <span>
-                                          <del
-                                            style={{
-                                              color: 'gray',
-                                              textDecorationColor: 'gray',
-                                              textDecorationLine: 'line-through',
-                                            }}>
-                                            {formatCurrency(row.productPrice)}
-                                          </del>
-
-                                          <span
-                                            style={{
-                                              color: 'red',
-                                              marginLeft: 15,
-                                            }}>
-                                            {formatCurrency(row.price)}
-                                          </span>
-                                        </span>
-                                      ) : (
-                                        <span
-                                          style={{
-                                            color: 'red',
-                                            marginLeft: 15,
-                                          }}>
-                                          {formatCurrency(row.productPrice)}
-                                        </span>
-                                      )}
+                                      <span
+                                        style={{
+                                          color: 'red',
+                                        }}>
+                                        {formatCurrency(row.price)}
+                                      </span>
                                       <br />
                                       Size: {row.size}
                                       <br />x{row.quantity}
@@ -1544,6 +1535,67 @@ export default function AdBillDetail() {
             </div>
           )}
         </div>
+      </Paper>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>
+        {/* list chờ hoàn trả */}
+        <div>
+          {billDetail && (
+            <div>
+              {lstBillDetailWaitingReturn.length > 0 ? (
+                <div>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    spacing={2}>
+                    <h3>Đang chờ hoàn trả</h3>
+                  </Stack>
+                  <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
+                  {lstBillDetailWaitingReturn.length === 0 ? (
+                    <div>Loading BillDetail...</div>
+                  ) : (
+                    <div>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <TableContainer
+                            sx={{ maxHeight: 300, marginBottom: 5 }}
+                            className="table-container-custom-scrollbar">
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                              <TableBody>
+                                {listBillDetailUnactive.map((row, index) => (
+                                  <TableRow key={'billDetail' + row.id}>
+                                    <TableCell align="center">
+                                      <img src={row.productImg} alt="" width={'20%'} />
+                                    </TableCell>
+                                    <TableCell width={'45%'}>
+                                      {row.productName} <br></br>
+                                      <span
+                                        style={{
+                                          color: 'red',
+                                        }}>
+                                        {formatCurrency(row.price)}
+                                      </span>
+                                      <br />
+                                      Size: {row.size}
+                                      <br />x{row.quantity}
+                                    </TableCell>
+                                    <TableCell width={'20%'}>{row.note}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </Grid>
+                      </Grid>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
+      </Paper>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>
         {/* list hoàn trả */}
         <div>
           {billDetail && (
@@ -1572,43 +1624,21 @@ export default function AdBillDetail() {
                                 {listBillDetailUnactive.map((row, index) => (
                                   <TableRow key={'billDetail' + row.id}>
                                     <TableCell align="center">
-                                      <img src={row.productImg} alt="" width={'100px'} />
+                                      <img src={row.productImg} alt="" width={'20%'} />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell width={'45%'}>
                                       {row.productName} <br></br>
-                                      {row.price !== row.productPrice ? (
-                                        <span>
-                                          <del
-                                            style={{
-                                              color: 'gray',
-                                              textDecorationColor: 'gray',
-                                              textDecorationLine: 'line-through',
-                                            }}>
-                                            {formatCurrency(row.productPrice)}
-                                          </del>
-
-                                          <span
-                                            style={{
-                                              color: 'red',
-                                              marginLeft: 15,
-                                            }}>
-                                            {formatCurrency(row.price)}
-                                          </span>
-                                        </span>
-                                      ) : (
-                                        <span
-                                          style={{
-                                            color: 'red',
-                                            marginLeft: 15,
-                                          }}>
-                                          {formatCurrency(row.productPrice)}
-                                        </span>
-                                      )}
+                                      <span
+                                        style={{
+                                          color: 'red',
+                                        }}>
+                                        {formatCurrency(row.price)}
+                                      </span>
                                       <br />
                                       Size: {row.size}
                                       <br />x{row.quantity}
                                     </TableCell>
-                                    <TableCell>{row.note}</TableCell>
+                                    <TableCell width={'20%'}>{row.note}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
@@ -1623,7 +1653,9 @@ export default function AdBillDetail() {
             </div>
           )}
         </div>
-
+      </Paper>
+      <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>
+        {' '}
         <div>
           <Stack sx={{ marginLeft: 'auto', width: 300, paddingRight: 5 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>

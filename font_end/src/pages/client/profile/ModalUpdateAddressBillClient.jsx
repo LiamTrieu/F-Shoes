@@ -33,6 +33,7 @@ const styleAdBillModalUpdateAdd = {
 }
 
 export default function ModalUpdateAddressBillClient({
+  loading,
   open,
   setOPen,
   billDetail,
@@ -282,6 +283,7 @@ export default function ModalUpdateAddressBillClient({
     console.log(hdBillReq)
     ClientAccountApi.updateInfBill(billDetail.id, hdBillReq)
       .then(() => {
+        loading(true)
         toast.success('Đã cập nhật thông tin đơn hàng', {
           position: toast.POSITION.TOP_RIGHT,
         })

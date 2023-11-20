@@ -6,12 +6,14 @@ import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillHistoryRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
 import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
+import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
+import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Account;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
@@ -66,6 +68,9 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Autowired
     private HDBillHistoryService hdBillHistoryService;
+
+    @Autowired
+    private UserLogin userLogin;
 
     @Override
     public Page<HDBillResponse> filterBill(BillFilterRequest billFilterRequest) {
@@ -137,17 +142,13 @@ public class HDBillServiceImpl implements HDBillService {
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
             billHistory.setNote(hdBillRequest.getNoteBillHistory());
-            billHistory.setAccount(accFake());
+            billHistory.setAccount(userLogin.getUserLogin());
             hdBillHistoryRepository.save(billHistory);
             return hdBillRepository.save(bill);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    private Account accFake() {
-        return accountRepository.findAll().get(0);
     }
 
     @Transactional
@@ -158,10 +159,21 @@ public class HDBillServiceImpl implements HDBillService {
             try {
                 if (!hdBillRequest.getNoteBillHistory().trim().isEmpty()) {
                     if (bill != null) {
+                        if (bill.getStatus() != 1) {
+                            List<HDBillDetailResponse> hdBillDetailResponses = hdBillDetailRepository.getBillDetailsByBillId(idBill);
+
+                            hdBillDetailResponses.forEach(hdBillDetailResponse -> {
+                                ProductDetail productDetail = productDetailRepository.findById(hdBillDetailResponse.getProductDetailId()).get();
+                                int newAmount = productDetail.getAmount() + hdBillDetailResponse.getQuantity();
+                                productDetail.setAmount(newAmount);
+                                productDetailRepository.save(productDetail);
+                            });
+                        }
+
                         bill.setStatus(0);
                         HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
                                 .note(hdBillRequest.getNoteBillHistory())
-                                .idStaff(accFake().getId())
+                                .idStaff(userLogin.getUserLogin().getId())
                                 .bill(bill)
                                 .build();
                         BillHistory billHistory = new BillHistory();
@@ -169,8 +181,9 @@ public class HDBillServiceImpl implements HDBillService {
                         billHistory.setStatusBill(0);
                         billHistory.setNote(hdBillHistoryRequest.getNote());
                         billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
-                        billHistory.setAccount(accFake());
+                        billHistory.setAccount(userLogin.getUserLogin());
                         hdBillHistoryRepository.save(billHistory);
+
                         hdBillRepository.save(bill);
                     }
                 }
@@ -297,7 +310,7 @@ public class HDBillServiceImpl implements HDBillService {
         transaction.setStatus(hdConfirmPaymentRequest.getStatus());
         transaction.setNote(hdConfirmPaymentRequest.getNoteBillHistory());
         transaction.setTotalMoney(bill.getMoneyAfter());
-        transaction.setAccount(accFake());
+        transaction.setAccount(userLogin.getUserLogin());
         transaction.setTransactionCode(hdConfirmPaymentRequest.getTransactionCode());
         transactionRepository.save(transaction);
         if (hdConfirmPaymentRequest.getType() == 0) {
@@ -316,7 +329,7 @@ public class HDBillServiceImpl implements HDBillService {
                     .note(hdConfirmPaymentRequest.getNoteBillHistory())
                     .statusBill(null)
                     .bill(bill)
-                    .account(accFake())
+                    .account(userLogin.getUserLogin())
                     .build();
             hdBillHistoryRepository.save(hdBillHistory);
             return bill;

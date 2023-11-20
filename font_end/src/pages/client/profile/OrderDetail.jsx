@@ -11,6 +11,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableHead,
   TableRow,
   TextField,
   Tooltip,
@@ -29,7 +30,6 @@ import { CiCircleRemove } from 'react-icons/ci'
 import ClientModalThemSP from './ModalThemSPBillClient'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
-import clientCartApi from '../../../api/client/clientCartApi'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 
 export default function OrderDetail() {
@@ -42,6 +42,9 @@ export default function OrderDetail() {
   const [openModalThemSP, setOpenModalThemSP] = useState(false)
   const [listTransaction, setListTransaction] = useState([])
   const [openModalCancelBill, setOpenModalCancelBill] = useState(false)
+  const [listBillDetailUnactive, setListBillDetailUnactive] = useState([])
+  const [lstBillDetailWaitingReturn, setLstBillDetailWaitingReturn] = useState([])
+  const [isUpdate, setIsUpdate] = useState(false)
 
   const getBillHistoryByIdBill = (id) => {
     setLoadingTimeline(true)
@@ -177,6 +180,7 @@ export default function OrderDetail() {
     ClientAccountApi.deleteBillDetail(id)
       .then((response) => {
         getBillByIdBill(id)
+        setIsUpdate(true)
         toast.success('Đã xoá sản phẩm khỏi giỏ hàng', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -251,16 +255,45 @@ export default function OrderDetail() {
     )
   }
 
+  const getBillDetailByIdBillAndStt = (id) => {
+    const UnActiveStt = 1
+    ClientAccountApi.getBillDetailsByIdBillAndStt(id, UnActiveStt)
+      .then((response) => {
+        setListBillDetailUnactive(response.data.data)
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API get bill detail by bill: ', error)
+      })
+    const waitingSTT = 2
+    ClientAccountApi.getBillDetailsByIdBillAndStt(id, waitingSTT)
+      .then((response) => {
+        setLstBillDetailWaitingReturn(response.data.data)
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API get bill detail by bill: ', error)
+      })
+  }
+
   useEffect(() => {
     getBillByIdBill(id)
     getBillHistoryByIdBill(id)
     getBillClient(id)
     getTransactionByIdbill(id)
-  }, [id])
+    getBillDetailByIdBillAndStt(id)
+    if (isUpdate) {
+      getBillByIdBill(id)
+      getBillHistoryByIdBill(id)
+      getBillClient(id)
+      getTransactionByIdbill(id)
+      getBillDetailByIdBillAndStt(id)
+      setIsUpdate(false)
+    }
+  }, [id, isUpdate])
 
   return (
     <div>
       <ModalUpdateAddressBillClient
+        loading={setIsUpdate}
         open={openModalUpdateAdd}
         setOPen={setopenModalUpdateAdd}
         billDetail={billClient}
@@ -271,6 +304,7 @@ export default function OrderDetail() {
         setOPen={setOpenModalThemSP}
         billDetail={billClient ? billClient : null}
         idBill={billClient ? billClient.id : null}
+        load={setIsUpdate}
       />
       <ModalCancelBill
         setOpen={setOpenModalCancelBill}
@@ -360,6 +394,9 @@ export default function OrderDetail() {
                           <Typography>
                             Phân loại hàng: {row.category} - {row.size}
                           </Typography>
+                          <Typography color={'red'}>
+                            {row.price !== null ? formatCurrency(row.price) : 0}
+                          </Typography>
                           <Typography>X{row.quantity}</Typography>
                         </TableCell>
                         <TableCell align="center">
@@ -428,6 +465,84 @@ export default function OrderDetail() {
                     ))}
                   </TableBody>
                 </Table>
+                {/*chờ hoàn trả */}
+                {billClient && lstBillDetailWaitingReturn.length > 0 ? (
+                  <Table sx={{ minWidth: 650, marginTop: 2 }} aria-label="simple table">
+                    <TableHead
+                      style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '20px' }}>
+                      Đang chờ hoàn trả
+                    </TableHead>
+
+                    <TableBody>
+                      {lstBillDetailWaitingReturn.map((row, index) => (
+                        <TableRow key={row.id + index}>
+                          <TableCell align="center">
+                            <img src={row.productImg} alt="" width={'100px'} />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
+                              {row.productName}"
+                            </Typography>
+                            <Typography>
+                              Phân loại hàng: {row.category} - {row.size}
+                            </Typography>
+
+                            <Typography>
+                              {row.price !== null ? formatCurrency(row.price) : 0} <br /> X
+                              {row.quantity}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
+                            {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
+                          </TableCell>
+                          <TableCell>
+                            <Typography>{row.note}</Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : null}
+                {/* hoàn trả */}
+                {billClient && listBillDetailUnactive.length > 0 ? (
+                  <Table sx={{ minWidth: 650, marginTop: 2 }} aria-label="simple table">
+                    <TableHead
+                      style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '20px' }}>
+                      Danh sách hoàn trả
+                    </TableHead>
+
+                    <TableBody>
+                      {listBillDetailUnactive.map((row, index) => (
+                        <TableRow key={row.id + index}>
+                          <TableCell align="center">
+                            <img src={row.productImg} alt="" width={'100px'} />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
+                              {row.productName}"
+                            </Typography>
+                            <Typography>
+                              Phân loại hàng: {row.category} - {row.size}
+                            </Typography>
+
+                            <Typography>
+                              {row.price !== null ? formatCurrency(row.price) : 0} <br /> X
+                              {row.quantity}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
+                            {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
+                          </TableCell>
+                          <TableCell>
+                            <Typography>{row.note}</Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : null}
               </TableContainer>
               <Container maxWidth="lg">
                 <Grid container spacing={2}>
