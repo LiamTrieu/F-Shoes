@@ -211,7 +211,6 @@ export default function AdCustomerAdd() {
 
     const specificAddressParts = diaChi.specificAddress.split(', ')
     const [diaChiCuThe] = specificAddressParts
-    console.log(diaChiCuThe)
     if (!diaChi.specificAddress.trim()) {
       newErrors.specificAddress = 'Vui lòng nhập địa chỉ cụ thể.'
       check++

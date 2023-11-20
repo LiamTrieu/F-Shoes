@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Grid, Card, CardMedia, CardContent, Typography, Box, Button, Tooltip } from '@mui/material'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import './productHome.css'
 import Carousel from 'react-material-ui-carousel'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
@@ -8,21 +8,30 @@ import clientProductApi from '../../api/client/clientProductApi'
 import { useDispatch } from 'react-redux'
 import { addCart } from '../../services/slices/cartSlice'
 import { toast } from 'react-toastify'
+import ModalAddProductToCart from '../../pages/client/ModalAddProductToCart'
+import { formatCurrency } from '../../services/common/formatCurrency '
 
 export default function CartProduct({ products, colmd, collg }) {
+  const [openModalCart, setOpenModalCart] = useState(false)
+  const handleOpenModalCart = () => setOpenModalCart(true)
+  const handleCloseModalCart = () => setOpenModalCart(false)
+
+  const [product, setProduct] = useState({ image: [], price: '' })
+
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
     const discountedPrice = originalPrice - discountAmount
     return discountedPrice
   }
   const [isCartHovered, setIsCartHovered] = useState(false)
-  // const [product, setProduct] = useState({ image: [], price: '' })
 
-  let navigate = useNavigate()
   const dispatch = useDispatch()
   const addProductToCart = (id) => {
     clientProductApi.getById(id).then((response) => {
-      console.log(response.data.data)
+      setProduct({
+        ...response.data.data,
+        image: response.data.data.image.split(','),
+      })
       const newItem = {
         id: id,
         idProduct: response.data.data.idProduct,
@@ -34,7 +43,7 @@ export default function CartProduct({ products, colmd, collg }) {
         size: response.data.data.size,
       }
       dispatch(addCart(newItem))
-      navigate('/cart')
+      handleOpenModalCart()
       toast.success('Thêm sản phẩm thành công')
     })
   }
@@ -45,7 +54,6 @@ export default function CartProduct({ products, colmd, collg }) {
         {products.map((product, i) => {
           const hasPromotion = product.promotion !== null && product.statusPromotion === 1
           const discountValue = product.value || 0
-
           const red = [255, 0, 0]
           const green = [255, 255, 0]
           const interpolatedColor = [
@@ -64,18 +72,16 @@ export default function CartProduct({ products, colmd, collg }) {
               width={'100%'}
               onMouseEnter={() => setIsCartHovered(i)}
               onMouseLeave={() => setIsCartHovered(null)}>
-              <Button
-                component={Link}
-                to={`/product/${product.id}`}
-                sx={{ width: '100%', p: 0, my: 1 }}>
+              <Button sx={{ width: '100%', p: 0, my: 1 }}>
                 <Card sx={{ width: '100%', height: '100%' }}>
                   {hasPromotion && (
                     <div
-                      className="discount-badge"
+                      className="products-discount-badge"
                       style={{
                         backgroundColor: `rgb(${interpolatedColor[0]}, ${interpolatedColor[1]}, ${interpolatedColor[2]})`,
                       }}>{`${discountValue ? discountValue : ''}%`}</div>
                   )}
+
                   <Box
                     sx={{
                       position: 'relative',
@@ -99,16 +105,22 @@ export default function CartProduct({ products, colmd, collg }) {
                         sx={{ width: '100%', height: '100%' }}
                         navButtonsAlwaysInvisible>
                         {product.image.map((item, i) => (
-                          <CardMedia
-                            component="img"
-                            alt="Product"
-                            image={item}
-                            sx={{
-                              minWidth: '100%',
-                              minHeight: '100%',
-                              objectFit: 'contain',
-                            }}
-                          />
+                          <Button
+                            component={Link}
+                            to={`/product/${product.id}`}
+                            sx={{ width: '100%', p: 0 }}>
+                            <CardMedia
+                              to={`/product/${product.id}`}
+                              component="img"
+                              alt="Product"
+                              image={item}
+                              sx={{
+                                minWidth: '100%',
+                                minHeight: '100%',
+                                objectFit: 'contain',
+                              }}
+                            />
+                          </Button>
                         ))}
                       </Carousel>
                     </Box>
@@ -132,50 +144,56 @@ export default function CartProduct({ products, colmd, collg }) {
                       </div>
                     )}
                   </Box>
-
-                  <CardContent>
-                    <Typography
-                      className="title"
-                      gutterBottom
-                      component="div"
-                      sx={{ textTransform: 'none' }}>
-                      {product.title}
-                    </Typography>
-                    <Typography gutterBottom component="div">
-                      <span>
-                        {' '}
-                        {product.promotion && product.statusPromotion === 1 ? (
-                          <div style={{ display: 'flex' }}>
-                            <div className="promotion-price">{`${product.priceBefort.toLocaleString(
-                              'it-IT',
-                              { style: 'currency', currency: 'VND' },
-                            )} `}</div>{' '}
-                            <div>
-                              <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                {`${calculateDiscountedPrice(
-                                  product.priceBefort,
-                                  product.value,
-                                ).toLocaleString('it-IT', {
-                                  style: 'currency',
-                                  currency: 'VND',
-                                })} `}
-                              </span>{' '}
+                  <Button
+                    component={Link}
+                    to={`/product/${product.id}`}
+                    sx={{ width: '100%', p: 0 }}>
+                    <CardContent>
+                      <Typography
+                        className="title"
+                        gutterBottom
+                        component="div"
+                        sx={{ textTransform: 'none' }}>
+                        <span style={{ color: 'black' }}>{product.title}</span>
+                      </Typography>
+                      <Typography gutterBottom component="div">
+                        <span>
+                          {product.promotion && product.statusPromotion === 1 ? (
+                            <div style={{ display: 'flex' }}>
+                              <div className="promotion-price">
+                                {formatCurrency(product.priceBefort)}
+                              </div>
+                              <div>
+                                <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                  {formatCurrency(
+                                    calculateDiscountedPrice(product.priceBefort, product.value),
+                                  )}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <span>{`${product.priceBefort.toLocaleString('it-IT', {
-                            style: 'currency',
-                            currency: 'VND',
-                          })} `}</span>
-                        )}
-                      </span>
-                    </Typography>
-                  </CardContent>
+                          ) : (
+                            <div style={{ display: 'flex' }}>
+                              <span style={{ color: 'black', fontWeight: 'bold' }}>
+                                {formatCurrency(product.priceBefort)}
+                              </span>
+                            </div>
+                          )}
+                        </span>
+                      </Typography>
+                    </CardContent>
+                  </Button>
                 </Card>
               </Button>
             </Grid>
           )
         })}
+        {openModalCart && (
+          <ModalAddProductToCart
+            openModal={openModalCart}
+            handleCloseModal={handleCloseModalCart}
+            product={product}
+          />
+        )}
       </Grid>
     </>
   )

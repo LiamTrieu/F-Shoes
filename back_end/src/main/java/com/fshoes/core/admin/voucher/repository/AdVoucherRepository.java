@@ -61,6 +61,7 @@ public interface AdVoucherRepository extends VoucherRepository {
             id, full_name as fullName, phone_number as phoneNumber, email, date_birth as dateBirth
             from account
             where role = 2
+            and status = 0
             order by created_at DESC 
             """, nativeQuery = true)
     Page<AdFindCustomerRespone> getFindAllCustomer(Pageable pageable);
@@ -125,9 +126,9 @@ public interface AdVoucherRepository extends VoucherRepository {
     List<Voucher> getAllVoucherWrong(Long dateNow);
 
     @Query(value = """
-                select  ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, avatar, email,
-                 full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber,
-                 gender, created_at as createdAt, status from account WHERE role = 2
+             select  ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, avatar, email,
+             full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber,
+             gender, created_at as createdAt, status from account WHERE role = 2 AND status = 0
             """, nativeQuery = true)
     List<KhachHangRespone> getAllCustomer();
 }

@@ -30,7 +30,20 @@ const style = {
 export default function AddressUser() {
   const [listDiaChi, setListDiaChi] = useState([])
   const [open, setOpen] = React.useState(false)
-  const handleClose = () => setOpen(false)
+  const handleClose = () => {
+    setOpen(false)
+    setErrors({
+      fullName: '',
+      email: '',
+      phoneNumber: '',
+      dateBirth: '',
+      gender: '',
+      provinceId: '',
+      districtId: '',
+      wardId: '',
+      specificAddress: '',
+    })
+  }
 
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
@@ -357,10 +370,9 @@ export default function AddressUser() {
                       setDiaChi({ ...diaChi, name: e.target.value })
                       setErrors({ ...errors, fullName: '' })
                     }}
+                    error={Boolean(errors.fullName)}
+                    helperText={errors.fullName}
                   />
-                  <Typography variant="body2" color="error">
-                    {errors.fullName}
-                  </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Typography>
@@ -378,10 +390,9 @@ export default function AddressUser() {
                       setDiaChi({ ...diaChi, phoneNumber: e.target.value.trim() })
                       setErrors({ ...errors, phoneNumber: '' })
                     }}
+                    error={Boolean(errors.phoneNumber)}
+                    helperText={errors.phoneNumber}
                   />
-                  <Typography variant="body2" color="error">
-                    {errors.phoneNumber}
-                  </Typography>
                 </Grid>
               </Grid>
               <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -478,11 +489,9 @@ export default function AddressUser() {
                       setDiaChi(updatedDiaChi)
                       setErrors({ ...errors, specificAddress: '' })
                     }}
-                    disabled={!selectedXa}
+                    error={Boolean(errors.specificAddress)}
+                    helperText={errors.specificAddress}
                   />
-                  <Typography variant="body2" color="error">
-                    {errors.specificAddress}
-                  </Typography>
                 </Grid>
               </Grid>
 

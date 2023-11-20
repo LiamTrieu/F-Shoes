@@ -9,6 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Drawer from '@mui/material/Drawer'
 import CartProduct from '../../layout/client/CartProduct'
 import {
+  Button,
   Checkbox,
   Collapse,
   Container,
@@ -32,9 +33,11 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
 import styled from '@emotion/styled'
 import PropTypes from 'prop-types'
+import CancelIcon from '@mui/icons-material/Cancel'
 import { useParams } from 'react-router-dom'
 import { addCart } from '../../services/slices/cartSlice'
 import { useDispatch } from 'react-redux'
+import { formatCurrency } from '../../services/common/formatCurrency '
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -267,12 +270,8 @@ export default function Product() {
           <Collapse in={openCategory} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               {listCategory.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectCategory.includes(lf.id)}
-                    onChange={(e) => handleCheckBoxCategory(e, lf.id)}
-                  />
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxCategory(e, lf.id)}>
+                  <Checkbox key={lf.id} checked={selectCategory.includes(lf.id)} />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
@@ -287,12 +286,8 @@ export default function Product() {
           <Collapse in={openBrand} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               {listBrand.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectBrand.includes(lf.id)}
-                    onChange={(e) => handleCheckBoxBrand(e, lf.id)}
-                  />
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxBrand(e, lf.id)}>
+                  <Checkbox key={lf.id} checked={selectBrand.includes(lf.id)} />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
@@ -309,12 +304,8 @@ export default function Product() {
           <Collapse in={openMaterial} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               {listMaterial.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectMaterial.includes(lf.id)}
-                    onChange={(e) => handleCheckBoxMaterial(e, lf.id)}
-                  />
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxMaterial(e, lf.id)}>
+                  <Checkbox key={lf.id} checked={selectMaterial.includes(lf.id)} />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
@@ -329,12 +320,8 @@ export default function Product() {
           <Collapse in={openSole} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               {listSole.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectSole.includes(lf.id)}
-                    onChange={(e) => handleCheckBoxSole(e, lf.id)}
-                  />
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxSole(e, lf.id)}>
+                  <Checkbox key={lf.id} checked={selectSole.includes(lf.id)} />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
@@ -381,14 +368,36 @@ export default function Product() {
               valueLabelDisplay="auto"
               slots={{ thumb: AirbnbThumbComponent }}
               defaultValue={[filter.minPrice, priceMax]}
-              valueLabelFormat={(value) =>
-                `${value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}`
-              }
+              valueLabelFormat={(value) => formatCurrency(value)}
             />
           </ListItem>
         </div>
       </List>
     )
+  }
+
+  const handleResetFilter = () => {
+    setFilter({
+      brand: [],
+      material: [],
+      color: [],
+      sole: [],
+      category: [],
+      minPrice: minMaxPrice.minPrice,
+      maxPrice: minMaxPrice.maxPrice,
+      nameProductDetail: null,
+    })
+    setOpenBrand(false)
+    setOpenCategory(false)
+    setOpenColor(false)
+    setOpenMaterial(false)
+    setOpenSole(false)
+    setPriceMax(minMaxPrice.maxPrice)
+    setSelectBrand([])
+    setSelectCategory([])
+    setSelectColor([])
+    setSelectMaterial([])
+    setSelectSole([])
   }
 
   return (
@@ -397,6 +406,32 @@ export default function Product() {
         {isMenuBarVisible && (
           <Grid item xs={2.5} className="grid-drawer-portfolio">
             <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+              <div
+                style={{
+                  padding: '10px',
+                }}>
+                <Stack
+                  display="flex"
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  sx={{ marginLeft: '16px', marginRight: '16px' }}>
+                  <span>
+                    <b>Tìm kiếm theo</b>
+                  </span>
+                  <Button
+                    color="cam"
+                    sx={{
+                      border: '1px solid #F37622',
+                      height: '20px',
+                      width: '30px',
+                    }}
+                    onClick={() => handleResetFilter()}>
+                    <CancelIcon sx={{ width: '15px', height: '15px', marginRight: '5px' }} />
+                    <span style={{ fontSize: '10px' }}>Xóa</span>
+                  </Button>
+                </Stack>
+              </div>
               <MenuBar />
             </Box>
             <IconButton

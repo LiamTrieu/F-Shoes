@@ -147,7 +147,7 @@ export default function AdVoucherPage() {
 
   return (
     <div className="voucher-css">
-      <BreadcrumbsCustom nameHere={'Khuyến mãi'} />
+      <BreadcrumbsCustom nameHere={'voucher'} />
       <Paper elevation={3}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
@@ -180,7 +180,7 @@ export default function AdVoucherPage() {
                 color="cam"
                 style={{ borderRadius: '8px ', borderColor: '#fc7c27' }}>
                 <AiOutlinePlus className="icon-css" />
-                <Typography>Tạo khuyễn mãi</Typography>
+                <Typography>Tạo voucher</Typography>
               </Button>
             </Link>
           </Grid>
