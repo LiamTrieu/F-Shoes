@@ -9,6 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Drawer from '@mui/material/Drawer'
 import CartProduct from '../../layout/client/CartProduct'
 import {
+  Button,
   Checkbox,
   Collapse,
   Container,
@@ -32,9 +33,11 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
 import styled from '@emotion/styled'
 import PropTypes from 'prop-types'
+import CancelIcon from '@mui/icons-material/Cancel'
 import { useParams } from 'react-router-dom'
 import { addCart } from '../../services/slices/cartSlice'
 import { useDispatch } from 'react-redux'
+import { formatCurrency } from '../../services/common/formatCurrency '
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -381,14 +384,37 @@ export default function Product() {
               valueLabelDisplay="auto"
               slots={{ thumb: AirbnbThumbComponent }}
               defaultValue={[filter.minPrice, priceMax]}
-              valueLabelFormat={(value) =>
-                `${value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}`
-              }
+              valueLabelFormat={(value) => formatCurrency(value)}
             />
+            {/* `${value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}` */}
           </ListItem>
         </div>
       </List>
     )
+  }
+
+  const handleResetFilter = () => {
+    setFilter({
+      brand: [],
+      material: [],
+      color: [],
+      sole: [],
+      category: [],
+      minPrice: minMaxPrice.minPrice,
+      maxPrice: minMaxPrice.maxPrice,
+      nameProductDetail: null,
+    })
+    setOpenBrand(false)
+    setOpenCategory(false)
+    setOpenColor(false)
+    setOpenMaterial(false)
+    setOpenSole(false)
+    setPriceMax(minMaxPrice.maxPrice)
+    setSelectBrand([])
+    setSelectCategory([])
+    setSelectColor([])
+    setSelectMaterial([])
+    setSelectSole([])
   }
 
   return (
@@ -396,7 +422,29 @@ export default function Product() {
       <Grid container spacing={1}>
         {isMenuBarVisible && (
           <Grid item xs={2.5} className="grid-drawer-portfolio">
-            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, alignItems: 'center' }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                justifyItems="center"
+                alignItems="center"
+                display="flex"
+                sx={{ marginBottom: '1rem', marginLeft: '26px', marginRight: '16px' }}>
+                <span>
+                  <b>Tìm kiếm theo</b>
+                </span>
+                <Button
+                  color="cam"
+                  sx={{
+                    border: '1px solid #F37622',
+                    height: '20px',
+                    width: '30px',
+                  }}
+                  onClick={() => handleResetFilter()}>
+                  <CancelIcon sx={{ width: '15px', height: '15px', marginRight: '5px' }} />
+                  <span style={{ fontSize: '10px' }}>Xóa</span>
+                </Button>
+              </Stack>
               <MenuBar />
             </Box>
             <IconButton

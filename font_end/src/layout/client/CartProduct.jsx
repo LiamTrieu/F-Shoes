@@ -8,21 +8,31 @@ import clientProductApi from '../../api/client/clientProductApi'
 import { useDispatch } from 'react-redux'
 import { addCart } from '../../services/slices/cartSlice'
 import { toast } from 'react-toastify'
+import ModalAddProductToCart from '../../pages/client/ModalAddProductToCart'
+import { formatCurrency } from '../../services/common/formatCurrency '
 
 export default function CartProduct({ products, colmd, collg }) {
+  const [openModalCart, setOpenModalCart] = useState(false)
+  const handleOpenModalCart = () => setOpenModalCart(true)
+  const handleCloseModalCart = () => setOpenModalCart(false)
+
+  const [product, setProduct] = useState({ image: [], price: '' })
+
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
     const discountedPrice = originalPrice - discountAmount
     return discountedPrice
   }
   const [isCartHovered, setIsCartHovered] = useState(false)
-  // const [product, setProduct] = useState({ image: [], price: '' })
 
   let navigate = useNavigate()
   const dispatch = useDispatch()
   const addProductToCart = (id) => {
     clientProductApi.getById(id).then((response) => {
-      console.log(response.data.data)
+      setProduct({
+        ...response.data.data,
+        image: response.data.data.image.split(','),
+      })
       const newItem = {
         id: id,
         idProduct: response.data.data.idProduct,
@@ -34,7 +44,7 @@ export default function CartProduct({ products, colmd, collg }) {
         size: response.data.data.size,
       }
       dispatch(addCart(newItem))
-      navigate('/cart')
+      handleOpenModalCart()
       toast.success('Thêm sản phẩm thành công')
     })
   }
@@ -64,42 +74,43 @@ export default function CartProduct({ products, colmd, collg }) {
               width={'100%'}
               onMouseEnter={() => setIsCartHovered(i)}
               onMouseLeave={() => setIsCartHovered(null)}>
-              <Button
-                component={Link}
-                to={`/product/${product.id}`}
-                sx={{ width: '100%', p: 0, my: 1 }}>
-                <Card sx={{ width: '100%', height: '100%' }}>
-                  {hasPromotion && (
-                    <div
-                      className="discount-badge"
-                      style={{
-                        backgroundColor: `rgb(${interpolatedColor[0]}, ${interpolatedColor[1]}, ${interpolatedColor[2]})`,
-                      }}>{`${discountValue ? discountValue : ''}%`}</div>
-                  )}
+              <Card sx={{ width: '100%', height: '100%', marginTop: '16px' }}>
+                {hasPromotion && (
+                  <div
+                    className="products-discount-badge"
+                    style={{
+                      backgroundColor: `rgb(${interpolatedColor[0]}, ${interpolatedColor[1]}, ${interpolatedColor[2]})`,
+                    }}>{`${discountValue ? discountValue : ''}%`}</div>
+                )}
+                <Box
+                  sx={{
+                    position: 'relative',
+                    width: '100%',
+                    paddingBottom: '100%',
+                    overflow: 'hidden',
+                  }}>
                   <Box
                     sx={{
-                      position: 'relative',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
                       width: '100%',
-                      paddingBottom: '100%',
-                      overflow: 'hidden',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}>
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      <Carousel
-                        indicators={false}
-                        sx={{ width: '100%', height: '100%' }}
-                        navButtonsAlwaysInvisible>
-                        {product.image.map((item, i) => (
+                    <Carousel
+                      indicators={false}
+                      sx={{ width: '100%', height: '100%' }}
+                      navButtonsAlwaysInvisible>
+                      {product.image.map((item, i) => (
+                        <Button
+                          component={Link}
+                          to={`/product/${product.id}`}
+                          sx={{ width: '100%', p: 0 }}>
                           <CardMedia
+                            to={`/product/${product.id}`}
                             component="img"
                             alt="Product"
                             image={item}
@@ -109,73 +120,72 @@ export default function CartProduct({ products, colmd, collg }) {
                               objectFit: 'contain',
                             }}
                           />
-                        ))}
-                      </Carousel>
-                    </Box>
-
-                    {isCartHovered === i && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          zIndex: 2,
-                          top: '80%',
-                          left: '40%',
-                        }}>
-                        <Tooltip title="Mua ngay">
-                          <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() => addProductToCart(product.id)}>
-                            <AddShoppingCartIcon />
-                          </Button>
-                        </Tooltip>
-                      </div>
-                    )}
+                        </Button>
+                      ))}
+                    </Carousel>
                   </Box>
 
+                  {isCartHovered === i && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        zIndex: 2,
+                        top: '80%',
+                        left: '40%',
+                      }}>
+                      <Tooltip title="Mua ngay">
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => addProductToCart(product.id)}>
+                          <AddShoppingCartIcon />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  )}
+                </Box>
+                <Button component={Link} to={`/product/${product.id}`} sx={{ width: '100%', p: 0 }}>
                   <CardContent>
                     <Typography
                       className="title"
                       gutterBottom
                       component="div"
                       sx={{ textTransform: 'none' }}>
-                      {product.title}
+                      <span style={{ color: 'black' }}>{product.title}</span>
                     </Typography>
                     <Typography gutterBottom component="div">
                       <span>
-                        {' '}
                         {product.promotion && product.statusPromotion === 1 ? (
                           <div style={{ display: 'flex' }}>
-                            <div className="promotion-price">{`${product.priceBefort.toLocaleString(
-                              'it-IT',
-                              { style: 'currency', currency: 'VND' },
-                            )} `}</div>{' '}
+                            <div className="promotion-price">
+                              {formatCurrency(product.priceBefort)}
+                            </div>
                             <div>
                               <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                {`${calculateDiscountedPrice(
-                                  product.priceBefort,
-                                  product.value,
-                                ).toLocaleString('it-IT', {
-                                  style: 'currency',
-                                  currency: 'VND',
-                                })} `}
-                              </span>{' '}
+                                {formatCurrency(
+                                  calculateDiscountedPrice(product.priceBefort, product.value),
+                                )}
+                              </span>
                             </div>
                           </div>
                         ) : (
-                          <span>{`${product.priceBefort.toLocaleString('it-IT', {
-                            style: 'currency',
-                            currency: 'VND',
-                          })} `}</span>
+                          <span>{formatCurrency(product.priceBefort)}</span>
                         )}
                       </span>
                     </Typography>
                   </CardContent>
-                </Card>
-              </Button>
+                </Button>
+              </Card>
             </Grid>
           )
         })}
+        {openModalCart && (
+          <ModalAddProductToCart
+            openModal={openModalCart}
+            handleCloseModal={handleCloseModalCart}
+            product={product}
+          />
+        )}
       </Grid>
     </>
   )
