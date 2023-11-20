@@ -265,6 +265,8 @@ public class HDBillServiceImpl implements HDBillService {
             bill.setConfirmationDate(DateUtil.getCurrentTimeNow());
 
             hdBillRepository.save(bill);
+            messagingTemplate.convertAndSend("/topic/real-time-bill-page-admin",
+                    clientProductDetailRepository.updateRealTime(bill.getId()));
 
             // Lưu lịch sử hóa đơn
             HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()

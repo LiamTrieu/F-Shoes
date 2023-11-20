@@ -73,14 +73,21 @@ export default function MyVoucher() {
   }
 
   useEffect(() => {
+    fetchVoucherPublic()
+    fetchVoucherPrivate()
+  }, [])
+
+  useEffect(() => {
     const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    console.log('Socket created')
     stompClient = Stomp.over(socket)
     stompClient.connect({}, onConnect)
 
     return () => {
+      console.log('Socket created1')
       stompClient.disconnect()
     }
-  }, [])
+  }, [voucherPublic, voucherPrivate])
 
   const onConnect = () => {
     stompClient.subscribe('/topic/my-voucher-realtime', (message) => {
@@ -96,20 +103,25 @@ export default function MyVoucher() {
     const preVoucherPrivate = [...voucherPrivate]
     const indexPublic = preVoucherPublic.findIndex((voucher) => voucher.id === data.id)
     const indexPrivate = preVoucherPrivate.findIndex((voucher) => voucher.id === data.id)
-    if (indexPrivate !== -1) {
-      preVoucherPrivate[indexPublic] = data
-      setVoucherPrivate(preVoucherPrivate)
-    }
     if (indexPublic !== -1) {
       preVoucherPublic[indexPublic] = data
-      setVoucherPublic(preVoucherPublic)
+      if (data.type === 0) {
+        setVoucherPublic(preVoucherPublic)
+      } else {
+        fetchVoucherPrivate()
+        fetchVoucherPublic()
+      }
+    }
+    if (indexPrivate !== -1) {
+      preVoucherPrivate[indexPrivate] = data
+      if (data.type === 1) {
+        setVoucherPrivate(preVoucherPrivate)
+      } else {
+        fetchVoucherPrivate()
+        fetchVoucherPublic()
+      }
     }
   }
-
-  useEffect(() => {
-    fetchVoucherPublic()
-    fetchVoucherPrivate()
-  }, [])
 
   return (
     <div>

@@ -153,7 +153,7 @@ export default function CartProduct({ products, colmd, collg }) {
                         className="title"
                         gutterBottom
                         component="div"
-                        sx={{ textTransform: 'none' }}>
+                        sx={{ textTransform: 'none', textAlign: 'left' }}>
                         <span style={{ color: 'black' }}>{product.title}</span>
                       </Typography>
                       <Typography gutterBottom component="div">

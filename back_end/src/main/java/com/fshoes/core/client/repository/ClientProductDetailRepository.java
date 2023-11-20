@@ -121,16 +121,17 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
             """, nativeQuery = true)
     List<ClientProductResponse> getAllProductClient(@Param("request") ClientFindProductRequest request);
     @Query(value = """
-                SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,
-                MAX( pr.status) as statusPromotion ,MAX(pr.value) as value,
+                SELECT 
+                       pd.id as id,
+                       pr.id as promotion ,
+                       pr.status as statusPromotion ,pr.value as value,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
-                       MAX(pd.price) as price,
-                       MAX(pd.weight) as weight,
-                       MAX(pd.amount) as amount,
-                       MAX(pd.description) as description,
+                       pd.price as price,
+                       pd.weight as weight,
+                       pd.amount as amount,
+                       pd.description as description,
                        GROUP_CONCAT(DISTINCT i.url) as image,
                        pd.id_product,
                        pd.id_color,
@@ -156,7 +157,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
                 WHERE pd.id = :id
-                GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
+                GROUP BY pd.id, pr.id, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
     ClientProductResponse updateRealTime(String id);
 

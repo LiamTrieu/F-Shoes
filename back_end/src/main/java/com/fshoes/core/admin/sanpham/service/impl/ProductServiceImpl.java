@@ -153,6 +153,16 @@ public class ProductServiceImpl implements ProductService {
         productDetailRepository.save(request.tranDetail(productDetail));
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-client",
                 clientProductDetailRepository.updateRealTime(productDetail.getId()));
+        messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail",
+                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+        messagingTemplate.convertAndSend("/topic/realtime-san-pham-home",
+                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+        messagingTemplate.convertAndSend("/topic/realtime-san-pham-modal-add-to-card",
+                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+        messagingTemplate.convertAndSend("/topic/realtime-san-pham-cart",
+                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+        messagingTemplate.convertAndSend("/topic/realtime-san-pham-checkout",
+                clientProductDetailRepository.updateRealTime(productDetail.getId()));
     }
 
     @Override
