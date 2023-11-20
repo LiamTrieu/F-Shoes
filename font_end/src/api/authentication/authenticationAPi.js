@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getCookie } from '../../services/cookie'
-import { axiosApi } from '../axios'
+import axiosAdmin, { axiosApi } from '../axios'
 
 const authenticationAPi = {
   loginAdmin: (email, password) => {
@@ -26,6 +26,10 @@ const authenticationAPi = {
   changePassword: (password, newPassword) => {
     const url = `/authentication/doi-mat-khau`
     return axiosApi.post(url, { password: password, newPassword: newPassword })
+  },
+  changePasswordAdmin: (password, newPassword) => {
+    const url = `/authentication/doi-mat-khau`
+    return axiosAdmin.post(url, { password: password, newPassword: newPassword })
   },
   checkMail: (email) => {
     const url = `/authentication/check-mail?email=${email}`
