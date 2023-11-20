@@ -256,8 +256,6 @@ public class HDBillServiceImpl implements HDBillService {
 
             // Cập nhật thông tin hóa đơn và trạng thái
             bill.setStatus(2);
-            bill.setVoucher(billConfirmRequest.getIdVoucher() != null ? voucherRepository.findById(billConfirmRequest.getIdVoucher()).orElse(null) : null);
-            bill.setCustomer(billConfirmRequest.getIdCustomer() != null ? accountRepository.findById(billConfirmRequest.getIdCustomer()).orElse(null) : null);
             bill.setFullName(billConfirmRequest.getFullName());
             bill.setNote(billConfirmRequest.getNote());
             bill.setAddress(billConfirmRequest.getAddress());
@@ -271,7 +269,7 @@ public class HDBillServiceImpl implements HDBillService {
             // Lưu lịch sử hóa đơn
             HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
                     .note(billConfirmRequest.getNoteBillHistory())
-                    .idStaff(billConfirmRequest.getIdStaff())
+                    .idStaff(userLogin.getUserLogin().getId())
                     .bill(bill)
                     .build();
             hdBillHistoryService.save(hdBillHistoryRequest);

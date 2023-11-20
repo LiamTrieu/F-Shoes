@@ -309,15 +309,13 @@ export default function AdBillDetail() {
 
     const handleConfirmOrder = () => {
       const updatedBillConfirmRequest = {
-        idVoucher: null,
-        idCustomer: null,
         fullName: billDetail.fullName,
         phoneNumber: billDetail.phoneNumber,
         address: billDetail.address,
         note: billDetail.note,
         status: 2,
         noteBillHistory: ghiChu,
-        idStaff: null,
+
         listHdctReq: listHDCT.map((item) => ({
           productDetailId: item.productDetailId,
           idBill: billDetail.id,
