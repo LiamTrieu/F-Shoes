@@ -29,7 +29,6 @@ import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
 import { toast } from 'react-toastify'
-import { useZxing } from 'react-zxing'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -184,47 +183,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
       currency: 'VND',
     })
   }
-  const [qrScannerVisible, setQrScannerVisible] = useState(false)
-  const styleModal = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  }
-  const RenderVideo = () => {
-    const { ref } = useZxing({
-      onDecodeResult(result) {
-        handleScan(result)
-      },
-    })
-    return <video ref={ref} width="100%" />
-  }
-  const handleOpenQRScanner = () => {
-    setQrScannerVisible(true)
-  }
-
-  const handleScan = (qrData) => {
-    if (qrData?.text) {
-      sellApi.getProduct(qrData.text).then((product) => {
-        if (product.data.success) {
-          setIsShowProductDetail(true)
-          hanldeAmountProduct(qrData.text)
-          setSelectedProduct(product.data.data)
-          setQrScannerVisible(false)
-        } else {
-          toast.warning('Mã qr code không chính xác')
-        }
-      })
-    }
-  }
-  const handleCloseQRScanner = () => {
-    setQrScannerVisible(false)
-  }
 
   return (
     <div className="scrollbar-modal-add">
@@ -270,23 +228,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                   setFilter({ ...filter, nameProductDetail: e.target.value })
                 }}
               />
-              <Button
-                sx={{
-                  float: 'right',
-                }}
-                color="cam"
-                className="btnqr"
-                variant="outlined"
-                onClick={handleOpenQRScanner}>
-                Quét QR
-              </Button>
-              {qrScannerVisible && (
-                <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
-                  {qrScannerVisible && (
-                    <Box sx={styleModal}>{qrScannerVisible && <RenderVideo />}</Box>
-                  )}
-                </Modal>
-              )}
             </Box>
             <Box>
               <b>Danh mục:</b>

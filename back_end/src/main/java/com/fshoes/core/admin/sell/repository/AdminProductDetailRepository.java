@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface AdminProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
-                   SELECT bd.id as idBillDetail ,pd.id, pr.id as promotion,pr.status as statusPromotion ,pr.value, bd.quantity,
+                   SELECT bd.id as idBillDetail ,pd.id, pr.id as promotion,pr.status as statusPromotion,pd.weight ,pr.value, bd.quantity,
                    p.name as nameProduct, pd.price, s.size, MAX(i.url) as image   
                    FROM product_detail pd 
                    left join bill_detail bd on bd.id_product_detail = pd.id 

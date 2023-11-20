@@ -148,9 +148,13 @@ export default function Checkout() {
   const navigate = useNavigate()
 
   const arrData = useSelector(GetCheckout)
+
   useEffect(() => {
+    if (arrData.length === 0) {
+      navigate('/cart')
+      return
+    }
     loadDetailAddress()
-    if (arrData.length === 0) navigate('/cart')
     loadTinh()
   }, [navigate, arrData])
 
@@ -184,6 +188,8 @@ export default function Checkout() {
     setErrors({ ...errors, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
+    setSelectedXa(null)
+    setXa([])
     setRequest({ ...request, tinh: newValue.label, provinceId: newValue.id })
     if (newValue) {
       loadHuyen(newValue.id)
@@ -418,7 +424,7 @@ export default function Checkout() {
                 <span className="checkout-info-label">Thông tin giao hàng</span>
                 {userLogin && (
                   <Button
-                    style={{ float: 'right' }}
+                    style={{ float: 'right', display: listAddress.length > 0 ? 'none' : 'block' }}
                     size="small"
                     variant="outlined"
                     onClick={() => {
@@ -518,6 +524,7 @@ export default function Checkout() {
                   </Typography>
                   <Autocomplete
                     fullWidth
+                    clearIcon={null}
                     size="small"
                     id="combo-box-demo"
                     value={selectedTinh}
@@ -538,6 +545,7 @@ export default function Checkout() {
                     <span className="required"> *</span>Quận/huyện
                   </Typography>
                   <Autocomplete
+                    clearIcon={null}
                     fullWidth
                     size="small"
                     className="search-field"
@@ -560,6 +568,7 @@ export default function Checkout() {
                     <span className="required"> *</span>Xã/thị trấn
                   </Typography>
                   <Autocomplete
+                    clearIcon={null}
                     fullWidth
                     size="small"
                     className="search-field"
