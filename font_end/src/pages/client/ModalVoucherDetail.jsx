@@ -3,6 +3,7 @@ import React from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import './ModalVoucher'
 import dayjs from 'dayjs'
+import { formatCurrency } from '../../services/common/formatCurrency '
 
 const styleModalVoucher = {
   position: 'absolute',
@@ -47,12 +48,12 @@ export default function ModalVoucherDetail({ openModal, setOpenModal, voucher })
               <Grid item xs={8} className="grid-information-voucher">
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <div>
-                    Giá trị:
-                    {voucher.typeValue === 0 ? voucher.value + ' %' : voucher.value + ' VNĐ'}
+                    Giá trị:{' '}
+                    {voucher.typeValue === 0 ? voucher.value + ' %' : formatCurrency(voucher.value)}
                     <br />
-                    Tối đa: {voucher.maximumValue} VNĐ
+                    Tối đa: {formatCurrency(voucher.maximumValue)}
                     <br />
-                    Tối thiểu: {voucher.minimumAmount} VNĐ
+                    Tối thiểu: {formatCurrency(voucher.minimumAmount)}
                   </div>
                 </Stack>
               </Grid>
@@ -68,7 +69,7 @@ export default function ModalVoucherDetail({ openModal, setOpenModal, voucher })
                   <br />
                   <span>
                     {dayjs(voucher.startDate).format('DD-MM-YYYY HH:mm') +
-                      '---' +
+                      ' --- ' +
                       dayjs(voucher.endDate).format('DD-MM-YYYY HH:mm')}
                   </span>
                 </Grid>
@@ -78,9 +79,15 @@ export default function ModalVoucherDetail({ openModal, setOpenModal, voucher })
                   </span>
                   <br />
                   <span>
-                    Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé! Giảm{' '}
-                    {voucher.typeValue === 0 ? voucher.value + ' %' : voucher.value + ' VNĐ'} cho
-                    Đơn Tối Thiểu {voucher.minimumAmount} VNĐ Giảm tối đa {voucher.maximumValue} VNĐ
+                    Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé
+                    <br />
+                    Giảm{' '}
+                    {voucher.typeValue === 0
+                      ? voucher.value + ' %'
+                      : formatCurrency(voucher.value) + ' '}
+                    cho Đơn Tối Thiểu {formatCurrency(voucher.minimumAmount)}
+                    <br /> Giảm tối đa
+                    {' ' + formatCurrency(voucher.maximumValue)}
                   </span>
                 </Grid>
                 <Grid item xs={12}>

@@ -8,6 +8,7 @@ import ModalVoucherDetail from './ModalVoucherDetail'
 import Empty from '../../components/Empty'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import { formatCurrency } from '../../services/common/formatCurrency .js'
 
 function CustomTabPanel(props) {
   const { children, value, index } = props
@@ -132,11 +133,12 @@ export default function MyVoucher() {
                         <Grid item xs={9} className="grid-information-voucher-my-voucher">
                           <Stack direction="row" justifyContent="space-between" alignItems="center">
                             <div>
-                              Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
+                              Giá trị:{' '}
+                              {v.typeValue === 0 ? v.value + ' %' : formatCurrency(v.value)}
                               <br />
-                              Tối đa: {v.maximumValue} VNĐ
+                              Tối đa: {formatCurrency(v.maximumValue)}
                               <br />
-                              Tối thiểu: {v.minimumAmount} VNĐ
+                              Tối thiểu: {formatCurrency(v.minimumAmount)}
                             </div>
                             <div>
                               <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>
@@ -159,11 +161,12 @@ export default function MyVoucher() {
                         <Grid item xs={9} className="grid-information-voucher-my-voucher">
                           <Stack direction="row" justifyContent="space-between" alignItems="center">
                             <div>
-                              Giá trị: {v.typeValue === 0 ? v.value + ' %' : v.value + ' VNĐ'}
+                              Giá trị:{' '}
+                              {v.typeValue === 0 ? v.value + ' %' : formatCurrency(v.value)}
                               <br />
-                              Tối đa: {v.maximumValue} VNĐ
+                              Tối đa: {formatCurrency(v.maximumValue)}
                               <br />
-                              Tối thiểu: {v.minimumAmount} VNĐ
+                              Tối thiểu: {formatCurrency(v.minimumAmount)}
                             </div>
                             <div>
                               <Link onClick={() => handleOpenModal(v.code)}>Xem</Link>

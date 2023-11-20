@@ -270,12 +270,8 @@ export default function Product() {
           <Collapse in={openCategory} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               {listCategory.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectCategory.includes(lf.id)}
-                    onChange={(e) => handleCheckBoxCategory(e, lf.id)}
-                  />
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxCategory(e, lf.id)}>
+                  <Checkbox key={lf.id} checked={selectCategory.includes(lf.id)} />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
@@ -290,12 +286,8 @@ export default function Product() {
           <Collapse in={openBrand} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               {listBrand.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectBrand.includes(lf.id)}
-                    onChange={(e) => handleCheckBoxBrand(e, lf.id)}
-                  />
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxBrand(e, lf.id)}>
+                  <Checkbox key={lf.id} checked={selectBrand.includes(lf.id)} />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
@@ -312,12 +304,8 @@ export default function Product() {
           <Collapse in={openMaterial} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               {listMaterial.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectMaterial.includes(lf.id)}
-                    onChange={(e) => handleCheckBoxMaterial(e, lf.id)}
-                  />
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxMaterial(e, lf.id)}>
+                  <Checkbox key={lf.id} checked={selectMaterial.includes(lf.id)} />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
@@ -332,12 +320,8 @@ export default function Product() {
           <Collapse in={openSole} timeout="auto" unmountOnExit className="collapse-portfolio">
             <List component="div" disablePadding>
               {listSole.map((lf) => (
-                <ListItemButton key={lf.id}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectSole.includes(lf.id)}
-                    onChange={(e) => handleCheckBoxSole(e, lf.id)}
-                  />
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxSole(e, lf.id)}>
+                  <Checkbox key={lf.id} checked={selectSole.includes(lf.id)} />
                   <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
                 </ListItemButton>
               ))}
@@ -386,7 +370,6 @@ export default function Product() {
               defaultValue={[filter.minPrice, priceMax]}
               valueLabelFormat={(value) => formatCurrency(value)}
             />
-            {/* `${value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}` */}
           </ListItem>
         </div>
       </List>
@@ -422,29 +405,33 @@ export default function Product() {
       <Grid container spacing={1}>
         {isMenuBarVisible && (
           <Grid item xs={2.5} className="grid-drawer-portfolio">
-            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, alignItems: 'center' }}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                justifyItems="center"
-                alignItems="center"
-                display="flex"
-                sx={{ marginBottom: '1rem', marginLeft: '26px', marginRight: '16px' }}>
-                <span>
-                  <b>Tìm kiếm theo</b>
-                </span>
-                <Button
-                  color="cam"
-                  sx={{
-                    border: '1px solid #F37622',
-                    height: '20px',
-                    width: '30px',
-                  }}
-                  onClick={() => handleResetFilter()}>
-                  <CancelIcon sx={{ width: '15px', height: '15px', marginRight: '5px' }} />
-                  <span style={{ fontSize: '10px' }}>Xóa</span>
-                </Button>
-              </Stack>
+            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+              <div
+                style={{
+                  padding: '10px',
+                }}>
+                <Stack
+                  display="flex"
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  sx={{ marginLeft: '16px', marginRight: '16px' }}>
+                  <span>
+                    <b>Tìm kiếm theo</b>
+                  </span>
+                  <Button
+                    color="cam"
+                    sx={{
+                      border: '1px solid #F37622',
+                      height: '20px',
+                      width: '30px',
+                    }}
+                    onClick={() => handleResetFilter()}>
+                    <CancelIcon sx={{ width: '15px', height: '15px', marginRight: '5px' }} />
+                    <span style={{ fontSize: '10px' }}>Xóa</span>
+                  </Button>
+                </Stack>
+              </div>
               <MenuBar />
             </Box>
             <IconButton
