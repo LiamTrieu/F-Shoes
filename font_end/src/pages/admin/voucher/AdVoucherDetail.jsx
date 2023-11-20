@@ -449,7 +449,9 @@ export default function AdVoucherDetail() {
                   className="input-css"
                   label="Giá trị"
                   size="small"
-                  value={valueDefault}
+                  value={
+                    voucherDetail.typeValue === 0 ? valueDefault : formatCurrency(valueDefault)
+                  }
                   onChange={(e) => handleSetValue(e.target.value)}
                   fullWidth
                   InputLabelProps={{

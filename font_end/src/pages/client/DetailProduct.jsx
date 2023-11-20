@@ -42,13 +42,16 @@ import { toast } from 'react-toastify'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import ReplyIcon from '@mui/icons-material/Reply'
 import ModalAddProductToCart from './ModalAddProductToCart'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
+import { formatCurrency } from '../../services/common/formatCurrency '
 
 function calculateTotalPayment(cart) {
   let total = 0
   cart.forEach((item) => {
     total += item.gia * item.soLuong
   })
-  return total.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+  return formatCurrency(total)
 }
 
 const styleModalCart = {
@@ -63,6 +66,7 @@ const styleModalCart = {
   p: 4,
 }
 
+var stompClient = null
 export default function DetailProduct() {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
@@ -83,6 +87,34 @@ export default function DetailProduct() {
   const openSidebar = () => {
     setIsSidebarOpen(true)
   }
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [product])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-detail', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
+  }
+
+  function updateRealTimeProductDetail(data) {
+    const preProduct = product
+    const index = preProduct.id === data.id ? 0 : 1
+    if (index !== -1) {
+      setProduct({...data, image: data.image.split(',')})
+    }
+  }
+
   useEffect(() => {
     let data
     clientProductApi
@@ -172,7 +204,6 @@ export default function DetailProduct() {
     }
   }
   const checkOut = () => {
-    console.log(product)
     if (
       isNaN(parseInt(soLuong.toString().trim())) ||
       soLuong <= 0 ||
@@ -246,27 +277,15 @@ export default function DetailProduct() {
                   {' '}
                   {product.promotion && product.statusPromotion === 1 ? (
                     <div style={{ display: 'flex' }}>
-                      <div className="promotion-price">{`${product.price.toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'VND',
-                      })} `}</div>{' '}
+                      <div className="promotion-price">{formatCurrency(product.price)}</div>{' '}
                       <div>
                         <span style={{ color: 'red', fontWeight: 'bold' }}>
-                          {`${calculateDiscountedPrice(product.price, product.value).toLocaleString(
-                            'it-IT',
-                            {
-                              style: 'currency',
-                              currency: 'VND',
-                            },
-                          )} `}
+                          {formatCurrency(calculateDiscountedPrice(product.price, product.value))}
                         </span>{' '}
                       </div>
                     </div>
                   ) : (
-                    <span>{`${product.price.toLocaleString('it-IT', {
-                      style: 'currency',
-                      currency: 'VND',
-                    })} `}</span>
+                    <span>{formatCurrency(product.price)}</span>
                   )}
                 </span>
               </Typography>
