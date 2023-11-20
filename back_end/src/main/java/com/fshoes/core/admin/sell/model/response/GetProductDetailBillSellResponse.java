@@ -12,6 +12,8 @@ public interface GetProductDetailBillSellResponse extends IsIdentified {
 
     String getSize();
 
+    String getWeight();
+
     String getQuantity();
 
     String getImage();
