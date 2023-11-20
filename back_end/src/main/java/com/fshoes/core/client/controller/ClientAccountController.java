@@ -108,5 +108,13 @@ public class ClientAccountController {
         return new ObjectRespone(service.cancelBill(idBill, clientCancelBillRequest));
     }
 
+    @GetMapping("/get-billDetail-by-idBill-and-status/{idBill}")
+    public ObjectRespone getBillDetailByBillIdAndStatus(
+            @PathVariable("idBill") String idBill,
+            @RequestParam("status") Integer status
+    ) {
+        return new ObjectRespone(service.getBillDetailsByBillIdAndStatus(idBill, status));
+    }
+
 
 }

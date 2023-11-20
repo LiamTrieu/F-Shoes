@@ -50,5 +50,9 @@ const ClientAccountApi = {
     const url = `/client/customer/cancel-bill/${idBill}`
     return axiosApi.put(url, clientCancelBillReq)
   },
+  getBillDetailsByIdBillAndStt: (idBill, status) => {
+    const urlGetByIdBillAndStt = `/client/customer/get-billDetail-by-idBill-and-status/${idBill}`
+    return axiosApi.get(urlGetByIdBillAndStt, { params: { status } })
+  },
 }
 export default ClientAccountApi
