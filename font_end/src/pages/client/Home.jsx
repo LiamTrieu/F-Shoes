@@ -63,7 +63,9 @@ export default function Home() {
 
   function updateRealTimeProductHome(data) {
     const preProduct = [...products]
+    const preSellingProduct = [...sellingProducts]
     const index = preProduct.findIndex((product) => product.id === data.id)
+    const indexs = preSellingProduct.findIndex((product) => product.id === data.id)
     if (index !== -1) {
       preProduct[index] = {
         id: data.id,
@@ -82,6 +84,26 @@ export default function Home() {
         idBrand: data.idBrand,
       }
       setProducts(preProduct)
+    }
+
+    if (indexs !== -1) {
+      preSellingProduct[indexs] = {
+        id: data.id,
+        title: data.name,
+        priceBefort: data.price,
+        priceAfter: data.price,
+        value: data.value,
+        promotion: data.promotion,
+        statusPromotion: data.statusPromotion,
+        image: data.image.split(','),
+        idProduct: data.idProduct,
+        idColor: data.idColor,
+        idMaterial: data.idMaterial,
+        idSole: data.idSole,
+        idCategory: data.idCategory,
+        idBrand: data.idBrand,
+      }
+      setSellingProducts(preSellingProduct)
     }
   }
 

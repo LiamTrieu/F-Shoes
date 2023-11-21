@@ -126,6 +126,20 @@ export default function AdBillPage() {
         console.error('Lỗi khi gửi yêu cầu API get filter: ', error)
       })
   }
+
+  useEffect(() => {
+    const preListHoaDon = [...listHoaDon]
+    setListHoaDon([
+      { ...hoaDonUpdate },
+      ...preListHoaDon
+        .slice(0, preListHoaDon.length === 5 ? preListHoaDon.length - 1 : preListHoaDon.length)
+        .map((hd) => {
+          hd.stt = hd.stt + 1
+          return hd
+        }),
+    ])
+  }, [hoaDonUpdate])
+
   useEffect(() => {
     const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
     stompClient = Stomp.over(socket)
@@ -134,7 +148,7 @@ export default function AdBillPage() {
     return () => {
       stompClient.disconnect()
     }
-  }, [])
+  }, [listHoaDon])
 
   const onConnect = () => {
     stompClient.subscribe('/topic/bill-update', (message) => {
@@ -143,7 +157,25 @@ export default function AdBillPage() {
         setHoaDonUpdate(data)
       }
     })
-    stompClient.subscribe('/topic/real-time-bill-page-admin', (message) => {
+    stompClient.subscribe('/topic/real-time-huy-don-bill-page-admin', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        billRealTime(data)
+      }
+    })
+    stompClient.subscribe('/topic/real-time-xac-nhan-bill-page-admin', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        billRealTime(data)
+      }
+    })
+    stompClient.subscribe('/topic/real-time-update-status-bill-page-admin', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        billRealTime(data)
+      }
+    })
+    stompClient.subscribe('/topic/real-time-payment-bill-page-admin', (message) => {
       if (message.body) {
         const data = JSON.parse(message.body)
         billRealTime(data)
@@ -159,18 +191,6 @@ export default function AdBillPage() {
       setListHoaDon(preProduct)
     }
   }
-  useEffect(() => {
-    const preListHoaDon = [...listHoaDon]
-    setListHoaDon([
-      { ...hoaDonUpdate },
-      ...preListHoaDon
-        .slice(0, preListHoaDon.length === 5 ? preListHoaDon.length - 1 : preListHoaDon.length)
-        .map((hd) => {
-          hd.stt = hd.stt + 1
-          return hd
-        }),
-    ])
-  }, [hoaDonUpdate])
 
   return (
     <div className="hoa-don">
