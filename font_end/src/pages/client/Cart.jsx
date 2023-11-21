@@ -560,7 +560,8 @@ export default function Cart() {
                                     <div>
                                       <span style={{ color: 'red', fontWeight: 'bold' }}>
                                         {`${formatPrice(
-                                          calculateDiscountedPrice(cart.gia, item.value),
+                                          cart.soLuong *
+                                            calculateDiscountedPrice(cart.gia, item.value),
                                         )} `}
                                       </span>
                                     </div>
@@ -572,7 +573,7 @@ export default function Cart() {
 
                           {!promotionByProductDetail.some(
                             (item) => item.idProductDetail === cart.id && item.id,
-                          ) && <div>{`${formatPrice(cart.gia)} `}</div>}
+                          ) && <div>{`${formatPrice(cart.soLuong * cart.gia)} `}</div>}
                         </TableCell>
                       </TableRow>
                     ))}
