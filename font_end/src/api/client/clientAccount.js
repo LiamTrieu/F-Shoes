@@ -9,6 +9,10 @@ const ClientAccountApi = {
     const url = `/client/customer/all-bill-table`
     return axiosApi.get(url, { params: filter })
   },
+  getAllBillReturn: () => {
+    const url = `/client/customer/all-bill-return`
+    return axiosApi.get(url)
+  },
   getBillDetailByIdBill: (idBill) => {
     const url = `/client/customer/get-by-idBill/${idBill}`
     return axiosApi.get(url)

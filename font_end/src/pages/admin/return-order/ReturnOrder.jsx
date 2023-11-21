@@ -195,16 +195,13 @@ const TableReturn = ({ status }) => {
                   <b>Mã hóa đơn</b>
                 </TableCell>
                 <TableCell>
-                  <b>Người bán</b>
-                </TableCell>
-                <TableCell>
                   <b>Thời gian</b>
                 </TableCell>
                 <TableCell>
-                  <b>Khách hàng</b>
+                  <b>Số tiền</b>
                 </TableCell>
                 <TableCell>
-                  <b>Số tiền</b>
+                  <b>Trạng thái</b>
                 </TableCell>
                 <TableCell align="center">
                   <b>Chức năng</b>
@@ -224,11 +221,32 @@ const TableReturn = ({ status }) => {
                     <TableCell>
                       <Link to={`/admin/bill-detail/${data.idBill}`}>{data.codeBill}</Link>
                     </TableCell>
-                    <TableCell>{data.staff}</TableCell>
                     <TableCell>{dayjs(data.date).format('DD-MM-YYYY HH:mm')}</TableCell>
-                    <TableCell>{data.customer}</TableCell>
                     <TableCell>
                       <Chip size="small" label={formatCurrency(data.total)} />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        className={
+                          data.status === 0
+                            ? 'chip-cho'
+                            : data.status === 1
+                            ? 'chip-hoat-dong'
+                            : data.status === 2
+                            ? 'chip-khong-hoat-dong'
+                            : 'chip-dang'
+                        }
+                        size="small"
+                        label={
+                          data.status === 0
+                            ? 'Chờ phê duyệt'
+                            : data.status === 1
+                            ? 'Hoàn thành'
+                            : data.status === 2
+                            ? 'Đã hủy'
+                            : 'Đang xử lý'
+                        }
+                      />
                     </TableCell>
                     <TableCell align="center">
                       <IconButton
@@ -299,7 +317,7 @@ export default function ReturnOrder() {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <Tabs value={tabValue} onChange={handleChange}>
             <Tab label="Chờ xác nhận trả hàng" />
-            <Tab label="Chờ trả hàng" />
+            <Tab label="Đang xử lý" />
             <Tab label="Từ chối trả hàng" />
             <Tab label="Trả hàng thành công" />
           </Tabs>
