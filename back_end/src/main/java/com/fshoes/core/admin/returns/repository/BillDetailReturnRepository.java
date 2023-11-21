@@ -1,11 +1,14 @@
 package com.fshoes.core.admin.returns.repository;
 
 import com.fshoes.core.admin.returns.model.response.BillDetailReturnResponse;
+import com.fshoes.entity.BillDetail;
+import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.repository.BillDetailRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BillDetailReturnRepository extends BillDetailRepository {
@@ -28,4 +31,6 @@ public interface BillDetailReturnRepository extends BillDetailRepository {
                  GROUP BY bd.id, bd.quantity, bd.price
             """, nativeQuery = true)
     List<BillDetailReturnResponse> getBillDetailReturn(String idBill);
+
+    Optional<BillDetail> findByProductDetailIdAndStatusAndBillId(String idProductDetail, StatusBillDetail statusBillDetail, String billId);
 }

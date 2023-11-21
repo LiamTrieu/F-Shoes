@@ -10,14 +10,15 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import ReplyIcon from '@mui/icons-material/Reply'
 import { Link } from 'react-router-dom'
 import { setCheckout } from '../../services/slices/checkoutSlice'
-import clientCartApi from '../../api/client/clientCartApi'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
 const styleModalCart = {
   position: 'absolute',
@@ -46,11 +47,11 @@ function calculateTotalPayment(cart) {
   return total.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
 }
 
+var stompClient = null
 export default function ModalAddProductToCart({ openModal, handleCloseModal, product }) {
   const dispatch = useDispatch()
   const amountProduct = useSelector(GetCart).length
   const productCart = useSelector(GetCart)
-  const [promotionByProductDetail, setGromotionByProductDetail] = useState([])
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
     const discountedPrice = originalPrice - discountAmount
@@ -65,23 +66,35 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
       dispatch(updateCart({ ...cart, soLuong: soluong }))
     }
   }
-  const product1 = useSelector(GetCart)
 
-  const productIds = product1.map((cart) => cart.id)
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
 
-  const getPromotionProductDetails = (id) => {
-    clientCartApi.getPromotionByProductDetail(id).then((response) => {
-      setGromotionByProductDetail(response.data.data)
-      console.log(response.data.data)
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [productCart])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-modal-add-to-card', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductAddToCart(data)
+      }
     })
   }
 
-  useEffect(() => {
-    if (amountProduct > 0) {
-      getPromotionProductDetails(productIds)
+  function updateRealTimeProductAddToCart(data) {
+    const preProduct = [...productCart]
+    const index = preProduct.findIndex((product) => product.id === data.id)
+    const sl = preProduct[index].soLuong
+    if (index !== -1) {
+      preProduct[index] = { ...data, gia: data.price, soLuong: sl, image: data.image.split(',') }
+      dispatch(setCart(preProduct))
     }
-  }, [])
-
+  }
   return (
     <div>
       <Modal
@@ -158,32 +171,23 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                     </TableCell>
                     <TableCell align="center">
                       <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
-                        {promotionByProductDetail.map((item, index) => {
-                          const isDiscounted = item.idProductDetail === cart.id && item.id
-
-                          return (
-                            <div key={index}>
-                              {isDiscounted ? (
-                                <div>
-                                  <div className="promotion-price">{`${formatPrice(
-                                    cart.gia,
-                                  )} `}</div>
-                                  <div>
-                                    <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                      {`${formatPrice(
-                                        calculateDiscountedPrice(cart.gia, item.value),
-                                      )} `}
-                                    </span>
-                                  </div>
-                                </div>
-                              ) : null}
+                        {/* <span>
+                          {cart.promotion && cart.statusPromotion === 1 ? (
+                            <div>
+                              <div className="promotion-price">{`${formatPrice(cart.gia)} `}</div>
+                              <div>
+                                <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                  {`${formatPrice(
+                                    calculateDiscountedPrice(cart.gia, cart.value),
+                                  )} `}
+                                </span>
+                              </div>
                             </div>
-                          )
-                        })}
-
-                        {!promotionByProductDetail.some(
-                          (item) => item.idProductDetail === cart.id && item.id,
-                        ) && <div>{`${formatPrice(cart.gia)} `}</div>}
+                          ) : (
+                            <span>{`${formatPrice(cart.gia)} `}</span>
+                          )}
+                        </span> */}
+                        <span>{`${formatPrice(cart.gia)} `}</span>
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
@@ -201,29 +205,15 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                       </div>
                     </TableCell>
                     <TableCell align="center">
-                      {promotionByProductDetail.map((item, index) => {
-                        const isDiscounted = item.idProductDetail === cart.id && item.id
-
-                        return (
-                          <div key={index}>
-                            {isDiscounted ? (
-                              <div>
-                                <div>
-                                  <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                    {`${formatPrice(
-                                      calculateDiscountedPrice(cart.gia, item.value),
-                                    )} `}
-                                  </span>
-                                </div>
-                              </div>
-                            ) : null}
-                          </div>
-                        )
-                      })}
-
-                      {!promotionByProductDetail.some(
-                        (item) => item.idProductDetail === cart.id && item.id,
-                      ) && <div>{`${formatPrice(cart.gia)} `}</div>}
+                      {product.promotion ? (
+                        <div>
+                          {formatPrice(
+                            cart.soLuong * calculateDiscountedPrice(cart.gia, product.value),
+                          )}
+                        </div>
+                      ) : (
+                        <span>{`${formatPrice(cart.soLuong * cart.gia)} `}</span>
+                      )}
                     </TableCell>
                     <TableCell align="center">
                       <DeleteForeverIcon

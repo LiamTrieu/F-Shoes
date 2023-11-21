@@ -46,4 +46,16 @@ public class AdReturnsController {
     public ObjectRespone acceptReturn(@RequestBody ReturnRequest request){
         return new ObjectRespone(returnService.acceptReturn(request));
     }
+    @PostMapping ("/hoan-thanh")
+    public ObjectRespone hoanThanhReturn(@RequestBody ReturnRequest request){
+        return new ObjectRespone(returnService.hoanThanhReturn(request));
+    }
+    @PutMapping("/xac-nhan/{id}")
+    public ObjectRespone xacNhanReturn(@PathVariable("id") String id){
+        return new ObjectRespone(returnService.xacNhanReturn(id));
+    }
+    @PutMapping ("/huy/{id}")
+    public ObjectRespone huyReturn(@PathVariable("id") String id){
+        return new ObjectRespone(returnService.huyReturn(id));
+    }
 }

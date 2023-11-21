@@ -402,6 +402,7 @@ export default function AddressUser() {
                       <span className="required"> *</span>Tỉnh/thành phố
                     </Typography>
                     <Autocomplete
+                      clearIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"
@@ -428,6 +429,7 @@ export default function AddressUser() {
                       <span className="required"> *</span>Quận/huyện
                     </Typography>
                     <Autocomplete
+                      clearIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"
@@ -454,6 +456,7 @@ export default function AddressUser() {
                       <span className="required"> *</span>Xã/phường/thị trấn
                     </Typography>
                     <Autocomplete
+                      clearIcon={null}
                       fullWidth
                       size="small"
                       className="search-field"

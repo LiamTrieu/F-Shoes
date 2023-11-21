@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react'
 import ghnAPI from '../../api/admin/ghn/ghnApi'
 import './Checkout.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { GetCheckout } from '../../services/slices/checkoutSlice'
+import { GetCheckout, setCheckout } from '../../services/slices/checkoutSlice'
 import { Link, useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import clientCheckoutApi from '../../api/client/clientCheckoutApi'
@@ -33,7 +33,10 @@ import ClientAddressApi from '../../api/client/clientAddressApi'
 import authenticationAPi from '../../api/authentication/authenticationAPi'
 import { GetUser } from '../../services/slices/userSlice'
 import ReplyIcon from '@mui/icons-material/Reply'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function Checkout() {
   const userLogin = useSelector(GetUser)
   const [request, setRequest] = useState({
@@ -148,9 +151,13 @@ export default function Checkout() {
   const navigate = useNavigate()
 
   const arrData = useSelector(GetCheckout)
+
   useEffect(() => {
+    if (arrData.length === 0) {
+      navigate('/cart')
+      return
+    }
     loadDetailAddress()
-    if (arrData.length === 0) navigate('/cart')
     loadTinh()
   }, [navigate, arrData])
 
@@ -184,6 +191,8 @@ export default function Checkout() {
     setErrors({ ...errors, provinceId: '' })
     setSelectedTinh(newValue)
     setSelectedHuyen(null)
+    setSelectedXa(null)
+    setXa([])
     setRequest({ ...request, tinh: newValue.label, provinceId: newValue.id })
     if (newValue) {
       loadHuyen(newValue.id)
@@ -397,6 +406,35 @@ export default function Checkout() {
     setOpenModalVoucher(true)
   }
 
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [arrData])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-checkout', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductCart(data)
+      }
+    })
+  }
+
+  function updateRealTimeProductCart(data) {
+    const preProduct = [...arrData]
+    const index = preProduct.findIndex((p) => p.id === data.id)
+    const sl = preProduct[index].soLuong
+    if (index !== -1) {
+      preProduct[index] = { ...data, gia: data.price, soLuong: sl, image: data.image.split(',') }
+      dispatch(setCheckout(preProduct))
+    }
+  }
+
   return (
     <div className="check-out">
       <Container maxWidth="xl" sx={{ mt: 3 }}>
@@ -418,7 +456,7 @@ export default function Checkout() {
                 <span className="checkout-info-label">Thông tin giao hàng</span>
                 {userLogin && (
                   <Button
-                    style={{ float: 'right' }}
+                    style={{ float: 'right', display: listAddress.length > 0 ? 'none' : 'block' }}
                     size="small"
                     variant="outlined"
                     onClick={() => {
@@ -518,6 +556,7 @@ export default function Checkout() {
                   </Typography>
                   <Autocomplete
                     fullWidth
+                    clearIcon={null}
                     size="small"
                     id="combo-box-demo"
                     value={selectedTinh}
@@ -538,6 +577,7 @@ export default function Checkout() {
                     <span className="required"> *</span>Quận/huyện
                   </Typography>
                   <Autocomplete
+                    clearIcon={null}
                     fullWidth
                     size="small"
                     className="search-field"
@@ -560,6 +600,7 @@ export default function Checkout() {
                     <span className="required"> *</span>Xã/thị trấn
                   </Typography>
                   <Autocomplete
+                    clearIcon={null}
                     fullWidth
                     size="small"
                     className="search-field"

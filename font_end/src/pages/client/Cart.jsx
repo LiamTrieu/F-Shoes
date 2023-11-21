@@ -38,7 +38,10 @@ import { setCheckout } from '../../services/slices/checkoutSlice'
 
 import clientProductApi from '../../api/client/clientProductApi'
 import clientCartApi from '../../api/client/clientCartApi'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function Cart() {
   const [productSelect, setProductSelect] = useState([])
   const [promotionByProductDetail, setGromotionByProductDetail] = useState([])
@@ -356,6 +359,36 @@ export default function Cart() {
       currency: 'VND',
     })
   }
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [product])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-cart', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductCart(data)
+      }
+    })
+  }
+
+  function updateRealTimeProductCart(data) {
+    const preProduct = [...product]
+    const index = preProduct.findIndex((p) => p.id === data.id)
+    const sl = preProduct[index].soLuong
+    if (index !== -1) {
+      preProduct[index] = { ...data, gia: data.price, soLuong: sl, image: data.image.split(',') }
+      dispatch(setCart(preProduct))
+    }
+  }
+
   return (
     <div className="cart">
       <Container maxWidth="xl">

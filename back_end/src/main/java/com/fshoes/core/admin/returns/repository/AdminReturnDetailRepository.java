@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.returns.repository;
 
 import com.fshoes.core.admin.returns.model.response.BillDetailReturnResponse;
+import com.fshoes.entity.ReturnDetail;
 import com.fshoes.repository.ReturnDetailRepository;
 import com.fshoes.repository.ReturnsRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,6 @@ public interface AdminReturnDetailRepository extends ReturnDetailRepository {
                  GROUP BY rd.id, rd.quantity, rd.price
             """, nativeQuery = true)
     List<BillDetailReturnResponse> getBillDetailReturn(String idReturn);
+
+    List<ReturnDetail> findAllByReturnsId(String idReturn);
 }

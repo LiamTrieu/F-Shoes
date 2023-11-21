@@ -122,22 +122,33 @@ export default function ReturnOrderBill() {
       fee: phi,
       listDetail: detail,
     }
-    const title = 'Xác nhận hoàn trả sản phẩm?'
-    confirmSatus(title, '').then((result) => {
-      if (result.isConfirmed) {
-        returnApi.accept(returnBill).then(
-          (res) => {
-            if (res.data.success) {
-              toast.success('Trả hàng thành công!')
-              navigate('/admin/return-order/3')
-            } else {
-              navigate(-1)
-            }
-          },
-          () => {},
-        )
-      }
-    })
+    if (
+      traKhach -
+        billDetail.reduce((total, e) => {
+          return total + e.quantity * e.price
+        }, 0) *
+          (1 - phi / 100) <
+      0
+    ) {
+      toast.warning('Tiền trả khác phải lớn hơn hoặc bằng tiền khách nhận!')
+    } else {
+      const title = 'Xác nhận hoàn trả sản phẩm?'
+      confirmSatus(title, '').then((result) => {
+        if (result.isConfirmed) {
+          returnApi.accept(returnBill).then(
+            (res) => {
+              if (res.data.success) {
+                toast.success('Trả hàng thành công!')
+                navigate('/admin/return-order/3')
+              } else {
+                navigate(-1)
+              }
+            },
+            () => {},
+          )
+        }
+      })
+    }
   }
 
   return (

@@ -433,7 +433,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         service_id: serviceId,
         to_district_id: detailDiaChi.districtId,
         to_ward_code: newValue.id,
-        weight: '200',
+        weight: listProductDetailBill.reduce(
+          (totalWeight, e) => totalWeight + parseInt(e.weight),
+          0,
+        ),
         insurance_value: '10000',
       }
       ghnAPI.getTotal(filterTotal).then((response) => {
@@ -697,7 +700,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
             service_id: serviceId,
             to_district_id: districtId,
             to_ward_code: wardId,
-            weight: '200',
+            weight: listProductDetailBill.reduce(
+              (totalWeight, e) => totalWeight + parseInt(e.weight),
+              0,
+            ),
             insurance_value: '10000',
           }
 
@@ -769,7 +775,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
             service_id: serviceId,
             to_district_id: districtId,
             to_ward_code: wardId,
-            weight: '200',
+            weight: listProductDetailBill.reduce(
+              (totalWeight, e) => totalWeight + parseInt(e.weight),
+              0,
+            ),
             insurance_value: '10000',
           }
 
@@ -1254,6 +1263,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     const { ref } = useZxing({
       onDecodeResult(result) {
         handleScan(result)
+        setQrScannerVisible(false)
       },
     })
     return <video ref={ref} width="100%" />
@@ -1263,12 +1273,21 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     if (qrData?.text) {
       sellApi.getProduct(qrData.text).then((product) => {
         if (product.data.success) {
-          // Optionally, you can update the UI or show a notification
-          toast.success('Sản phẩm đã được thêm vào giỏ hàng')
-          // setIsShowProductDetail(true)
-          // hanldeAmountProduct(qrData.text)
-          // setSelectedProduct(product.data.data)
-          setQrScannerVisible(false)
+          console.log(product)
+          const BillDetail = {
+            billId: idBill,
+            productDetailId: product.data.data.productDetailId,
+            quantity: 1,
+            price: product.data.data.price,
+          }
+          sellApi.addBillDetail(BillDetail, idBill).then(() => {
+            toast.success('Thêm sản phẩm thành công', {
+              position: toast.POSITION.TOP_CENTER,
+            })
+            fectchProductBillSell(idBill)
+            setQrScannerVisible(false)
+            console.log(listProductDetailBill)
+          })
         } else {
           toast.warning('Mã qr code không chính xác')
         }
@@ -1302,9 +1321,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
           <Button
             sx={{
               float: 'right',
+              mr: 3,
             }}
             color="cam"
             className="btnqr"
+            size="small"
             variant="outlined"
             onClick={handleOpenQRScanner}>
             Quét QR

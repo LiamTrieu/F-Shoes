@@ -79,10 +79,7 @@ public interface ClientVoucherRepository extends VoucherRepository {
             v.start_date AS startDate, v.end_date AS endDate, v.status
             FROM voucher v
             LEFT JOIN customer_voucher cv ON v.id = cv.id_voucher
-            WHERE
-            v.status = 1
-            AND v.quantity > 0
-            AND v.type = 1 AND v.id = :id
+            WHERE v.id = :id
             GROUP BY v.id
             """, nativeQuery = true)
     ClientVoucherResponse getVoucherReal(String id);

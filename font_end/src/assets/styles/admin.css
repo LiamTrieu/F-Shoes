@@ -26,6 +26,20 @@
   border-color: #fd9690 !important;
 }
 
+.chip-cho {
+  border: 1px solid #d9d9d9 !important;
+  color: #F2741F !important;
+  background: #f0ffe2 !important;
+  border-color: #f0bf9f !important;
+}
+
+.chip-dang {
+  border: 1px solid #d9d9d9 !important;
+  color: #410bd6 !important;
+  background: #f0ffe2 !important;
+  border-color: #a88fec !important;
+}
+
 /* Đảm bảo bảng rộng bằng chiều rộng của màn hình chứa */
 .tableCss {
   width: 100% !important;

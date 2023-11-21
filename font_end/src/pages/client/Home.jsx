@@ -6,7 +6,10 @@ import './Home.css'
 import clientProductApi from '../../api/client/clientProductApi'
 import CartProductHome from '../../layout/client/CartProductHome'
 import CartSellingProduct from '../../layout/client/CartSellingProduct'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function Home() {
   const [products, setProducts] = useState([])
   const [sellingProducts, setSellingProducts] = useState([])
@@ -38,6 +41,49 @@ export default function Home() {
       )
     })
   }, [])
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [products])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-home', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductHome(data)
+      }
+    })
+  }
+
+  function updateRealTimeProductHome(data) {
+    const preProduct = [...products]
+    const index = preProduct.findIndex((product) => product.id === data.id)
+    if (index !== -1) {
+      preProduct[index] = {
+        id: data.id,
+        title: data.name,
+        priceBefort: data.price,
+        priceAfter: data.price,
+        value: data.value,
+        promotion: data.promotion,
+        statusPromotion: data.statusPromotion,
+        image: data.image.split(','),
+        idProduct: data.idProduct,
+        idColor: data.idColor,
+        idMaterial: data.idMaterial,
+        idSole: data.idSole,
+        idCategory: data.idCategory,
+        idBrand: data.idBrand,
+      }
+      setProducts(preProduct)
+    }
+  }
 
   useEffect(() => {
     clientProductApi.getSellingProduct().then((result) => {

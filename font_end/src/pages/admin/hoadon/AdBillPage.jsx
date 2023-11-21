@@ -143,6 +143,21 @@ export default function AdBillPage() {
         setHoaDonUpdate(data)
       }
     })
+    stompClient.subscribe('/topic/real-time-bill-page-admin', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        billRealTime(data)
+      }
+    })
+  }
+
+  const billRealTime = (data) => {
+    const preProduct = [...listHoaDon]
+    const index = preProduct.findIndex((p) => p.id === data.id)
+    if (index !== -1) {
+      preProduct[index] = data
+      setListHoaDon(preProduct)
+    }
   }
   useEffect(() => {
     const preListHoaDon = [...listHoaDon]

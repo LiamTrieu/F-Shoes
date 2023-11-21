@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,6 +102,16 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     @Override
     public List<ClientGetAllBillTableResponse> getALlBillTable(ClientBillAccountRequest status) {
         return billRepository.getALlBillTable(status, userLogin.getUserLogin().getId());
+    }
+
+    @Override
+    public List<String> getALlBillReturn() {
+        Long currentDate = Calendar.getInstance().getTimeInMillis();
+        Calendar sevenDaysAgo = Calendar.getInstance();
+        sevenDaysAgo.setTimeInMillis(currentDate);
+        sevenDaysAgo.add(Calendar.DAY_OF_YEAR, -7);
+        Long sevenDaysAgoTimestamp = sevenDaysAgo.getTimeInMillis();
+        return billRepository.getBillReturn(sevenDaysAgoTimestamp, userLogin.getUserLogin().getId());
     }
 
     @Override

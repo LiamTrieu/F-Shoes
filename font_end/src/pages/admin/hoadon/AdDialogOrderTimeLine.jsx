@@ -93,7 +93,7 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
                     <TableCell align="center">
                       {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
                     </TableCell>
-                    <TableCell align="center">{row.email}</TableCell>
+                    <TableCell align="center">{row.createdBy}</TableCell>
                     <TableCell align="center">
                       <Chip
                         className={getStatusStyle(row.statusBill)}
