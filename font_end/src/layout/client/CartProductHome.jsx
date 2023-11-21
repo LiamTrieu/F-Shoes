@@ -8,8 +8,12 @@ import clientProductApi from '../../api/client/clientProductApi'
 import { addCart } from '../../services/slices/cartSlice'
 import { toast } from 'react-toastify'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
+import ModalAddProductToCart from '../../pages/client/ModalAddProductToCart'
 
 export default function CartProductHome({ products, colmd, collg }) {
+  const [openModalCart, setOpenModalCart] = useState(false)
+  const handleOpenModalCart = () => setOpenModalCart(true)
+  const handleCloseModalCart = () => setOpenModalCart(false)
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
     const discountedPrice = originalPrice - discountAmount
@@ -17,12 +21,17 @@ export default function CartProductHome({ products, colmd, collg }) {
   }
 
   const [isCartHovered, setIsCartHovered] = useState(false)
+  const [product, setProduct] = useState({ image: [], price: '' })
 
   let navigate = useNavigate()
   const dispatch = useDispatch()
   const addProductToCart = (id) => {
     clientProductApi.getById(id).then((response) => {
       console.log(response.data.data)
+      setProduct({
+        ...response.data.data,
+        image: response.data.data.image.split(','),
+      })
       const newItem = {
         id: id,
         idProduct: response.data.data.idProduct,
@@ -34,7 +43,7 @@ export default function CartProductHome({ products, colmd, collg }) {
         size: response.data.data.size,
       }
       dispatch(addCart(newItem))
-      navigate('/cart')
+      handleOpenModalCart()
       toast.success('Thêm sản phẩm thành công')
     })
   }
@@ -179,6 +188,13 @@ export default function CartProductHome({ products, colmd, collg }) {
           // </Grid>
         )
       })}
+      {openModalCart && (
+        <ModalAddProductToCart
+          openModal={openModalCart}
+          handleCloseModal={handleCloseModalCart}
+          product={product}
+        />
+      )}
       {/* </Grid> */}
     </>
   )
