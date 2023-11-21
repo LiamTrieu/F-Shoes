@@ -29,6 +29,12 @@ const sellApi = {
     const urlGetAll = `/sell/add-product-sell/${id}`
     return axiosAdmin.post(urlGetAll, billDetail)
   },
+
+  addBillDetailByIdProductDetail: (idProductDetail, id) => {
+    const urlGetAll = `/sell/add-product-sell-by-id/${id}?idProductDetail=${idProductDetail}`
+    return axiosAdmin.post(urlGetAll)
+  },
+
   createBill: () => {
     const url = `/sell/create-bill`
     return axiosAdmin.post(url)
