@@ -165,6 +165,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 MAX( pr.id) as promotion ,
                 MAX( pr.status) as statusPromotion ,
                 MAX(pr.value) as value,
+                MAX(si.size) as size,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
@@ -186,6 +187,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      color c ON c.id = pd.id_color
                          JOIN
                      category ca ON ca.id = pd.id_category
+                         JOIN
+                        size si ON si.id = pd.id_size
                          JOIN
                      brand b ON b.id = pd.id_brand
                          JOIN

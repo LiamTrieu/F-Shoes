@@ -9,4 +9,6 @@ public interface ClientPromotionResponse extends IsIdentified {
     String getValue();
 
     String getIdProductDetail();
+
+    String getPrice();
 }

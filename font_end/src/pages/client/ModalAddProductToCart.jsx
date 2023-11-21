@@ -10,13 +10,14 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import ReplyIcon from '@mui/icons-material/Reply'
 import { Link } from 'react-router-dom'
 import { setCheckout } from '../../services/slices/checkoutSlice'
+import clientCartApi from '../../api/client/clientCartApi'
 
 const styleModalCart = {
   position: 'absolute',
@@ -49,6 +50,7 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
   const dispatch = useDispatch()
   const amountProduct = useSelector(GetCart).length
   const productCart = useSelector(GetCart)
+  const [promotionByProductDetail, setGromotionByProductDetail] = useState([])
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
     const discountedPrice = originalPrice - discountAmount
@@ -63,6 +65,23 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
       dispatch(updateCart({ ...cart, soLuong: soluong }))
     }
   }
+  const product1 = useSelector(GetCart)
+
+  const productIds = product1.map((cart) => cart.id)
+
+  const getPromotionProductDetails = (id) => {
+    clientCartApi.getPromotionByProductDetail(id).then((response) => {
+      setGromotionByProductDetail(response.data.data)
+      console.log(response.data.data)
+    })
+  }
+
+  useEffect(() => {
+    if (amountProduct > 0) {
+      getPromotionProductDetails(productIds)
+    }
+  }, [])
+
   return (
     <div>
       <Modal
@@ -139,23 +158,32 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                     </TableCell>
                     <TableCell align="center">
                       <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
-                        {/* <span>
-                          {cart.promotion && cart.statusPromotion === 1 ? (
-                            <div>
-                              <div className="promotion-price">{`${formatPrice(cart.gia)} `}</div>
-                              <div>
-                                <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                  {`${formatPrice(
-                                    calculateDiscountedPrice(cart.gia, cart.value),
-                                  )} `}
-                                </span>
-                              </div>
+                        {promotionByProductDetail.map((item, index) => {
+                          const isDiscounted = item.idProductDetail === cart.id && item.id
+
+                          return (
+                            <div key={index}>
+                              {isDiscounted ? (
+                                <div>
+                                  <div className="promotion-price">{`${formatPrice(
+                                    cart.gia,
+                                  )} `}</div>
+                                  <div>
+                                    <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                      {`${formatPrice(
+                                        calculateDiscountedPrice(cart.gia, item.value),
+                                      )} `}
+                                    </span>
+                                  </div>
+                                </div>
+                              ) : null}
                             </div>
-                          ) : (
-                            <span>{`${formatPrice(cart.gia)} `}</span>
-                          )}
-                        </span> */}
-                        <span>{`${formatPrice(cart.gia)} `}</span>
+                          )
+                        })}
+
+                        {!promotionByProductDetail.some(
+                          (item) => item.idProductDetail === cart.id && item.id,
+                        ) && <div>{`${formatPrice(cart.gia)} `}</div>}
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
@@ -173,15 +201,29 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                       </div>
                     </TableCell>
                     <TableCell align="center">
-                      {product.promotion ? (
-                        <div>
-                          {formatPrice(
-                            cart.soLuong * calculateDiscountedPrice(cart.gia, product.value),
-                          )}
-                        </div>
-                      ) : (
-                        <span>{`${formatPrice(cart.soLuong * cart.gia)} `}</span>
-                      )}
+                      {promotionByProductDetail.map((item, index) => {
+                        const isDiscounted = item.idProductDetail === cart.id && item.id
+
+                        return (
+                          <div key={index}>
+                            {isDiscounted ? (
+                              <div>
+                                <div>
+                                  <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                    {`${formatPrice(
+                                      calculateDiscountedPrice(cart.gia, item.value),
+                                    )} `}
+                                  </span>
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        )
+                      })}
+
+                      {!promotionByProductDetail.some(
+                        (item) => item.idProductDetail === cart.id && item.id,
+                      ) && <div>{`${formatPrice(cart.gia)} `}</div>}
                     </TableCell>
                     <TableCell align="center">
                       <DeleteForeverIcon

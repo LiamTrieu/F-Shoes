@@ -122,7 +122,7 @@ export default function HeadingClient() {
           component={Link}
           to="/about-us"
           color="inherit">
-          Loại Giầy
+          Loại Giày
         </Typography>
         <Typography
           onClick={() => {
