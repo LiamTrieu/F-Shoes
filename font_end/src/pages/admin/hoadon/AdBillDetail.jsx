@@ -1355,17 +1355,16 @@ export default function AdBillDetail() {
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
             <h3>Lịch sửa thanh toán</h3>
-            {(billDetail && billDetail.status !== 0) ||
-              (billDetail.status !== 7 && (
-                <Button
-                  onClick={() => setOpenModalConfirmPayment(true)}
-                  variant="outlined"
-                  className="them-moi"
-                  color="cam"
-                  style={{ marginRight: '5px' }}>
-                  Xác nhận thanh toán
-                </Button>
-              ))}
+            {(billDetail?.status !== 0 || billDetail?.status !== 7) && (
+              <Button
+                onClick={() => setOpenModalConfirmPayment(true)}
+                variant="outlined"
+                className="them-moi"
+                color="cam"
+                style={{ marginRight: '5px' }}>
+                Xác nhận thanh toán
+              </Button>
+            )}
           </Stack>
           {listTransaction.length > 0 ? (
             <>
