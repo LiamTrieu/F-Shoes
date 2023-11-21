@@ -34,6 +34,8 @@ public interface AdminSellService {
 
     BillDetail addBillDetail(CreateBillRequest request, String id);
 
+    BillDetail addBillDetailByIdProduct(String idProductDetail, String id);
+
     List<CartDetailResponse> getCartDetail();
 
     List<GetSizeResponse> getListSize();

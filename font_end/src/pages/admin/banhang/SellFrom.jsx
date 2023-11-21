@@ -84,7 +84,7 @@ const styleCustomerPays = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 500,
+  width: 400,
   height: 580,
   bgcolor: 'background.paper',
   borderRadius: '8px',
@@ -1259,39 +1259,29 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     boxShadow: 24,
     p: 4,
   }
-  const RenderVideo = () => {
+  const RenderVideo = ({ show }) => {
     const { ref } = useZxing({
       onDecodeResult(result) {
         handleScan(result)
-        setQrScannerVisible(false)
       },
+      paused: !show,
     })
-    return <video ref={ref} width="100%" />
+    return show ? <video ref={ref} width="100%" /> : <></>
   }
 
   const handleScan = (qrData) => {
     if (qrData?.text) {
-      sellApi.getProduct(qrData.text).then((product) => {
-        if (product.data.success) {
-          console.log(product)
-          const BillDetail = {
-            billId: idBill,
-            productDetailId: product.data.data.productDetailId,
-            quantity: 1,
-            price: product.data.data.price,
-          }
-          sellApi.addBillDetail(BillDetail, idBill).then(() => {
-            toast.success('Thêm sản phẩm thành công', {
-              position: toast.POSITION.TOP_CENTER,
-            })
-            fectchProductBillSell(idBill)
-            setQrScannerVisible(false)
-            console.log(listProductDetailBill)
+      sellApi
+        .addBillDetailByIdProductDetail(qrData?.text, idBill)
+        .then(() => {
+          toast.success('Thêm sản phẩm thành công', {
+            position: toast.POSITION.TOP_CENTER,
           })
-        } else {
-          toast.warning('Mã qr code không chính xác')
-        }
-      })
+        })
+        .finally(() => {
+          fectchProductBillSell(idBill)
+          setQrScannerVisible(false)
+        })
     }
   }
 
@@ -1330,11 +1320,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
             onClick={handleOpenQRScanner}>
             Quét QR
           </Button>
-          {qrScannerVisible && (
-            <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
-              {qrScannerVisible && <Box sx={styleModal}>{qrScannerVisible && <RenderVideo />}</Box>}
-            </Modal>
-          )}
+          <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
+            <Box sx={styleModal}>
+              <RenderVideo show={qrScannerVisible} />
+            </Box>
+          </Modal>
         </Box>
 
         <ModelSell
@@ -2824,6 +2814,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 color="cam"
                 placeholder="Mã giao dịch"
                 variant="outlined"
+                fullWidth
                 sx={{
                   width: '330px',
                   marginTop: '10px',

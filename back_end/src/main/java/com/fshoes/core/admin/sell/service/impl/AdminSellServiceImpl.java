@@ -292,6 +292,30 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     }
 
+    @Override
+    public BillDetail addBillDetailByIdProduct(String idProductDetail, String id) {
+        BillDetail existingBillDetail = billDetailRepositoty.findByProductIdAndBillId(
+                idProductDetail,
+                id
+        );
+
+        if (existingBillDetail != null) {
+            int newQuantity = existingBillDetail.getQuantity() + 1;
+            existingBillDetail.setQuantity(newQuantity);
+            return billDetailRepositoty.save(existingBillDetail);
+        } else {
+        ProductDetail productDetail = productDetailRepository.findById(idProductDetail).orElse(null);
+        Bill bill = billRepository.findById(id).orElse(null);
+        BillDetail billDetail = new BillDetail();
+        billDetail.setQuantity(1);
+        billDetail.setProductDetail(productDetail);
+        billDetail.setPrice(productDetail.getPrice());
+        billDetail.setBill(bill);
+        billDetail.setStatus(0);
+        return billDetailRepositoty.save(billDetail);
+    }
+    }
+
 
     @Override
     public List<CartDetailResponse> getCartDetail() {

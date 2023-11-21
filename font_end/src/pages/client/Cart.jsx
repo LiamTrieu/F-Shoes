@@ -573,7 +573,11 @@ export default function Cart() {
 
                           {!promotionByProductDetail.some(
                             (item) => item.idProductDetail === cart.id && item.id,
-                          ) && <div>{`${formatPrice(cart.soLuong * cart.gia)} `}</div>}
+                          ) && (
+                            <div style={{ color: 'red' }}>{`${formatPrice(
+                              cart.soLuong * cart.gia,
+                            )} `}</div>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}

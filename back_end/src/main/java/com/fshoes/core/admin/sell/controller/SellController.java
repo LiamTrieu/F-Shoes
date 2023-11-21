@@ -97,6 +97,11 @@ public class SellController {
         return new ObjectRespone(getSell.addBillDetail(request, id));
     }
 
+    @PostMapping("/add-product-sell-by-id/{id}")
+    public ObjectRespone addProductSellByIdProductDetail(@RequestParam String idProductDetail, @PathVariable String id) {
+        return new ObjectRespone(getSell.addBillDetailByIdProduct(idProductDetail, id));
+    }
+
     @PutMapping("/add-bill/{id}")
     public ObjectRespone addBill(@RequestBody AddBillRequest request, @PathVariable String id) {
         return new ObjectRespone(getSell.addBill(request, id));

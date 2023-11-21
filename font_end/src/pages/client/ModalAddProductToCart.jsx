@@ -103,6 +103,22 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
       }
     })
   }
+  function calculateProductTotalPayment(cart, promotionByProductDetail) {
+    const isDiscounted = promotionByProductDetail.some(
+      (item) => item.idProductDetail === cart.id && item.id,
+    )
+
+    if (isDiscounted) {
+      const discountedPrice = promotionByProductDetail
+        .filter((item) => item.idProductDetail === cart.id && item.id)
+        .map((item) => cart.soLuong * calculateDiscountedPrice(cart.gia, item.value))
+        .reduce((total, price) => total + price, 0)
+
+      return discountedPrice
+    } else {
+      return cart.soLuong * cart.gia
+    }
+  }
 
   function updateRealTimeProductAddToCart(data) {
     const preProduct = [...productCart]
@@ -254,7 +270,11 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
 
                       {!promotionByProductDetail.some(
                         (item) => item.idProductDetail === cart.id && item.id,
-                      ) && <div>{`${formatPrice(cart.soLuong * cart.gia)} `}</div>}
+                      ) && (
+                        <div style={{ color: 'red' }}>{`${formatPrice(
+                          cart.soLuong * cart.gia,
+                        )} `}</div>
+                      )}
                     </TableCell>
                     <TableCell align="center">
                       <DeleteForeverIcon
@@ -280,7 +300,13 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
               <Typography sx={{ mt: 3, fontSize: '17px' }}>
                 Tổng thanh toán:
                 <span style={{ fontWeight: 1000, marginLeft: '20px', color: 'red' }}>
-                  {calculateTotalPayment(productCart)}
+                  {formatPrice(
+                    productCart.reduce(
+                      (total, cart) =>
+                        total + calculateProductTotalPayment(cart, promotionByProductDetail),
+                      0,
+                    ),
+                  )}
                 </span>
               </Typography>
 
