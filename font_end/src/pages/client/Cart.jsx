@@ -506,33 +506,32 @@ export default function Cart() {
                         <TableCell align="center">
                           {' '}
                           <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
-                            {promotionByProductDetail.map((item, index) => (
-                              <div key={index}>
-                                {item.id ? (
-                                  <div>
-                                    {item.idProductDetail === cart.id && (
+                            {promotionByProductDetail.map((item, index) => {
+                              const isDiscounted = item.idProductDetail === cart.id && item.id
+
+                              return (
+                                <div key={index}>
+                                  {isDiscounted ? (
+                                    <div>
+                                      <div className="promotion-price">{`${formatPrice(
+                                        cart.gia,
+                                      )} `}</div>
                                       <div>
-                                        <div>
-                                          <div className="promotion-price">{`${formatPrice(
-                                            cart.gia,
-                                          )} `}</div>
-                                          <div>
-                                            <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                              {`${formatPrice(
-                                                calculateDiscountedPrice(cart.gia, item.value),
-                                              )} `}
-                                            </span>
-                                          </div>
-                                        </div>
+                                        <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                          {`${formatPrice(
+                                            calculateDiscountedPrice(cart.gia, item.value),
+                                          )} `}
+                                        </span>
                                       </div>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <div>{`${formatPrice(cart.gia)} `}</div>
-                                )}
-                              </div>
-                            ))}
-                            {/* <div className="promotion-price">{`${formatPrice(cart.gia)} `}</div> */}
+                                    </div>
+                                  ) : null}
+                                </div>
+                              )
+                            })}
+
+                            {!promotionByProductDetail.some(
+                              (item) => item.idProductDetail === cart.id && item.id,
+                            ) && <div>{`${formatPrice(cart.gia)} `}</div>}
                           </Typography>
                         </TableCell>
                         <TableCell align="center">
@@ -551,24 +550,30 @@ export default function Cart() {
                           </div>
                         </TableCell>
                         <TableCell align="center">
-                          {promotionByProductDetail.map((item) => (
-                            <div>
-                              {item.idProductDetail === cart.id && (
-                                <div>
-                                  {item.id ? (
+                          {promotionByProductDetail.map((item, index) => {
+                            const isDiscounted = item.idProductDetail === cart.id && item.id
+
+                            return (
+                              <div key={index}>
+                                {isDiscounted ? (
+                                  <div>
                                     <div>
-                                      {formatPrice(
-                                        cart.soLuong *
-                                          calculateDiscountedPrice(cart.gia, item.value),
-                                      )}
+                                      <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                        {`${formatPrice(
+                                          cart.soLuong *
+                                            calculateDiscountedPrice(cart.gia, item.value),
+                                        )} `}
+                                      </span>
                                     </div>
-                                  ) : (
-                                    <span>{`${formatPrice(cart.soLuong * cart.gia)} `}</span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                                  </div>
+                                ) : null}
+                              </div>
+                            )
+                          })}
+
+                          {!promotionByProductDetail.some(
+                            (item) => item.idProductDetail === cart.id && item.id,
+                          ) && <div>{`${formatPrice(cart.soLuong * cart.gia)} `}</div>}
                         </TableCell>
                       </TableRow>
                     ))}

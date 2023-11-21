@@ -217,6 +217,23 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         try {
             Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
             if (bill.getStatus() == 1 || bill.getStatus() == 2 || bill.getStatus() == 6) {
+                List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
+
+                BigDecimal totalAmount = listBillDetail.stream()
+                        .filter(item -> item.getStatus() == 1)
+                        .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                bill.setTotalMoney(totalAmount);
+                BigDecimal tienCanThanhToan = totalAmount;
+                if (bill.getMoneyReduced() != null) {
+                    tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
+                }
+                if (bill.getMoneyShip() != null) {
+                    tienCanThanhToan = tienCanThanhToan.add(bill.getMoneyShip());
+                }
+                bill.setMoneyAfter(tienCanThanhToan);
+                hdBillRepositpory.save(bill);
                 BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
                 billDetail.setStatus(1);
                 ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
@@ -225,7 +242,7 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                         .note("Đã xoá sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize())
                         .build();
                 hdBillHistoryRepository.save(billHistory);
-                hdBillDetailRepository.save(billDetail);
+                hdBillDetailRepository.delete(billDetail);
                 return true;
             } else {
                 return false;

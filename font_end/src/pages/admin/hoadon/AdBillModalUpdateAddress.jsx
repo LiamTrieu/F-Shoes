@@ -283,7 +283,6 @@ export default function ModalAdBillUpdateAddress({
     }
     const diaChi = diaChiCuThe + ', ' + xaName + ', ' + huyenName + ', ' + tinhName
     hdBillReq.address = diaChi
-    console.log(hdBillReq)
     hoaDonApi
       .update(billDetail.id, hdBillReq)
       .then(() => {

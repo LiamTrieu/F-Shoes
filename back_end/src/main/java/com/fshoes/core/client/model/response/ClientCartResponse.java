@@ -7,12 +7,6 @@ import java.math.BigDecimal;
 public interface ClientCartResponse extends IsIdentified {
     String getName();
 
-    String getPromotion();
-
-    BigDecimal getValue();
-
-    Integer getStatusPromotion();
-
     BigDecimal getGia();
 
     String getWeight();
