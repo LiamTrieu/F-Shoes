@@ -105,15 +105,29 @@ export default function DetailProduct() {
         updateRealTimeProductDetail(data)
       }
     })
+    // stompClient.subscribe('/topic/realtime-update-san-pham-by-admin', (message) => {
+    //   if (message.body) {
+    //     const data = JSON.parse(message.body)
+    //     updateRealTimeUpdateProductByAdmin(data)
+    //   }
+    // })
   }
 
   function updateRealTimeProductDetail(data) {
     const preProduct = product
     const index = preProduct.id === data.id ? 0 : 1
     if (index !== -1) {
-      setProduct({...data, image: data.image.split(',')})
+      setProduct({ ...data, image: data.image.split(',') })
     }
   }
+
+  // function updateRealTimeUpdateProductByAdmin(data) {
+  //   const preProduct = product
+  //   const index = preProduct.id === data.id ? 0 : 1
+  //   if (index !== -1) {
+  //     setProduct({ ...data, image: data.image.split(',') })
+  //   }
+  // }
 
   useEffect(() => {
     let data
