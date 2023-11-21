@@ -2,13 +2,14 @@
     FROM node:lts AS development
     # Set working directory
     WORKDIR /app
+    
+    ENV NODE_OPTIONS="--max-old-space-size=4096"
     #
     COPY package.json /app/package.json
     COPY package-lock.json /app/package-lock.json
     # Same as npm install
     RUN npm ci
     COPY . /app
-    ENV CI=true
     ENV PORT=3000
     CMD [ "npm", "start" ]
     FROM development AS build
@@ -16,7 +17,7 @@
     # 2. For Nginx setup
     FROM nginx:alpine
     # Copy config nginx
-    COPY --from=build ./nginx.conf /etc/nginx/conf.d/default.conf
+    COPY --from=build /app/.nginx/nginx.conf /etc/nginx/conf.d/default.conf
     WORKDIR /usr/share/nginx/html
     # Remove default nginx static assets
     RUN rm -rf ./*
