@@ -199,11 +199,13 @@ export default function ProductScreen() {
             <View>
               <Text style={styles.headingText}>Loại giày</Text>
               {listCategory.map((lf) => (
-                <ListItem key={lf.id} containerStyle={styles.listItemContainer}>
+                <ListItem
+                  onPress={() => handleCheckBoxCategory(lf.id)}
+                  key={lf.id}
+                  containerStyle={styles.listItemContainer}>
                   <CheckBox
                     containerStyle={styles.checkboxContainer}
                     checked={selectCategory.includes(lf.id)}
-                    onPress={() => handleCheckBoxCategory(lf.id)}
                   />
                   <ListItem.Content>
                     <ListItem.Title>{lf.name}</ListItem.Title>
@@ -214,11 +216,13 @@ export default function ProductScreen() {
             <View>
               <Text style={styles.headingText}>Thương hiệu</Text>
               {listBrand.map((lf) => (
-                <ListItem key={lf.id} containerStyle={styles.listItemContainer}>
+                <ListItem
+                  onPress={() => handleCheckBoxBrand(lf.id)}
+                  key={lf.id}
+                  containerStyle={styles.listItemContainer}>
                   <CheckBox
                     containerStyle={styles.checkboxContainer}
                     checked={selectBrand.includes(lf.id)}
-                    onPress={() => handleCheckBoxBrand(lf.id)}
                   />
                   <ListItem.Content>
                     <ListItem.Title>{lf.name}</ListItem.Title>
@@ -229,11 +233,13 @@ export default function ProductScreen() {
             <View>
               <Text style={styles.headingText}>Chất liệu</Text>
               {listMaterial.map((lf) => (
-                <ListItem key={lf.id} containerStyle={styles.listItemContainer}>
+                <ListItem
+                  onPress={() => handleCheckBoxMaterial(lf.id)}
+                  key={lf.id}
+                  containerStyle={styles.listItemContainer}>
                   <CheckBox
                     containerStyle={styles.checkboxContainer}
                     checked={selectMaterial.includes(lf.id)}
-                    onPress={() => handleCheckBoxMaterial(lf.id)}
                   />
                   <ListItem.Content>
                     <ListItem.Title>{lf.name}</ListItem.Title>
@@ -244,11 +250,13 @@ export default function ProductScreen() {
             <View>
               <Text style={styles.headingText}>Đế giày</Text>
               {listSole.map((lf) => (
-                <ListItem key={lf.id} containerStyle={styles.listItemContainer}>
+                <ListItem
+                  onPress={() => handleCheckBoxSole(lf.id)}
+                  key={lf.id}
+                  containerStyle={styles.listItemContainer}>
                   <CheckBox
                     containerStyle={styles.checkboxContainer}
                     checked={selectSole.includes(lf.id)}
-                    onPress={() => handleCheckBoxSole(lf.id)}
                   />
                   <ListItem.Content>
                     <ListItem.Title>{lf.name}</ListItem.Title>

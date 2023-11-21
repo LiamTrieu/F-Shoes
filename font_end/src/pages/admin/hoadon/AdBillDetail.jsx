@@ -1560,7 +1560,7 @@ export default function AdBillDetail() {
                             className="table-container-custom-scrollbar">
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                               <TableBody>
-                                {listBillDetailUnactive.map((row, index) => (
+                                {lstBillDetailWaitingReturn.map((row, index) => (
                                   <TableRow key={'billDetail' + row.id}>
                                     <TableCell align="center">
                                       <img src={row.productImg} alt="" width={'20%'} />

@@ -54,6 +54,10 @@ public class ClientAccountController {
     public ObjectRespone getAllBillTable(ClientBillAccountRequest status) {
         return new ObjectRespone(service.getALlBillTable(status));
     }
+    @GetMapping("/all-bill-return")
+    public ObjectRespone getAllBillReturn() {
+        return new ObjectRespone(service.getALlBillReturn());
+    }
 
     @GetMapping("/get-by-idBill/{idBill}")
     public ObjectRespone getByIdBill(@PathVariable("idBill") String idBill) {

@@ -12,6 +12,7 @@ import {
   Paper,
   Radio,
   RadioGroup,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -19,15 +20,14 @@ import {
   Typography,
 } from '@mui/material'
 import './index.css'
-import { RemoveCircle } from '@mui/icons-material'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
-import PersonIcon from '@mui/icons-material/Person'
+import { RiBillLine } from 'react-icons/ri'
 import Carousel from 'react-material-ui-carousel'
 import { toast } from 'react-toastify'
+import confirmSatus from '../../../components/comfirmSwal'
 
 const listBreadcrumbs = [{ name: 'Trả hàng', link: '/admin/return-order/0' }]
 export default function ReturnOrderDetail() {
-  const param = useParams()
+  const { id } = useParams()
   const navigate = useNavigate()
   const [returnDetail, setReturnDetail] = useState({})
   const [billDetail, setBillDetail] = useState([])
@@ -36,7 +36,7 @@ export default function ReturnOrderDetail() {
   const [codePay, setCodePay] = useState(null)
 
   useEffect(() => {
-    returnApi.getReturnDetail(param.id).then(
+    returnApi.getReturnDetail(id).then(
       (res) => {
         if (res.data.success) {
           setReturnDetail(res.data.data)
@@ -46,7 +46,7 @@ export default function ReturnOrderDetail() {
       },
       () => {},
     )
-    returnApi.getReturnDetail2(param.id).then(
+    returnApi.getReturnDetail2(id).then(
       (res) => {
         if (res.data.success) {
           setBillDetail(res.data.data)
@@ -57,6 +57,87 @@ export default function ReturnOrderDetail() {
       () => {},
     )
   }, [])
+
+  function xacNhan() {
+    const title = 'Xác nhận yêu cầu trả sản phẩm?'
+    confirmSatus(title, '').then((result) => {
+      if (result.isConfirmed) {
+        returnApi.xacNhan(id).then(
+          (res) => {
+            if (res.data.success) {
+              toast.success('Xác nhận yêu cầu thành công!')
+              navigate('/admin/return-order/0')
+            } else {
+              toast.error('Xác nhận yêu cầu thất bại!')
+            }
+          },
+          () => {},
+        )
+      }
+    })
+  }
+
+  function huy() {
+    const title = 'Hủy yêu cầu trả sản phẩm?'
+    confirmSatus(title, '').then((result) => {
+      if (result.isConfirmed) {
+        returnApi.huy(id).then(
+          (res) => {
+            if (res.data.success) {
+              toast.success('Hủy yêu cầu thành công!')
+              navigate('/admin/return-order/0')
+            } else {
+              toast.error('Hủy yêu cầu thất bại!')
+            }
+          },
+          () => {},
+        )
+      }
+    })
+  }
+
+  function hoanThanh() {
+    const returnBill = {
+      idReturn: id,
+      returnMoney:
+        billDetail.reduce((total, e) => {
+          return total + e.quantity * e.price
+        }, 0) *
+        (1 - returnDetail.fee / 100),
+      moneyPayment: traKhach,
+      type: typePay,
+      codePayment: codePay,
+      fee: returnDetail.fee,
+      listDetail: [],
+    }
+    if (
+      traKhach -
+        billDetail.reduce((total, e) => {
+          return total + e.quantity * e.price
+        }, 0) *
+          (1 - returnDetail?.fee / 100) <
+      0
+    ) {
+      toast.warning('Tiền trả khác phải lớn hơn hoặc bằng tiền khách nhận!')
+    } else {
+      const title = 'Xác nhận hoàn trả sản phẩm?'
+      confirmSatus(title, '').then((result) => {
+        if (result.isConfirmed) {
+          returnApi.hoanThanh(returnBill).then(
+            (res) => {
+              if (res.data.success) {
+                toast.success('Trả hàng thành công!')
+                navigate('/admin/return-order/3')
+              } else {
+                toast.error('Trả hàng thất bại!')
+              }
+            },
+            () => {},
+          )
+        }
+      })
+    }
+  }
 
   return (
     <div className="tra-hang">
@@ -98,7 +179,7 @@ export default function ReturnOrderDetail() {
                     </div>
                   </TableCell>
                   <TableCell width={'15%'}>
-                    <Chip label={<b>{product.quantity}</b>} />
+                    <Chip label={<b>Số lượng: {product.quantity}</b>} />
                   </TableCell>
                   <TableCell width={'5%'}>
                     <TextField
@@ -116,15 +197,7 @@ export default function ReturnOrderDetail() {
                     </b>
                   </TableCell>
                   <TableCell width={'15%'}>
-                    <TextField
-                      value={product?.note}
-                      disabled
-                      color="cam"
-                      placeholder="Ghi chú"
-                      multiline
-                      rows={2}
-                      sx={{ marginRight: '10px' }}
-                    />
+                    <b>{product?.note}</b>
                   </TableCell>
                 </TableBody>
               </Table>
@@ -145,6 +218,8 @@ export default function ReturnOrderDetail() {
                     ? 'Hoàn thành'
                     : returnDetail?.status === 0
                     ? 'Chờ xác nhận'
+                    : returnDetail?.status === 3
+                    ? 'Đang xử lý'
                     : 'Đã hủy'
                 }
                 style={{
@@ -152,7 +227,9 @@ export default function ReturnOrderDetail() {
                     returnDetail?.status === 1
                       ? 'green'
                       : returnDetail?.status === 0
-                      ? 'yellow'
+                      ? '#F2741F'
+                      : returnDetail?.status === 3
+                      ? 'blue'
                       : 'red',
                 }}
                 size="small"
@@ -168,14 +245,20 @@ export default function ReturnOrderDetail() {
                 padding: '10px',
                 borderRadius: '10px',
               }}>
-              <PersonIcon style={{ marginRight: '5px' }} />
+              <RiBillLine style={{ marginRight: '5px' }} />
               <b>
-                {returnDetail?.customer} -{' '}
+                Mã hóa đơn: &nbsp;
                 <Link to={`/admin/bill-detail/${returnDetail?.idBill}`}>
                   {returnDetail?.codeBill}
                 </Link>
               </b>
             </div>
+            <Grid container mt={2}>
+              <Grid xs={6}>Tên người mua</Grid>
+              <Grid xs={6} sx={{ textAlign: 'right' }}>
+                <b>{returnDetail?.customer}</b>
+              </Grid>
+            </Grid>
             <Grid container mt={2}>
               <Grid xs={6}>
                 Tổng tiền{' '}
@@ -208,7 +291,14 @@ export default function ReturnOrderDetail() {
                   sx={{ width: '150px' }}
                   size="small"
                   value={returnDetail?.fee}
-                  disabled
+                  onChange={(e) => {
+                    const inputValue = e.target.value.trim() === '' ? 0 : parseInt(e.target.value)
+
+                    if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 100) {
+                      setReturnDetail({ ...returnDetail, fee: inputValue })
+                    }
+                  }}
+                  disabled={returnDetail?.status !== 3}
                   variant="standard"
                   InputLabelProps={{ shrink: true }}
                   InputProps={{
@@ -219,19 +309,21 @@ export default function ReturnOrderDetail() {
             </Grid>
             <Grid container mt={2}>
               <Grid xs={6}>
-                <b>Cần trả khách</b>
+                <b>{returnDetail?.status === 1 ? 'Đã' : 'Cần'} trả khách</b>
               </Grid>
               <Grid xs={6} sx={{ textAlign: 'right' }}>
                 <b style={{ color: '#2874A6' }}>
-                  {(
-                    billDetail.reduce((total, e) => {
-                      return total + e.quantity * e.price
-                    }, 0) *
-                    (1 - returnDetail?.fee / 100)
-                  ).toLocaleString('it-IT', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })}
+                  {returnDetail?.status === 2
+                    ? '0 VND'
+                    : (
+                        billDetail.reduce((total, e) => {
+                          return total + e.quantity * e.price
+                        }, 0) *
+                        (1 - returnDetail?.fee / 100)
+                      ).toLocaleString('it-IT', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })}
                 </b>
               </Grid>
             </Grid>
@@ -244,6 +336,7 @@ export default function ReturnOrderDetail() {
                   </Grid>
                   <Grid xs={6} sx={{ textAlign: 'right' }}>
                     <TextField
+                      disabled={returnDetail?.status !== 3}
                       className="input-soluong-return-2"
                       sx={{ width: '150px' }}
                       size="small"
@@ -270,16 +363,18 @@ export default function ReturnOrderDetail() {
                   </Grid>
                   <Grid xs={6} sx={{ textAlign: 'right' }}>
                     <b>
-                      {/* {(
-                    traKhach -
-                    billDetail.reduce((total, e) => {
-                      return total + e.quantityReturn * e.price
-                    }, 0) *
-                      (1 - phi / 100)
-                  ).toLocaleString('it-IT', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })} */}
+                      {returnDetail?.status === 3
+                        ? (
+                            traKhach -
+                            billDetail.reduce((total, e) => {
+                              return total + e.quantity * e.price
+                            }, 0) *
+                              (1 - returnDetail?.fee / 100)
+                          ).toLocaleString('it-IT', {
+                            style: 'currency',
+                            currency: 'VND',
+                          })
+                        : '0 VND'}
                     </b>
                   </Grid>
                 </Grid>
@@ -291,8 +386,18 @@ export default function ReturnOrderDetail() {
                   onChange={(e) => {
                     setTypePay(parseInt(e.target.value))
                   }}>
-                  <FormControlLabel value={0} control={<Radio />} label="Tiền mặt" />
-                  <FormControlLabel value={1} control={<Radio />} label="Chuyển khoản" />
+                  <FormControlLabel
+                    disabled={returnDetail?.status !== 3}
+                    value={0}
+                    control={<Radio />}
+                    label="Tiền mặt"
+                  />
+                  <FormControlLabel
+                    disabled={returnDetail?.status !== 3}
+                    value={1}
+                    control={<Radio />}
+                    label="Chuyển khoản"
+                  />
                 </RadioGroup>
                 {typePay === 1 && (
                   <TextField
@@ -305,9 +410,38 @@ export default function ReturnOrderDetail() {
                     fullWidth
                   />
                 )}
-                <Button sx={{ mt: 5 }} color="cam" variant="contained" fullWidth>
-                  TRẢ HÀNG
-                </Button>
+                {returnDetail?.status !== 2 && (
+                  <Stack direction="row" spacing={2} mt={2}>
+                    <Button
+                      onClick={huy}
+                      sx={{ mt: 5 }}
+                      color="error"
+                      variant="contained"
+                      fullWidth>
+                      Hủy
+                    </Button>
+                    {returnDetail?.status === 0 && (
+                      <Button
+                        onClick={xacNhan}
+                        sx={{ mt: 5 }}
+                        color="success"
+                        variant="contained"
+                        fullWidth>
+                        Xác nhận
+                      </Button>
+                    )}
+                    {returnDetail?.status === 3 && (
+                      <Button
+                        onClick={hoanThanh}
+                        sx={{ mt: 5 }}
+                        color="success"
+                        variant="contained"
+                        fullWidth>
+                        Hoàn thành
+                      </Button>
+                    )}
+                  </Stack>
+                )}
               </>
             )}
           </Paper>

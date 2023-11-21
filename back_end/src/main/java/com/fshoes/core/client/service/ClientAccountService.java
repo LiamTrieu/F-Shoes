@@ -33,6 +33,8 @@ public interface ClientAccountService {
 
     List<ClientGetAllBillTableResponse> getALlBillTable(ClientBillAccountRequest status);
 
+    List<String> getALlBillReturn();
+
     List<ClientBillDetailResponse> getBillDetailsByBillId(String idBill);
 
     List<CLientBillHistoryResponse> getListBillHistoryByIdBill(String idBill);

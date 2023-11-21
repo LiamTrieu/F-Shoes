@@ -1,9 +1,11 @@
 package com.fshoes.core.admin.thongke.Modal.Response;
 
+import java.math.BigDecimal;
+
 public interface DoanhThuResponse {
     String getNgayHienTai();
 
-    Integer getDoanhSoNgay();
+    BigDecimal getDoanhSoNgay();
 
     Integer getSoDonHangNgay();
 
@@ -11,7 +13,7 @@ public interface DoanhThuResponse {
 
     String getTuanNay();
 
-    Integer getDoanhSoTuanNay();
+    BigDecimal getDoanhSoTuanNay();
 
     Integer getSoDonHangTuanNay();
 
@@ -19,7 +21,7 @@ public interface DoanhThuResponse {
 
     String getThangNay();
 
-    Integer getDoanhSoThangNay();
+    BigDecimal getDoanhSoThangNay();
 
     Integer getSoDonHangThangNay();
 
@@ -27,7 +29,7 @@ public interface DoanhThuResponse {
 
     String getNamNay();
 
-    Integer getDoanhSoNamNay();
+    BigDecimal getDoanhSoNamNay();
 
     Integer getSoDonHangNamNay();
 

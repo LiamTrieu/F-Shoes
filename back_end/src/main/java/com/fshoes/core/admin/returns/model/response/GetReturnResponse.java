@@ -9,9 +9,8 @@ public interface GetReturnResponse extends IsIdentified {
     String getCode();
     String getCodeBill();
     String getIdBill();
-    String getStaff();
     Long getDate();
-    String getCustomer();
     BigDecimal getTotal();
+    Integer getStatus();
 
 }

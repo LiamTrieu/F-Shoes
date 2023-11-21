@@ -16,11 +16,12 @@ import com.fshoes.core.admin.returns.service.ReturnService;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
+import com.fshoes.infrastructure.constant.Message;
+import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.infrastructure.exception.RestApiException;
 import com.fshoes.repository.BillHistoryRepository;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.TransactionRepository;
-import com.fshoes.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,7 +106,7 @@ public class ReturnServiceImpl implements ReturnService {
             transaction.setAccount(userLogin.getUserLogin());
             transaction.setBill(bill);
             transaction.setNote("Hoàn trả tiền khách trả hàng");
-            transaction.setTotalMoney(BigDecimal.valueOf(Long.parseLong(request.getReturnMoney())));
+            transaction.setTotalMoney(new BigDecimal(request.getReturnMoney()));
             transactionRepository.save(transaction);
 
             Returns returns = new Returns();
@@ -112,7 +114,7 @@ public class ReturnServiceImpl implements ReturnService {
             Long dateNow = Calendar.getInstance().getTimeInMillis();
             returns.setCode("HT" + dateNow);
             returns.setReturnAt(dateNow);
-            returns.setReturnMoney(BigDecimal.valueOf(Long.parseLong(request.getReturnMoney())));
+            returns.setReturnMoney(new BigDecimal(request.getReturnMoney()));
             returns.setStatus(1);
             returns.setFee(Integer.valueOf(request.getFee()));
             returnsRepository.save(returns);
@@ -160,6 +162,73 @@ public class ReturnServiceImpl implements ReturnService {
     }
 
     @Override
+    public Boolean hoanThanhReturn(ReturnRequest request) {
+        try {
+            Returns returns = returnsRepository.findById(request.getIdReturn()).orElseThrow(
+                    () -> new RestApiException(Message.API_ERROR)
+            );
+            Long dateNow = Calendar.getInstance().getTimeInMillis();
+            returns.setReturnAt(dateNow);
+            returns.setReturnMoney(new BigDecimal(request.getReturnMoney()));
+            returns.setStatus(1);
+            returns.setFee(Integer.valueOf(request.getFee()));
+            returnsRepository.save(returns);
+            Bill bill = billRepository.findById(returns.getBill().getId())
+                    .orElseThrow(() -> new RestApiException("Hóa đơn không tồn tại"));
+            BigDecimal returnMoney = new BigDecimal(request.getReturnMoney());
+
+            int percent = Integer.parseInt(request.getFee());
+            BigDecimal increasedReturnMoney = returnMoney.multiply(BigDecimal.valueOf(1 + percent / 100.0));
+            bill.setTotalMoney(bill.getTotalMoney().subtract(increasedReturnMoney));
+            bill.setMoneyAfter(bill.getMoneyAfter().subtract(increasedReturnMoney));
+            billRepository.save(bill);
+
+            List<ReturnDetail> returnDetails = returnDetailRepository.findAllByReturnsId(returns.getId());
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill);
+            billHistory.setAccount(userLogin.getUserLogin());
+            billHistory.setNote("Hoàn sản phẩm: " +
+                                returnDetails.stream()
+                                        .map(e -> "x" + e.getQuantity() + " " +
+                                                e.getProductDetail().getProduct().getName() + " " +
+                                                e.getProductDetail().getMaterial().getName() + " " +
+                                                e.getProductDetail().getSole().getName() + " " +
+                                                e.getProductDetail().getColor().getName() + " [" +
+                                                e.getProductDetail().getSize().getSize() + " ]")
+                                        .collect(Collectors.joining(", ")));
+            billHistoryRepository.save(billHistory);
+
+            Transaction transaction = new Transaction();
+            transaction.setType(1);
+            transaction.setStatus(0);
+            transaction.setPaymentMethod(request.getType());
+            if (request.getType() == 1) {
+                transaction.setTransactionCode(request.getCodePayment());
+            }
+            transaction.setAccount(userLogin.getUserLogin());
+            transaction.setBill(bill);
+            transaction.setNote("Hoàn trả tiền khách trả hàng");
+            transaction.setTotalMoney(new BigDecimal(request.getReturnMoney()));
+            transactionRepository.save(transaction);
+
+            List<BillDetail> billDetails = new ArrayList<>();
+            for (ReturnDetail returnDetail : returnDetails) {
+                BillDetail billDetail = returnDetail.getBillDetail();
+                ProductDetail productDetail = billDetail.getProductDetail();
+                billDetail.setStatus(1);
+                billDetails.add(billDetail);
+                productDetail.setAmount(productDetail.getAmount() + billDetail.getQuantity());
+                productDetailRepository.save(productDetail);
+            }
+            billDetailRepository.saveAll(billDetails);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
     public PageReponse<GetReturnResponse> getReturn(GetReturnRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(), 5);
         return new PageReponse<>(returnsRepository.getAllReturn(pageable, request));
@@ -173,5 +242,54 @@ public class ReturnServiceImpl implements ReturnService {
     @Override
     public List<BillDetailReturnResponse> getReturnDetail2(String id) {
         return returnDetailRepository.getBillDetailReturn(id);
+    }
+
+    @Override
+    public Returns xacNhanReturn(String id) {
+        Returns returns = returnsRepository.findById(id)
+                .orElseThrow(() -> new RestApiException(Message.API_ERROR));
+        returns.setStatus(3);
+        Long dateNow = Calendar.getInstance().getTimeInMillis();
+        returns.setReturnAt(dateNow);
+        return returnsRepository.save(returns);
+    }
+
+    @Override
+    public Returns huyReturn(String id) {
+        try {
+            Returns returns = returnsRepository.findById(id)
+                    .orElseThrow(() -> new RestApiException(Message.API_ERROR));
+            List<ReturnDetail> detailList = returnDetailRepository.findAllByReturnsId(id);
+            List<BillDetail> newBillDetails = new ArrayList<>();
+            List<ReturnDetail> updateReturnsDetail = new ArrayList<>();
+            List<BillDetail> removeBillDetails = new ArrayList<>();
+            for (ReturnDetail returnDetail : detailList) {
+                BillDetail billDetail = billDetailRepository.findByProductDetailIdAndStatusAndBillId(
+                        returnDetail.getProductDetail().getId(),
+                        StatusBillDetail.TON_TAI, returns.getBill().getId()).orElse(null);
+                if (billDetail == null) {
+                    billDetail = returnDetail.getBillDetail();
+                    billDetail.setStatus(0);
+                    newBillDetails.add(billDetail);
+                }else {
+                    billDetail.setQuantity(returnDetail.getQuantity()+billDetail.getQuantity());
+                    newBillDetails.add(billDetail);
+                    removeBillDetails.add(returnDetail.getBillDetail());
+                    returnDetail.setBillDetail(null);
+                    updateReturnsDetail.add(returnDetail);
+                }
+            }
+            billDetailRepository.saveAll(newBillDetails);
+            returnDetailRepository.saveAll(updateReturnsDetail);
+            billDetailRepository.deleteAll(removeBillDetails);
+            returns.setStatus(2);
+            Long dateNow = Calendar.getInstance().getTimeInMillis();
+            returns.setReturnAt(dateNow);
+            return returnsRepository.save(returns);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

@@ -8,10 +8,8 @@ export const getStatusProfile = (status) => {
       return 'Đã xác nhận'
     case 3:
       return 'Đang vận chuyển'
-    case 4:
+    case 7:
       return 'Hoàn thành'
-    case 5:
-      return 'Trả hàng'
     default:
       console.error('Trạng thái hóa đơn không hợp lệ')
       break
