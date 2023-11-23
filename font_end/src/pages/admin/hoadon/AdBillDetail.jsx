@@ -100,7 +100,7 @@ export default function AdBillDetail() {
             (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
             0,
           ) - billDetail.moneyReduced
-        setMoneyAfter(newMoneyAfter + billDetail.moneyShip)
+        setMoneyAfter(newMoneyAfter)
       } else {
         const newMoneyAfter = updatedList.reduce(
           (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
@@ -138,7 +138,7 @@ export default function AdBillDetail() {
   }
 
   const handleTextFieldQuantityChange = (row, index, newValue) => {
-    let soLuong = 1
+    let soLuong = ''
     if (!isNaN(newValue) && newValue > 0) {
       soLuong = newValue
     }
@@ -288,6 +288,15 @@ export default function AdBillDetail() {
                   sx={{ minWidth: '30px' }}>
                   Xác nhận lấy hàng
                 </Button>
+                <Button
+                  variant="contained"
+                  className="them-moi"
+                  color="error"
+                  style={{ marginRight: '5px' }}
+                  onClick={() => setOpenModalCancelBill(true)}
+                  sx={{ minWidth: '30px' }}>
+                  Huỷ đơn
+                </Button>
               </div>
             )
           default:
@@ -372,7 +381,6 @@ export default function AdBillDetail() {
     const [ghiChu, setGhiChu] = useState('')
     const updateStatusBillRequest = {
       noteBillHistory: ghiChu,
-      idStaff: '099b241f-f2cf-448f-909d-55f288dfea5b',
       status: 3,
     }
 
@@ -447,7 +455,6 @@ export default function AdBillDetail() {
 
     const handleConfirmPayment = () => {
       const confirmPaymentRequest = {
-        idStaff: '099b241f-f2cf-448f-909d-55f288dfea5b',
         noteBillHistory: ghiChu,
         type: isRefundMode ? 1 : 0,
         status: 0,
@@ -690,7 +697,6 @@ export default function AdBillDetail() {
 
     const updateStatusBillRequest = {
       noteBillHistory: ghiChu,
-      idStaff: '0b2b4301-623d-455b-b8fe-4d8213f16022',
       status: 7,
     }
     const handleConfirmComplete = (id, updateStatusBillRequest) => {
@@ -936,11 +942,16 @@ export default function AdBillDetail() {
 
     const updateStatusBillRequest = {
       noteBillHistory: ghiChu,
-      idStaff: '0b2b4301-623d-455b-b8fe-4d8213f16022',
       status: 0,
     }
     const handlecancelBill = (id, updateStatusBillRequest) => {
-      if (billDetail.status !== 3 && billDetail.status !== 7 && billDetail.status !== 4) {
+      if (billDetail.status !== 0 && billDetail.status !== 7 && billDetail.status !== 4) {
+        if (ghiChu.trim() === '') {
+          toast.error('Vui lòng nhập ghi chú', {
+            position: toast.POSITION.TOP_CENTER,
+          })
+          return
+        }
         hoaDonApi
           .cancelBill(id, updateStatusBillRequest)
           .then((response) => {
@@ -995,7 +1006,6 @@ export default function AdBillDetail() {
 
     const updateStatusBillRequest = {
       noteBillHistory: ghiChu,
-      idStaff: '0b2b4301-623d-455b-b8fe-4d8213f16022',
       status: 4,
     }
     const handleConfirmReceived = (id, updateStatusBillRequest) => {
@@ -1053,6 +1063,7 @@ export default function AdBillDetail() {
       .then((response) => {
         setBillDetail(response.data.data)
         setMoneyAfter(response.data.data.moneyAfter)
+        console.log('alooo')
         console.log(response.data.data)
         setLoading(false)
       })
@@ -1158,6 +1169,7 @@ export default function AdBillDetail() {
       productDetailId: hdct.productDetailId,
       idBill: idBill,
       status: hdct.status,
+      quantity: hdct.quantity,
     }
     hoaDonChiTietApi
       .delete(hdBillDetailReq)
@@ -1275,7 +1287,7 @@ export default function AdBillDetail() {
       {/* Thông tin đơn hàng */}
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
-          <h3>Thông tin đơn hàng</h3>
+          <h3>Thông tin đơn hàng - {billDetail?.type === 0 ? 'Đơn tại quầy' : 'Đơn trực tuyến'}</h3>
           {(billDetail && billDetail.status === 1) ||
             (billDetail && billDetail.status === 2 && (
               <Button
@@ -1332,7 +1344,7 @@ export default function AdBillDetail() {
                   <Stack direction="row" spacing={1}>
                     <label>Loại:</label>
                     {billDetail.type ? (
-                      <Chip className="chip-giao-hang" label=" Giao hàng" size="small" />
+                      <Chip className="chip-giao-hang" label="Giao hàng" size="small" />
                     ) : (
                       <Chip className="chip-tai-quay" label=" Tại quầy" size="small" />
                     )}
@@ -1506,7 +1518,8 @@ export default function AdBillDetail() {
                                       <TableCell>
                                         {billDetail &&
                                           listBillDetail.length > 1 &&
-                                          (billDetail.status === 6 || billDetail.status < 3) && (
+                                          billDetail.status !== 0 &&
+                                          billDetail.status < 3 && (
                                             <Tooltip title="Xoá sản phẩm">
                                               <IconButton
                                                 onClick={() =>

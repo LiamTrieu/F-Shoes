@@ -1,6 +1,11 @@
 package com.fshoes.core.admin.hoadon.service.impl;
 
-import com.fshoes.core.admin.hoadon.model.request.*;
+import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
+import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillHistoryRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
@@ -11,13 +16,15 @@ import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.core.client.repository.ClientBillRepository;
 import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.UserLogin;
-import com.fshoes.entity.*;
+import com.fshoes.entity.Bill;
+import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.BillHistory;
+import com.fshoes.entity.ProductDetail;
+import com.fshoes.entity.Transaction;
 import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.infrastructure.constant.TypeBill;
-import com.fshoes.repository.AccountRepository;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.TransactionRepository;
-import com.fshoes.repository.VoucherRepository;
 import com.fshoes.util.DateUtil;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
@@ -38,12 +45,6 @@ import java.util.stream.Collectors;
 public class HDBillServiceImpl implements HDBillService {
     @Autowired
     private HDBillRepository hdBillRepository;
-
-    @Autowired
-    private VoucherRepository voucherRepository;
-
-    @Autowired
-    private AccountRepository accountRepository;
 
     @Autowired
     private HDBillHistoryRepository hdBillHistoryRepository;
@@ -173,16 +174,11 @@ public class HDBillServiceImpl implements HDBillService {
                         }
 
                         bill.setStatus(0);
-                        HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
-                                .note(hdBillRequest.getNoteBillHistory())
-                                .idStaff(userLogin.getUserLogin().getId())
-                                .bill(bill)
-                                .build();
+
                         BillHistory billHistory = new BillHistory();
                         billHistory.setBill(bill);
                         billHistory.setStatusBill(0);
-                        billHistory.setNote(hdBillHistoryRequest.getNote());
-                        billHistory.setAccount(accountRepository.findById(hdBillHistoryRequest.getIdStaff()).orElse(null));
+                        billHistory.setNote(hdBillRequest.getNoteBillHistory());
                         billHistory.setAccount(userLogin.getUserLogin());
                         hdBillHistoryRepository.save(billHistory);
                         messagingTemplate.convertAndSend("/topic/real-time-huy-don-bill-page-admin",
@@ -303,7 +299,7 @@ public class HDBillServiceImpl implements HDBillService {
         }
         HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
                 .note(hdBillRequest.getNoteBillHistory())
-                .idStaff(hdBillRequest.getIdStaff())
+                .idStaff(userLogin.getUserLogin().getId())
                 .bill(bill)
                 .build();
         hdBillHistoryService.save(hdBillHistoryRequest);
@@ -334,7 +330,7 @@ public class HDBillServiceImpl implements HDBillService {
             hdBillRepository.save(bill);
             HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
                     .note(hdConfirmPaymentRequest.getNoteBillHistory())
-                    .idStaff(hdConfirmPaymentRequest.getIdStaff())
+                    .idStaff(userLogin.getUserLogin().getId())
                     .bill(bill)
                     .build();
             hdBillHistoryService.save(hdBillHistoryRequest);

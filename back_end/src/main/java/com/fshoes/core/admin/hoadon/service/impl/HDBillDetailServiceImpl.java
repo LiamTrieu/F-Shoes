@@ -76,6 +76,24 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                         clientProductDetailRepository.updateRealTime(productDetail.getId()));
             }
 
+            List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
+
+            BigDecimal totalAmount = listBillDetail.stream()
+                    .filter(item -> item.getStatus() == 0)
+                    .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            bill.setTotalMoney(totalAmount);
+            BigDecimal tienCanThanhToan = totalAmount;
+            if (bill.getMoneyReduced() != null) {
+                tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
+            }
+            if (bill.getMoneyShip() != null) {
+                tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
+            }
+            bill.setMoneyAfter(tienCanThanhToan);
+            hdBillRepositpory.save(bill);
+
             billHistory.setNote("Đã thêm " + hdBillDetailRequest.getQuantity() + " sản phẩm" + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
             hdBillHistoryRepository.save(billHistory);
             return hdBillDetailRepository.save(newBillDetail);
@@ -142,16 +160,9 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     public BillDetail decrementQuantity(String idBillDetail) {
         BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
         Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
-        if (bill.getMoneyReduced() != null) {
-            BigDecimal moneyAfter = bill.getTotalMoney().subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
-            bill.setMoneyAfter(moneyAfter);
-        } else {
-            BigDecimal moneyAfter = bill.getTotalMoney().add(bill.getMoneyShip());
-            bill.setMoneyAfter(moneyAfter);
-        }
         if (bill.getStatus() == 1) {
             billDetail.setQuantity(billDetail.getQuantity() - 1);
-            return hdBillDetailRepository.save(billDetail);
+            hdBillDetailRepository.save(billDetail);
         } else {
             billDetail.setQuantity(billDetail.getQuantity() - 1);
             ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
@@ -159,25 +170,40 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             productDetailRepository.save(productDetail);
             messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-decrease-by-bill-detail",
                     clientProductDetailRepository.updateRealTime(productDetail.getId()));
-            return hdBillDetailRepository.save(billDetail);
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill);
+            billHistory.setNote("Đã xoá 1 sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+            billHistory.setAccount(userLogin.getUserLogin());
+            hdBillHistoryRepository.save(billHistory);
+            hdBillDetailRepository.save(billDetail);
         }
+        List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
 
+        BigDecimal totalAmount = listBillDetail.stream()
+                .filter(item -> item.getStatus() == 0)
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        bill.setTotalMoney(totalAmount);
+        BigDecimal tienCanThanhToan = totalAmount;
+        if (bill.getMoneyReduced() != null) {
+            tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
+        }
+        if (bill.getMoneyShip() != null) {
+            tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
+        }
+        bill.setMoneyAfter(tienCanThanhToan);
+        hdBillRepositpory.save(bill);
+        return billDetail;
     }
 
     @Override
     public BillDetail incrementQuantity(String idBillDetail) {
         BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
         Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
-        if (bill.getMoneyReduced() != null) {
-            BigDecimal moneyAfter = bill.getTotalMoney().subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
-            bill.setMoneyAfter(moneyAfter);
-        } else {
-            BigDecimal moneyAfter = bill.getTotalMoney().add(bill.getMoneyShip());
-            bill.setMoneyAfter(moneyAfter);
-        }
         if (bill.getStatus() == 1) {
             billDetail.setQuantity(billDetail.getQuantity() + 1);
-            return hdBillDetailRepository.save(billDetail);
+            hdBillDetailRepository.save(billDetail);
         } else {
             billDetail.setQuantity(billDetail.getQuantity() + 1);
             ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
@@ -185,8 +211,31 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             productDetailRepository.save(productDetail);
             messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-increase-by-bill-detail",
                     clientProductDetailRepository.updateRealTime(productDetail.getId()));
-            return hdBillDetailRepository.save(billDetail);
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill);
+            billHistory.setNote("Đã thêm 1 sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+            billHistory.setAccount(userLogin.getUserLogin());
+            hdBillHistoryRepository.save(billHistory);
+            hdBillDetailRepository.save(billDetail);
         }
+        List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
+
+        BigDecimal totalAmount = listBillDetail.stream()
+                .filter(item -> item.getStatus() == 0)
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        bill.setTotalMoney(totalAmount);
+        BigDecimal tienCanThanhToan = totalAmount;
+        if (bill.getMoneyReduced() != null) {
+            tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
+        }
+        if (bill.getMoneyShip() != null) {
+            tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
+        }
+        bill.setMoneyAfter(tienCanThanhToan);
+        hdBillRepositpory.save(bill);
+        return billDetail;
     }
 
     @Override
@@ -194,13 +243,7 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         BillDetail billDetail = hdBillDetailRepository.findById(idBillDetail).get();
         ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
         Bill bill = hdBillRepositpory.findById(billDetail.getBill().getId()).get();
-        if (bill.getMoneyReduced() != null) {
-            BigDecimal moneyAfter = bill.getTotalMoney().subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
-            bill.setMoneyAfter(moneyAfter);
-        } else {
-            BigDecimal moneyAfter = bill.getTotalMoney().add(bill.getMoneyShip());
-            bill.setMoneyAfter(moneyAfter);
-        }
+
         if (bill.getStatus() == 1) {
             billDetail.setQuantity(quantity);
             return hdBillDetailRepository.save(billDetail);
@@ -211,18 +254,42 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                     productDetail.setAmount(productDetail.getAmount() + differenceQuantity);
                     productDetailRepository.save(productDetail);
                     billDetail.setQuantity(quantity);
+                    BillHistory billHistory = new BillHistory();
+                    billHistory.setBill(bill);
+                    billHistory.setNote("Đã xoá " + quantity + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+                    billHistory.setAccount(userLogin.getUserLogin());
+                    hdBillHistoryRepository.save(billHistory);
                     hdBillDetailRepository.save(billDetail);
-                    return billDetail;
                 } else {
                     Integer differenceQuantity = quantity - billDetail.getQuantity();
                     productDetail.setAmount(productDetail.getAmount() - differenceQuantity);
                     productDetailRepository.save(productDetail);
+                    BillHistory billHistory = new BillHistory();
+                    billHistory.setBill(bill);
+                    billHistory.setNote("Đã thêm " + quantity + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+                    billHistory.setAccount(userLogin.getUserLogin());
+                    hdBillHistoryRepository.save(billHistory);
                     billDetail.setQuantity(quantity);
-                    hdBillDetailRepository.save(billDetail);
-                    return billDetail;
                 }
             }
         }
+        List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
+
+        BigDecimal totalAmount = listBillDetail.stream()
+                .filter(item -> item.getStatus() == 0)
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        bill.setTotalMoney(totalAmount);
+        BigDecimal tienCanThanhToan = totalAmount;
+        if (bill.getMoneyReduced() != null) {
+            tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
+        }
+        if (bill.getMoneyShip() != null) {
+            tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
+        }
+        bill.setMoneyAfter(tienCanThanhToan);
+        hdBillRepositpory.save(bill);
         return billDetail;
     }
 
@@ -232,10 +299,22 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         try {
             Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
             if (bill.getStatus() == 1 || bill.getStatus() == 2 || bill.getStatus() == 6) {
+                BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
+                billDetail.setStatus(1);
+                ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
+                productDetail.setAmount(productDetail.getAmount() + hdBillDetailRequest.getQuantity());
+                productDetailRepository.save(productDetail);
+                BillHistory billHistory = BillHistory.builder()
+                        .bill(bill)
+                        .account(userLogin.getUserLogin())
+                        .note("Đã xoá sản phẩm " + hdBillDetailRequest.getQuantity() + " " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize())
+                        .build();
+                hdBillHistoryRepository.save(billHistory);
+                hdBillDetailRepository.delete(billDetail);
                 List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
 
                 BigDecimal totalAmount = listBillDetail.stream()
-                        .filter(item -> item.getStatus() == 1)
+                        .filter(item -> item.getStatus() == 0)
                         .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -245,19 +324,10 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                     tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
                 }
                 if (bill.getMoneyShip() != null) {
-                    tienCanThanhToan = tienCanThanhToan.add(bill.getMoneyShip());
+                    tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
                 }
                 bill.setMoneyAfter(tienCanThanhToan);
                 hdBillRepositpory.save(bill);
-                BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
-                billDetail.setStatus(1);
-                ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
-                BillHistory billHistory = BillHistory.builder()
-                        .bill(bill)
-                        .note("Đã xoá sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize())
-                        .build();
-                hdBillHistoryRepository.save(billHistory);
-                hdBillDetailRepository.delete(billDetail);
                 return true;
             } else {
                 return false;
