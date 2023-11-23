@@ -105,29 +105,39 @@ export default function DetailProduct() {
         updateRealTimeProductDetail(data)
       }
     })
-    // stompClient.subscribe('/topic/realtime-update-san-pham-by-admin', (message) => {
-    //   if (message.body) {
-    //     const data = JSON.parse(message.body)
-    //     updateRealTimeUpdateProductByAdmin(data)
-    //   }
-    // })
+    stompClient.subscribe('/topic/realtime-san-pham-detail-by-status-bill-2', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
+    stompClient.subscribe('/topic/realtime-san-pham-detail-increase-by-bill-detail', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
+    stompClient.subscribe('/topic/realtime-san-pham-detail-decrease-by-bill-detail', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
+    stompClient.subscribe('/topic/realtime-san-pham-detail-by-add-in-bill-detail', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
   }
 
   function updateRealTimeProductDetail(data) {
     const preProduct = product
-    const index = preProduct.id === data.id ? 0 : 1
+    const index = preProduct.id === data.id ? 0 : -1
     if (index !== -1) {
       setProduct({ ...data, image: data.image.split(',') })
     }
   }
-
-  // function updateRealTimeUpdateProductByAdmin(data) {
-  //   const preProduct = product
-  //   const index = preProduct.id === data.id ? 0 : 1
-  //   if (index !== -1) {
-  //     setProduct({ ...data, image: data.image.split(',') })
-  //   }
-  // }
 
   useEffect(() => {
     let data

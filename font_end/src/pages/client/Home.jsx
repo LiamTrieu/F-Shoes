@@ -141,20 +141,20 @@ export default function Home() {
     <>
       <div className="home">
         <Fragment>
-          <Container maxWidth="xl">
-            <Box>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    muted
-                    onEnded={handleVideoEnded}
-                    style={{ width: '100%', height: '100%' }}
-                    src="https://brand.assets.adidas.com/video/upload/if_w_gt_1920,w_1920/running_fw23_adizero_boston12_launch_hp_masthead_d_dcb43d7604.mp4"></video>
-                </Grid>
+          <Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  muted
+                  onEnded={handleVideoEnded}
+                  style={{ width: '100%', height: '100%' }}
+                  src="https://brand.assets.adidas.com/video/upload/if_w_gt_1920,w_1920/running_fw23_adizero_boston12_launch_hp_masthead_d_dcb43d7604.mp4"></video>
               </Grid>
-            </Box>
+            </Grid>
+          </Box>
+          <Container maxWidth="xl">
             <Typography className="title-banner">RUN YOUR RUN</Typography>
             <Typography className="title-banner-child">
               Follow the feeling that keeps you running your best in the city

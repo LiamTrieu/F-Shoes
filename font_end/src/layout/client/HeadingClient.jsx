@@ -4,10 +4,13 @@ import {
   Badge,
   Box,
   Button,
+  Container,
   Drawer,
   ListItemIcon,
   Menu,
   MenuItem,
+  Stack,
+  TextField,
   Toolbar,
   Typography,
 } from '@mui/material'
@@ -26,6 +29,9 @@ import confirmSatus from '../../components/comfirmSwal'
 import { GetUser, removeUser } from '../../services/slices/userSlice'
 import clientCartApi from '../../api/client/clientCartApi'
 import { Logout } from '@mui/icons-material'
+import SearchIcon from '@mui/icons-material/Search'
+import { FiPhone } from 'react-icons/fi'
+import { FiMapPin } from 'react-icons/fi'
 
 export default function HeadingClient() {
   const [openDrawer, setOpenDrawer] = useState(false)
@@ -35,7 +41,12 @@ export default function HeadingClient() {
     anchorEl === null ? setAnchorEl(event.currentTarget) : setAnchorEl(null)
     openMenuProfile === false ? setOpenMenuProfile(true) : setOpenMenuProfile(false)
   }
+  const [activeIndex, setActiveIndex] = useState(-1) // Initialize with -1 (no active index)
 
+  const handleLinkClick = (index) => {
+    setOpenDrawer(false)
+    setActiveIndex(index)
+  }
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer)
   }
@@ -75,11 +86,12 @@ export default function HeadingClient() {
         <Typography
           onClick={() => {
             setOpenDrawer(false)
+            handleLinkClick(0)
           }}
           component={Link}
           to="/"
           color="inherit"
-          className="link-with-underline"
+          className={`link-with-underline ${activeIndex === 0 ? 'active-link' : ''}`}
           sx={{
             my: { md: 0, xs: 2 },
             display: 'block',
@@ -93,8 +105,9 @@ export default function HeadingClient() {
         <Typography
           onClick={() => {
             setOpenDrawer(false)
+            handleLinkClick(1)
           }}
-          className="link-with-underline"
+          className={`link-with-underline ${activeIndex === 1 ? 'active-link' : ''}`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -110,8 +123,9 @@ export default function HeadingClient() {
         <Typography
           onClick={() => {
             setOpenDrawer(false)
+            handleLinkClick(2)
           }}
-          className="link-with-underline"
+          className={`link-with-underline ${activeIndex === 2 ? 'active-link' : ''}`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -127,8 +141,9 @@ export default function HeadingClient() {
         <Typography
           onClick={() => {
             setOpenDrawer(false)
+            handleLinkClick(3)
           }}
-          className="link-with-underline"
+          className={`link-with-underline ${activeIndex === 3 ? 'active-link' : ''}`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -145,8 +160,9 @@ export default function HeadingClient() {
         <Typography
           onClick={() => {
             setOpenDrawer(false)
+            handleLinkClick(4)
           }}
-          className="link-with-underline"
+          className={`link-with-underline ${activeIndex === 4 ? 'active-link' : ''}`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -162,8 +178,45 @@ export default function HeadingClient() {
         <Typography
           onClick={() => {
             setOpenDrawer(false)
+            handleLinkClick(5)
           }}
-          className="link-with-underline"
+          className={`link-with-underline ${activeIndex === 5 ? 'active-link' : ''}`}
+          sx={{
+            marginLeft: { md: 4 },
+            fontFamily: 'monospace',
+            fontSize: '17px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+          component={Link}
+          to="/tracking"
+          color="inherit">
+          Tra cứu
+        </Typography>
+        <Typography
+          onClick={() => {
+            setOpenDrawer(false)
+            handleLinkClick(6)
+          }}
+          className={`link-with-underline ${activeIndex === 6 ? 'active-link' : ''}`}
+          sx={{
+            marginLeft: { md: 4 },
+            fontFamily: 'monospace',
+            fontSize: '17px',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+          component={Link}
+          to="/tracking"
+          color="inherit">
+          Tra cứu
+        </Typography>
+        <Typography
+          onClick={() => {
+            setOpenDrawer(false)
+            handleLinkClick(7)
+          }}
+          className={`link-with-underline ${activeIndex === 7 ? 'active-link' : ''}`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -198,119 +251,178 @@ export default function HeadingClient() {
     }
   }
   return (
-    <AppBar position="sticky" sx={{ backgroundColor: 'white', color: 'black', mb: 2 }}>
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="menu"
-          onClick={handleDrawerToggle}
-          edge="start"
-          sx={{ display: { sm: 'block', md: 'none' } }} // Chỉ hiển thị icon menu trên màn hình sm
-        >
-          <MenuIcon />
-        </IconButton>
-        <Drawer
-          PaperProps={{
-            style: { minWidth: '200px' },
-          }}
-          anchor="left"
-          open={openDrawer}
-          onClose={handleDrawerToggle}>
-          <BarSelect />
-        </Drawer>
-        <Typography variant="h6" component={Link} to="/">
-          <Box
-            component={'img'}
-            sx={{
-              p: 6,
-              py: 0,
-              transition: 'width 0.5s',
-              height: '60px',
-            }}
-            src={require('../../assets/image/logowebnobg.png')}
-            alt="logo"
-          />
+    <>
+      <div
+        style={{
+          backgroundColor: 'black',
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          height: '30px',
+        }}>
+        <Typography sx={{ fontSize: '15px', color: 'white', fontWeight: 700 }}>
+          Chào mừng bạn đến với shop giày thể thao F-SHOES
         </Typography>
+      </div>
+      <AppBar position="sticky" sx={{ height: '150px', backgroundColor: 'white', color: 'black' }}>
+        {/* <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="menu"
+            onClick={handleDrawerToggle}
+            edge="start"
+            sx={{ display: { sm: 'block', md: 'none' } }} // Chỉ hiển thị icon menu trên màn hình sm
+          >
+            <MenuIcon />
+          </IconButton>
+          <Drawer
+            PaperProps={{
+              style: { minWidth: '200px' },
+            }}
+            anchor="left"
+            open={openDrawer}
+            onClose={handleDrawerToggle}>
+            <BarSelect />
+          </Drawer> */}
+        <Container maxWidth="xl">
+          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+            <div style={{ fontSize: '30px', color: '#f2741f', display: 'flex' }}>
+              <FiPhone />
+              <Typography sx={{ color: 'black', marginLeft: '5px', marginRight: '5px' }}>
+                HOTLINE:1900 6750
+              </Typography>{' '}
+              <FiMapPin />
+              <Link to="/contact">
+                <Typography
+                  sx={{
+                    color: 'black',
+                    marginLeft: '5px',
+                    marginRight: '5px',
+                    textDecoration: 'none',
+                  }}
+                  className="hethong">
+                  Hệ thống cửa hàng
+                </Typography>
+              </Link>
+            </div>
+            <div>
+              <Typography variant="h6" component={Link} to="/">
+                <Box
+                  component={'img'}
+                  sx={{
+                    p: 6,
+                    py: 0,
+                    transition: 'width 0.5s',
+                    height: '120px',
+                  }}
+                  src={require('../../assets/image/TinTuc/logo_vip.jpg')}
+                  alt="logo"
+                />
+              </Typography>
+            </div>
+            <div>
+              <TextField
+                sx={{ width: '200px', borderRadius: '5px' }}
+                size="medium"
+                placeholder="Tìm kiếm sản phẩm"
+                className="search-product-home"
+                InputProps={{
+                  endAdornment: <SearchIcon />,
+                }}
+              />
+              <Button component={Link} to="/cart" color="inherit">
+                <Badge badgeContent={amountProduct} color="error">
+                  <ShoppingCartIcon />
+                </Badge>
+              </Button>
+              <IconButton
+                sx={{ borderRadius: '0px' }}
+                onClick={(event) => handleClick(event)}
+                color="inherit">
+                <Avatar src={user && user.avatar} sx={{ width: 35, height: 35, mr: 1 }} />
+                <Menu
+                  anchorEl={anchorEl}
+                  open={openMenuProfile}
+                  slotProps={{
+                    paper: {
+                      elevation: 0,
+                      sx: {
+                        overflow: 'visible',
+                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                        mt: 1.5,
+                        '& .MuiAvatar-root': {
+                          width: 32,
+                          height: 32,
+                          ml: -0.5,
+                          mr: 1,
+                        },
+                        '&:before': {
+                          content: '""',
+                          display: 'block',
+                          position: 'absolute',
+                          top: 0,
+                          right: 14,
+                          width: 10,
+                          height: 10,
+                          bgcolor: 'background.paper',
+                          transform: 'translateY(-50%) rotate(45deg)',
+                          zIndex: 0,
+                        },
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
+                  {user ? (
+                    <>
+                      <Link to={`/profile/user`} style={{ textDecoration: 'none', color: 'black' }}>
+                        <MenuItem>
+                          <Avatar /> Tài khoản của tôi
+                        </MenuItem>
+                      </Link>
+                      <MenuItem style={{ color: 'black' }} onClick={() => handleAccount()}>
+                        <ListItemIcon>
+                          <Logout fontSize="small" />
+                        </ListItemIcon>
+                        Đăng xuất
+                      </MenuItem>
+                    </>
+                  ) : (
+                    <Link to={`/login`} style={{ textDecoration: 'none', color: 'black' }}>
+                      <MenuItem>
+                        <Avatar /> Đăng nhập
+                      </MenuItem>
+                    </Link>
+                  )}
+                </Menu>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    textTransform: 'none',
+                    display: { md: 'block', xs: 'none' },
+                  }}>
+                  {user ? user.name : 'Đăng nhập'}
+                </Typography>
+              </IconButton>
+            </div>
+          </Stack>
+        </Container>
+        {/* </Toolbar> */}
+      </AppBar>
+      <div
+        style={{
+          height: '60px',
+          backgroundColor: 'black',
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+        }}>
         <Box sx={{ flexGrow: 1 }}>
           <Box sx={{ display: { md: 'block', xs: 'none' } }}>
             <BarSelect />
           </Box>
         </Box>
-        <Button component={Link} to="/cart" color="inherit">
-          <Badge badgeContent={amountProduct} color="error">
-            <ShoppingCartIcon />
-          </Badge>
-        </Button>
-        <IconButton
-          sx={{ borderRadius: '0px' }}
-          onClick={(event) => handleClick(event)}
-          color="inherit">
-          <Avatar src={user && user.avatar} sx={{ width: 35, height: 35, mr: 1 }} />
-          <Menu
-            anchorEl={anchorEl}
-            open={openMenuProfile}
-            slotProps={{
-              paper: {
-                elevation: 0,
-                sx: {
-                  overflow: 'visible',
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                  mt: 1.5,
-                  '& .MuiAvatar-root': {
-                    width: 32,
-                    height: 32,
-                    ml: -0.5,
-                    mr: 1,
-                  },
-                  '&:before': {
-                    content: '""',
-                    display: 'block',
-                    position: 'absolute',
-                    top: 0,
-                    right: 14,
-                    width: 10,
-                    height: 10,
-                    bgcolor: 'background.paper',
-                    transform: 'translateY(-50%) rotate(45deg)',
-                    zIndex: 0,
-                  },
-                },
-              },
-            }}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-            {user ? (
-              <>
-                <Link to={`/profile/user`} style={{ textDecoration: 'none', color: 'black' }}>
-                  <MenuItem>
-                    <Avatar /> Tài khoản của tôi
-                  </MenuItem>
-                </Link>
-                <MenuItem style={{ color: 'black' }} onClick={() => handleAccount()}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  Đăng xuất
-                </MenuItem>
-              </>
-            ) : (
-              <Link to={`/login`} style={{ textDecoration: 'none', color: 'black' }}>
-                <MenuItem>
-                  <Avatar /> Đăng nhập
-                </MenuItem>
-              </Link>
-            )}
-          </Menu>
-          <Typography
-            variant="subtitle2"
-            sx={{
-              textTransform: 'none',
-              display: { md: 'block', xs: 'none' },
-            }}>
-            {user ? user.name : 'Đăng nhập'}
-          </Typography>
-        </IconButton>
-      </Toolbar>
-    </AppBar>
+      </div>
+    </>
   )
 }

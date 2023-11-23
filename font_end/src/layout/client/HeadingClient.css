@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=Noto+Sans+NKo+Unjoined:wght@600&family=Oswald&family=Roboto:ital,wght@0,500;1,700&display=swap');
+
+.footer {
+  background-image: url('../../assets/image/TinTuc/banner_footer.png');
+}
+
 .css-hyum1k-MuiToolbar-root {
   min-height: 80px !important;
 }
@@ -16,7 +22,14 @@
   font-weight: 1000 !important;
   font-size: 20px !important;
   margin-bottom: 20px !important;
-  margin-top: 20px !important;
+
+  color: rgb(255, 200, 0);
+}
+.active-link {
+  background-color: #f2741f;
+  height: 60px;
+  width: 120px;
+  text-align: center;
 }
 
 .title-footer {
@@ -26,6 +39,8 @@
 .phoneNumber {
   color: blue;
   font-weight: 700 !important;
+  color: white;
+  margin-bottom: 10px;
 }
 
 .text-footer {
@@ -33,23 +48,25 @@
   font-size: 14px !important;
   text-decoration: none;
   color: black;
+  color: white;
 }
 
 .img-contact {
-  width: 18% !important;
+  width: 15% !important;
   margin-right: 15px !important;
 }
 
 .link-with-underline {
   position: relative;
   text-decoration: none;
-  color: inherit;
   font-family: 'IBM Plex Sans', sans-serif;
   font-family: 'Noto Sans NKo Unjoined', sans-serif;
+  font-family: 'Oswald', sans-serif;
   font-family: 'Roboto', sans-serif;
+  color: white;
 }
 
-.link-with-underline::after {
+/* .link-with-underline::after {
   content: '';
   position: absolute;
   left: 0;
@@ -60,15 +77,23 @@
   transform: scaleX(0);
   transform-origin: 0% 100%;
   transition: transform 0.3s ease-in-out;
-}
-
-.link-with-underline:hover::after {
-  transform: scaleX(1);
-}
+  color: white;
+} */
 
 .menu-title {
   display: flex;
   justify-content: center !important;
+  color: white;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Noto Sans NKo Unjoined', sans-serif;
+  font-family: 'Oswald', sans-serif;
+  font-family: 'Roboto', sans-serif;
+}
+.menu-title :hover {
+  background-color: #f2741f;
+  height: 60px;
+  width: 120px;
+  text-align: center;
 }
 
 .menu-title .MuiTypography-root {
@@ -76,16 +101,27 @@
   line-height: 1.5 !important;
   letter-spacing: 0.00938em !important;
   color: inherit !important;
-  font-size: 17px !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
   text-decoration: none !important;
   margin-left: 32px !important;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Noto Sans NKo Unjoined', sans-serif;
+  font-family: 'Oswald', sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .gird-footer {
   margin-top: 96px;
+  color: white;
 }
 
 .footer .MuiGrid-root {
   width: calc(100% + 96px);
+  color: white;
+}
+.search-product-home .MuiInputBase-root {
+  border-radius: 30px !important;
+  height: 55px;
+  border: 2px solid black;
 }

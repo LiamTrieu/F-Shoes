@@ -35,6 +35,7 @@ import { GetUser } from '../../services/slices/userSlice'
 import ReplyIcon from '@mui/icons-material/Reply'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import clientCartApi from '../../api/client/clientCartApi'
 
 var stompClient = null
 export default function Checkout() {
@@ -70,6 +71,7 @@ export default function Checkout() {
   const [isShowDiaChi, setIsShowDiaChi] = useState(false)
   const [listAddress, setListAddress] = useState([])
   const [openModalVoucher, setOpenModalVoucher] = useState(false)
+  const [promotionByProductDetail, setGromotionByProductDetail] = useState([])
 
   const [voucher, setVoucher] = useState(null)
   const [voucherFilter, setVoucherFilter] = useState({
@@ -151,6 +153,21 @@ export default function Checkout() {
   const navigate = useNavigate()
 
   const arrData = useSelector(GetCheckout)
+
+  const product = useSelector(GetCheckout)
+
+  const productIds = product.map((cart) => cart.id)
+
+  const getPromotionProductDetails = (id) => {
+    clientCartApi.getPromotionByProductDetail(id).then((response) => {
+      setGromotionByProductDetail(response.data.data)
+      console.log(response.data.data)
+    })
+  }
+
+  useEffect(() => {
+    getPromotionProductDetails(productIds)
+  }, [])
 
   useEffect(() => {
     if (arrData.length === 0) {
@@ -432,6 +449,36 @@ export default function Checkout() {
     if (index !== -1) {
       preProduct[index] = { ...data, gia: data.price, soLuong: sl, image: data.image.split(',') }
       dispatch(setCheckout(preProduct))
+    }
+  }
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    })
+  }
+
+  const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
+    const discountAmount = (discountPercentage / 100) * originalPrice
+    const discountedPrice = originalPrice - discountAmount
+    return discountedPrice
+  }
+
+  function calculateProductTotalPayment(cart, promotionByProductDetail) {
+    const isDiscounted = promotionByProductDetail.some(
+      (item) => item.idProductDetail === cart.id && item.id,
+    )
+
+    if (isDiscounted) {
+      const discountedPrice = promotionByProductDetail
+        .filter((item) => item.idProductDetail === cart.id && item.id)
+        .map((item) => cart.soLuong * calculateDiscountedPrice(cart.gia, item.value))
+        .reduce((total, price) => total + price, 0)
+
+      return discountedPrice
+    } else {
+      return cart.soLuong * cart.gia
     }
   }
 
@@ -747,10 +794,33 @@ export default function Checkout() {
                         fontWeight: 'bold',
                         textAlign: 'left',
                       }}>
-                      {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'VND',
+                      {promotionByProductDetail.map((item, index) => {
+                        const isDiscounted = item.idProductDetail === cart.id && item.id
+
+                        return (
+                          <div key={index}>
+                            {isDiscounted ? (
+                              <div>
+                                <div>
+                                  <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                    {`${formatPrice(
+                                      cart.soLuong * calculateDiscountedPrice(cart.gia, item.value),
+                                    )} `}
+                                  </span>
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        )
                       })}
+
+                      {!promotionByProductDetail.some(
+                        (item) => item.idProductDetail === cart.id && item.id,
+                      ) && (
+                        <div style={{ color: 'red' }}>{`${formatPrice(
+                          cart.soLuong * cart.gia,
+                        )} `}</div>
+                      )}
                     </TableCell>
                   </TableBody>
                 ))}
@@ -814,11 +884,13 @@ export default function Checkout() {
                   </Typography>
                   <Typography color={'red'}>
                     <b className="ck-tong-tien">
-                      {(
-                        arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0) +
-                        phiShip -
-                        giamGia
-                      ).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                      {formatPrice(
+                        arrData.reduce(
+                          (total, cart) =>
+                            total + calculateProductTotalPayment(cart, promotionByProductDetail),
+                          0,
+                        ),
+                      )}
                     </b>
                   </Typography>
                 </Stack>
