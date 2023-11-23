@@ -527,7 +527,7 @@ export default function Product() {
               </Typography>
             </Stack>
             <div className="cart-product-portfolio">
-              <CartProduct products={products} colmd={6} collg={3} />
+              <CartProduct products={products} colmd={6} collg={isMenuBarVisible ? 3 : 2} />
             </div>
           </Box>
         </Grid>
