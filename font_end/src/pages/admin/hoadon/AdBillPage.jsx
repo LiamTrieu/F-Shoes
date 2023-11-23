@@ -381,7 +381,7 @@ export default function AdBillPage() {
                       {dayjs(row.createdAt).format('DD/MM/YYYY  HH:mm')}
                     </TableCell>
                     <TableCell align="center">
-                      {row.type ? (
+                      {row.type === 1 ? (
                         <Chip className="chip-giao-hang" label="Trực tuyến" size="small" />
                       ) : (
                         <Chip className="chip-tai-quay" label="Tại quầy" size="small" />
