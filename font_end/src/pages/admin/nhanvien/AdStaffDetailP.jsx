@@ -300,10 +300,6 @@ export default function AdStaffDetail() {
           .finally(() => {
             setLoading(false)
           })
-      } else {
-        toast.error('Cập nhật nhân viên thất bại', {
-          position: toast.POSITION.TOP_RIGHT,
-        })
       }
     })
   }

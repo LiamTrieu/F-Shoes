@@ -2,15 +2,16 @@ import {
   Backdrop,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Container,
   IconButton,
+  InputAdornment,
   MenuItem,
   Pagination,
   Paper,
   Select,
   Stack,
-  Switch,
   Table,
   TableBody,
   TableCell,
@@ -22,16 +23,16 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import { FaPlus } from 'react-icons/fa'
 import { spButton } from '../sanpham/sanPhamStyle'
 import dayjs from 'dayjs'
-import { RxMagnifyingGlass } from 'react-icons/rx'
+import SearchIcon from '@mui/icons-material/Search'
 import { toast } from 'react-toastify'
 import { useTheme } from '@emotion/react'
 import confirmSatus from '../../../components/comfirmSwal'
-import { MdEditSquare } from 'react-icons/md'
+import { TbEyeEdit } from 'react-icons/tb'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import soleApi from '../../../api/admin/sanpham/soleApi'
+import { AiOutlinePlusSquare } from 'react-icons/ai'
 
 const listBreadcrumb = [{ name: 'Quản lý đế giày' }]
 export default function AdSolePage() {
@@ -40,7 +41,6 @@ export default function AdSolePage() {
   const [openUpdate, setOpenUpdate] = useState(false)
   const [sole, setSole] = useState({ name: '' })
   const [errorSole, setErrorSole] = useState('')
-  const [errorSoleUpdate, setErrorSoleUpdate] = useState('')
   const [soleUpdate, setSoleUpdate] = useState({ id: 0, name: '' })
   const [allNameSole, setAllNameSole] = useState([])
   const [listSole, setListSole] = useState([])
@@ -81,59 +81,19 @@ export default function AdSolePage() {
       })
   }
 
-  // const handleValidateAdd = () => {
-  //   let check = 0
-  //   const errors = {
-  //     name: '',
-  //   }
-
-  //   if (sole.name.trim() === '') {
-  //     errors.name = 'Không được để trống tên đế giày'
-  //   } else if (sole.name.length > 100) {
-  //     errors.name = 'Tên đế giày không được dài hơn 100 ký tự'
-  //   } else if (allNameSole.includes(sole.name)) {
-  //     errors.name = 'Tên đế giày đã tồn tại'
-  //   }
-
-  //   for (const key in errors) {
-  //     if (errors[key]) {
-  //       check++
-  //     }
-  //   }
-
-  //   setErrorSole(errors.name)
-
-  //   return check
-  // }
-
-  // const handleValidateUpdate = () => {
-  //   let check = 0
-  //   const errors = {
-  //     nameUpdate: '',
-  //   }
-
-  //   if (soleUpdate.name.trim() === '') {
-  //     errors.nameUpdate = 'Không được để trống tên đế giày'
-  //   } else if (soleUpdate.name.length > 100) {
-  //     errors.nameUpdate = 'Tên đế giày không được dài hơn 100 ký tự'
-  //   } else if (allNameSole.includes(soleUpdate.name)) {
-  //     errors.name = 'Tên đế giày đã tồn tại'
-  //   }
-
-  //   for (const key in errors) {
-  //     if (errors[key]) {
-  //       check++
-  //     }
-  //   }
-
-  //   setErrorSoleUpdate(errors.nameUpdate)
-
-  //   return check
-  // }
-
   const addSole = () => {
-    // const check = handleValidateAdd()
-    // if (check < 1) {
+    if (!sole.name) {
+      setErrorSole('Tên không được để trống.')
+      return
+    }
+    if (sole.name.length > 100) {
+      setErrorSole('Tên đế giày không được dài hơn 100 ký tự')
+      return
+    }
+    if (allNameSole.includes(sole.name)) {
+      setErrorSole('Tên đã tồn tại, vui lòng chọn tên khác.')
+      return
+    }
     setIsBackdrop(true)
     const title = 'Xác nhận Thêm mới đế giày?'
     const text = ''
@@ -151,6 +111,7 @@ export default function AdSolePage() {
                 position: toast.POSITION.TOP_RIGHT,
               })
               fetchData(filter)
+              haldleAllNameSole()
             } else {
               setOpenAdd(true)
               toast.error('Thêm đế giày thất bại', {
@@ -166,15 +127,22 @@ export default function AdSolePage() {
       }
     })
     setIsBackdrop(false)
-    // } else {
-    //   toast.error('Thêm đế giày thất bại, hãy nhập đủ dữ liệu', {
-    //     position: toast.POSITION.TOP_RIGHT,
-    //   })
-    // }
+  }
+
+  const isSoleNameDuplicate = (soleName, currentId) => {
+    return listSole.some((sole) => sole.name === soleName && sole.id !== currentId)
   }
   const updateSole = () => {
-    // const check = handleValidateUpdate()
-    // if (check < 1) {
+    if (!soleUpdate.name) {
+      setErrorSole('Tên không được để trống.')
+      return
+    } else if (soleUpdate.name.length > 100) {
+      setErrorSole('Tên đế giày không được dài hơn 100 ký tự')
+      return
+    } else if (isSoleNameDuplicate(soleUpdate.name, soleUpdate.id)) {
+      setErrorSole('Tên đế giày đã tồn tại')
+      return
+    }
     setIsBackdrop(true)
     const title = 'Xác nhận cập nhập đế giày?'
     const text = ''
@@ -189,6 +157,7 @@ export default function AdSolePage() {
               position: toast.POSITION.TOP_RIGHT,
             })
             fetchData(filter)
+            haldleAllNameSole()
           } else {
             setOpenUpdate(true)
             toast.error('Cập nhập đế giày thất bại', {
@@ -201,11 +170,6 @@ export default function AdSolePage() {
       }
     })
     setIsBackdrop(false)
-    // } else {
-    //   toast.error('Thêm đế giày thất bại, hãy nhập đủ dữ liệu', {
-    //     position: toast.POSITION.TOP_RIGHT,
-    //   })
-    // }
   }
 
   const chageName = (e) => {
@@ -215,7 +179,7 @@ export default function AdSolePage() {
 
   const setDeleted = (id) => {
     const title = 'Xác nhận thay đổi hoạt động?'
-    const text = 'Ẩn hoạt động sẽ làm ẩn đế giày khỏi nơi khác'
+    const text = 'Thay đổi hoạt động của đế giày'
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         soleApi
@@ -248,18 +212,18 @@ export default function AdSolePage() {
         </Backdrop>
         <BreadcrumbsCustom nameHere={'đế giày'} listLink={listBreadcrumb} />
         <Container component={Paper} elevation={3} sx={{ py: 3, borderRadius: '10px' }}>
-          <Stack
-            sx={{ mb: 2 }}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="flex-start"
-            spacing={12}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <TextField
+              className="search-field"
+              size="small"
+              color="cam"
               id="seachSole"
               InputProps={{
                 required: true,
                 startAdornment: (
-                  <RxMagnifyingGlass style={{ marginRight: '5px', fontSize: '25px' }} />
+                  <InputAdornment position="start">
+                    <SearchIcon color="cam" />
+                  </InputAdornment>
                 ),
               }}
               sx={{ mr: 0.5, width: '50%' }}
@@ -267,19 +231,20 @@ export default function AdSolePage() {
                 setFilter({ ...filter, name: e.target.value })
               }}
               inputProps={{ style: { height: '20px' } }}
-              size="small"
               placeholder="Tìm đế giày"
             />
             <Button
-              onClick={() => setOpenAdd(true)}
+              onClick={() => {
+                setOpenAdd(true)
+                setErrorSole('')
+                setSole({ ...sole, name: '' })
+              }}
               disableElevation
               sx={{ ...spButton }}
+              color="cam"
               variant="outlined">
-              <Box component={FaPlus} sx={{ mr: '3px', fontSize: '15px' }} />
-              Thêm&nbsp;
-              <Box sx={{ display: { xs: 'none', md: 'inline' } }} component={'span'}>
-                mới
-              </Box>
+              <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
+              <Typography sx={{ ml: 1 }}>Thêm mới</Typography>
             </Button>
             {openAdd && (
               <DialogAddUpdate
@@ -291,7 +256,7 @@ export default function AdSolePage() {
                     onClick={() => {
                       openAdd ? addSole() : updateSole()
                     }}
-                    color="primary"
+                    color="cam"
                     disableElevation
                     sx={{ ...spButton }}
                     variant="contained">
@@ -302,34 +267,15 @@ export default function AdSolePage() {
                   id={'nameInputAdd'}
                   onChange={(e) => {
                     chageName(e)
+                    setErrorSole('')
                   }}
                   defaultValue={sole.name}
                   fullWidth
-                  // sx={{
-                  //   my: 2,
-                  //   '& .MuiInputBase-root fieldset': {
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root': {
-                  //     ' &.Mui-focused fieldset': {
-                  //       borderColor: theme.palette.layout.colorText,
-                  //     },
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root:hover fieldset': {
-                  //     borderColor: 'gray',
-                  //   },
-                  // }}
-                  // inputProps={{
-                  //   style: { color: theme.palette.layout.colorText },
-                  //   required: true,
-                  // }}
                   size="small"
                   placeholder="Nhập tên đế giày"
+                  error={Boolean(errorSole)}
+                  helperText={errorSole}
                 />
-                <span style={{ color: 'red' }}>{errorSole}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -342,7 +288,7 @@ export default function AdSolePage() {
                     onClick={() => {
                       updateSole()
                     }}
-                    color="primary"
+                    color="cam"
                     disableElevation
                     sx={{ ...spButton }}
                     variant="contained">
@@ -353,34 +299,15 @@ export default function AdSolePage() {
                   id={'nameInputUpdate'}
                   onChange={(e) => {
                     chageName(e)
+                    setErrorSole('')
                   }}
                   defaultValue={soleUpdate.name}
                   fullWidth
-                  // sx={{
-                  //   my: 2,
-                  //   '& .MuiInputBase-root fieldset': {
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root': {
-                  //     ' &.Mui-focused fieldset': {
-                  //       borderColor: theme.palette.layout.colorText,
-                  //     },
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root:hover fieldset': {
-                  //     borderColor: 'gray',
-                  //   },
-                  // }}
-                  // inputProps={{
-                  //   style: { color: theme.palette.layout.colorText },
-                  //   required: true,
-                  // }}
                   size="small"
                   placeholder="Nhập tên đế giày"
+                  error={Boolean(errorSole)}
+                  helperText={errorSole}
                 />
-                <span style={{ color: 'red' }}>{errorSoleUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>
@@ -390,7 +317,7 @@ export default function AdSolePage() {
             </Typography>
           ) : (
             <>
-              <Table aria-label="simple table">
+              <Table className="tableCss mt-5">
                 <TableHead sx={{ backgroundColor: 'sanPham.colorTable' }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
@@ -421,23 +348,33 @@ export default function AdSolePage() {
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>
                       <TableCell align="center">
-                        <Switch
-                          checked={!row.deleted}
-                          onChange={(e) => {
-                            setDeleted(row.id)
-                          }}
-                          size="small"
-                        />
+                        {row.deleted === 0 ? (
+                          <Chip
+                            onClick={() => setDeleted(row.id)}
+                            className="chip-hoat-dong"
+                            size="small"
+                            label="Hoạt động"
+                          />
+                        ) : (
+                          <Chip
+                            onClick={() => setDeleted(row.id)}
+                            className="chip-khong-hoat-dong"
+                            size="small"
+                            label="Không hoạt động"
+                          />
+                        )}
                       </TableCell>
+
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
                           <IconButton
                             onClick={() => {
                               setSoleUpdate({ ...soleUpdate, id: row.id, name: row.name })
                               setOpenUpdate(true)
+                              setErrorSole('')
                             }}
                             color="warning">
-                            <MdEditSquare style={{ fontSize: '18px' }} />
+                            <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
                           </IconButton>
                         </Tooltip>
                       </TableCell>
@@ -470,14 +407,16 @@ export default function AdSolePage() {
                     đế giày
                   </Typography>
                 </Typography>
+
                 <Pagination
-                  color="primary"
-                  count={pageRespone.totalPages}
                   page={pageRespone.currentPage + 1}
                   onChange={(e, value) => {
                     e.preventDefault()
                     setFilter({ ...filter, page: value })
                   }}
+                  count={pageRespone.totalPages}
+                  color="cam"
+                  variant="outlined"
                 />
               </Stack>
             </>

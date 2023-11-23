@@ -430,10 +430,6 @@ const AddStaff = () => {
           .finally(() => {
             setLoading(false)
           })
-      } else {
-        toast.error('Thêm nhân viên thất bại', {
-          position: toast.POSITION.TOP_RIGHT,
-        })
       }
     })
   }
