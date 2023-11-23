@@ -74,10 +74,10 @@ const ContentModal = () => {
             ),
           }}
         />
-        <Button color="cam" variant="outlined" className="them-moi">
+        {/* <Button color="cam" variant="outlined" className="them-moi">
           <MdOutlineDocumentScanner style={{ marginRight: '5px', fontSize: '17px' }} />
           Quét mã
-        </Button>
+        </Button> */}
       </Stack>
       <Table className="tableCss">
         <TableHead>

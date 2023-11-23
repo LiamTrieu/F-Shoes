@@ -278,7 +278,7 @@ export default function Dashboard() {
   return (
     <Container maxWidth="lg" sx={{ mb: 5 }}>
       <Typography variant="h6" fontWeight={'bold'} my={2}>
-        Dashboard Overview
+        Thống kê
       </Typography>
       <Grid2 container spacing={2} mb={2}>
         <DashboardCard

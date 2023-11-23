@@ -48,7 +48,9 @@ export default function Payment() {
           </Typography>
           <Typography variant="h6" gutterBottom>
             Mã đơn hàng:{' '}
-            <Link>{new URLSearchParams(window.location.search).get('vnp_TxnRef')}</Link>
+            <Link to={`/tracking/${new URLSearchParams(window.location.search).get('vnp_TxnRef')}`}>
+              {new URLSearchParams(window.location.search).get('vnp_TxnRef')}
+            </Link>
           </Typography>
           <Typography variant="body1" paragraph>
             Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đang được xử lý.

@@ -283,12 +283,16 @@ export default function AdPromotionAdd() {
       const text = ''
       confirmSatus(title, text, theme).then((result) => {
         if (result.isConfirmed) {
-          khuyenMaiApi.addProductPromotion(addProductPromotion).then(() => {
-            toast.success('Add thành công', {
-              position: toast.POSITION.TOP_RIGHT,
+          khuyenMaiApi
+            .addProductPromotion(addProductPromotion)
+            .then(() => {
+              toast.success('Add thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
             })
-          })
-          navigate('/admin/promotion')
+            .finally(() => {
+              navigate('/admin/promotion')
+            })
         }
       })
     } else {
