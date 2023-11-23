@@ -2,15 +2,16 @@ import {
   Backdrop,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Container,
   IconButton,
+  InputAdornment,
   MenuItem,
   Pagination,
   Paper,
   Select,
   Stack,
-  Switch,
   Table,
   TableBody,
   TableCell,
@@ -22,17 +23,16 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import { FaPlus } from 'react-icons/fa'
+import { AiOutlinePlusSquare } from 'react-icons/ai'
 import { spButton } from './thuonghieuStyle'
 import dayjs from 'dayjs'
-import { RxMagnifyingGlass } from 'react-icons/rx'
+import SearchIcon from '@mui/icons-material/Search'
 import { toast } from 'react-toastify'
 import { useTheme } from '@emotion/react'
 import confirmSatus from '../../../components/comfirmSwal'
-import { MdEditSquare } from 'react-icons/md'
+import { TbEyeEdit } from 'react-icons/tb'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import bradApi from '../../../api/admin/sanpham/bradApi'
-import { red } from '@mui/material/colors'
 
 const listBreadcrumb = [{ name: 'Quản lý thương hiệu' }]
 
@@ -108,6 +108,10 @@ export default function AdBrandPage() {
     return check
   }
 
+  const isBrandNameDuplicate = (brandName, currentId) => {
+    return listBrand.some((brand) => brand.name === brandName && brand.id !== currentId)
+  }
+
   const handleValidateUpdate = () => {
     let check = 0
     const errors = {
@@ -118,8 +122,8 @@ export default function AdBrandPage() {
       errors.nameUpdate = 'Không được để trống tên thương hiệu'
     } else if (brandUpdate.name.length > 100) {
       errors.nameUpdate = 'Tên thương hiệu không được dài hơn 100 ký tự'
-    } else if (allNameBrand.includes(brandUpdate.name)) {
-      errors.name = 'Tên thương hiệu đã tồn tại'
+    } else if (isBrandNameDuplicate(brandUpdate.name, brandUpdate.id)) {
+      errors.nameUpdate = 'Tên thương hiệu đã tồn tại'
     }
 
     for (const key in errors) {
@@ -151,6 +155,7 @@ export default function AdBrandPage() {
                 position: toast.POSITION.TOP_RIGHT,
               })
               fetchData(filter)
+              haldleAllNameBrand()
             } else {
               setOpenAdd(true)
               toast.error('Thêm thương hiệu thất bại', {
@@ -186,6 +191,7 @@ export default function AdBrandPage() {
                 position: toast.POSITION.TOP_RIGHT,
               })
               fetchData(filter)
+              haldleAllNameBrand()
             } else {
               setOpenUpdate(true)
               toast.error('Cập nhập thương hiệu thất bại', {
@@ -247,18 +253,18 @@ export default function AdBrandPage() {
         </Backdrop>
         <BreadcrumbsCustom nameHere={'thương hiệu'} listLink={listBreadcrumb} />
         <Container component={Paper} elevation={3} sx={{ py: 3, borderRadius: '10px' }}>
-          <Stack
-            sx={{ mb: 2 }}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="flex-start"
-            spacing={12}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <TextField
+              className="search-field"
+              size="small"
+              color="cam"
               id="seachProduct"
               InputProps={{
                 required: true,
                 startAdornment: (
-                  <RxMagnifyingGlass style={{ marginRight: '5px', fontSize: '25px' }} />
+                  <InputAdornment position="start">
+                    <SearchIcon color="cam" />
+                  </InputAdornment>
                 ),
               }}
               sx={{ mr: 0.5, width: '50%' }}
@@ -266,19 +272,20 @@ export default function AdBrandPage() {
                 setFilter({ ...filter, name: e.target.value })
               }}
               inputProps={{ style: { height: '20px' } }}
-              size="small"
               placeholder="Tìm thương hiệu"
             />
             <Button
-              onClick={() => setOpenAdd(true)}
+              onClick={() => {
+                setOpenAdd(true)
+                setBrand({ ...brand, name: '' })
+                setErrorBrand('')
+              }}
               disableElevation
               sx={{ ...spButton }}
+              color="cam"
               variant="outlined">
-              <Box component={FaPlus} sx={{ mr: '3px', fontSize: '15px' }} />
-              Thêm&nbsp;
-              <Box sx={{ display: { xs: 'none', md: 'inline' } }} component={'span'}>
-                mới
-              </Box>
+              <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
+              <Typography sx={{ ml: 1 }}>Thêm mới</Typography>
             </Button>
             {openAdd && (
               <DialogAddUpdate
@@ -290,7 +297,7 @@ export default function AdBrandPage() {
                     onClick={() => {
                       openAdd ? addBrand() : updateBrand()
                     }}
-                    color="primary"
+                    color="cam"
                     disableElevation
                     sx={{ ...spButton }}
                     variant="contained">
@@ -301,34 +308,18 @@ export default function AdBrandPage() {
                   id={'nameInputAdd'}
                   onChange={(e) => {
                     chageName(e)
+                    setErrorBrand('')
                   }}
                   defaultValue={brand.name}
                   fullWidth
-                  // sx={{
-                  //   my: 2,
-                  //   '& .MuiInputBase-root fieldset': {
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root': {
-                  //     ' &.Mui-focused fieldset': {
-                  //       borderColor: theme.palette.layout.colorText,
-                  //     },
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root:hover fieldset': {
-                  //     borderColor: 'gray',
-                  //   },
-                  // }}
                   inputProps={{
-                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
                   placeholder="Nhập tên thương hiệu"
+                  error={Boolean(errorBrand)}
+                  helperText={errorBrand}
                 />
-                <span style={{ color: 'red' }}>{errorBrand}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -341,7 +332,7 @@ export default function AdBrandPage() {
                     onClick={() => {
                       updateBrand()
                     }}
-                    color="primary"
+                    color="cam"
                     disableElevation
                     sx={{ ...spButton }}
                     variant="contained">
@@ -352,34 +343,18 @@ export default function AdBrandPage() {
                   id={'nameInputUpdate'}
                   onChange={(e) => {
                     chageName(e)
+                    setErrorBrandUpdate('')
                   }}
                   defaultValue={brandUpdate.name}
                   fullWidth
-                  // sx={{
-                  //   my: 2,
-                  //   '& .MuiInputBase-root fieldset': {
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root': {
-                  //     ' &.Mui-focused fieldset': {
-                  //       borderColor: theme.palette.layout.colorText,
-                  //     },
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root:hover fieldset': {
-                  //     borderColor: 'gray',
-                  //   },
-                  // }}
                   inputProps={{
-                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
                   placeholder="Nhập tên thương hiệu"
+                  error={Boolean(errorBrandUpdate)}
+                  helperText={errorBrandUpdate}
                 />
-                <span style={{ color: 'red' }}>{errorBrandUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>
@@ -389,7 +364,7 @@ export default function AdBrandPage() {
             </Typography>
           ) : (
             <>
-              <Table aria-label="simple table">
+              <Table className="tableCss mt-5">
                 <TableHead sx={{ backgroundColor: 'sanPham.colorTable' }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
@@ -420,13 +395,21 @@ export default function AdBrandPage() {
                         {dayjs(row.createdAt).format('DD/MM/YYYY')}
                       </TableCell>
                       <TableCell align="center">
-                        <Switch
-                          checked={!row.deleted}
-                          onChange={(e) => {
-                            setDeleted(row.id)
-                          }}
-                          size="small"
-                        />
+                        {row.deleted === 0 ? (
+                          <Chip
+                            onClick={() => setDeleted(row.id)}
+                            className="chip-hoat-dong"
+                            size="small"
+                            label="Hoạt động"
+                          />
+                        ) : (
+                          <Chip
+                            onClick={() => setDeleted(row.id)}
+                            className="chip-khong-hoat-dong"
+                            size="small"
+                            label="Không hoạt động"
+                          />
+                        )}
                       </TableCell>
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
@@ -434,9 +417,10 @@ export default function AdBrandPage() {
                             onClick={() => {
                               setBrandUpdate({ ...brandUpdate, id: row.id, name: row.name })
                               setOpenUpdate(true)
+                              setErrorBrandUpdate('')
                             }}
                             color="warning">
-                            <MdEditSquare style={{ fontSize: '18px' }} />
+                            <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
                           </IconButton>
                         </Tooltip>
                       </TableCell>
@@ -470,13 +454,14 @@ export default function AdBrandPage() {
                   </Typography>
                 </Typography>
                 <Pagination
-                  color="primary"
                   count={pageRespone.totalPages}
                   page={pageRespone.currentPage + 1}
                   onChange={(e, value) => {
                     e.preventDefault()
                     setFilter({ ...filter, page: value })
                   }}
+                  color="cam"
+                  variant="outlined"
                 />
               </Stack>
             </>

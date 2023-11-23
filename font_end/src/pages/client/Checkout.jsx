@@ -503,7 +503,7 @@ export default function Checkout() {
                 <span className="checkout-info-label">Thông tin giao hàng</span>
                 {userLogin && (
                   <Button
-                    style={{ float: 'right', display: listAddress.length > 0 ? 'none' : 'block' }}
+                    style={{ float: 'right' }}
                     size="small"
                     variant="outlined"
                     onClick={() => {
@@ -527,6 +527,7 @@ export default function Checkout() {
                   loadXa={loadXa}
                   arrData={arrData}
                   setTimeShip={setTimeShip}
+                  loadListAd={loadListAd}
                 />
               </div>
               <Grid container mt={0} spacing={3}>
