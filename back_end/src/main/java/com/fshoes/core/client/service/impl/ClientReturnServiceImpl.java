@@ -41,13 +41,6 @@ public class ClientReturnServiceImpl implements ClientReturnService {
     public Boolean requestReturn(ReturnRequest request) {
         try {
             Bill bill = billRepository.findById(request.getIdBill()).orElseThrow(() -> new RestApiException("Hóa đơn không tồn tại"));
-            BigDecimal returnMoney = new BigDecimal(request.getReturnMoney());
-
-            int percent = Integer.parseInt(request.getFee());
-            BigDecimal increasedReturnMoney = returnMoney.multiply(BigDecimal.valueOf(1 + percent / 100.0));
-            bill.setTotalMoney(bill.getTotalMoney().subtract(increasedReturnMoney));
-            bill.setMoneyAfter(bill.getMoneyAfter().subtract(increasedReturnMoney));
-            billRepository.save(bill);
 
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);

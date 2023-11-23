@@ -1505,7 +1505,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
           </Typography>
           <Button
             onClick={() => {
-              setIsShowCustomer(true)
+              if (listProductDetailBill.length > 0) {
+                setIsShowCustomer(true)
+              } else {
+                toast.warning('Vui lòng thêm sản phẩm trước!')
+              }
             }}
             sx={{ float: 'right', borderRadius: '8px' }}
             size="small"
@@ -2702,7 +2706,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Phí vận chuyển</Typography>
-                <Typography>{giaoHang ? `${shipTotal} ₫` : '0 ₫'}</Typography>
+                <Typography>{giaoHang ? `${formatPrice(shipTotal)}` : '0 ₫'}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Giảm giá</Typography>
