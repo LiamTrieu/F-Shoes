@@ -120,20 +120,20 @@ export default function AdVoucherPage() {
   }
 
   const handelDeleteVoucher = (idDelete) => {
-    const title = 'Xác nhận hủy voucher?'
+    const title = 'Xác nhận hủy phiếu giảm giá?'
     const text = ''
     confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
         voucherApi
           .deleteVoucher(idDelete)
           .then(() => {
-            toast.success('Hủy voucher thành công', {
+            toast.success('Hủy phiếu giảm giá thành công', {
               position: toast.POSITION.TOP_RIGHT,
             })
             fetchData(searchVoucher)
           })
           .catch(() => {
-            toast.error('Hủy voucher thất bại', {
+            toast.error('Hủy phiếu giảm giá thất bại', {
               position: toast.POSITION.TOP_RIGHT,
             })
           })
@@ -147,13 +147,13 @@ export default function AdVoucherPage() {
 
   return (
     <div className="voucher-css">
-      <BreadcrumbsCustom nameHere={'voucher'} />
+      <BreadcrumbsCustom nameHere={'Phiếu giảm giá'} />
       <Paper elevation={3}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <TextField
               className="search-voucher"
-              placeholder="Tìm voucher theo mã hoặc tên"
+              placeholder="Tìm phiếu giảm giá theo mã hoặc tên"
               type="text"
               size="small"
               fullWidth
@@ -180,7 +180,7 @@ export default function AdVoucherPage() {
                 color="cam"
                 style={{ borderRadius: '8px ', borderColor: '#fc7c27' }}>
                 <AiOutlinePlus className="icon-css" />
-                <Typography>Tạo voucher</Typography>
+                <Typography>Tạo mới</Typography>
               </Button>
             </Link>
           </Grid>

@@ -6,6 +6,7 @@ import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
+import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
@@ -15,6 +16,7 @@ import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.repository.ProductDetailRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,6 +37,12 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
 
     @Autowired
     private HDBillHistoryRepository hdBillHistoryRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private ClientProductDetailRepository clientProductDetailRepository;
 
     @Autowired
     private UserLogin userLogin;
@@ -64,7 +72,10 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             if (bill.getStatus() == 2 || bill.getStatus() == 6) {
                 productDetail.setAmount(productDetail.getAmount() - hdBillDetailRequest.getQuantity());
                 productDetailRepository.save(productDetail);
+                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-add-in-bill-detail",
+                        clientProductDetailRepository.updateRealTime(productDetail.getId()));
             }
+
             billHistory.setNote("Đã thêm " + hdBillDetailRequest.getQuantity() + " sản phẩm" + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
             hdBillHistoryRepository.save(billHistory);
             return hdBillDetailRepository.save(newBillDetail);
@@ -146,6 +157,8 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
             productDetail.setAmount(productDetail.getAmount() + 1);
             productDetailRepository.save(productDetail);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-decrease-by-bill-detail",
+                    clientProductDetailRepository.updateRealTime(productDetail.getId()));
             return hdBillDetailRepository.save(billDetail);
         }
 
@@ -170,6 +183,8 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
             productDetail.setAmount(productDetail.getAmount() - 1);
             productDetailRepository.save(productDetail);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-increase-by-bill-detail",
+                    clientProductDetailRepository.updateRealTime(productDetail.getId()));
             return hdBillDetailRepository.save(billDetail);
         }
     }

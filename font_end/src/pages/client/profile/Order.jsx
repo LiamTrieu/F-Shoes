@@ -38,7 +38,10 @@ import ModalReturn from './ModalReturn'
 import CloseIcon from '@mui/icons-material/Close'
 import clientReturnApi from '../../../api/client/clientReturnApi'
 import ReturnDetailClient from './ReturnDetailClient'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function Order() {
   const [getBill, setGetBill] = useState([])
   const [getBillTable, setGetBillTable] = useState([])
@@ -65,10 +68,14 @@ export default function Order() {
     })
   }, [filter])
 
-  useEffect(() => {
+  const fetchAllBillTable = (filter) => {
     ClientAccountApi.getAllBillTable(filter).then((response) => {
       setGetBillTable(response.data.data)
     })
+  }
+
+  useEffect(() => {
+    fetchAllBillTable(filter)
   }, [filter])
 
   useEffect(() => {
@@ -82,6 +89,47 @@ export default function Order() {
       style: 'currency',
       currency: 'VND',
     })
+  }
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [getBillTable])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/real-time-huy-don-bill-my-profile', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeBillMyProdile(data)
+      }
+    })
+    stompClient.subscribe('/topic/real-time-xac-nhan-bill-my-profile', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeBillMyProdile(data)
+      }
+    })
+    stompClient.subscribe('/topic/real-time-update-status-bill-my-profile', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeBillMyProdile(data)
+      }
+    })
+  }
+
+  function updateRealTimeBillMyProdile(data) {
+    const preBill = [...getBillTable]
+    const index = preBill.findIndex((bill) => bill.id === data.id)
+    if (index !== -1) {
+      preBill[index] = data
+      setGetBillTable(preBill)
+    }
+    fetchAllBillTable(filter)
   }
 
   const [returnSelect, setReturnSelect] = useState(null)

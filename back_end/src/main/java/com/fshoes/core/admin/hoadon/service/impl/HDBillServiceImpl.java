@@ -1,11 +1,6 @@
 package com.fshoes.core.admin.hoadon.service.impl;
 
-import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
-import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDBillHistoryRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
+import com.fshoes.core.admin.hoadon.model.request.*;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
@@ -13,15 +8,10 @@ import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
+import com.fshoes.core.client.repository.ClientBillRepository;
 import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.UserLogin;
-import com.fshoes.entity.Account;
-import com.fshoes.entity.Bill;
-import com.fshoes.entity.BillDetail;
-import com.fshoes.entity.BillHistory;
-import com.fshoes.entity.ProductDetail;
-import com.fshoes.entity.Transaction;
-import com.fshoes.entity.Voucher;
+import com.fshoes.entity.*;
 import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.infrastructure.constant.TypeBill;
 import com.fshoes.repository.AccountRepository;
@@ -80,6 +70,9 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private ClientBillRepository clientBillRepository;
 
     @Override
     public Page<HDBillResponse> filterBill(BillFilterRequest billFilterRequest) {
@@ -194,6 +187,8 @@ public class HDBillServiceImpl implements HDBillService {
                         hdBillHistoryRepository.save(billHistory);
                         messagingTemplate.convertAndSend("/topic/real-time-huy-don-bill-page-admin",
                                 hdBillRepository.realTimeBill(bill.getId()));
+                        messagingTemplate.convertAndSend("/topic/real-time-huy-don-bill-my-profile",
+                                clientBillRepository.realTimeBillMyProfile(bill.getId()));
                         hdBillRepository.save(bill);
                     }
                 }
@@ -233,6 +228,8 @@ public class HDBillServiceImpl implements HDBillService {
                             productDetailRepository.save(productDetail);
                             messagingTemplate.convertAndSend("/topic/realtime-san-pham-client",
                                     clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-status-bill-2",
+                                    clientProductDetailRepository.updateRealTime(productDetail.getId()));
                             return billDetail;
                         } else {
                             return null;
@@ -268,6 +265,8 @@ public class HDBillServiceImpl implements HDBillService {
             hdBillRepository.save(bill);
             messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-page-admin",
                     hdBillRepository.realTimeBill(bill.getId()));
+            messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-my-profile",
+                    clientBillRepository.realTimeBillMyProfile(bill.getId()));
 
             // Lưu lịch sử hóa đơn
             HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
@@ -310,6 +309,8 @@ public class HDBillServiceImpl implements HDBillService {
         hdBillHistoryService.save(hdBillHistoryRequest);
         messagingTemplate.convertAndSend("/topic/real-time-update-status-bill-page-admin",
                 hdBillRepository.realTimeBill(bill.getId()));
+        messagingTemplate.convertAndSend("/topic/real-time-update-status-bill-my-profile",
+                clientBillRepository.realTimeBillMyProfile(bill.getId()));
         return hdBillRepository.save(bill);
     }
 
