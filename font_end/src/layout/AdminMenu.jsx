@@ -147,7 +147,7 @@ export default function AdminMenu() {
           <ListItemText
             sx={{ m: 0, p: 0 }}
             primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-            primary="Voucher"
+            primary="Phiếu giảm giá"
           />
         </ListItemButton>
         <ListItemButton className="mt-3" component={Link} to="/admin/promotion">

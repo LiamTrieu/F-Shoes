@@ -107,20 +107,16 @@ export default function MyVoucher() {
       preVoucherPublic[indexPublic] = data
       if (data.type === 0) {
         setVoucherPublic(preVoucherPublic)
-      } else {
-        fetchVoucherPrivate()
-        fetchVoucherPublic()
       }
     }
     if (indexPrivate !== -1) {
       preVoucherPrivate[indexPrivate] = data
       if (data.type === 1) {
         setVoucherPrivate(preVoucherPrivate)
-      } else {
-        fetchVoucherPrivate()
-        fetchVoucherPublic()
       }
     }
+    fetchVoucherPrivate()
+    fetchVoucherPublic()
   }
 
   return (

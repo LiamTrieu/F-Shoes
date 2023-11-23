@@ -11,6 +11,7 @@ import com.fshoes.core.admin.sanpham.repository.AdImageRepository;
 import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
 import com.fshoes.core.admin.sanpham.repository.AdProductRepository;
 import com.fshoes.core.admin.sanpham.service.ProductService;
+import com.fshoes.core.client.repository.ClientBillDetailRepository;
 import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.Image;
@@ -48,6 +49,9 @@ public class ProductServiceImpl implements ProductService {
     private CloudinaryImage cloudinaryImage;
     @Autowired
     private ClientProductDetailRepository clientProductDetailRepository;
+
+    @Autowired
+    private ClientBillDetailRepository clientBillDetailRepository;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -163,6 +167,8 @@ public class ProductServiceImpl implements ProductService {
                 clientProductDetailRepository.updateRealTime(productDetail.getId()));
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-checkout",
                 clientProductDetailRepository.updateRealTime(productDetail.getId()));
+//        messagingTemplate.convertAndSend("/topic/realtime-san-pham-in-bill-detail-my-profile",
+//                clientBillDetailRepository.realTimeProductInBillDetailMyProfile(productDetail.getId()));
     }
 
     @Override

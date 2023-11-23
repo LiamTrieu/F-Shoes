@@ -31,7 +31,10 @@ import ClientModalThemSP from './ModalThemSPBillClient'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
+// var stompClient = null
 export default function OrderDetail() {
   const { id } = useParams()
   const [billDetail, setBillDetail] = useState([])
@@ -223,6 +226,35 @@ export default function OrderDetail() {
           })
       }
     }
+
+    // useEffect(() => {
+    //   const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    //   stompClient = Stomp.over(socket)
+    //   stompClient.connect({}, onConnect)
+
+    //   return () => {
+    //     stompClient.disconnect()
+    //   }
+    // }, [billDetail])
+
+    // const onConnect = () => {
+    //   stompClient.subscribe('/topic/realtime-san-pham-in-bill-detail-my-profile', (message) => {
+    //     if (message.body) {
+    //       const data = JSON.parse(message.body)
+    //       updateRealTimeProductDetailInBillDetailMyProfile(data)
+    //     }
+    //   })
+    // }
+
+    // function updateRealTimeProductDetailInBillDetailMyProfile(data) {
+    //   // đang có lỗi vì trả ra 8 thằng
+    //   const preProduct = [...billDetail]
+    //   const index = preProduct.findIndex((product) => product.productDetailId === data.id)
+    //   if (index !== -1) {
+    //     preProduct[index] = data
+    //     setBillDetail(preProduct)
+    //   }
+    // }
 
     return (
       <DialogAddUpdate

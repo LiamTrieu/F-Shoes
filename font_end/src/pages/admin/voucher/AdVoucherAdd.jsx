@@ -34,7 +34,7 @@ import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 
-const listBreadcrumbs = [{ name: 'voucher', link: '/admin/voucher' }]
+const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
 
 const initialVoucher = {
   code: '',
@@ -284,7 +284,7 @@ export default function AdVoucherAdd() {
     const check = handleValidation()
 
     if (check < 1) {
-      const title = 'Xác nhận thêm mới voucher?'
+      const title = 'Xác nhận thêm mới phiếu giảm giá?'
       const text = ''
       confirmSatus(title, text, theme).then((result) => {
         if (result.isConfirmed) {
@@ -292,20 +292,20 @@ export default function AdVoucherAdd() {
           voucherApi
             .addVoucher(updatedVoucherAdd)
             .then(() => {
-              toast.success('Thêm mới voucher thành công', {
+              toast.success('Thêm mới phiếu giảm giá thành công', {
                 position: toast.POSITION.TOP_RIGHT,
               })
               navigate('/admin/voucher')
             })
             .catch(() => {
-              toast.error('Thêm mới voucher thất bại', {
+              toast.error('Thêm mới phiếu giảm giá thất bại', {
                 position: toast.POSITION.TOP_RIGHT,
               })
             })
         }
       })
     } else {
-      toast.error('Không thể thêm mới voucher', {
+      toast.error('Không thể thêm mới phiếu giảm giá', {
         position: toast.POSITION.TOP_RIGHT,
       })
     }
@@ -359,14 +359,14 @@ export default function AdVoucherAdd() {
 
   return (
     <div className="voucher-add">
-      <BreadcrumbsCustom nameHere={'Thêm voucher'} listLink={listBreadcrumbs} />
+      <BreadcrumbsCustom nameHere={'Tạo phiếu giảm giá'} listLink={listBreadcrumbs} />
       <Paper sx={{ p: 2 }}>
         <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
           <Grid item xs={5}>
             <div style={{ marginBottom: '16px' }}>
               <TextField
                 className="input-css"
-                label="Mã voucher"
+                label="Mã phiếu giảm giá"
                 type="text"
                 size="small"
                 fullWidth
@@ -382,7 +382,7 @@ export default function AdVoucherAdd() {
             <div style={{ marginBottom: '16px' }}>
               <TextField
                 className="input-css"
-                label="Tên voucher"
+                label="Tên phiếu giảm giá"
                 type="text"
                 size="small"
                 fullWidth
