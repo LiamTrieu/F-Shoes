@@ -67,7 +67,7 @@ public class Bill extends PrimaryEntity {
 
     private StatusBill status;
 
-    private Integer receivingMethod;
+    private Integer receivingMethod; //receivingMethod nếu mua tại quầy set là 0 còn giao hàng là 1 nhé
 
     @Column(length = EntityProperties.LENGTH_EMAIL)
     private String email;
