@@ -322,8 +322,10 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                 BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
                 billDetail.setStatus(1);
                 ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
-                productDetail.setAmount(productDetail.getAmount() + hdBillDetailRequest.getQuantity());
-                productDetailRepository.save(productDetail);
+                if (bill.getStatus() != 1) {
+                    productDetail.setAmount(productDetail.getAmount() + hdBillDetailRequest.getQuantity());
+                    productDetailRepository.save(productDetail);
+                }
                 BillHistory billHistory = BillHistory.builder()
                         .bill(bill)
                         .account(userLogin.getUserLogin())

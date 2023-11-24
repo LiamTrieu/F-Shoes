@@ -49,8 +49,8 @@ public class ThongKeController {
     }
 
     @GetMapping("/view/thong-ke-don-hang")
-    public ObjectRespone getThongKeDonHang() {
-        return new ObjectRespone(thongKeService.getThongKeDonHang());
+    public ObjectRespone getThongKeDonHang(GetDataDashBoarhByDateRequest request) throws ParseException {
+        return new ObjectRespone(thongKeService.getThongKeDonHang(request));
     }
 
     @GetMapping("/get-product-take-out")

@@ -191,44 +191,40 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
         updateRealTimeProductDetail(data)
       }
     })
-    stompClient.subscribe(
-      '/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail',
-      (message) => {
-        if (message.body) {
-          const data = JSON.parse(message.body)
-          updateRealTimeProductDetail(data)
-        }
-      },
-    )
-    stompClient.subscribe(
-      '/topic/realtime-san-pham-detail-modal-add-admin-decrease-by-bill-detail',
-      (message) => {
-        if (message.body) {
-          const data = JSON.parse(message.body)
-          updateRealTimeProductDetail(data)
-        }
-      },
-    )
-    stompClient.subscribe(
-      '/topic/realtime-san-pham-detail-modal-add-admin-increase-by-bill-detail',
-      (message) => {
-        if (message.body) {
-          const data = JSON.parse(message.body)
-          updateRealTimeProductDetail(data)
-        }
-      },
-    )
+    // stompClient.subscribe(
+    //   '/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail',
+    //   (message) => {
+    //     if (message.body) {
+    //       const data = JSON.parse(message.body)
+    //       updateRealTimeProductDetail(data)
+    //     }
+    //   },
+    // )
+    // stompClient.subscribe(
+    //   '/topic/realtime-san-pham-detail-modal-add-admin-decrease-by-bill-detail',
+    //   (message) => {
+    //     if (message.body) {
+    //       const data = JSON.parse(message.body)
+    //       updateRealTimeProductDetail(data)
+    //     }
+    //   },
+    // )
+    // stompClient.subscribe(
+    //   '/topic/realtime-san-pham-detail-modal-add-admin-increase-by-bill-detail',
+    //   (message) => {
+    //     if (message.body) {
+    //       const data = JSON.parse(message.body)
+    //       updateRealTimeProductDetail(data)
+    //     }
+    //   },
+    // )
   }
 
   function updateRealTimeProductDetail(data) {
-    console.log('=====', data)
     const preProduct = [...listProduct]
-    console.log('=====', listProduct)
     const index = preProduct.findIndex((p) => p.id === data.id)
-    console.log('=====', index)
     if (index !== -1) {
       preProduct[index] = data
-      console.log('=====', preProduct[index])
       setListProduct(preProduct)
     }
   }
