@@ -194,6 +194,20 @@ export default function AdBillDetail() {
     }
   }, [id, billDetail, isUpdateBill, listTransaction])
 
+  const getBillHistoryByIdBill = (id) => {
+    setLoadingTimeline(true)
+    lichSuHoaDonApi
+      .getByIdBill(id)
+      .then((response) => {
+        setListOrderTimeLine(response.data.data)
+        setLoadingTimeline(false)
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API get orderTimeline: ', error)
+        setLoadingTimeline(false)
+      })
+  }
+
   useEffect(() => {
     const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
     stompClient = Stomp.over(socket)
@@ -226,6 +240,16 @@ export default function AdBillDetail() {
         }
       },
     )
+    // stompClient.subscribe(
+    //   '/topic/realtime-san-pham-detail-modal-add-client-by-add-in-bill-detail',
+    //   (message) => {
+    //     console.log('=====', message)
+    //     if (message.body) {
+    //       const data = JSON.parse(message.body)
+    //       updateRealTimeListBillDetailByCustomer(data)
+    //     }
+    //   },
+    // )
   }
 
   function updateRealTimeDiaChiMuaHang(data) {
@@ -241,6 +265,15 @@ export default function AdBillDetail() {
       setListOrderTimeLine(data)
     }
   }
+
+  // function updateRealTimeListBillDetailByCustomer(data) {
+  //   console.log('=====', data)
+  //   const index = id === data[0].idBill ? 0 : -1
+  //   console.log('=====', index)
+  //   if (index !== -1) {
+  //     setListBillDetail(data)
+  //   }
+  // }
 
   const showBtnConfirmPayment = useCallback(
     (billDetail, listTransaction) => {
@@ -1119,20 +1152,6 @@ export default function AdBillDetail() {
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get bill: ', error)
         setLoading(false)
-      })
-  }
-
-  const getBillHistoryByIdBill = (id) => {
-    setLoadingTimeline(true)
-    lichSuHoaDonApi
-      .getByIdBill(id)
-      .then((response) => {
-        setListOrderTimeLine(response.data.data)
-        setLoadingTimeline(false)
-      })
-      .catch((error) => {
-        console.error('Lỗi khi gửi yêu cầu API get orderTimeline: ', error)
-        setLoadingTimeline(false)
       })
   }
 

@@ -16,7 +16,7 @@ public interface HDBillDetailRepository extends BillDetailRepository {
 
 
     @Query(value = """
-            SELECT bd.id, MIN(i.url) as productImg,
+            SELECT bd.id, b.id as idBill, MIN(i.url) as productImg,
                    CONCAT(p.name, ' ', c.name) as productName,
                    bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId,
                    bd.status as status, MAX(pd.weight) as weight, bd.note as note
@@ -43,7 +43,7 @@ public interface HDBillDetailRepository extends BillDetailRepository {
     void deleteByBillId(@Param("billId") String billId);
 
     @Query(value = """
-            SELECT bd.id, MIN(i.url) as productImg,
+            SELECT bd.id, b.id as idBill, MIN(i.url) as productImg,
                     CONCAT(p.name, ' ', c.name) as productName,
                     bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId,
                     bd.status as status

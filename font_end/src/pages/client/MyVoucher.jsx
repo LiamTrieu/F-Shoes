@@ -115,14 +115,12 @@ export default function MyVoucher() {
         setVoucherPrivate(preVoucherPrivate)
       }
     }
-    fetchVoucherPrivate()
-    fetchVoucherPublic()
   }
 
   return (
     <div>
       <Paper className="my-voucher" elevation={3} sx={{ p: 2 }}>
-        <h1>Kho khyễn mãi</h1>
+        <h1>Phiếu giảm giá</h1>
         <Grid container>
           <Box sx={{ width: '100%', mt: 2 }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
