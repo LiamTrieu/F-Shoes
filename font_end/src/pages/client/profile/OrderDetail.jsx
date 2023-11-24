@@ -212,6 +212,8 @@ export default function OrderDetail() {
             toast.success('Đã huỷ đơn hàng', {
               position: toast.POSITION.TOP_RIGHT,
             })
+            getBillHistoryByIdBill(id)
+            getBillClient(id)
             setOpen(false)
           })
           .catch((error) => {
@@ -311,6 +313,78 @@ export default function OrderDetail() {
         }
       },
     )
+    stompClient.subscribe('/topic/realtime-bill-history-client-by-bill-comfirm', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        realtimeBillHistoryBill(data)
+      }
+    })
+    stompClient.subscribe(
+      '/topic/realtime-bill-history-client-by-bill-update-status',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realtimeBillHistoryBill(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-bill-history-client-by-bill-confirm-payment',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realtimeBillHistoryBill(data)
+        }
+      },
+    )
+    stompClient.subscribe('/topic/realtime-bill-history-client-by-bill-huy-don', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        realtimeBillHistoryBill(data)
+      }
+    })
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realTimeListProduct(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-client-admin-decrease-by-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realTimeListProduct(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-client-admin-increase-by-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realTimeListProduct(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-client-by-admin-delete-in-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realTimeListProduct(data)
+        }
+      },
+    )
+    stompClient.subscribe('/topic/real-time-thong-tin-don-hang-by-admin-update', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        realTimeListProduct(data)
+      }
+    })
   }
 
   function updateRealTimeBillDetailInBillDetailMyProfile(data) {
@@ -319,6 +393,20 @@ export default function OrderDetail() {
     if (index !== -1) {
       preProduct[index] = data
       setBillDetail(preProduct)
+    }
+  }
+
+  function realtimeBillHistoryBill(data) {
+    const index = id === data[0].idBill ? 0 : -1
+    if (index !== -1) {
+      setListOrderTimeLine(data)
+    }
+  }
+
+  function realTimeListProduct(data) {
+    const index = id === data[0].idBill ? 0 : -1
+    if (index !== -1) {
+      setBillDetail(data)
     }
   }
 
@@ -459,7 +547,8 @@ export default function OrderDetail() {
                               size="small"
                               onClick={() => handleDecrementQuantity(row, index)}
                               disabled={
-                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0
                               }>
                               <RemoveIcon fontSize="1px" />
                             </IconButton>
@@ -478,7 +567,8 @@ export default function OrderDetail() {
                                 handleTextFieldQuantityChange(row, index, e.target.value)
                               }
                               disabled={
-                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0
                               }
                             />
 
@@ -487,7 +577,8 @@ export default function OrderDetail() {
                               size="small"
                               onClick={() => handleIncrementQuantity(row, index)}
                               disabled={
-                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0
                               }>
                               <AddIcon fontSize="1px" />
                             </IconButton>

@@ -1,6 +1,7 @@
 package com.fshoes.core.client.service.impl;
 
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
+import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.sell.repository.AdminBillDetailRepositoty;
 import com.fshoes.core.admin.sell.repository.AdminBillRepository;
@@ -77,6 +78,11 @@ public class ClientAccountServiceImpl implements ClientAccountService {
 
     @Autowired
     private HDBillRepository hdBillRepository;
+    @Autowired
+    private HDBillDetailRepository hdBillDetailRepository;
+
+    @Autowired
+    private HDBillHistoryRepository hdBillHistoryRepository;
 
 
     @Override
@@ -175,7 +181,10 @@ public class ClientAccountServiceImpl implements ClientAccountService {
             billHistory.setNote(hdBillRequest.getNoteBillHistory());
             billHistory.setAccount(userLogin.getUserLogin());
             billHistoryRepository.save(billHistory);
-            return clientBillRepository.save(bill);
+            Bill billSave = clientBillRepository.save(bill);
+            messagingTemplate.convertAndSend("/topic/real-time-thong-tin-don-hang-by-client-update",
+                    hdBillRepository.getBillResponse(bill.getId()));
+            return billSave;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -203,9 +212,9 @@ public class ClientAccountServiceImpl implements ClientAccountService {
                     .build();
             billHistory.setNote("Đã thêm " + clientBillDetailRequest.getQuantity() + " sản phẩm" + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
             billHistoryRepository.save(billHistory);
-
+//            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-client-by-add-in-bill-detail",
+//                    hdBillDetailRepository.getBillDetailsByBillIdAndStatus(bill.getId(),0));
             billDetail = billDetailRepository.save(newBillDetail);
-
         } else {
             billDetail.setQuantity(clientBillDetailRequest.getQuantity());
             billDetail.setStatus(clientBillDetailRequest.getStatus());
@@ -218,7 +227,11 @@ public class ClientAccountServiceImpl implements ClientAccountService {
             }
             billHistory.setAccount(userLogin.getUserLogin());
             billHistoryRepository.save(billHistory);
+
+//            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-client-by-add-in-bill-detail",
+//                    hdBillDetailRepository.getBillDetailsByBillIdAndStatus(bill.getId(),0));
             billDetail = billDetailRepository.save(billDetail);
+
         }
         List<BillDetail> listBillDetail = billDetailRepository.findAllByBillId(bill.getId());
         BigDecimal totalAmount = listBillDetail.stream()
@@ -234,8 +247,7 @@ public class ClientAccountServiceImpl implements ClientAccountService {
             tienCanThanhToan = tienCanThanhToan.add(bill.getMoneyShip());
         }
         bill.setMoneyAfter(tienCanThanhToan);
-        billRepository.save(bill);
-
+       billRepository.save(bill);
         return billDetail;
     }
 
@@ -284,6 +296,10 @@ public class ClientAccountServiceImpl implements ClientAccountService {
             billRepository.save(bill);
             messagingTemplate.convertAndSend("/topic/real-time-huy-don-bill-page-admin-by-customer",
                     hdBillRepository.realTimeBill(bill.getId()));
+            messagingTemplate.convertAndSend("/topic/real-time-huy-don-bill-detail-admin-by-customer",
+                    hdBillHistoryRepository.getListBillHistoryByIdBill(bill.getId()));
+            messagingTemplate.convertAndSend("/topic/real-time-huy-don-bill-detail-admin-by-customer-and-update-bill-detail",
+                    hdBillRepository.getBillResponse(bill.getId()));
             return true;
         } catch (Exception exception) {
             return false;

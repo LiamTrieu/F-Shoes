@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 
 public interface HDBillDetailResponse extends IsIdentified {
 
+    String getIdBill();
+
     String getProductImg();
 
     String getProductName();
