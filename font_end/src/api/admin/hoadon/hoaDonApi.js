@@ -32,6 +32,10 @@ const hoaDonApi = {
     const url = `/bill/update/${idBill}`
     return axiosAdmin.put(url, hdBillReq)
   },
+  printBill: (idBill) => {
+    const url = `/bill/print-bill/${idBill}`
+    return axiosAdmin.post(url)
+  },
 }
 
 export default hoaDonApi

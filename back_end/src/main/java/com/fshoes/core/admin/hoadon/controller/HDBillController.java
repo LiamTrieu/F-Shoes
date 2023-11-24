@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.List;
 
@@ -66,6 +67,11 @@ public class HDBillController {
     @PutMapping("/update-billDetail/{id}")
     public ObjectRespone updateBillDetail(@PathVariable("id") String id, @RequestBody List<HDBillDetailRequest> listHdBillDetailRequest) {
         return new ObjectRespone(hdBillService.updateBillDetailByBill(id, listHdBillDetailRequest));
+    }
+
+    @PostMapping("/print-bill/{id}")
+    public ObjectRespone inHoaDon(@PathVariable("id") String id) {
+        return new ObjectRespone(hdBillService.xuatHoaDon(id));
     }
 
 }

@@ -227,7 +227,7 @@ export default function AdBillDetail() {
       }
     }
     //billDetail.type: giao hàng
-    if (billDetail.type) {
+    if (billDetail.receivingMethod === 1) {
       if (billDetail.status !== 0) {
         switch (billDetail.status) {
           case 1:
@@ -1060,6 +1060,8 @@ export default function AdBillDetail() {
       .getOne(id)
       .then((response) => {
         setBillDetail(response.data.data)
+        console.log('bill:')
+        console.log(response.data.data)
         setMoneyAfter(response.data.data.moneyAfter)
         setLoading(false)
       })
@@ -1193,6 +1195,26 @@ export default function AdBillDetail() {
     setOpenModalReturnProduct(true)
   }
 
+  const confirmPrintBill = (idBill) => {
+    confirmSatus('Xác nhận in hoá đơn', 'Bạn có chắc chắn muốn in hoá đơn này?').then((result) => {
+      if (result.isConfirmed) {
+        hoaDonApi
+          .printBill(idBill)
+          .then(() => {
+            toast.success('In thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            setIsUpdateBill(true)
+          })
+          .catch(() => {
+            toast.error('Đã sảy ra lỗi', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+          })
+      }
+    })
+  }
+
   return (
     <div className="hoa-don">
       <ModalConfirmBill
@@ -1264,6 +1286,16 @@ export default function AdBillDetail() {
               onClick={() => setOpenDialog(true)}>
               Chi tiết
             </Button>
+            {billDetail && billDetail.status === 7 ? (
+              <Button
+                variant="outlined"
+                className="them-moi"
+                color="cam"
+                style={{ marginRight: '5px' }}
+                onClick={() => confirmPrintBill(billDetail.id)}>
+                In hoá đơn
+              </Button>
+            ) : null}
             {loading ? (
               <div>Loading...</div>
             ) : (
@@ -1337,7 +1369,7 @@ export default function AdBillDetail() {
                 <Typography variant="p" fontFamily={'Inter'}>
                   <Stack direction="row" spacing={1}>
                     <label>Loại:</label>
-                    {billDetail.type ? (
+                    {billDetail.receivingMethod === 1 ? (
                       <Chip className="chip-giao-hang" label="Giao hàng" size="small" />
                     ) : (
                       <Chip className="chip-tai-quay" label=" Tại quầy" size="small" />
