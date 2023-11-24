@@ -311,6 +311,63 @@ export default function OrderDetail() {
         }
       },
     )
+    stompClient.subscribe('/topic/realtime-bill-history-client-by-bill-comfirm', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        realtimeBillHistoryBill(data)
+      }
+    })
+    stompClient.subscribe(
+      '/topic/realtime-bill-history-client-by-bill-update-status',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realtimeBillHistoryBill(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-bill-history-client-by-bill-confirm-payment',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realtimeBillHistoryBill(data)
+        }
+      },
+    )
+    stompClient.subscribe('/topic/realtime-bill-history-client-by-bill-huy-don', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        realtimeBillHistoryBill(data)
+      }
+    })
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realTimeListProduct(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-client-admin-decrease-by-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realTimeListProduct(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-client-admin-increase-by-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realTimeListProduct(data)
+        }
+      },
+    )
   }
 
   function updateRealTimeBillDetailInBillDetailMyProfile(data) {
@@ -319,6 +376,20 @@ export default function OrderDetail() {
     if (index !== -1) {
       preProduct[index] = data
       setBillDetail(preProduct)
+    }
+  }
+
+  function realtimeBillHistoryBill(data) {
+    const index = id === data[0].idBill ? 0 : -1
+    if (index !== -1) {
+      setListOrderTimeLine(data)
+    }
+  }
+
+  function realTimeListProduct(data) {
+    const index = id === data[0].idBill ? 0 : -1
+    if (index !== -1) {
+      setBillDetail(data)
     }
   }
 
@@ -383,30 +454,32 @@ export default function OrderDetail() {
                 )}
               </Grid>
               <Grid item xs={4}>
-                <Grid container justifyContent="flex-end" spacing={2}>
-                  <Grid item xs={12}>
-                    {billClient && billClient.status === 1 && listTransaction.length < 1 && (
-                      <Button
-                        variant="outlined"
-                        style={{ minWidth: '30%', float: 'right', marginTop: '20px' }}
-                        onClick={() => setopenModalUpdateAdd(true)}>
-                        Cập nhật
-                      </Button>
-                    )}
+                {listOrderTimeLine.length < 1 && (
+                  <Grid container justifyContent="flex-end" spacing={2}>
+                    <Grid item xs={12}>
+                      {billClient && billClient.status === 1 && listTransaction.length < 1 && (
+                        <Button
+                          variant="outlined"
+                          style={{ minWidth: '30%', float: 'right', marginTop: '20px' }}
+                          onClick={() => setopenModalUpdateAdd(true)}>
+                          Cập nhật
+                        </Button>
+                      )}
+                    </Grid>
+                    <Grid item xs={12} sx={{ mt: 3 }}>
+                      {billClient && billClient.status === 1 && listTransaction.length < 1 && (
+                        <Button
+                          variant="contained"
+                          className="them-moi"
+                          color="error"
+                          style={{ minWidth: '30%', float: 'right' }}
+                          onClick={() => setOpenModalCancelBill(true)}>
+                          Hủy đơn
+                        </Button>
+                      )}
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} sx={{ mt: 3 }}>
-                    {billClient && billClient.status === 1 && listTransaction.length < 1 && (
-                      <Button
-                        variant="contained"
-                        className="them-moi"
-                        color="error"
-                        style={{ minWidth: '30%', float: 'right' }}
-                        onClick={() => setOpenModalCancelBill(true)}>
-                        Hủy đơn
-                      </Button>
-                    )}
-                  </Grid>
-                </Grid>
+                )}
               </Grid>
             </Grid>
           </Container>
