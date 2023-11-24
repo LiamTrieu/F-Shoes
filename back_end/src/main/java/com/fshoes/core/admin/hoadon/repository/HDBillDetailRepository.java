@@ -42,23 +42,11 @@ public interface HDBillDetailRepository extends BillDetailRepository {
             """, nativeQuery = true)
     void deleteByBillId(@Param("billId") String billId);
 
-//    @Query(value = """
-//            SELECT * FROM bill_detail bdt
-//            WHERE bdt.id_bill = :idBill AND bdt.id_product_detail = :idProductDetail
-//            """, nativeQuery = true)
-//
-//    BillDetail getByIdBillAnDIdProductDetail(@Param("idBill") String idBill, @Param("idProductDetail") String idProductDetail);
-//
-//    //    @Query(value = "SELECT * FROM bill_detail bdt " +
-////            "WHERE bdt.id_bill = :idBill AND bdt.id_product_detail = :idProductDetail", nativeQuery = true)
-////    BillDetail getByIdBillAnDIdProductDetail(@Param("idBill") String idBill, @Param("idProductDetail") String idProductDetail);\
-////    BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
-
     @Query(value = """
             SELECT bd.id, MIN(i.url) as productImg,
                     CONCAT(p.name, ' ', c.name) as productName,
                     bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId,
-                    bd.status as status
+                    bd.status as status,
              FROM bill_detail bd
                  LEFT JOIN product_detail pd ON bd.id_product_detail = pd.id
                  LEFT JOIN image i ON pd.id = i.id_product_detail
@@ -69,4 +57,6 @@ public interface HDBillDetailRepository extends BillDetailRepository {
              WHERE b.id = :idBill
              GROUP BY bd.id, p.name, c.name, bd.price, pd.price, s.size, pd.id, bd.status;            """, nativeQuery = true)
     List<HDBillDetailResponse> getBillDetailsByBillId(@Param("idBill") String idBill);
+
+    List<BillDetail> getBillDetailByBillId(String idBill);
 }

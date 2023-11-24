@@ -134,27 +134,28 @@ public class GenHoaDon {
             table.setSpacingAfter(10f);
 
             DecimalFormat decimalFormat = new DecimalFormat("###,###.## VND");
+
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+
             int sttCounter = 1;
+            PdfPCell cell = new PdfPCell(new Phrase("STT", headerFont));
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Tên sản phẩm", headerFont));
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Số lượng", headerFont));
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Đơn giá", headerFont));
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Thành tiền", headerFont));
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Trạng thái", headerFont));
+            table.addCell(cell);
             for (BillDetail billDetail : billDetails) {
-
-                PdfPCell cell = new PdfPCell(new Phrase("STT", headerFont));
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase("Tên sản phẩm", headerFont));
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase("Số lượng", headerFont));
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase("Đơn giá", headerFont));
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase("Thành tiền", headerFont));
-                table.addCell(cell);
-
-                cell = new PdfPCell(new Phrase("Trạng thái", headerFont));
-                table.addCell(cell);
-
                 // Thêm dữ liệu sản phẩm
                 table.addCell(String.valueOf(sttCounter));
                 table.addCell(productDetailRepository.getName(billDetail.getProductDetail().getId()));
@@ -186,25 +187,39 @@ public class GenHoaDon {
             totalcell3.setHorizontalAlignment(Element.ALIGN_LEFT);
             totalcell3.setBorder(Rectangle.NO_BORDER);
             invoiceTable3.addCell(totalcell3);
-            PdfPCell totalcell4 = new PdfPCell(new Paragraph(decimalFormat.format(bill.getMoneyReduced()), headerFont));
-            totalcell4.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            totalcell4.setBorder(Rectangle.NO_BORDER);
-            invoiceTable3.addCell(totalcell4);
+            if (bill.getMoneyReduced() != null) {
+                PdfPCell totalcell4 = new PdfPCell(new Paragraph(decimalFormat.format(bill.getMoneyReduced().longValue()), headerFont));
+                totalcell4.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                totalcell4.setBorder(Rectangle.NO_BORDER);
+                invoiceTable3.addCell(totalcell4);
+            } else {
+                PdfPCell totalcell4 = new PdfPCell(new Paragraph(decimalFormat.format(0), headerFont));
+                totalcell4.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                totalcell4.setBorder(Rectangle.NO_BORDER);
+                invoiceTable3.addCell(totalcell4);
+            }
 
             PdfPCell totalcell5 = new PdfPCell(new Paragraph("Phí giao hàng:", normalFont));
             totalcell5.setHorizontalAlignment(Element.ALIGN_LEFT);
             totalcell5.setBorder(Rectangle.NO_BORDER);
             invoiceTable3.addCell(totalcell5);
-            PdfPCell totalcell6 = new PdfPCell(new Paragraph(decimalFormat.format(bill.getMoneyShip()), headerFont));
-            totalcell6.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            totalcell6.setBorder(Rectangle.NO_BORDER);
-            invoiceTable3.addCell(totalcell6);
+            if (bill.getMoneyShip() != null) {
+                PdfPCell totalcell6 = new PdfPCell(new Paragraph(decimalFormat.format(bill.getMoneyShip().longValue()), headerFont));
+                totalcell6.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                totalcell6.setBorder(Rectangle.NO_BORDER);
+                invoiceTable3.addCell(totalcell6);
+            } else {
+                PdfPCell totalcell6 = new PdfPCell(new Paragraph(decimalFormat.format(0), headerFont));
+                totalcell6.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                totalcell6.setBorder(Rectangle.NO_BORDER);
+                invoiceTable3.addCell(totalcell6);
+            }
 
             PdfPCell totalcell7 = new PdfPCell(new Paragraph("Tổng tiền cần thanh toán:", normalFont));
             totalcell7.setHorizontalAlignment(Element.ALIGN_LEFT);
             totalcell7.setBorder(Rectangle.NO_BORDER);
             invoiceTable3.addCell(totalcell7);
-            PdfPCell totalcell8 = new PdfPCell(new Paragraph(decimalFormat.format(bill.getMoneyAfter()), headerFont));
+            PdfPCell totalcell8 = new PdfPCell(new Paragraph(decimalFormat.format(bill.getMoneyAfter().longValue()), headerFont));
             totalcell8.setHorizontalAlignment(Element.ALIGN_RIGHT);
             totalcell8.setBorder(Rectangle.NO_BORDER);
             invoiceTable3.addCell(totalcell8);

@@ -9,6 +9,7 @@ import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.entity.Bill;
 import org.springframework.data.domain.Page;
 
+import java.io.File;
 import java.util.List;
 
 public interface HDBillService {
@@ -29,5 +30,7 @@ public interface HDBillService {
     Bill confirmPayment(String idBill, HDConfirmPaymentRequest hdConfirmPaymentRequest);
 
     Bill updateBillDetailByBill(String idBill, List<HDBillDetailRequest> listHDBillRequest);
+
+    File xuatHoaDon(String idBill);
 
 }

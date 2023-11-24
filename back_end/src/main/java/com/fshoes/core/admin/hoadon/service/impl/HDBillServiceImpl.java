@@ -28,6 +28,7 @@ import com.fshoes.infrastructure.constant.TypeBill;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.TransactionRepository;
 import com.fshoes.util.DateUtil;
+import com.fshoes.util.GenHoaDon;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
@@ -66,6 +68,9 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Autowired
     private UserLogin userLogin;
+
+    @Autowired
+    private GenHoaDon genHoaDon;
 
 
     @Autowired
@@ -411,6 +416,13 @@ public class HDBillServiceImpl implements HDBillService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public File xuatHoaDon(String idBill) {
+        Bill bill = hdBillRepository.findById(idBill).get();
+        List<BillDetail> lstBillDetail = hdBillDetailRepository.getBillDetailByBillId(idBill);
+        return genHoaDon.genHoaDon(bill, lstBillDetail);
     }
 
 
