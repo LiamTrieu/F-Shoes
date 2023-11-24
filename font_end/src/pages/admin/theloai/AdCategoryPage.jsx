@@ -2,15 +2,16 @@ import {
   Backdrop,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Container,
   IconButton,
+  InputAdornment,
   MenuItem,
   Pagination,
   Paper,
   Select,
   Stack,
-  Switch,
   Table,
   TableBody,
   TableCell,
@@ -22,14 +23,14 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import { FaPlus } from 'react-icons/fa'
+import { AiOutlinePlusSquare } from 'react-icons/ai'
 import { spButton } from './theloaiStyle'
 import dayjs from 'dayjs'
-import { RxMagnifyingGlass } from 'react-icons/rx'
+import SearchIcon from '@mui/icons-material/Search'
 import { toast } from 'react-toastify'
 import { useTheme } from '@emotion/react'
 import confirmSatus from '../../../components/comfirmSwal'
-import { MdEditSquare } from 'react-icons/md'
+import { TbEyeEdit } from 'react-icons/tb'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 
@@ -105,6 +106,11 @@ export default function AdCategoryPage() {
 
     return check
   }
+  const isCategoryNameDuplicate = (categoryName, currentId) => {
+    return listCategory.some(
+      (category) => category.name === categoryName && category.id !== currentId,
+    )
+  }
 
   const handleValidateUpdate = () => {
     let check = 0
@@ -116,8 +122,8 @@ export default function AdCategoryPage() {
       errors.nameUpdate = 'Không được để trống tên thể loại'
     } else if (categoryUpdate.name.length > 100) {
       errors.nameUpdate = 'Tên thể loại không được dài hơn 100 ký tự'
-    } else if (allNameCategory.includes(categoryUpdate.name)) {
-      errors.name = 'Tên thể loại đã tồn tại'
+    } else if (isCategoryNameDuplicate(categoryUpdate.name, categoryUpdate.id)) {
+      errors.nameUpdate = 'Tên thể loại đã tồn tại'
     }
 
     for (const key in errors) {
@@ -149,6 +155,7 @@ export default function AdCategoryPage() {
                 position: toast.POSITION.TOP_RIGHT,
               })
               fetchData(filter)
+              haldleAllNameCategory()
             } else {
               setOpenAdd(true)
               toast.error('Thêm thể loại thất bại', {
@@ -186,6 +193,7 @@ export default function AdCategoryPage() {
                   position: toast.POSITION.TOP_RIGHT,
                 })
                 fetchData(filter)
+                haldleAllNameCategory()
               } else {
                 setOpenUpdate(true)
                 toast.error('Cập nhập thể loại thất bại', {
@@ -238,18 +246,18 @@ export default function AdCategoryPage() {
         </Backdrop>
         <BreadcrumbsCustom nameHere={'Thể loại'} listLink={listBreadcrumb} />
         <Container component={Paper} elevation={3} sx={{ py: 3, borderRadius: '10px' }}>
-          <Stack
-            sx={{ mb: 2 }}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="flex-start"
-            spacing={12}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <TextField
+              className="search-field"
+              size="small"
+              color="cam"
               id="seachProduct"
               InputProps={{
                 required: true,
                 startAdornment: (
-                  <RxMagnifyingGlass style={{ marginRight: '5px', fontSize: '25px' }} />
+                  <InputAdornment position="start">
+                    <SearchIcon color="cam" />
+                  </InputAdornment>
                 ),
               }}
               sx={{ mr: 0.5, width: '50%' }}
@@ -257,19 +265,20 @@ export default function AdCategoryPage() {
                 setFilter({ ...filter, name: e.target.value })
               }}
               inputProps={{ style: { height: '20px' } }}
-              size="small"
               placeholder="Tìm thể loại"
             />
             <Button
-              onClick={() => setOpenAdd(true)}
+              onClick={() => {
+                setOpenAdd(true)
+                setErrorCategory('')
+                setCategory({ ...category, name: '' })
+              }}
               disableElevation
               sx={{ ...spButton }}
+              color="cam"
               variant="outlined">
-              <Box component={FaPlus} sx={{ mr: '3px', fontSize: '15px' }} />
-              Thêm&nbsp;
-              <Box sx={{ display: { xs: 'none', md: 'inline' } }} component={'span'}>
-                mới
-              </Box>
+              <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
+              <Typography sx={{ ml: 1 }}>Thêm mới</Typography>
             </Button>
             {openAdd && (
               <DialogAddUpdate
@@ -281,7 +290,7 @@ export default function AdCategoryPage() {
                     onClick={() => {
                       openAdd ? addProduct() : updateProduct()
                     }}
-                    color="primary"
+                    color="cam"
                     disableElevation
                     sx={{ ...spButton }}
                     variant="contained">
@@ -292,34 +301,18 @@ export default function AdCategoryPage() {
                   id={'nameInputAdd'}
                   onChange={(e) => {
                     chageName(e)
+                    setErrorCategory('')
                   }}
                   defaultValue={category.name}
                   fullWidth
-                  // sx={{
-                  //   my: 2,
-                  //   '& .MuiInputBase-root fieldset': {
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root': {
-                  //     ' &.Mui-focused fieldset': {
-                  //       borderColor: theme.palette.layout.colorText,
-                  //     },
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root:hover fieldset': {
-                  //     borderColor: 'gray',
-                  //   },
-                  // }}
                   inputProps={{
-                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
                   placeholder="Nhập tên thể loại"
+                  error={Boolean(errorCategory)}
+                  helperText={errorCategory}
                 />
-                <span style={{ color: 'red' }}>{errorCategory}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -332,7 +325,7 @@ export default function AdCategoryPage() {
                     onClick={() => {
                       updateProduct()
                     }}
-                    color="primary"
+                    color="cam"
                     disableElevation
                     sx={{ ...spButton }}
                     variant="contained">
@@ -343,34 +336,18 @@ export default function AdCategoryPage() {
                   id={'nameInputUpdate'}
                   onChange={(e) => {
                     chageName(e)
+                    setErrorCategoryUpdate('')
                   }}
                   defaultValue={categoryUpdate.name}
                   fullWidth
-                  // sx={{
-                  //   my: 2,
-                  //   '& .MuiInputBase-root fieldset': {
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root': {
-                  //     ' &.Mui-focused fieldset': {
-                  //       borderColor: theme.palette.layout.colorText,
-                  //     },
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root:hover fieldset': {
-                  //     borderColor: 'gray',
-                  //   },
-                  // }}
                   inputProps={{
-                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
                   placeholder="Nhập tên thể loại"
+                  error={Boolean(errorCategoryUpdate)}
+                  helperText={errorCategoryUpdate}
                 />
-                <span style={{ color: 'red' }}>{errorCategoryUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>
@@ -380,7 +357,7 @@ export default function AdCategoryPage() {
             </Typography>
           ) : (
             <>
-              <Table aria-label="simple table">
+              <Table className="tableCss mt-5">
                 <TableHead sx={{ backgroundColor: 'sanPham.colorTable' }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
@@ -411,13 +388,21 @@ export default function AdCategoryPage() {
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>
                       <TableCell align="center">
-                        <Switch
-                          checked={!row.deleted}
-                          onChange={(e) => {
-                            setDeleted(row.id)
-                          }}
-                          size="small"
-                        />
+                        {row.deleted === 0 ? (
+                          <Chip
+                            onClick={() => setDeleted(row.id)}
+                            className="chip-hoat-dong"
+                            size="small"
+                            label="Hoạt động"
+                          />
+                        ) : (
+                          <Chip
+                            onClick={() => setDeleted(row.id)}
+                            className="chip-khong-hoat-dong"
+                            size="small"
+                            label="Không hoạt động"
+                          />
+                        )}
                       </TableCell>
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
@@ -425,9 +410,10 @@ export default function AdCategoryPage() {
                             onClick={() => {
                               setCategoryUpdate({ ...categoryUpdate, id: row.id, name: row.name })
                               setOpenUpdate(true)
+                              setErrorCategoryUpdate('')
                             }}
                             color="warning">
-                            <MdEditSquare style={{ fontSize: '18px' }} />
+                            <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
                           </IconButton>
                         </Tooltip>
                       </TableCell>
@@ -461,13 +447,14 @@ export default function AdCategoryPage() {
                   </Typography>
                 </Typography>
                 <Pagination
-                  color="primary"
                   count={pageRespone.totalPages}
                   page={pageRespone.currentPage + 1}
                   onChange={(e, value) => {
                     e.preventDefault()
                     setFilter({ ...filter, page: value })
                   }}
+                  color="cam"
+                  variant="outlined"
                 />
               </Stack>
             </>

@@ -2,15 +2,16 @@ import {
   Backdrop,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Container,
   IconButton,
+  InputAdornment,
   MenuItem,
   Pagination,
   Paper,
   Select,
   Stack,
-  Switch,
   Table,
   TableBody,
   TableCell,
@@ -22,14 +23,14 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import { FaPlus } from 'react-icons/fa'
+import { AiOutlinePlusSquare } from 'react-icons/ai'
 import { spButton } from './chatlieuStyle'
 import dayjs from 'dayjs'
-import { RxMagnifyingGlass } from 'react-icons/rx'
+import SearchIcon from '@mui/icons-material/Search'
 import { toast } from 'react-toastify'
 import { useTheme } from '@emotion/react'
 import confirmSatus from '../../../components/comfirmSwal'
-import { MdEditSquare } from 'react-icons/md'
+import { TbEyeEdit } from 'react-icons/tb'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import materialApi from '../../../api/admin/sanpham/materialApi'
 
@@ -107,6 +108,12 @@ export default function AdMaterialPage() {
     return check
   }
 
+  const isMatirialNameDuplicate = (matirialName, currentId) => {
+    return listMaterial.some(
+      (material) => material.name === matirialName && material.id !== currentId,
+    )
+  }
+
   const handleValidateUpdate = () => {
     let check = 0
     const errors = {
@@ -117,8 +124,8 @@ export default function AdMaterialPage() {
       errors.nameUpdate = 'Không được để trống tên chất liệu'
     } else if (materialUpdate.name.length > 100) {
       errors.nameUpdate = 'Tên chất liệu không được dài hơn 100 ký tự'
-    } else if (allNameMaterial.includes(materialUpdate.name)) {
-      errors.name = 'Tên đế giày đã tồn tại'
+    } else if (isMatirialNameDuplicate(materialUpdate.name, materialUpdate.id)) {
+      errors.nameUpdate = 'Tên chất liệu đã tồn tại'
     }
 
     for (const key in errors) {
@@ -150,6 +157,7 @@ export default function AdMaterialPage() {
                 position: toast.POSITION.TOP_RIGHT,
               })
               fetchData(filter)
+              haldleAllNameMaterial()
             } else {
               setOpenAdd(true)
               toast.error('Thêm chất liệu thất bại', {
@@ -188,6 +196,7 @@ export default function AdMaterialPage() {
                   position: toast.POSITION.TOP_RIGHT,
                 })
                 fetchData(filter)
+                haldleAllNameMaterial()
               } else {
                 setOpenUpdate(true)
                 toast.error('Cập nhập chất liệu thất bại', {
@@ -246,18 +255,18 @@ export default function AdMaterialPage() {
         </Backdrop>
         <BreadcrumbsCustom nameHere={'chất liệu'} listLink={listBreadcrumb} />
         <Container component={Paper} elevation={3} sx={{ py: 3, borderRadius: '10px' }}>
-          <Stack
-            sx={{ mb: 2 }}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="flex-start"
-            spacing={12}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <TextField
+              className="search-field"
+              size="small"
+              color="cam"
               id="seachProduct"
               InputProps={{
                 required: true,
                 startAdornment: (
-                  <RxMagnifyingGlass style={{ marginRight: '5px', fontSize: '25px' }} />
+                  <InputAdornment position="start">
+                    <SearchIcon color="cam" />
+                  </InputAdornment>
                 ),
               }}
               sx={{ mr: 0.5, width: '50%' }}
@@ -265,19 +274,20 @@ export default function AdMaterialPage() {
                 setFilter({ ...filter, name: e.target.value })
               }}
               inputProps={{ style: { height: '20px' } }}
-              size="small"
               placeholder="Tìm chất liệu"
             />
             <Button
-              onClick={() => setOpenAdd(true)}
+              onClick={() => {
+                setOpenAdd(true)
+                setMaterial({ ...material, name: '' })
+                setErrorMaterial('')
+              }}
               disableElevation
               sx={{ ...spButton }}
+              color="cam"
               variant="outlined">
-              <Box component={FaPlus} sx={{ mr: '3px', fontSize: '15px' }} />
-              Thêm&nbsp;
-              <Box sx={{ display: { xs: 'none', md: 'inline' } }} component={'span'}>
-                mới
-              </Box>
+              <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
+              <Typography sx={{ ml: 1 }}>Thêm mới</Typography>
             </Button>
             {openAdd && (
               <DialogAddUpdate
@@ -289,7 +299,7 @@ export default function AdMaterialPage() {
                     onClick={() => {
                       openAdd ? addProduct() : updateProduct()
                     }}
-                    color="primary"
+                    color="cam"
                     disableElevation
                     sx={{ ...spButton }}
                     variant="contained">
@@ -300,34 +310,18 @@ export default function AdMaterialPage() {
                   id={'nameInputAdd'}
                   onChange={(e) => {
                     chageName(e)
+                    setErrorMaterial('')
                   }}
                   defaultValue={material.name}
                   fullWidth
-                  // sx={{
-                  //   my: 2,
-                  //   '& .MuiInputBase-root fieldset': {
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root': {
-                  //     ' &.Mui-focused fieldset': {
-                  //       borderColor: theme.palette.layout.colorText,
-                  //     },
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root:hover fieldset': {
-                  //     borderColor: 'gray',
-                  //   },
-                  // }}
                   inputProps={{
-                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
                   placeholder="Nhập tên chất liệu"
+                  error={Boolean(errorMaterial)}
+                  helperText={errorMaterial}
                 />
-                <span style={{ color: 'red' }}>{errorMaterial}</span>
               </DialogAddUpdate>
             )}
             {openUpdate && (
@@ -340,7 +334,7 @@ export default function AdMaterialPage() {
                     onClick={() => {
                       updateProduct()
                     }}
-                    color="primary"
+                    color="cam"
                     disableElevation
                     sx={{ ...spButton }}
                     variant="contained">
@@ -351,34 +345,18 @@ export default function AdMaterialPage() {
                   id={'nameInputUpdate'}
                   onChange={(e) => {
                     chageName(e)
+                    setErrorMaterialUpdate('')
                   }}
                   defaultValue={materialUpdate.name}
                   fullWidth
-                  // sx={{
-                  //   my: 2,
-                  //   '& .MuiInputBase-root fieldset': {
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root': {
-                  //     ' &.Mui-focused fieldset': {
-                  //       borderColor: theme.palette.layout.colorText,
-                  //     },
-                  //     borderColor: theme.palette.layout.colorText,
-                  //     color: theme.palette.layout.colorText,
-                  //   },
-                  //   '& .MuiInputBase-root:hover fieldset': {
-                  //     borderColor: 'gray',
-                  //   },
-                  // }}
                   inputProps={{
-                    // style: { color: theme.palette.layout.colorText },
                     required: true,
                   }}
                   size="small"
                   placeholder="Nhập tên chất liệu"
+                  error={Boolean(errorMaterialUpdate)}
+                  helperText={errorMaterialUpdate}
                 />
-                <span style={{ color: 'red' }}>{errorMaterialUpdate}</span>
               </DialogAddUpdate>
             )}
           </Stack>
@@ -388,7 +366,7 @@ export default function AdMaterialPage() {
             </Typography>
           ) : (
             <>
-              <Table aria-label="simple table">
+              <Table className="tableCss mt-5">
                 <TableHead sx={{ backgroundColor: 'sanPham.colorTable' }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: '500' }} align="center">
@@ -419,13 +397,21 @@ export default function AdMaterialPage() {
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>
                       <TableCell align="center">
-                        <Switch
-                          checked={!row.deleted}
-                          onChange={(e) => {
-                            setDeleted(row.id)
-                          }}
-                          size="small"
-                        />
+                        {row.deleted === 0 ? (
+                          <Chip
+                            onClick={() => setDeleted(row.id)}
+                            className="chip-hoat-dong"
+                            size="small"
+                            label="Hoạt động"
+                          />
+                        ) : (
+                          <Chip
+                            onClick={() => setDeleted(row.id)}
+                            className="chip-khong-hoat-dong"
+                            size="small"
+                            label="Không hoạt động"
+                          />
+                        )}
                       </TableCell>
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
@@ -433,9 +419,10 @@ export default function AdMaterialPage() {
                             onClick={() => {
                               setMaterialUpdate({ ...materialUpdate, id: row.id, name: row.name })
                               setOpenUpdate(true)
+                              setErrorMaterialUpdate('')
                             }}
                             color="warning">
-                            <MdEditSquare style={{ fontSize: '18px' }} />
+                            <TbEyeEdit fontSize={'25px'} color="#FC7C27" />
                           </IconButton>
                         </Tooltip>
                       </TableCell>
@@ -469,13 +456,14 @@ export default function AdMaterialPage() {
                   </Typography>
                 </Typography>
                 <Pagination
-                  color="primary"
                   count={pageRespone.totalPages}
                   page={pageRespone.currentPage + 1}
                   onChange={(e, value) => {
                     e.preventDefault()
                     setFilter({ ...filter, page: value })
                   }}
+                  color="cam"
+                  variant="outlined"
                 />
               </Stack>
             </>
