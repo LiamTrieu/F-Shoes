@@ -44,5 +44,8 @@ public class AddBillRequest {
 
     private  Long desiredReceiptDate;
 
+    private Integer receivingMethod;
+
+
 
 }

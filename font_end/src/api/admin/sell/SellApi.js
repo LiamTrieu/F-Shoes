@@ -43,7 +43,14 @@ const sellApi = {
     const url = `/sell/delete-bill/${id}`
     return axiosAdmin.delete(url)
   },
-
+  deleteTransaction: (idBill) => {
+    const url = `/sell/delete-transaction/${idBill}`
+    return axiosAdmin.delete(url)
+  },
+  getPayOrderByIdBill: (idBill) => {
+    const url = `/sell/get-pay_order/${idBill}`
+    return axiosAdmin.get(url)
+  },
   getProductDetailBill: (id) => {
     const url = `/sell/get-product-detail-bill/${id}`
     return axiosAdmin.get(url)

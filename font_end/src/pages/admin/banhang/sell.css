@@ -27,3 +27,9 @@
   .MuiSelect-select {
   color: #fc7c27 !important;
 }
+.css-table-sell .MuiTableCell-root {
+  padding: 10px !important;
+}
+.css-table-sell {
+  margin-top: 20px;
+}

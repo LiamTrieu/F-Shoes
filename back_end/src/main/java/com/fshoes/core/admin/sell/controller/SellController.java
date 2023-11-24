@@ -66,6 +66,10 @@ public class SellController {
         return new ObjectRespone(getSell.getAmount(id));
     }
 
+    @GetMapping("/get-pay_order/{idBill}")
+    public ObjectRespone getPayOrder(@PathVariable String idBill) {
+        return new ObjectRespone(getSell.getPayOrder(idBill));
+    }
     @GetMapping("/get-product-detail-bill/{id}")
     public ObjectRespone getAllProductDetailBill(@PathVariable String id) {
         return new ObjectRespone(getSell.getProductDetailBillSell(id));
@@ -79,6 +83,11 @@ public class SellController {
     @DeleteMapping("/delete-bill/{id}")
     public ObjectRespone deleteBillSell(@PathVariable String id) {
         return new ObjectRespone(getSell.deleteBill(id));
+    }
+
+    @DeleteMapping("/delete-transaction/{idBill}")
+    public ObjectRespone deleteTransaction(@PathVariable String idBill) {
+        return new ObjectRespone(getSell.deleteTransaction(idBill));
     }
 
     @GetMapping("/get-product-cart")

@@ -18,11 +18,13 @@ import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
 import com.fshoes.infrastructure.constant.Message;
+import com.fshoes.infrastructure.constant.TypeBill;
 import com.fshoes.infrastructure.exception.RestApiException;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.TransactionRepository;
 import com.fshoes.util.GenHoaDon;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -69,6 +71,9 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Autowired
     private KhachHangRepository khachHangRepository;
+
+    @Autowired
+    private AdminTransactionRepository adminTransactionRepository;
 
     @Autowired
     private HDBillHistoryRepository billHistoryRepository;
@@ -174,12 +179,25 @@ public class AdminSellServiceImpl implements AdminSellService {
         bill.setMoneyShip(request.getMoneyShip());
         bill.setMoneyReduced(request.getMoneyReduce());
         bill.setMoneyAfter(request.getMoneyAfter());
-        bill.setType(request.getType());
-        bill.setStatus(2);
+        if (request.getType() == 0) {
+            bill.setStatus(7);
+        } else {
+            bill.setStatus(2);
+        }
+        bill.setReceivingMethod(request.getReceivingMethod());
+        if (request.getType() == 0) {
+            bill.setCompleteDate(Calendar.getInstance().getTimeInMillis());
+        } else {
+            bill.setCompleteDate(null);
+        }
         billRepository.save(bill);
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill);
-        billHistory.setStatusBill(2);
+        if (request.getType() == 0) {
+            billHistory.setStatusBill(7);
+        } else {
+            billHistory.setStatusBill(2);
+        }
         billHistoryRepository.save(billHistory);
         messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
         return bill;
@@ -211,29 +229,11 @@ public class AdminSellServiceImpl implements AdminSellService {
             Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
             assert account != null;
             bill.setCustomer(account);
-        }
+        };
         bill.setNote(request.getNote());
-        bill.setAddress(request.getAddress());
-        bill.setPhoneNumber(request.getPhoneNumber());
-        bill.setFullName(request.getFullName());
-        bill.setTotalMoney(request.getTotalMoney());
-        bill.setMoneyShip(request.getMoneyShip());
-        bill.setMoneyReduced(request.getMoneyReduce());
-        bill.setMoneyAfter(request.getMoneyAfter());
-        bill.setType(request.getType());
         bill.setCustomerAmount(request.getCustomerAmount());
+        bill.setReceivingMethod(request.getReceivingMethod());
         bill.setDesiredReceiptDate(request.getDesiredReceiptDate());
-        if (request.getType() == 0) {
-            bill.setStatus(7);
-        } else {
-            bill.setStatus(2);
-        }
-        if (request.getType() == 0) {
-            bill.setCompleteDate(Calendar.getInstance().getTimeInMillis());
-        } else {
-            bill.setCompleteDate(null);
-        }
-
         billRepository.save(bill);
 
         Transaction transaction = new Transaction();
@@ -242,23 +242,13 @@ public class AdminSellServiceImpl implements AdminSellService {
         transaction.setPaymentMethod(request.getPaymentMethod());
         transaction.setType(0);
         transaction.setStatus(0);
-        transaction.setTotalMoney(request.getMoneyAfter());
+        transaction.setTotalMoney(request.getTotalMoney());
         transaction.setAccount(userLogin.getUserLogin());
         transaction.setNote(request.getNoteTransaction());
         transactionRepository.save(transaction);
 
 
-        BillHistory billHistory = new BillHistory();
-        billHistory.setBill(bill);
-        if (request.getType() == 0) {
-
-            billHistory.setStatusBill(7);
-        } else {
-
-            billHistory.setStatusBill(2);
-        }
-        billHistoryRepository.save(billHistory);
-        messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
+//        messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
         return bill;
     }
 
@@ -472,6 +462,27 @@ public class AdminSellServiceImpl implements AdminSellService {
     @Override
     public GetAllProductResponse getProduct(String id) {
         return getProductRepository.getProduct(id);
+    }
+
+    @Override
+    public List<PayOrderResponse> getPayOrder(String idBill) {
+        return billRepository.getPayOrder(idBill);
+    }
+
+    @Override
+    public Boolean deleteTransaction(String idBill) {
+        try{
+            List<Transaction> getONe = adminTransactionRepository.getTransactionByIdBill(idBill);
+
+            for (Transaction t: getONe) {
+                transactionRepository.delete(t);
+            }
+
+                return true;
+        }catch (Exception e){
+            return false;
+        }
+
     }
 
     @Override

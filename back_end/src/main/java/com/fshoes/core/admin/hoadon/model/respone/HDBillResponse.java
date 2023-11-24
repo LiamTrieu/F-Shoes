@@ -48,5 +48,7 @@ public interface HDBillResponse extends IsIdentified {
 
     BigDecimal getCustomerAmount();
 
+    Integer getReceivingMethod();
+
 
 }
