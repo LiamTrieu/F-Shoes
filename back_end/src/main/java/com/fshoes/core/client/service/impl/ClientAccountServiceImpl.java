@@ -1,5 +1,9 @@
 package com.fshoes.core.client.service.impl;
 
+import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
+import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
+import com.fshoes.core.admin.sell.repository.AdminBillDetailRepositoty;
+import com.fshoes.core.admin.sell.repository.AdminBillRepository;
 import com.fshoes.core.client.model.request.ClientAccountRequest;
 import com.fshoes.core.client.model.request.ClientBillAccountRequest;
 import com.fshoes.core.client.model.request.ClientBillDetailRequest;
@@ -30,6 +34,7 @@ import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.repository.ProductDetailRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -66,6 +71,12 @@ public class ClientAccountServiceImpl implements ClientAccountService {
 
     @Autowired
     private ProductDetailRepository productDetailRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private HDBillRepository hdBillRepository;
 
 
     @Override
@@ -271,6 +282,8 @@ public class ClientAccountServiceImpl implements ClientAccountService {
             billHistoryRepository.save(billHistory);
             bill.setNote(clientCancelBillRequest.getNoteBillHistory());
             billRepository.save(bill);
+            messagingTemplate.convertAndSend("/topic/real-time-huy-don-bill-page-admin-by-customer",
+                    hdBillRepository.realTimeBill(bill.getId()));
             return true;
         } catch (Exception exception) {
             return false;

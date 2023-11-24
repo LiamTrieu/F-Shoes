@@ -31,6 +31,8 @@ import sellApi from '../../../api/admin/sell/SellApi'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import hoaDonChiTietApi from '../../../api/admin/hoadon/hoaDonChiTiet'
 import { toast } from 'react-toastify'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 const styleAdBillModalThemSP = {
   position: 'absolute',
   top: '50%',
@@ -51,6 +53,8 @@ const styleAdBillModalThemSPDetail = {
   borderRadius: 1.5,
   boxShadow: 24,
 }
+
+var stompClient = null
 export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
@@ -153,7 +157,6 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
       price: price,
       status: 0,
     }
-    console.log(billDetailReq)
     hoaDonChiTietApi
       .saveBillDetail(billDetailReq)
       .then((response) => {
@@ -169,6 +172,61 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
         })
         console.error('Lỗi khi gửi yêu cầu APIsaveBillDetail: ', error)
       })
+  }
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [listProduct])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-modal-add-admin', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
+    // stompClient.subscribe(
+    //   '/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail',
+    //   (message) => {
+    //     if (message.body) {
+    //       const data = JSON.parse(message.body)
+    //       updateRealTimeProductDetail(data)
+    //     }
+    //   },
+    // )
+    // stompClient.subscribe(
+    //   '/topic/realtime-san-pham-detail-modal-add-admin-decrease-by-bill-detail',
+    //   (message) => {
+    //     if (message.body) {
+    //       const data = JSON.parse(message.body)
+    //       updateRealTimeProductDetail(data)
+    //     }
+    //   },
+    // )
+    // stompClient.subscribe(
+    //   '/topic/realtime-san-pham-detail-modal-add-admin-increase-by-bill-detail',
+    //   (message) => {
+    //     if (message.body) {
+    //       const data = JSON.parse(message.body)
+    //       updateRealTimeProductDetail(data)
+    //     }
+    //   },
+    // )
+  }
+
+  function updateRealTimeProductDetail(data) {
+    const preProduct = [...listProduct]
+    const index = preProduct.findIndex((p) => p.id === data.id)
+    if (index !== -1) {
+      preProduct[index] = data
+      setListProduct(preProduct)
+    }
   }
   return (
     <div>

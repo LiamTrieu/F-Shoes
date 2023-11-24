@@ -31,9 +31,9 @@ const thongKeApi = {
     return axiosAdmin.get(urlGetAll)
   },
 
-  getThongKeDonHang: () => {
+  getThongKeDonHang: (filter) => {
     const urlGetAll = `/statistical/view/thong-ke-don-hang`
-    return axiosAdmin.get(urlGetAll)
+    return axiosAdmin.get(urlGetAll, { params: filter })
   },
 
   getProductTakeOut: (filter) => {

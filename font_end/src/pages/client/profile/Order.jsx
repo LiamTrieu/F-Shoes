@@ -129,7 +129,6 @@ export default function Order() {
       preBill[index] = data
       setGetBillTable(preBill)
     }
-    fetchAllBillTable(filter)
   }
 
   const [returnSelect, setReturnSelect] = useState(null)

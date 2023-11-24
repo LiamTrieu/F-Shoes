@@ -89,8 +89,8 @@ export default function Dashboard() {
     size: 5,
   })
   const [filterInCustom, setFilterInCustom] = useState({
-    startDate: dayjs().format('DD-MM-YYYY'),
-    endDate: dayjs().format('DD-MM-YYYY'),
+    startDate: null,
+    endDate: null,
     page: 1,
     size: 5,
   })
@@ -180,8 +180,8 @@ export default function Dashboard() {
     })
   }
 
-  const fetchThongKeDonHang = () => {
-    thongKeApi.getThongKeDonHang().then((response) => {
+  const fetchThongKeDonHang = (filterInCustom) => {
+    thongKeApi.getThongKeDonHang(filterInCustom).then((response) => {
       setDataBieuDo(response.data.data)
     })
   }
@@ -248,9 +248,11 @@ export default function Dashboard() {
     setTkSanPhamTuan(weekProduct)
     setTkSanPhamThang(monthProduct)
     setTkSanPhamNam(yearProduct)
-
-    console.log('=====' + handleRateCalculation(10, 1000))
   }
+
+  useEffect(() => {
+    handleGrowthRate()
+  }, [doanhThu, doanhThuCu])
 
   useEffect(() => {
     if (indexButton === 1) {
@@ -261,9 +263,10 @@ export default function Dashboard() {
       fecthDataMonth(filter)
     } else if (indexButton === 4) {
       fecthDataYear(filter)
+    } else if (indexButton === 5) {
+      fecthDataInCustom(filterInCustom)
     }
     fecthDataTakeOut(filterTakeOut)
-    fecthDataInCustom(filterInCustom)
   }, [filter, doanhThu, indexButton, filterTakeOut, filterInCustom])
 
   useEffect(() => {
@@ -272,8 +275,8 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => {
-    fetchThongKeDonHang()
-  }, [])
+    fetchThongKeDonHang(filterInCustom)
+  }, [filterInCustom])
 
   return (
     <Container maxWidth="lg" sx={{ mb: 5 }}>
@@ -368,54 +371,6 @@ export default function Dashboard() {
                 Tùy chỉnh
               </Button>
             </Grid>
-            {indexButton === 5 && (
-              <Grid container mb={1} className="grid-date-dashboard">
-                <Grid item xs={6} className="dateTime-dashboard">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      format={'DD-MM-YYYY'}
-                      ampm={false}
-                      onChange={(e) =>
-                        setFilterInCustom({
-                          ...filterInCustom,
-                          startDate: dayjs(e).format('DD-MM-YYYY'),
-                        })
-                      }
-                      defaultValue={dayjs()}
-                      slotProps={{
-                        actionBar: {
-                          actions: ['clear'],
-                          onClick: () => setFilterInCustom({ ...filterInCustom, startDate: '' }),
-                        },
-                      }}
-                      label="Từ ngày"
-                    />
-                  </LocalizationProvider>
-                </Grid>
-                <Grid item xs={6} className="dateTime-dashboard">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      format={'DD-MM-YYYY'}
-                      ampm={false}
-                      onChange={(e) =>
-                        setFilterInCustom({
-                          ...filterInCustom,
-                          endDate: dayjs(e).format('DD-MM-YYYY'),
-                        })
-                      }
-                      defaultValue={dayjs()}
-                      slotProps={{
-                        actionBar: {
-                          actions: ['clear'],
-                          onClick: () => setFilterInCustom({ ...filterInCustom, endDate: '' }),
-                        },
-                      }}
-                      label="Đến ngày"
-                    />
-                  </LocalizationProvider>
-                </Grid>
-              </Grid>
-            )}
             <Table aria-label="simple table" className="table-css">
               <TableHead>
                 <TableRow>
@@ -491,6 +446,55 @@ export default function Dashboard() {
           </Paper>
         </Grid>
         <Grid item xs={5}>
+          <Paper
+            elevation={3}
+            className="paper-date"
+            sx={{ marginBottom: '16px', backgroundColor: 'white' }}>
+            <Grid container spacing={2}>
+              <Grid item xs={6} className="dateTime-dashboard">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    format={'DD-MM-YYYY'}
+                    ampm={false}
+                    onChange={(e) =>
+                      setFilterInCustom({
+                        ...filterInCustom,
+                        startDate: dayjs(e).format('DD-MM-YYYY'),
+                      })
+                    }
+                    slotProps={{
+                      actionBar: {
+                        actions: ['clear'],
+                        onClick: () => setFilterInCustom({ ...filterInCustom, startDate: null }),
+                      },
+                    }}
+                    label="Từ ngày"
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={6} className="dateTime-dashboard">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    format={'DD-MM-YYYY'}
+                    ampm={false}
+                    onChange={(e) =>
+                      setFilterInCustom({
+                        ...filterInCustom,
+                        endDate: dayjs(e).format('DD-MM-YYYY'),
+                      })
+                    }
+                    slotProps={{
+                      actionBar: {
+                        actions: ['clear'],
+                        onClick: () => setFilterInCustom({ ...filterInCustom, endDate: null }),
+                      },
+                    }}
+                    label="Đến ngày"
+                  />
+                </LocalizationProvider>
+              </Grid>
+            </Grid>
+          </Paper>
           <Paper elevation={3} className="paper-css" sx={{ height: '460px' }}>
             <LineChartDashBoard dataBieuDo={dataBieuDo} />
           </Paper>

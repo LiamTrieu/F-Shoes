@@ -145,8 +145,8 @@ public interface adminThongKeRepository extends BillDetailRepository {
             WHERE
             b.status = 7
             AND bd.status != 1
-            AND b.complete_date >= :#{#startDate}
-            AND b.complete_date <= :#{#endDate}
+            AND (:#{#startDate} IS NULL OR b.complete_date >= :#{#startDate})
+            AND (:#{#endDate} IS NULL OR b.complete_date <= :#{#endDate})
             GROUP BY p.id, c.id,m.id,s.id,ca.id,br.id
             ORDER BY Sum(bd.quantity) DESC;
             """, nativeQuery = true)
@@ -339,10 +339,12 @@ public interface adminThongKeRepository extends BillDetailRepository {
                 SELECT 7
             ) s
             LEFT JOIN bill b ON s.status = b.status
+            WHERE (:#{#startDate} IS NULL OR b.complete_date >= :#{#startDate})
+            AND (:#{#endDate} IS NULL OR b.complete_date <= :#{#endDate})
             GROUP BY s.status
             ORDER BY s.status ASC;
             """, nativeQuery = true)
-    List<ThongKeSanPhamResponse> getThongKeDonhang();
+    List<ThongKeSanPhamResponse> getThongKeDonhang(Long startDate, Long endDate);
 
     @Query(value = """
             SELECT

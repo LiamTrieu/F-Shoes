@@ -11,6 +11,7 @@ import com.fshoes.core.admin.sanpham.repository.AdImageRepository;
 import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
 import com.fshoes.core.admin.sanpham.repository.AdProductRepository;
 import com.fshoes.core.admin.sanpham.service.ProductService;
+import com.fshoes.core.admin.sell.repository.AdminSellGetProductRepository;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
 import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.PageReponse;
@@ -52,6 +53,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ClientBillDetailRepository clientBillDetailRepository;
+
+    @Autowired
+    private AdminSellGetProductRepository adminSellGetProductRepository;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -167,6 +171,8 @@ public class ProductServiceImpl implements ProductService {
                 clientProductDetailRepository.updateRealTime(productDetail.getId()));
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-checkout",
                 clientProductDetailRepository.updateRealTime(productDetail.getId()));
+        messagingTemplate.convertAndSend("/topic/realtime-san-pham-modal-add-admin",
+                adminSellGetProductRepository.realTimeProductModalAddAdmin(productDetail.getId()));
 //        messagingTemplate.convertAndSend("/topic/realtime-san-pham-in-bill-detail-my-profile",
 //                clientBillDetailRepository.realTimeProductInBillDetailMyProfile(productDetail.getId()));
     }

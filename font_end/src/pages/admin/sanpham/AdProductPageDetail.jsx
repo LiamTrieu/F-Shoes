@@ -46,8 +46,12 @@ import { toast } from 'react-toastify'
 import AdModalDetailProductDetail from './AdModalDetailProductDetail'
 import confirmSatus from '../../../components/comfirmSwal'
 import Carousel from 'react-material-ui-carousel'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
+
+var stompClient = null
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -238,6 +242,67 @@ export default function AdProductPageDetail() {
           })
       }
     })
+  }
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [listProductDetail])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/realtime-san-pham-detail-admin-by-bill-comfirm', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-admin-by-add-in-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          updateRealTimeProductDetail(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-admin-increase-by-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          updateRealTimeProductDetail(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-admin-decrease-by-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          updateRealTimeProductDetail(data)
+        }
+      },
+    )
+    stompClient.subscribe('/topic/realtime-san-pham-detail-cancel-bill-admin', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
+  }
+
+  function updateRealTimeProductDetail(data) {
+    const preProduct = [...listProductDetail]
+    const index = preProduct.findIndex((product) => product.id === data.id)
+    if (index !== -1) {
+      preProduct[index] = data
+      setListProductDetail(preProduct)
+    }
   }
 
   return (
