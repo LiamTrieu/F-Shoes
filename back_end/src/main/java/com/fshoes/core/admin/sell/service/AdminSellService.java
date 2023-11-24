@@ -58,4 +58,8 @@ public interface AdminSellService {
     Boolean deleteProductsDetail(String idBill, List<String> idPrDetail);
 
     GetAllProductResponse getProduct(String id);
+
+    List<PayOrderResponse> getPayOrder(String idBill);
+
+    Boolean deleteTransaction(String idBill);
 }

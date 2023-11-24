@@ -84,8 +84,8 @@ const styleCustomerPays = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
-  height: 580,
+  width: 550,
+  height: 680,
   bgcolor: 'background.paper',
   borderRadius: '8px',
   boxShadow: 24,
@@ -125,6 +125,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setErrorAddBill({ customerAmount: '', payMent: '' })
   }
   const [paymentMethod, setPaymentMethod] = useState('0')
+  const [payOrderByIdBill, setPayOrderByIdBill] = useState([])
   const [transactionCode, setTransactionCode] = useState('')
   const [isTextFieldDisabled, setIsTextFieldDisabled] = useState(false)
   const [noteTransaction, setNoteTransaction] = useState('')
@@ -134,6 +135,16 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     setPaymentMethod(selectedPaymentMethod)
     setIsTextFieldDisabled(selectedPaymentMethod === '1')
   }
+
+  const fetchPayOrderByIdBill = (idBill) => {
+    sellApi.getPayOrderByIdBill(idBill).then((response) => {
+      setPayOrderByIdBill(response.data.data)
+    })
+  }
+
+  useEffect(() => {
+    fetchPayOrderByIdBill(idBill)
+  }, [])
 
   const [searchKhachHang, setSearchKhachHang] = useState({
     nameSearch: '',
@@ -1074,6 +1085,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       totalMoney: totalPriceCart ? totalPriceCart : '',
       moneyAfter: totalPrice ? totalPrice : '',
       type: giaoHang === true ? 1 : 0,
+      receivingMethod: giaoHang === true ? 1 : 0,
     }
 
     const title = 'Xác nhận đặt hàng ?'
@@ -1188,37 +1200,20 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     }
 
     const dataPay = {
-      fullName: detailDiaChi.name ? detailDiaChi.name : '',
-      phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
-      idVourcher: voucher.id ? voucher.id : null,
-      idCustomer: newDiaChi.idCustomer ? newDiaChi.idCustomer : null,
-      address: detailDiaChi.specificAddress
-        ? detailDiaChi.specificAddress + ', ' + xaName + ', ' + huyenName + ', ' + tinhName
-        : '',
-      note: khachHang.note ? khachHang.note : '',
-      moneyShip: giaoHang ? shipTotal : 0,
-      moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',
-      totalMoney: totalPriceCart ? totalPriceCart : '',
+      note: noteTransaction ? noteTransaction : '',
       moneyAfter: totalPrice ? totalPrice : '',
-      type: giaoHang === true ? 1 : 0,
       customerAmount: customerAmount,
       transactionCode: transactionCode ? transactionCode : null,
       paymentMethod: paymentMethod === '1' ? 1 : 0,
       noteTransaction: noteTransaction ? noteTransaction : null,
       desiredReceiptDate: timeShip ? timeShip : '',
+      totalMoney: customerAmount ? customerAmount : '',
     }
-    const titlePay = 'Xác nhận thanh toán ?'
-    const textPay = ''
-    confirmSatus(titlePay, textPay, theme).then((result) => {
-      if (result.isConfirmed) {
-        sellApi.payOrder(dataPay, id).then((response) => {
-          toast.success(' Thanh toán thành công', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          getAllBillTaoDonHang()
-          setSelectBill('')
-        })
-      }
+
+    sellApi.payOrder(dataPay, id).then((response) => {
+      // getAllBillTaoDonHang()
+      // setSelectBill('')
+      fetchPayOrderByIdBill(idBill)
     })
   }
 
@@ -1239,6 +1234,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   const totalMoneyReduce = moneyVoucher > voucher.maximumValue ? voucher.maximumValue : moneyVoucher
 
   const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce
+
+  const totalMoneyTransaction = payOrderByIdBill.find((bill) => bill.id === idBill)?.totalMoney
 
   const excessMoney = customerAmount - totalPrice
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
@@ -1283,6 +1280,19 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
           setQrScannerVisible(false)
         })
     }
+  }
+
+  const deleteTransaction = (idBill) => {
+    sellApi
+      .deleteTransaction(idBill)
+      .then(() => {
+        toast.warning('Huỷ thanh toán thành công', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+      .finally(() => {
+        fetchPayOrderByIdBill(idBill)
+      })
   }
 
   return (
@@ -2747,80 +2757,94 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description">
             <Box sx={styleCustomerPays}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Thanh toán
+              <Typography
+                id="modal-modal-title"
+                sx={{ fontSize: '30px', fontWeight: 1000 }}
+                component="h2">
+                THANH TOÁN
               </Typography>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+                <Typography style={{ fontSize: '20px', fontWeight: 700 }}>
+                  Tổng tiền hàng{' '}
+                </Typography>
+                <Typography style={{ color: 'red', fontWeight: 700 }}>
+                  {formatPrice(totalPrice)}{' '}
+                </Typography>
+              </Stack>
+              <div style={{ textAlign: 'center', marginTop: '30px' }}>
+                <Button
+                  style={{
+                    backgroundColor: paymentMethod === '0' ? '#FF3333' : 'pink',
+                    borderRadius: '20px',
+                    width: '200px',
+                    color: 'white',
+                  }}
+                  onClick={() => setPaymentMethod('0')}>
+                  Chuyển khoản
+                </Button>
+                <Button
+                  style={{
+                    backgroundColor: paymentMethod === '1' ? '#32CD32' : 'pink',
+                    borderRadius: '20px',
+                    width: '200px',
+                    color: 'white',
+                  }}
+                  onClick={() => setPaymentMethod('1')}>
+                  Tiền mặt
+                </Button>
+              </div>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={2}
+                style={{ marginTop: '20px' }}>
+                <TextField
+                  label="Tiền khách đứa"
+                  onChange={(e) => {
+                    setCustomerAmount(e.target.value)
+                    setErrorAddBill({ ...errorAddBill, customerAmount: '' })
+                  }}
+                  sx={{
+                    width: '45%',
+                    display: paymentMethod === '0' || paymentMethod === '1' ? 'block' : 'none',
+                  }}
+                  variant="standard"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  error={Boolean(errorAddBill.customerAmount)}
+                  helperText={errorAddBill.customerAmount}
+                  value={customerAmount}
+                  type="number"
+                />
+                <TextField
+                  label="Tiền thừa"
+                  value={formatPrice(excessMoney)}
+                  defaultValue={0}
+                  sx={{
+                    width: '45%',
+                    display: paymentMethod === '0' || paymentMethod === '1' ? 'block' : 'none',
+                  }}
+                  variant="standard"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    readOnly: true,
+                    style: {
+                      color: excessMoney < 0 ? 'red' : 'black',
+                    },
+                  }}
+                />
+              </Stack>
               <TextField
-                id="outlined-basic"
                 color="cam"
-                label="Tổng tiền"
-                value={formatPrice(totalPrice)}
-                variant="outlined"
-                sx={{ width: '330px', marginTop: '15px' }}
-                size="small"
-              />
-              <TextField
-                id="outlined-basic"
-                color="cam"
-                label="Tiền khách đưa"
-                type="number"
-                variant="outlined"
-                onChange={(e) => {
-                  setCustomerAmount(e.target.value)
-                  setErrorAddBill({ ...errorAddBill, customerAmount: '' })
-                }}
-                sx={{ width: '330px', marginTop: '10px' }}
-                value={customerAmount}
-                size="small"
-                error={Boolean(errorAddBill.customerAmount)}
-                helperText={errorAddBill.customerAmount}
-              />
-              <TextField
-                id="outlined-basic"
-                color="cam"
-                label="Tiền thừa"
-                variant="outlined"
-                value={formatPrice(excessMoney)}
-                sx={{ width: '330px', marginTop: '10px' }}
-                defaultValue={0}
-                size="small"
-                InputProps={{
-                  readOnly: true,
-                  style: {
-                    color: excessMoney < 0 ? 'red' : 'black',
-                  },
-                }}
-              />
-              <TextField
-                color="cam"
-                className="search-field"
-                size="small"
-                fullWidth
-                label="Ghi chú"
-                onChange={(e) => setNoteTransaction(e.target.value)}
-                multiline
-                rows={4}
-                style={{ marginTop: '10px' }}
-              />
-              <FormControl component="fieldset">
-                <FormLabel component="legend">Phương thức thanh toán:</FormLabel>
-                <RadioGroup
-                  row
-                  aria-label="payment-method"
-                  name="payment-method"
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}>
-                  <FormControlLabel value="0" control={<Radio />} label="Chuyển khoản" />
-                  <FormControlLabel value="1" control={<Radio />} label="Tiền mặt" />
-                </RadioGroup>
-              </FormControl>
-              <TextField
-                color="cam"
-                placeholder="Mã giao dịch"
-                variant="outlined"
+                label="Mã giao dịch"
+                variant="standard"
                 fullWidth
                 sx={{
-                  width: '330px',
+                  width: '100%',
                   marginTop: '10px',
                   display: paymentMethod === '0' ? 'block' : 'none',
                 }}
@@ -2832,8 +2856,66 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 }}
                 error={Boolean(errorAddBill.payMent)}
                 helperText={errorAddBill.payMent}
-                // disabled={isTextFieldDisabled}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
+
+              <TextField
+                color="cam"
+                className="search-field"
+                size="small"
+                fullWidth
+                label="Ghi chú"
+                onChange={(e) => setNoteTransaction(e.target.value)}
+                multiline
+                rows={4}
+                style={{ marginTop: '10px' }}
+              />
+              <div className="css-table-sell">
+                {payOrderByIdBill.length > 0 && (
+                  <div style={{ float: 'right' }}>
+                    <Button
+                      onClick={() => deleteTransaction(idBill)}
+                      variant="contained"
+                      sx={{
+                        backgroundColor: '#FF3333',
+                        height: '20px',
+                        textTransform: 'lowercase',
+                      }}
+                      color="error">
+                      Hủy thanh toán
+                    </Button>
+                  </div>
+                )}
+
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table" style={{ height: '150px' }}>
+                    <TableHead sx={{ backgroundColor: '#FFA500' }}>
+                      <TableRow>
+                        <TableCell align="center">STT</TableCell>
+                        <TableCell align="center">Phương thức</TableCell>
+                        <TableCell align="center">Số tiền</TableCell>
+                        <TableCell align="center">Ghi chú</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {payOrderByIdBill.map((item, index) => (
+                        <TableRow
+                          key={item.id}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                          <TableCell align="center">{index + 1}</TableCell>
+                          <TableCell align="center">
+                            {item.paymentMethod === 1 ? 'Tiền mặt' : 'Chuyển khoản'}{' '}
+                          </TableCell>
+                          <TableCell align="center">{item.totalMoney}</TableCell>
+                          <TableCell align="center">{item.note}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
 
               <div
                 style={{
@@ -2843,18 +2925,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   marginTop: '20px',
                 }}>
                 <Button
-                  onClick={handleClose}
-                  variant="contained"
-                  sx={{ backgroundColor: '#FF3333' }}
-                  color="error">
-                  Hủy
-                </Button>
-                <Button
                   variant="contained"
                   sx={{ marginLeft: '20px' }}
                   color="success"
                   onClick={() => addBillorder(idBill)}>
-                  Thanh toán
+                  Xác nhận
                 </Button>
               </div>
             </Box>
@@ -2862,17 +2937,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
         </div>
         <Box p={2}>
           <Stack direction={'row'} justifyContent={'right'}>
-            {giaoHang ? (
-              <Button
-                variant="outlined"
-                style={{ borderRadius: '8px' }}
-                color="cam"
-                onClick={() => addBill(idBill)}>
-                Xác nhận đặt hàng
-              </Button>
-            ) : (
-              ''
-            )}
+            <Button
+              variant="outlined"
+              style={{ borderRadius: '8px' }}
+              color="cam"
+              onClick={() => addBill(idBill)}>
+              Xác nhận đặt hàng
+            </Button>
           </Stack>
         </Box>
       </Paper>

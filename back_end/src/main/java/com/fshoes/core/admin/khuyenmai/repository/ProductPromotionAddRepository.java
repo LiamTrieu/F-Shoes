@@ -36,14 +36,10 @@ public interface ProductPromotionAddRepository extends ProductRepository {
     Page<AddProductPromotionResponse> getAllProduct(@Param("req") ProductPromotionSearch req, Pageable pageable);
 
     @Query(value = """
-            SELECT (cate.name) AS category, (b.name) AS brand, (p.name) , (pd.id) as productDetail , (p.id) ,GROUP_CONCAT(i.url) as url,
-            (sl.name) as sole , (c.name) as color, (m.name) as material  , si.size AS size,
-               pd.id_product,
-                       pd.id_color,
-                       pd.id_material,
-                       pd.id_sole,
-                       pd.id_category,
-                       pd.id_brand
+            SELECT MAX(cate.name) AS category, MAX(b.name) AS brand, (p.name) , 
+            MAX(pd.id) as productDetail , MAX(p.id) ,GROUP_CONCAT(DISTINCT i.url) as url,
+            MAX(sl.name) as sole , MAX(c.name) as color, MAX(m.name) as material  ,
+             GROUP_CONCAT(DISTINCT si.size ORDER BY si.size) AS size 
             FROM product_detail pd 
              JOIN product p ON pd.id_product = p.id 
              join material m on m.id = pd.id_material
@@ -65,22 +61,12 @@ public interface ProductPromotionAddRepository extends ProductRepository {
             OR (:#{#req.nameProduct} IS NULL OR sl.name like %:#{#req.nameProduct}%) 
             OR (:#{#req.nameProduct} IS NULL OR m.name like %:#{#req.nameProduct}%))   
             GROUP BY
-            p.id,
-            pd.id, 
-            pd.code, 
-            c.name, 
-            sl.name, 
-            m.name, 
-            si.size, 
-            c.code, 
-            cate.name, 
-            b.name,
-            pd.id_product,
-            pd.id_color,
-            pd.id_material,
-            pd.id_sole,
-            pd.id_category,
-            pd.id_brand
+            p.id, 
+            sl.id, 
+            m.id, 
+            c.id, 
+            cate.id,
+            b.id
             """, nativeQuery = true)
     Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") List<String> id, Pageable pageable,@Param("req") GetProductDetailByIdProduct req);
 }

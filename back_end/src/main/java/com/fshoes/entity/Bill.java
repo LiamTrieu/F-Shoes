@@ -67,6 +67,8 @@ public class Bill extends PrimaryEntity {
 
     private StatusBill status;
 
+    private Integer receivingMethod;
+
     @Column(length = EntityProperties.LENGTH_EMAIL)
     private String email;
 
