@@ -34,7 +34,7 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 
-// var stompClient = null
+var stompClient = null
 export default function OrderDetail() {
   const { id } = useParams()
   const [billDetail, setBillDetail] = useState([])
@@ -65,8 +65,6 @@ export default function OrderDetail() {
   const getBillByIdBill = (id) => {
     ClientAccountApi.getBillDetailByIdBill(id).then((response) => {
       setBillDetail(response.data.data)
-      console.log('data')
-      console.log(response.data.data)
     })
   }
 
@@ -159,8 +157,6 @@ export default function OrderDetail() {
     ClientAccountApi.getBillClient(id)
       .then((response) => {
         setBillCilent(response.data.data)
-        console.log('data bill Client')
-        console.log(response.data.data)
       })
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get bill client: ', error)
@@ -227,35 +223,6 @@ export default function OrderDetail() {
       }
     }
 
-    // useEffect(() => {
-    //   const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
-    //   stompClient = Stomp.over(socket)
-    //   stompClient.connect({}, onConnect)
-
-    //   return () => {
-    //     stompClient.disconnect()
-    //   }
-    // }, [billDetail])
-
-    // const onConnect = () => {
-    //   stompClient.subscribe('/topic/realtime-san-pham-in-bill-detail-my-profile', (message) => {
-    //     if (message.body) {
-    //       const data = JSON.parse(message.body)
-    //       updateRealTimeProductDetailInBillDetailMyProfile(data)
-    //     }
-    //   })
-    // }
-
-    // function updateRealTimeProductDetailInBillDetailMyProfile(data) {
-    //   // đang có lỗi vì trả ra 8 thằng
-    //   const preProduct = [...billDetail]
-    //   const index = preProduct.findIndex((product) => product.productDetailId === data.id)
-    //   if (index !== -1) {
-    //     preProduct[index] = data
-    //     setBillDetail(preProduct)
-    //   }
-    // }
-
     return (
       <DialogAddUpdate
         open={open}
@@ -304,6 +271,55 @@ export default function OrderDetail() {
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get bill detail by bill: ', error)
       })
+  }
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [billDetail])
+
+  const onConnect = () => {
+    // stompClient.subscribe('/topic/realtime-san-pham-in-bill-detail-my-profile', (message) => {
+    //   if (message.body) {
+    //     const data = JSON.parse(message.body)
+    //     updateRealTimeProductDetailInBillDetailMyProfile(data)
+    //   }
+    // })
+    stompClient.subscribe('/topic/realtime-bill-detail-client-by-bill-comfirm', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeBillDetailInBillDetailMyProfile(data)
+      }
+    })
+    stompClient.subscribe('/topic/realtime-bill-detail-client-by-bill-update-status', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeBillDetailInBillDetailMyProfile(data)
+      }
+    })
+    stompClient.subscribe(
+      '/topic/realtime-bill-detail-client-by-bill-confirm-payment',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          updateRealTimeBillDetailInBillDetailMyProfile(data)
+        }
+      },
+    )
+  }
+
+  function updateRealTimeBillDetailInBillDetailMyProfile(data) {
+    const preProduct = [...billDetail]
+    const index = preProduct.findIndex((product) => product.id === data.id)
+    if (index !== -1) {
+      preProduct[index] = data
+      setBillDetail(preProduct)
+    }
   }
 
   useEffect(() => {
@@ -386,7 +402,7 @@ export default function OrderDetail() {
                         color="error"
                         style={{ minWidth: '30%', float: 'right' }}
                         onClick={() => setOpenModalCancelBill(true)}>
-                        Huỷ đơn
+                        Hủy đơn
                       </Button>
                     )}
                   </Grid>

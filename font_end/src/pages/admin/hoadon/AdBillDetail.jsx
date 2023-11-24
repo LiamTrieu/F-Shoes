@@ -483,7 +483,6 @@ export default function AdBillDetail() {
             position: toast.POSITION.TOP_RIGHT,
           })
           setIsUpdateBill(true)
-          console.log(listTransaction)
           setOpen(false)
         })
         .catch((error) => {
@@ -731,7 +730,6 @@ export default function AdBillDetail() {
             Lưu
           </Button>
         }>
-        {console.log(billDetailReturn)}
         <div>
           <TextField
             color="cam"
@@ -1063,8 +1061,6 @@ export default function AdBillDetail() {
       .then((response) => {
         setBillDetail(response.data.data)
         setMoneyAfter(response.data.data.moneyAfter)
-        console.log('alooo')
-        console.log(response.data.data)
         setLoading(false)
       })
       .catch((error) => {
@@ -1079,8 +1075,6 @@ export default function AdBillDetail() {
       .getByIdBill(id)
       .then((response) => {
         setListOrderTimeLine(response.data.data)
-        console.log('Time line:')
-        console.log(response.data.data)
         setLoadingTimeline(false)
       })
       .catch((error) => {

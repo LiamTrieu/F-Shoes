@@ -80,6 +80,60 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
     Page<ProductDetailResponse> getAllProductDetail(PrdDetailFilterRequest request, Pageable pageable);
 
     @Query(value = """
+        SELECT
+            ROW_NUMBER() over (ORDER BY pd.created_at desc ) as stt,
+            p.deleted as deletedProduct,
+            pd.id as id,
+            pd.code as code,
+            c.name as colorName,
+            s.name as sole,
+            m.name as material,
+            si.size as size,
+            c.code as colorCode,
+            ca.name as category,
+            b.name as brand,
+            pd.amount,
+            pd.weight,
+            pd.price,
+            pd.deleted,
+            GROUP_CONCAT(i.url) as image
+        FROM
+            product_detail pd
+        JOIN
+            product p ON p.id = pd.id_product
+        JOIN
+            color c ON c.id = pd.id_color
+        JOIN
+            category ca ON ca.id = pd.id_category
+        JOIN
+            brand b ON b.id = pd.id_brand
+        JOIN
+            sole s ON s.id = pd.id_sole
+        JOIN
+            material m ON m.id = pd.id_material
+        JOIN
+            size si ON si.id = pd.id_size
+        LEFT JOIN
+            image i ON pd.id = i.id_product_detail
+        WHERE pd.id = :id
+        GROUP BY
+            pd.id, 
+            pd.code, 
+            c.name, 
+            s.name, 
+            m.name, 
+            si.size, 
+            c.code, 
+            ca.name, 
+            b.name, 
+            pd.amount, 
+            pd.weight, 
+            pd.price, 
+            pd.deleted
+        """, nativeQuery = true)
+    ProductDetailResponse realTimeProductDetailAdmin(String id);
+
+    @Query(value = """
             SELECT p.id, max(pd.price) as price, p.name as name
             FROM product p
             JOIN product_detail pd ON p.id = pd.id_product

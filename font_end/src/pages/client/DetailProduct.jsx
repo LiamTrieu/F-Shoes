@@ -129,6 +129,12 @@ export default function DetailProduct() {
         updateRealTimeProductDetail(data)
       }
     })
+    stompClient.subscribe('/topic/realtime-san-pham-detail-cancel-bill', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
   }
 
   function updateRealTimeProductDetail(data) {

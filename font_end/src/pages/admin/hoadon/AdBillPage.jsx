@@ -181,6 +181,12 @@ export default function AdBillPage() {
         billRealTime(data)
       }
     })
+    stompClient.subscribe('/topic/real-time-huy-don-bill-page-admin-by-customer', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        billRealTime(data)
+      }
+    })
   }
 
   const billRealTime = (data) => {
