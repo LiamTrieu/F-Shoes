@@ -941,6 +941,7 @@ export default function AdCustomerDetail() {
                           color="cam"
                           aria-label="favorite"
                           size="small"
+                          disabled={item.type === true}
                           onClick={() => handleUpdateType(item.id)}
                           style={{ display: item.type !== null ? 'block' : 'none' }}>
                           {item.type === true ? <StarIcon /> : <StarBorderPurple500SharpIcon />}

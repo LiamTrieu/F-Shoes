@@ -26,6 +26,7 @@ const style = {
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
+  borderRadius: '10px',
 }
 export default function AddressUser() {
   const [listDiaChi, setListDiaChi] = useState([])
