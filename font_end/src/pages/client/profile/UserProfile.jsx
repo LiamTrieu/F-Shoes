@@ -202,10 +202,6 @@ export default function UserProfile() {
           .finally(() => {
             setLoading(false)
           })
-      } else {
-        toast.error('Cập nhật thông tin thất bại', {
-          position: toast.POSITION.TOP_RIGHT,
-        })
       }
     })
   }
@@ -255,6 +251,7 @@ export default function UserProfile() {
                 }}
                 error={Boolean(errorsKH.email)}
                 helperText={errorsKH.email}
+                disabled
               />
             </Grid>
             <Grid item xs={12} md={12} sx={{ pr: 5, mt: 3 }}>
@@ -341,6 +338,13 @@ export default function UserProfile() {
                 </div>
               </Grid>
             </Grid>
+            <Button
+              onClick={handleButtonUpdateStaff}
+              variant="outlined"
+              className="btn-luupf"
+              size="small">
+              Lưu
+            </Button>
           </Grid>
           <hr className="hr-pcuser" />
           <Grid item xs={12} md={4}>
@@ -381,14 +385,6 @@ export default function UserProfile() {
             </div>
           </Grid>
         </Grid>
-        <Button
-          onClick={handleButtonUpdateStaff}
-          variant="outlined"
-          color="success"
-          size="small"
-          sx={{ float: 'left' }}>
-          Lưu
-        </Button>
       </Paper>
     </div>
   )

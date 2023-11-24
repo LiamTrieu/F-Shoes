@@ -254,7 +254,7 @@ export default function HeadingClient() {
     <>
       <div
         style={{
-          backgroundColor: 'black',
+          backgroundColor: '#f2741f',
           alignItems: 'center',
           display: 'flex',
           justifyContent: 'center',
@@ -412,7 +412,7 @@ export default function HeadingClient() {
       <div
         style={{
           height: '60px',
-          backgroundColor: 'black',
+          backgroundColor: '#f2741f',
           alignItems: 'center',
           display: 'flex',
           justifyContent: 'center',
