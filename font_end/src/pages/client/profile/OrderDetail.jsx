@@ -212,6 +212,8 @@ export default function OrderDetail() {
             toast.success('Đã huỷ đơn hàng', {
               position: toast.POSITION.TOP_RIGHT,
             })
+            getBillHistoryByIdBill(id)
+            getBillClient(id)
             setOpen(false)
           })
           .catch((error) => {
@@ -368,6 +370,21 @@ export default function OrderDetail() {
         }
       },
     )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-client-by-admin-delete-in-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          realTimeListProduct(data)
+        }
+      },
+    )
+    stompClient.subscribe('/topic/real-time-thong-tin-don-hang-by-admin-update', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        realTimeListProduct(data)
+      }
+    })
   }
 
   function updateRealTimeBillDetailInBillDetailMyProfile(data) {
@@ -454,32 +471,30 @@ export default function OrderDetail() {
                 )}
               </Grid>
               <Grid item xs={4}>
-                {listOrderTimeLine.length < 1 && (
-                  <Grid container justifyContent="flex-end" spacing={2}>
-                    <Grid item xs={12}>
-                      {billClient && billClient.status === 1 && listTransaction.length < 1 && (
-                        <Button
-                          variant="outlined"
-                          style={{ minWidth: '30%', float: 'right', marginTop: '20px' }}
-                          onClick={() => setopenModalUpdateAdd(true)}>
-                          Cập nhật
-                        </Button>
-                      )}
-                    </Grid>
-                    <Grid item xs={12} sx={{ mt: 3 }}>
-                      {billClient && billClient.status === 1 && listTransaction.length < 1 && (
-                        <Button
-                          variant="contained"
-                          className="them-moi"
-                          color="error"
-                          style={{ minWidth: '30%', float: 'right' }}
-                          onClick={() => setOpenModalCancelBill(true)}>
-                          Hủy đơn
-                        </Button>
-                      )}
-                    </Grid>
+                <Grid container justifyContent="flex-end" spacing={2}>
+                  <Grid item xs={12}>
+                    {billClient && billClient.status === 1 && listTransaction.length < 1 && (
+                      <Button
+                        variant="outlined"
+                        style={{ minWidth: '30%', float: 'right', marginTop: '20px' }}
+                        onClick={() => setopenModalUpdateAdd(true)}>
+                        Cập nhật
+                      </Button>
+                    )}
                   </Grid>
-                )}
+                  <Grid item xs={12} sx={{ mt: 3 }}>
+                    {billClient && billClient.status === 1 && listTransaction.length < 1 && (
+                      <Button
+                        variant="contained"
+                        className="them-moi"
+                        color="error"
+                        style={{ minWidth: '30%', float: 'right' }}
+                        onClick={() => setOpenModalCancelBill(true)}>
+                        Hủy đơn
+                      </Button>
+                    )}
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </Container>
@@ -532,7 +547,8 @@ export default function OrderDetail() {
                               size="small"
                               onClick={() => handleDecrementQuantity(row, index)}
                               disabled={
-                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0
                               }>
                               <RemoveIcon fontSize="1px" />
                             </IconButton>
@@ -551,7 +567,8 @@ export default function OrderDetail() {
                                 handleTextFieldQuantityChange(row, index, e.target.value)
                               }
                               disabled={
-                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0
                               }
                             />
 
@@ -560,7 +577,8 @@ export default function OrderDetail() {
                               size="small"
                               onClick={() => handleIncrementQuantity(row, index)}
                               disabled={
-                                (billClient && billClient.status > 1) || listTransaction.length > 0
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0
                               }>
                               <AddIcon fontSize="1px" />
                             </IconButton>

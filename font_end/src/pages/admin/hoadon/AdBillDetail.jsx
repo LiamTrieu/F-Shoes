@@ -50,9 +50,12 @@ import TimeLine from './TimeLine'
 import AdBillModalThemSP from './AdBillModalThemSP'
 import confirmSatus from '../../../components/comfirmSwal'
 import ModalAdBillUpdateAddress from './AdBillModalUpdateAddress'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
 const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
 
+var stompClient = null
 export default function AdBillDetail() {
   const { id } = useParams()
   const [billDetail, setBillDetail] = useState()
@@ -190,6 +193,54 @@ export default function AdBillDetail() {
       setIsUpdateBill(false)
     }
   }, [id, billDetail, isUpdateBill, listTransaction])
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [billDetail])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/real-time-thong-tin-don-hang-by-client-update', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeDiaChiMuaHang(data)
+      }
+    })
+    stompClient.subscribe('/topic/real-time-huy-don-bill-detail-admin-by-customer', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeHuyDonByCustomer(data)
+      }
+    })
+    stompClient.subscribe(
+      '/topic/real-time-huy-don-bill-detail-admin-by-customer-and-update-bill-detail',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          updateRealTimeDiaChiMuaHang(data)
+        }
+      },
+    )
+  }
+
+  function updateRealTimeDiaChiMuaHang(data) {
+    const index = id === data.id ? 0 : -1
+    if (index !== -1) {
+      setBillDetail(data)
+    }
+  }
+
+  function updateRealTimeHuyDonByCustomer(data) {
+    const index = id === data[0].idBill ? 0 : -1
+    if (index !== -1) {
+      setListOrderTimeLine(data)
+    }
+  }
 
   const showBtnConfirmPayment = useCallback(
     (billDetail, listTransaction) => {
@@ -1314,17 +1365,16 @@ export default function AdBillDetail() {
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
           <h3>Thông tin đơn hàng - {billDetail?.type === 0 ? 'Đơn tại quầy' : 'Đơn trực tuyến'}</h3>
-          {(billDetail && billDetail.status === 1) ||
-            (billDetail && billDetail.status === 2 && (
-              <Button
-                variant="outlined"
-                className="them-moi"
-                color="cam"
-                style={{ marginRight: '5px' }}
-                onClick={() => setopenModalUpdateAdd(true)}>
-                Cập nhật
-              </Button>
-            ))}
+          {billDetail && (billDetail.status === 1 || billDetail.status === 2) && (
+            <Button
+              variant="outlined"
+              className="them-moi"
+              color="cam"
+              style={{ marginRight: '5px' }}
+              onClick={() => setopenModalUpdateAdd(true)}>
+              Cập nhật
+            </Button>
+          )}
         </Stack>
 
         <Divider

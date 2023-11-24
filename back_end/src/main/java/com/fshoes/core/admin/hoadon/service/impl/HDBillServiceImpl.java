@@ -155,7 +155,10 @@ public class HDBillServiceImpl implements HDBillService {
             billHistory.setNote(hdBillRequest.getNoteBillHistory());
             billHistory.setAccount(userLogin.getUserLogin());
             hdBillHistoryRepository.save(billHistory);
-            return hdBillRepository.save(bill);
+            Bill billSave = clientBillRepository.save(bill);
+            messagingTemplate.convertAndSend("/topic/real-time-thong-tin-don-hang-by-admin-update",
+                    clientBillDetailRepository.getBillDetailsByBillId(bill.getId()));
+            return billSave;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

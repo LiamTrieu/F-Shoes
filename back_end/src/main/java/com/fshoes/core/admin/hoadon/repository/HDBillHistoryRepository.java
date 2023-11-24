@@ -13,7 +13,7 @@ import java.util.List;
 public interface HDBillHistoryRepository extends BillHistoryRepository {
 
     @Query(value = """
-            SELECT bh.id, bh.created_at as createdAt, bh.status_bill as statusBill,
+            SELECT bh.id, b.id as idBill, bh.created_at as createdAt, bh.status_bill as statusBill,
             bh.note as note, bh.created_by as createdBy, a.email as email, a.full_name as fullName
             FROM bill_history bh 
             LEFT JOIN bill b ON bh.id_bill = b.id

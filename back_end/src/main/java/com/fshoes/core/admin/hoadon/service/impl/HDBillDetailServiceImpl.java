@@ -89,7 +89,6 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                 messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-admin-by-add-in-bill-detail",
                         adProductDetailRepository.realTimeProductDetailAdmin(productDetail.getId()));
             }
-
             List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
 
             BigDecimal totalAmount = listBillDetail.stream()
@@ -345,6 +344,10 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                         .build();
                 hdBillHistoryRepository.save(billHistory);
                 hdBillDetailRepository.delete(billDetail);
+                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-client-by-admin-delete-in-bill-detail",
+                        clientBillDetailRepository.getBillDetailsByBillId(bill.getId()));
+                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-admin-delete-in-bill-detail",
+                        clientProductDetailRepository.updateRealTime(productDetail.getId()));
                 List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
 
                 BigDecimal totalAmount = listBillDetail.stream()
