@@ -84,12 +84,13 @@ export default function Checkout() {
   const loadDetailAddress = () => {
     ClientAddressApi.getDefault().then((response) => {
       if (response.data.data !== null) {
-        const { name, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
+        const { id, name, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
           response.data.data
 
         loadTinh()
         loadHuyen(provinceId)
         loadXa(districtId)
+        setiddcSelected(id)
 
         const addressParts = specificAddress.split(', ')
         if (addressParts.length === 4) {
@@ -166,10 +167,6 @@ export default function Checkout() {
   }
 
   useEffect(() => {
-    getPromotionProductDetails(productIds)
-  }, [])
-
-  useEffect(() => {
     if (arrData.length === 0) {
       navigate('/cart')
       return
@@ -177,6 +174,14 @@ export default function Checkout() {
     loadDetailAddress()
     loadTinh()
   }, [navigate, arrData])
+
+  useEffect(() => {
+    if (productIds.length === 0) {
+      navigate('/cart')
+      return
+    }
+    getPromotionProductDetails(productIds)
+  }, [])
 
   const loadTinh = () => {
     ghnAPI.getProvince().then((response) => {
@@ -202,6 +207,7 @@ export default function Checkout() {
   const [giamGia, setGiamGia] = useState('')
   const [timeShip, setTimeShip] = useState('')
   const [phiShip, setPhiShip] = useState('')
+  const [iddcSelected, setiddcSelected] = useState('')
   const dispatch = useDispatch()
 
   const handleTinhChange = (_, newValue) => {
@@ -528,6 +534,8 @@ export default function Checkout() {
                   arrData={arrData}
                   setTimeShip={setTimeShip}
                   loadListAd={loadListAd}
+                  iddcSelected={iddcSelected}
+                  setiddcSelected={setiddcSelected}
                 />
               </div>
               <Grid container mt={0} spacing={3}>
@@ -888,7 +896,10 @@ export default function Checkout() {
                       {formatPrice(
                         arrData.reduce(
                           (total, cart) =>
-                            total + calculateProductTotalPayment(cart, promotionByProductDetail),
+                            total +
+                            calculateProductTotalPayment(cart, promotionByProductDetail) +
+                            phiShip -
+                            giamGia,
                           0,
                         ),
                       )}
