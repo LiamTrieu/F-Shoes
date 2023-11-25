@@ -53,6 +53,18 @@ const TimeLine = (props) => {
             color = '#FF1233'
             icon = IoCloudDoneSharp
             break
+          case 10:
+            color = '#FF9933'
+            icon = IoCloudDoneSharp
+            break
+          case 11:
+            color = '#FF9933'
+            icon = IoCloudDoneSharp
+            break
+          case 12:
+            color = '#FF9933'
+            icon = IoCloudDoneSharp
+            break
           case 0:
             color = 'gray'
             icon = FaTrash
