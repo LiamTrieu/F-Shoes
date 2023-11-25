@@ -368,6 +368,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         String valueType = request.getTypePayment().equals("0") ? "Tại quầy" : "Đặt hàng";
 
         htmlTable.append("</table>");
+
         String htmlContent = "<!DOCTYPE html>" +
                 "<html>" +
                 "<head>" +
@@ -381,7 +382,6 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 "max-width: 800px;" +
                 "margin: 0 auto;" +
                 "padding: 20px;" +
-                "border: 1px solid #ccc;" +
                 "border-radius: 5px;" +
                 "box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);" +
                 "}" +
@@ -391,14 +391,12 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 "}" +
                 ".email-container {" +
                 "background-color: #fff;" +
-                "border: 1px solid #ddd;" +
                 "padding: 20px;" +
                 "border-radius: 5px;" +
                 "box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" +
                 "}" +
                 "table {" +
                 "width: 100%;" +
-                "border-collapse: collapse;" +
                 "margin-bottom: 20px;" +
                 "}" +
                 "th {" +

@@ -447,7 +447,7 @@ export default function OrderDetail() {
         open={openModalCancelBill}
         billDetail={billClient}
       />
-      <Container maxWidth="lg">
+      {/* <Container maxWidth="xl"> */}
         <Paper elevation={3} className="time-line" sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
           <h3>Lịch sử đơn hàng</h3>
           {loadingTimeline ? <div>Loading...</div> : <TimeLine orderTimeLine={listOrderTimeLine} />}
@@ -683,7 +683,7 @@ export default function OrderDetail() {
                   </Table>
                 ) : null}
               </TableContainer>
-              <Container maxWidth="lg">
+              <Container maxWidth="xl">
                 <Grid container spacing={2}>
                   <Grid item xs={9}>
                     <div style={{ float: 'right' }}>Tổng tiền hàng:</div>
@@ -727,7 +727,7 @@ export default function OrderDetail() {
             </Grid>
           </Grid>
         </Paper>
-      </Container>
+      {/* </Container> */}
     </div>
   )
 }

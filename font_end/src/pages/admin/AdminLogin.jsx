@@ -50,7 +50,15 @@ export default function AdminLogin() {
           toast.success('Đăng nhập thành công!')
           SetError(null)
           setCookie('AdminToken', response.data.data, 7)
-          navigate('/admin/dashboard')
+          authenticationAPi.getAdmin().then((data) => {
+            if (data.data.success) {
+              if (data.data.data.role === 0) {
+                navigate('/admin/sell')
+              } else {
+                navigate('/admin/dashboard')
+              }
+            }
+          })
         } else {
           toast.error('Đăng nhập thất bại!')
           SetError('Tài khoản hoặc mật khẩu không chính xác')
