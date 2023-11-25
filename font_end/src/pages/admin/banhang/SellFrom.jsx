@@ -1082,12 +1082,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       return
     }
 
-    if (totalPrice - totalMoneyPayOrderByIdBill < 0) {
-      toast.error('Khách thanh toán chưa đủ tiền', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
-    }
-
     const data = {
       fullName: detailDiaChi.name ? detailDiaChi.name : '',
       phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',

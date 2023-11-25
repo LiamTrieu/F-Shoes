@@ -33,6 +33,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import BillHistoryDialog from '../../admin/hoadon/AdDialogOrderTimeLine'
 
 var stompClient = null
 export default function OrderDetail() {
@@ -48,8 +49,9 @@ export default function OrderDetail() {
   const [listBillDetailUnactive, setListBillDetailUnactive] = useState([])
   const [lstBillDetailWaitingReturn, setLstBillDetailWaitingReturn] = useState([])
   const [isUpdate, setIsUpdate] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false)
 
-  const getBillHistoryByIdBill = (id) => {
+  const getBillHistoryDialogByIdBill = (id) => {
     setLoadingTimeline(true)
     ClientAccountApi.getBillHistoryByIdBill(id)
       .then((response) => {
@@ -409,6 +411,18 @@ export default function OrderDetail() {
       setBillDetail(data)
     }
   }
+  const getBillHistoryByIdBill = (id) => {
+    setLoadingTimeline(true)
+    ClientAccountApi.getBillHByIdBill(id)
+      .then((response) => {
+        setListOrderTimeLine(response.data.data)
+        setLoadingTimeline(false)
+      })
+      .catch((error) => {
+        console.error('Lỗi khi gửi yêu cầu API get orderTimeline: ', error)
+        setLoadingTimeline(false)
+      })
+  }
 
   useEffect(() => {
     getBillByIdBill(id)
@@ -451,6 +465,28 @@ export default function OrderDetail() {
         <Paper elevation={3} className="time-line" sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
           <h3>Lịch sử đơn hàng</h3>
           {loadingTimeline ? <div>Loading...</div> : <TimeLine orderTimeLine={listOrderTimeLine} />}
+          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
+            <Button
+              variant="outlined"
+              className="them-moi"
+              color="cam"
+              style={{ marginRight: '5px' }}
+              onClick={() => setOpenDialog(true)}>
+              Chi tiết
+            </Button>
+
+            {!billClient ? (
+              <div>Loading...</div>
+            ) : (
+              openDialog && (
+                <BillHistoryDialog
+                  openDialog={openDialog}
+                  setOpenDialog={setOpenDialog}
+                  listOrderTimeLine={listOrderTimeLine}
+                />
+              )
+            )}
+          </Stack>
         </Paper>
 
         <Paper style={{ marginBottom: '30px' }}>
