@@ -58,10 +58,29 @@ public class ThongKeServiceImpl implements ThongKeService {
 
     @Override
     public List<ThongKeSanPhamResponse> getThongKeDonHang(GetDataDashBoarhByDateRequest request) throws ParseException {
-        Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
         Long startDate = request.getStartDate() != null ? request.converDate(request.getStartDate()) : null;
         Long endDate = request.getEndDate() != null ? request.converDate(request.getEndDate()) : null;
         return thongKeRepository.getThongKeDonhang(startDate, endDate);
+    }
+
+    @Override
+    public List<ThongKeSanPhamResponse> getThongKeDonHangTrongNgay() {
+        return thongKeRepository.getThongKeDonhangTrongNgay();
+    }
+
+    @Override
+    public List<ThongKeSanPhamResponse> getThongKeDonHangTrongTuan() {
+        return thongKeRepository.getThongKeDonhangTrongTuan();
+    }
+
+    @Override
+    public List<ThongKeSanPhamResponse> getThongKeDonHangTrongThang() {
+        return thongKeRepository.getThongKeDonhangTrongThang();
+    }
+
+    @Override
+    public List<ThongKeSanPhamResponse> getThongKeDonHangTrongNam() {
+        return thongKeRepository.getThongKeDonhangTrongNam();
     }
 
     @Override

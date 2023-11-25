@@ -36,6 +36,26 @@ const thongKeApi = {
     return axiosAdmin.get(urlGetAll, { params: filter })
   },
 
+  getThongKeDonHangTrongNgay: () => {
+    const urlGetAll = `/statistical/view/thong-ke-don-hang-trong-ngay`
+    return axiosAdmin.get(urlGetAll)
+  },
+
+  getThongKeDonHangTrongTuan: () => {
+    const urlGetAll = `/statistical/view/thong-ke-don-hang-trong-tuan`
+    return axiosAdmin.get(urlGetAll)
+  },
+
+  getThongKeDonHangTrongThang: () => {
+    const urlGetAll = `/statistical/view/thong-ke-don-hang-trong-thang`
+    return axiosAdmin.get(urlGetAll)
+  },
+
+  getThongKeDonHangTrongNam: () => {
+    const urlGetAll = `/statistical/view/thong-ke-don-hang-trong-nam`
+    return axiosAdmin.get(urlGetAll)
+  },
+
   getProductTakeOut: (filter) => {
     const urlGetAll = `/statistical/get-product-take-out`
     return axiosAdmin.get(urlGetAll, { params: filter })

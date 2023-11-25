@@ -186,6 +186,30 @@ export default function Dashboard() {
     })
   }
 
+  const fetchThongKeDonHangTrongNgay = () => {
+    thongKeApi.getThongKeDonHangTrongNgay().then((response) => {
+      setDataBieuDo(response.data.data)
+    })
+  }
+
+  const fetchThongKeDonHangTrongTuan = () => {
+    thongKeApi.getThongKeDonHangTrongTuan().then((response) => {
+      setDataBieuDo(response.data.data)
+    })
+  }
+
+  const fetchThongKeDonHangTrongThang = () => {
+    thongKeApi.getThongKeDonHangTrongThang().then((response) => {
+      setDataBieuDo(response.data.data)
+    })
+  }
+
+  const fetchThongKeDonHangTrongNam = () => {
+    thongKeApi.getThongKeDonHangTrongNam().then((response) => {
+      setDataBieuDo(response.data.data)
+    })
+  }
+
   const fecthDataTakeOut = (filter) => {
     thongKeApi.getProductTakeOut(filter).then((response) => {
       setDataProductTakeOut(
@@ -257,14 +281,19 @@ export default function Dashboard() {
   useEffect(() => {
     if (indexButton === 1) {
       fecthDataDay(filter)
+      fetchThongKeDonHangTrongNgay()
     } else if (indexButton === 2) {
       fecthDataWeek(filter)
+      fetchThongKeDonHangTrongTuan()
     } else if (indexButton === 3) {
       fecthDataMonth(filter)
+      fetchThongKeDonHangTrongThang()
     } else if (indexButton === 4) {
       fecthDataYear(filter)
+      fetchThongKeDonHangTrongNam()
     } else if (indexButton === 5) {
       fecthDataInCustom(filterInCustom)
+      fetchThongKeDonHang(filterInCustom)
     }
     fecthDataTakeOut(filterTakeOut)
   }, [filter, doanhThu, indexButton, filterTakeOut, filterInCustom])
@@ -273,10 +302,6 @@ export default function Dashboard() {
     fecthDoanhThu()
     fecthDoanhThuCu()
   }, [])
-
-  useEffect(() => {
-    fetchThongKeDonHang(filterInCustom)
-  }, [filterInCustom])
 
   return (
     <Container maxWidth="lg" sx={{ mb: 5, ml: 0, mr: 0 }}>
@@ -318,9 +343,9 @@ export default function Dashboard() {
         />
       </Grid2>
       {/* ------------------------------------------------------------------------- */}
-      <Grid container spacing={2} sx={{ marginBottom: '20px' }}>
-        <Grid item xs={7}>
-          <Paper elevation={3} className="paper-css">
+      <Paper elevation={3} className="paper-css">
+        <Grid container spacing={2}>
+          <Grid item xs={7}>
             <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
               Danh sách sản phẩm bán chạy theo tháng
             </Typography>
@@ -387,69 +412,85 @@ export default function Dashboard() {
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {dataProductSelling.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell align="left" width={'20%'}>
-                      <img src={row.image[0]} width={'40%'} alt="error" />
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.nameProduct}
-                    </TableCell>
-                    <TableCell align="right">{row.quantity}</TableCell>
-                    <TableCell align="right">{formatCurrency(row.price)}</TableCell>
-                    <TableCell align="right">{row.size}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+              {dataProductSelling.length > 0 ? (
+                <TableBody>
+                  {dataProductSelling.map((row) => (
+                    <TableRow
+                      key={row.name}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell align="left" width={'20%'}>
+                        <img src={row.image[0]} width={'40%'} alt="error" />
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {row.nameProduct}
+                      </TableCell>
+                      <TableCell align="right">{row.quantity}</TableCell>
+                      <TableCell align="right">{formatCurrency(row.price)}</TableCell>
+                      <TableCell align="right">{row.size}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              ) : (
+                <div
+                  style={{
+                    width: '100%',
+                  }}>
+                  <img
+                    style={{
+                      textAlign: 'center',
+                    }}
+                    width={'200px'}
+                    src={require('../../../assets/image/no-data.png')}
+                    alt="No-data"
+                  />
+                </div>
+              )}
             </Table>
-            <Stack
-              mt={2}
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-start"
-              spacing={0}
-              className="stack-css">
-              <Typography component="span" variant={'body2'} mt={0.5}>
-                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
-                <Select
-                  color="cam"
-                  onChange={(e) => {
-                    setFilter({ ...filter, size: e.target.value })
-                  }}
-                  sx={{ height: '25px', mx: 0.5 }}
-                  size="small"
-                  value={filter.size}>
-                  <MenuItem value={1}>1</MenuItem>
-                  <MenuItem value={5}>5</MenuItem>
-                  <MenuItem value={10}>10</MenuItem>
-                  <MenuItem value={15}>15</MenuItem>
-                  <MenuItem value={20}>20</MenuItem>
-                </Select>
-                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
-                  sản phẩm
+            {dataProductSelling.length > 0 && (
+              <Stack
+                mt={2}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-start"
+                spacing={0}
+                className="stack-css">
+                <Typography component="span" variant={'body2'} mt={0.5}>
+                  <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+                  <Select
+                    color="cam"
+                    onChange={(e) => {
+                      setFilter({ ...filter, size: e.target.value })
+                    }}
+                    sx={{ height: '25px', mx: 0.5 }}
+                    size="small"
+                    value={filter.size}>
+                    <MenuItem value={1}>1</MenuItem>
+                    <MenuItem value={5}>5</MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={15}>15</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                  </Select>
+                  <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                    sản phẩm
+                  </Typography>
                 </Typography>
-              </Typography>
-              <Pagination
-                variant="outlined"
-                color="cam"
-                count={totalPages}
-                page={filter.page}
-                onChange={(e, value) => {
-                  e.preventDefault()
-                  setFilter({ ...filter, page: value })
-                }}
-              />
-            </Stack>
-          </Paper>
-        </Grid>
-        <Grid item xs={5}>
-          <Paper
-            elevation={3}
-            className="paper-date"
-            sx={{ marginBottom: '16px', backgroundColor: 'white' }}>
+                <Pagination
+                  variant="outlined"
+                  color="cam"
+                  count={totalPages}
+                  page={filter.page}
+                  onChange={(e, value) => {
+                    e.preventDefault()
+                    setFilter({ ...filter, page: value })
+                  }}
+                />
+              </Stack>
+            )}
+          </Grid>
+          <Grid item xs={5}>
+            <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
+              Trạng thái đơn hàng
+            </Typography>
             <Grid container spacing={2}>
               <Grid item xs={6} className="dateTime-dashboard">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -494,12 +535,12 @@ export default function Dashboard() {
                 </LocalizationProvider>
               </Grid>
             </Grid>
-          </Paper>
-          <Paper elevation={3} className="paper-css" sx={{ height: '460px' }}>
-            <LineChartDashBoard dataBieuDo={dataBieuDo} />
-          </Paper>
+            <Paper elevation={3} sx={{ height: '400px' }}>
+              <LineChartDashBoard dataBieuDo={dataBieuDo} />
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
+      </Paper>
       {/* ------------------------------------------------------------------------- */}
       <Grid container spacing={2} sx={{ marginBottom: '20px' }}>
         <Grid item xs={7}>
@@ -523,62 +564,80 @@ export default function Dashboard() {
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {dataProductTakeOut.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell align="left" width={'20%'}>
-                      <img src={row.image[0]} width={'40%'} alt="error" />
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.nameProduct}
-                    </TableCell>
-                    <TableCell align="right">{row.quantity}</TableCell>
-                    <TableCell align="right">{formatCurrency(row.price)}</TableCell>
-                    <TableCell align="right">{row.size}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+              {dataProductTakeOut.length > 0 ? (
+                <TableBody>
+                  {dataProductTakeOut.map((row) => (
+                    <TableRow
+                      key={row.name}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell align="left" width={'20%'}>
+                        <img src={row.image[0]} width={'40%'} alt="error" />
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {row.nameProduct}
+                      </TableCell>
+                      <TableCell align="right">{row.quantity}</TableCell>
+                      <TableCell align="right">{formatCurrency(row.price)}</TableCell>
+                      <TableCell align="right">{row.size}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              ) : (
+                <div
+                  style={{
+                    width: '100%',
+                  }}>
+                  <img
+                    style={{
+                      textAlign: 'center',
+                    }}
+                    width={'200px'}
+                    src={require('../../../assets/image/no-data.png')}
+                    alt="No-data"
+                  />
+                </div>
+              )}
             </Table>
-            <Stack
-              mt={2}
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-start"
-              spacing={0}
-              className="stack-css">
-              <Typography component="span" variant={'body2'} mt={0.5}>
-                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
-                <Select
-                  color="cam"
-                  onChange={(e) => {
-                    setFilterTakeOut({ ...filterTakeOut, size: e.target.value })
-                  }}
-                  sx={{ height: '25px', mx: 0.5 }}
-                  size="small"
-                  value={filterTakeOut.size}>
-                  <MenuItem value={1}>1</MenuItem>
-                  <MenuItem value={5}>5</MenuItem>
-                  <MenuItem value={10}>10</MenuItem>
-                  <MenuItem value={15}>15</MenuItem>
-                  <MenuItem value={20}>20</MenuItem>
-                </Select>
-                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
-                  sản phẩm
+            {dataProductTakeOut.length > 0 && (
+              <Stack
+                mt={2}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-start"
+                spacing={0}
+                className="stack-css">
+                <Typography component="span" variant={'body2'} mt={0.5}>
+                  <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+                  <Select
+                    color="cam"
+                    onChange={(e) => {
+                      setFilterTakeOut({ ...filterTakeOut, size: e.target.value })
+                    }}
+                    sx={{ height: '25px', mx: 0.5 }}
+                    size="small"
+                    value={filterTakeOut.size}>
+                    <MenuItem value={1}>1</MenuItem>
+                    <MenuItem value={5}>5</MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={15}>15</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                  </Select>
+                  <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                    sản phẩm
+                  </Typography>
                 </Typography>
-              </Typography>
-              <Pagination
-                variant="outlined"
-                color="cam"
-                count={totalPagesTakeOut}
-                page={filterTakeOut.page}
-                onChange={(e, value) => {
-                  e.preventDefault()
-                  setFilterTakeOut({ ...filterTakeOut, page: value })
-                }}
-              />
-            </Stack>
+                <Pagination
+                  variant="outlined"
+                  color="cam"
+                  count={totalPagesTakeOut}
+                  page={filterTakeOut.page}
+                  onChange={(e, value) => {
+                    e.preventDefault()
+                    setFilterTakeOut({ ...filterTakeOut, page: value })
+                  }}
+                />
+              </Stack>
+            )}
           </Paper>
         </Grid>
         <Grid item xs={5}>

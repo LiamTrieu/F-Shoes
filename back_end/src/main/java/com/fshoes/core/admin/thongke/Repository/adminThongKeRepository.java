@@ -347,6 +347,78 @@ public interface adminThongKeRepository extends BillDetailRepository {
     List<ThongKeSanPhamResponse> getThongKeDonhang(Long startDate, Long endDate);
 
     @Query(value = """
+              SELECT s.status, COALESCE(COUNT(b.id), 0) AS soLuong
+              FROM (
+                  SELECT 0 AS status UNION ALL
+                  SELECT 1 UNION ALL
+                  SELECT 2 UNION ALL
+                  SELECT 3 UNION ALL
+                  SELECT 4 UNION ALL
+                  SELECT 5 UNION ALL
+                  SELECT 6 UNION ALL
+                  SELECT 7
+              ) s
+              LEFT JOIN bill b ON s.status = b.status AND DATE(FROM_UNIXTIME(b.complete_date / 1000)) = DATE(CURDATE())
+              GROUP BY s.status
+              ORDER BY s.status ASC;
+            """, nativeQuery = true)
+    List<ThongKeSanPhamResponse> getThongKeDonhangTrongNgay();
+
+    @Query(value = """
+            SELECT s.status, COALESCE(COUNT(b.id), 0) AS soLuong
+            FROM (
+            SELECT 0 AS status UNION ALL
+                SELECT 1 UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7
+            ) s
+            LEFT JOIN bill b ON s.status = b.status AND WEEK(FROM_UNIXTIME(b.complete_date / 1000), 1) = WEEK(CURDATE(), 1)
+            GROUP BY s.status
+            ORDER BY s.status ASC;
+            """, nativeQuery = true)
+    List<ThongKeSanPhamResponse> getThongKeDonhangTrongTuan();
+
+    @Query(value = """
+            SELECT s.status, COALESCE(COUNT(b.id), 0) AS soLuong
+            FROM (
+            SELECT 0 AS status UNION ALL
+                SELECT 1 UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7
+            ) s
+            LEFT JOIN bill b ON s.status = b.status AND DATE_FORMAT(FROM_UNIXTIME(b.complete_date / 1000), '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+            GROUP BY s.status
+            ORDER BY s.status ASC;
+            """, nativeQuery = true)
+    List<ThongKeSanPhamResponse> getThongKeDonhangTrongThang();
+
+    @Query(value = """
+            SELECT s.status, COALESCE(COUNT(b.id), 0) AS soLuong
+            FROM (
+            SELECT 0 AS status UNION ALL
+                SELECT 1 UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7
+            ) s
+            LEFT JOIN bill b ON s.status = b.status AND DATE_FORMAT(FROM_UNIXTIME(b.complete_date / 1000), '%Y') = DATE_FORMAT(CURDATE(), '%Y')
+            GROUP BY s.status
+            ORDER BY s.status ASC;
+            """, nativeQuery = true)
+    List<ThongKeSanPhamResponse> getThongKeDonhangTrongNam();
+
+    @Query(value = """
             SELECT
             CONCAT(p.name, ' - ', c.name, ' - ', m.name, ' - ', s.name, ' - ', ca.name, ' - ', br.name) as nameProduct,
             MAX(pd.price) as price,
