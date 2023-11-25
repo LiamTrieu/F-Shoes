@@ -27,6 +27,14 @@ public interface ThongKeService {
 
     List<ThongKeSanPhamResponse> getThongKeDonHang(GetDataDashBoarhByDateRequest request) throws ParseException;
 
+    List<ThongKeSanPhamResponse> getThongKeDonHangTrongNgay();
+
+    List<ThongKeSanPhamResponse> getThongKeDonHangTrongTuan();
+
+    List<ThongKeSanPhamResponse> getThongKeDonHangTrongThang();
+
+    List<ThongKeSanPhamResponse> getThongKeDonHangTrongNam();
+
     PageReponse<GetDataDashBoardResponse> getProductTakeOut(GetDataDashBoardRequest request);
 
     PageReponse<GetDataDashBoardResponse> getProductInCustom(GetDataDashBoarhByDateRequest request) throws ParseException;

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Pie } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import { getStatus } from '../../../services/constants/statusHoaDon'
 import './Dashboard.css'
 
@@ -58,10 +58,12 @@ export default function LineChartDashBoard(props) {
 
   return (
     <Box mt={2} width={'99%'} height={400}>
-      <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
-        Trạng thái đơn hàng
-      </Typography>
-      <Pie className="legend-container" data={data} options={options} />
+      <Pie
+        className="legend-container"
+        style={{ paddingTop: '20px' }}
+        data={data}
+        options={options}
+      />
     </Box>
   )
 }

@@ -53,6 +53,26 @@ public class ThongKeController {
         return new ObjectRespone(thongKeService.getThongKeDonHang(request));
     }
 
+    @GetMapping("/view/thong-ke-don-hang-trong-ngay")
+    public ObjectRespone getThongKeDonHangTrongNgay() {
+        return new ObjectRespone(thongKeService.getThongKeDonHangTrongNgay());
+    }
+
+    @GetMapping("/view/thong-ke-don-hang-trong-tuan")
+    public ObjectRespone getThongKeDonHangTrongTuan() {
+        return new ObjectRespone(thongKeService.getThongKeDonHangTrongTuan());
+    }
+
+    @GetMapping("/view/thong-ke-don-hang-trong-thang")
+    public ObjectRespone getThongKeDonHangTrongThang() {
+        return new ObjectRespone(thongKeService.getThongKeDonHangTrongThang());
+    }
+
+    @GetMapping("/view/thong-ke-don-hang-trong-nam")
+    public ObjectRespone getThongKeDonHangTrongNam() {
+        return new ObjectRespone(thongKeService.getThongKeDonHangTrongNam());
+    }
+
     @GetMapping("/get-product-take-out")
     public ObjectRespone getProductTakeOut(GetDataDashBoardRequest request) {
         return new ObjectRespone(thongKeService.getProductTakeOut(request));
