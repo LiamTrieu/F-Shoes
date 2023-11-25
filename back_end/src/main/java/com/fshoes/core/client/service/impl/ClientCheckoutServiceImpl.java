@@ -348,7 +348,10 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         Email newEmail = new Email();
         String[] toMail = {request.getEmail()};
 
-        StringBuilder htmlTable = new StringBuilder("<table><tr><th style=\"width: 70%\">Tên sản phẩm</th><th style=\"width: 10%\">Số lượng</th><th style=\"width: 20%\">Giá tiền</th>");
+        StringBuilder htmlTable = new StringBuilder("<table><tr style=\"background-color: #F2904F; border: 1px solid #ddd;\">\n" +
+                                                    "    <th style=\"width: 70%; border: 1px solid #ddd;\">Tên sản phẩm</th>\n" +
+                                                    "    <th style=\"width: 10%; border: 1px solid #ddd;\">Số lượng</th>\n" +
+                                                    "    <th style=\"width: 20%; border: 1px solid #ddd;\">Giá tiền</th></tr>");
 
         for (ClientBillDetaillRequest detail : request.getBillDetail()) {
             int totalPrice = Integer.parseInt(detail.getPrice()) * detail.getQuantity();
@@ -367,85 +370,11 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
         htmlTable.append("</table>");
 
-        String htmlContent = "<!DOCTYPE html>" +
-                "<html>" +
-                "<head>" +
-                "<style>" +
-                "body {" +
-                "font-family: Arial, sans-serif;" +
-                "background-color: #f5f5f5;" +
-                "}" +
-                ".container {" +
-                "background-color: #fff;" +
-                "max-width: 800px;" +
-                "margin: 0 auto;" +
-                "padding: 20px;" +
-                "border-radius: 5px;" +
-                "box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);" +
-                "}" +
-                "h1 {" +
-                "color: #333;" +
-                "text-align: center;" +
-                "}" +
-                ".email-container {" +
-                "background-color: #fff;" +
-                "padding: 20px;" +
-                "border-radius: 5px;" +
-                "box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" +
-                "}" +
-                "table {" +
-                "width: 100%;" +
-                "margin-bottom: 20px;" +
-                "}" +
-                "th {" +
-                "border: 1px solid #ddd;" +
-                "padding: 8px;" +
-                "background-color: #F2741F;" +
-                "color: #fff;" +
-                "text-align: left;" +
-                "}" +
-                "td {" +
-                "border: 1px solid #ddd;" +
-                "padding: 8px;" +
-                "}" +
-                ".total-section {" +
-                "text-align: left;" +
-                "float: right;" +
-                "}" +
-                "p {" +
-                "margin-bottom: 10px;" +
-                "}" +
-                "strong {" +
-                "font-weight: bold;" +
-                "}" +
-                "ul {" +
-                "list-style-type: none;" +
-                "padding: 0;" +
-                "margin: 0;" +
-                "}" +
-                "li {" +
-                "margin-bottom: 5px;" +
-                "}" +
-                "button {" +
-                "background-color: #333;" +
-                "color: #fff;" +
-                "padding: 10px 20px;" +
-                "border: none;" +
-                "border-radius: 5px;" +
-                "font-size: 16px;" +
-                "cursor: pointer;" +
-                "display: block;" +
-                "margin: 20px auto;" +
-                "}" +
-                "button:hover {" +
-                "background-color: #555;" +
-                "}" +
-                "</style>" +
-                "</head>" +
-                "<body>" +
+        String htmlContent =
                 "<div class=\"container\">" +
-                "<h1>Thông Tin Đơn Hàng</h1>" +
+                "<h1 style=\"text-align: center; \">Thông Tin Đơn Hàng</h1>" +
                 "<div class=\"email-container\">" +
+                "<br/>"+
                 htmlTable.toString() +
                 "        <div class=\"total-section\">" +
                 "            <p>Thành tiền: <strong>" + formatCurrency(request.getTotalMoney()) + " VNĐ</strong></p>" +
@@ -454,6 +383,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 "            <p>Tổng cộng: <strong>" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VNĐ</strong></p>" +
                 "        </div>" +
                 "<div>" +
+                "<br/>"+
                 "<p><b>THÔNG TIN ĐƠN HÀNG:</b></p>" +
                 "<ul>" +
                 "<li>Mã đơn hàng: <strong>" + codeBill + "</strong></li>" +
@@ -468,20 +398,20 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 "<li>Địa chỉ: <strong>" + request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh() + "</strong></li>" +
                 "</ul>" +
                 "</div>" +
+                "<hr/>"+
                 "<p>" +
                 "Cảm ơn bạn đã tin tưởng và mua hàng tại cửa hàng của chúng tôi. " +
                 "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
                 "</p>" +
                 "</div>" +
-                "<a href='http://localhost:3000/tracking/" + codeBill + "'><button>Xem Chi Tiết</button></a>" +
+                "<a href='http://localhost:3000/tracking/" + codeBill + "' style=\"display: inline-block; text-align: center; text-decoration: none;\">" +
+                " <button style=\"background-color: #000; color: #fff; padding: 10px 20px; border: none; cursor: pointer;\">Xem Chi Tiết</button>" +
                 "</div>" +
                 (password == null ? "" : "</div>" +
                         "        <p style=\"color: #555;\">Hoặc đăng nhập vào hệ thống:</p>\n" +
                         "        <p><strong>Email:</strong> " + request.getEmail() + "</p>\n" +
                         "        <p><strong>Mật khẩu:</strong> " + password + "</p>\n" +
-                        "</div>")
-                + "</body>" +
-                "</html>";
+                        "</div>");
         newEmail.setBody(htmlContent);
         newEmail.setToEmail(toMail);
         newEmail.setSubject("Đơn hàng F-Shoes của bạn " + codeBill);
