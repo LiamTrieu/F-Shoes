@@ -60,7 +60,9 @@ public class StaffServiceImpl implements StaffService {
     @Transactional
     public Account add(@Valid StaffRequest staffRequest) throws ParseException {
         Long dateBirth = DateUtil.parseDateLong(staffRequest.getDateBirth());
+        String setCodeStaff = "NV" + repo.findAll().size();
         Account staff = Account.builder()
+                .code(setCodeStaff)
                 .fullName(staffRequest.getFullName())
                 .dateBirth(dateBirth)
                 .phoneNumber(staffRequest.getPhoneNumber())

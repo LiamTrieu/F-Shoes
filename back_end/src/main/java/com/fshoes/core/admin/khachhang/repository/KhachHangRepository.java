@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface KhachHangRepository extends JpaRepository<Account, String> {
 
-    @Query(value = "Select ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, avatar, email, full_name as fullName," +
+    @Query(value = "Select ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id,code, avatar, email, full_name as fullName," +
             "date_birth as dateBirth,phone_number as phoneNumber," +
             "gender, created_at as createdAt, status from account " +
             "where role=2 and (:#{#AKS.nameSearch} is null or full_name like %:#{#AKS.nameSearch}% or email like %:#{#AKS.nameSearch}% or phone_number like %:#{#AKS.nameSearch}%) " +
@@ -25,7 +25,7 @@ public interface KhachHangRepository extends JpaRepository<Account, String> {
 
 
     @Query(value = """
-                select  ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, avatar, email,
+                select  ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id,code, avatar, email,
                  full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber,
                  gender, created_at as createdAt, status from account 
             """, nativeQuery = true)

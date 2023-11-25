@@ -147,7 +147,10 @@ export default function AdCustomerPage() {
                 <TableCell align="center" width={'4%'}>
                   <span className="head-table">STT</span>
                 </TableCell>
-                <TableCell align="center" width={'20%'}>
+                <TableCell align="center" width={'5%'}>
+                  <span className="head-table">Code</span>
+                </TableCell>
+                <TableCell align="center" width={'15%'}>
                   <span className="head-table">Email</span>
                 </TableCell>
                 <TableCell align="center" width={'18%'}>
@@ -175,6 +178,7 @@ export default function AdCustomerPage() {
                 return (
                   <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell align="center">{row.stt}</TableCell>
+                    <TableCell align="center">{row.code}</TableCell>
                     <TableCell align="center">{row.email}</TableCell>
                     <TableCell align="center">{row.fullName}</TableCell>
                     <TableCell align="center">
