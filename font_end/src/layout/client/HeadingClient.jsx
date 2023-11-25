@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import './HeadingClient.css'
@@ -37,6 +37,7 @@ export default function HeadingClient() {
   const [openDrawer, setOpenDrawer] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
   const [openMenuProfile, setOpenMenuProfile] = useState(false)
+  const location = useLocation()
   const handleClick = (event) => {
     anchorEl === null ? setAnchorEl(event.currentTarget) : setAnchorEl(null)
     openMenuProfile === false ? setOpenMenuProfile(true) : setOpenMenuProfile(false)
@@ -51,6 +52,7 @@ export default function HeadingClient() {
   const user = useSelector(GetUser)
 
   useEffect(() => {
+    // handleLinkClick(0)
     if (getCookie('ClientToken')) {
       authenticationAPi.getClient().then((response) => {
         if (response.data.success) {
@@ -98,7 +100,7 @@ export default function HeadingClient() {
           component={Link}
           to="/"
           color="inherit"
-          className={`link-with-underline ${activeIndex === 0 ? 'active-link' : ''}`}
+          className={`link-with-underline ${location.pathname === '/home' ? 'active-link' : ''}`}
           sx={{
             my: { md: 0, xs: 2 },
             display: 'block',
@@ -114,7 +116,9 @@ export default function HeadingClient() {
             setOpenDrawer(false)
             handleLinkClick(1)
           }}
-          className={`link-with-underline ${activeIndex === 1 ? 'active-link' : ''}`}
+          className={`link-with-underline ${
+            location.pathname === '/products' ? 'active-link' : ''
+          }`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -132,7 +136,9 @@ export default function HeadingClient() {
             setOpenDrawer(false)
             handleLinkClick(2)
           }}
-          className={`link-with-underline ${activeIndex === 2 ? 'active-link' : ''}`}
+          className={`link-with-underline ${
+            location.pathname === '/about-us' ? 'active-link' : ''
+          }`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -150,7 +156,7 @@ export default function HeadingClient() {
             setOpenDrawer(false)
             handleLinkClick(3)
           }}
-          className={`link-with-underline ${activeIndex === 3 ? 'active-link' : ''}`}
+          className={`link-with-underline ${location.pathname === '/news' ? 'active-link' : ''}`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -169,7 +175,7 @@ export default function HeadingClient() {
             setOpenDrawer(false)
             handleLinkClick(4)
           }}
-          className={`link-with-underline ${activeIndex === 4 ? 'active-link' : ''}`}
+          className={`link-with-underline ${location.pathname === '/contact' ? 'active-link' : ''}`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -187,7 +193,9 @@ export default function HeadingClient() {
             setOpenDrawer(false)
             handleLinkClick(5)
           }}
-          className={`link-with-underline ${activeIndex === 5 ? 'active-link' : ''}`}
+          className={`link-with-underline ${
+            location.pathname === '/tracking' ? 'active-link' : ''
+          }`}
           sx={{
             marginLeft: { md: 4 },
             fontFamily: 'monospace',
@@ -224,7 +232,7 @@ export default function HeadingClient() {
     <>
       <div
         style={{
-          backgroundColor: '#f2904f',
+          backgroundColor: '#b19f9e',
           alignItems: 'center',
           display: 'flex',
           justifyContent: 'center',
