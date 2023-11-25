@@ -5,7 +5,6 @@ import com.fshoes.core.admin.returns.model.request.GetReturnRequest;
 import com.fshoes.core.admin.returns.model.request.ReturnDetailRequest;
 import com.fshoes.core.admin.returns.model.request.ReturnRequest;
 import com.fshoes.core.admin.returns.model.response.BillDetailReturnResponse;
-import com.fshoes.core.admin.returns.model.response.GetBillResponse;
 import com.fshoes.core.admin.returns.model.response.GetReturnDetailResponse;
 import com.fshoes.core.admin.returns.model.response.GetReturnResponse;
 import com.fshoes.core.admin.returns.repository.AdminReturnDetailRepository;
@@ -31,7 +30,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,15 +52,13 @@ public class ReturnServiceImpl implements ReturnService {
     private ProductDetailRepository productDetailRepository;
 
     @Override
-    public PageReponse<GetBillResponse> getBill(GetBillRequest request) {
+    public String getBill(GetBillRequest request) {
         Long currentDate = Calendar.getInstance().getTimeInMillis();
         Calendar sevenDaysAgo = Calendar.getInstance();
         sevenDaysAgo.setTimeInMillis(currentDate);
         sevenDaysAgo.add(Calendar.DAY_OF_YEAR, -7);
         Long sevenDaysAgoTimestamp = sevenDaysAgo.getTimeInMillis();
-
-        Pageable pageable = PageRequest.of(request.getPage(), 5);
-        return new PageReponse<>(billRepository.getBillReturn(request.getCodeBill(), sevenDaysAgoTimestamp, pageable));
+        return billRepository.getBillReturn(request.getCodeBill(), sevenDaysAgoTimestamp);
     }
 
     @Override
@@ -255,7 +251,7 @@ public class ReturnServiceImpl implements ReturnService {
     }
 
     @Override
-    public Returns huyReturn(String id) {
+    public Returns tuChoiReturn(String id) {
         try {
             Returns returns = returnsRepository.findById(id)
                     .orElseThrow(() -> new RestApiException(Message.API_ERROR));
@@ -287,6 +283,49 @@ public class ReturnServiceImpl implements ReturnService {
             returns.setReturnAt(dateNow);
             return returnsRepository.save(returns);
         }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public Returns huyReturn(String id) {
+        try {
+            Returns returns = returnsRepository.findById(id)
+                    .orElseThrow(() -> new RestApiException(Message.API_ERROR));
+            List<ReturnDetail> detailList = returnDetailRepository.findAllByReturnsId(id);
+            List<BillDetail> newBillDetails = new ArrayList<>();
+            List<ReturnDetail> updateReturnsDetail = new ArrayList<>();
+            List<BillDetail> removeBillDetails = new ArrayList<>();
+            for (ReturnDetail returnDetail : detailList) {
+                BillDetail billDetail = billDetailRepository.findByProductDetailIdAndStatusAndBillId(
+                        returnDetail.getProductDetail().getId(),
+                        StatusBillDetail.TON_TAI, returns.getBill().getId()).orElse(null);
+                if (billDetail == null) {
+                    billDetail = returnDetail.getBillDetail();
+                    billDetail.setStatus(0);
+                    newBillDetails.add(billDetail);
+                } else {
+                    billDetail.setQuantity(returnDetail.getQuantity() + billDetail.getQuantity());
+                    newBillDetails.add(billDetail);
+                    removeBillDetails.add(returnDetail.getBillDetail());
+                    returnDetail.setBillDetail(null);
+                    updateReturnsDetail.add(returnDetail);
+                }
+            }
+            billDetailRepository.saveAll(newBillDetails);
+            returnDetailRepository.saveAll(updateReturnsDetail);
+            billDetailRepository.deleteAll(removeBillDetails);
+            returns.setStatus(4);
+            Long dateNow = Calendar.getInstance().getTimeInMillis();
+            returns.setReturnAt(dateNow);
+            returnDetailRepository.saveAll(detailList.stream().map(dt -> {
+                        dt.setBillDetail(null);
+                        return dt;
+                    }).toList());
+            return returnsRepository.save(returns);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

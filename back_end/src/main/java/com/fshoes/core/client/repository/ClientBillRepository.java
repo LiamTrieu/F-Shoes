@@ -53,8 +53,10 @@ public interface ClientBillRepository extends BillRepository {
     @Query(value = """
             select b.id
             from bill b join bill_detail bd on bd.id_bill = b.id
+            LEFT JOIN returns r ON r.id_bill = b.id
             where b.status = 7 AND b.id_customer = :idAccount
             AND b.complete_date >= :date and bd.status = 0
+            AND NOT EXISTS (SELECT 1 FROM returns WHERE id_bill = b.id AND status <> 4)
             GROUP BY b.id
             """, nativeQuery = true)
     List<String> getBillReturn(@Param("date") Long date, String idAccount);
@@ -73,7 +75,7 @@ public interface ClientBillRepository extends BillRepository {
             FROM bill b
                   LEFT JOIN bill_detail bt ON b.id = bt.id_bill
                   LEFT JOIN Account c ON b.id_customer= c.id
-            WHERE b.id = :id 
+            WHERE b.id = :id
                    
             """, nativeQuery = true)
     ClientBillResponse getClientBillResponse(@Param("id") String id);

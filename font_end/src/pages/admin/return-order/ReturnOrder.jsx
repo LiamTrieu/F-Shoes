@@ -20,17 +20,22 @@ import {
   TableRow,
   TextField,
 } from '@mui/material'
-import { AiOutlinePlusSquare } from 'react-icons/ai'
 import SearchIcon from '@mui/icons-material/Search'
+import { FaCalendarPlus } from 'react-icons/fa'
 import dayjs from 'dayjs'
 import { MdOutlineDocumentScanner } from 'react-icons/md'
 import { useEffect } from 'react'
 import returnApi from '../../../api/admin/return/returnApi'
 import { formatCurrency } from '../../../services/common/formatCurrency '
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { TbEyeEdit } from 'react-icons/tb'
 import Empty from '../../../components/Empty'
+import { IoIosCreate } from 'react-icons/io'
+import { FaListAlt } from 'react-icons/fa'
+import { SignalCellularNullRounded } from '@mui/icons-material'
+import { toast } from 'react-toastify'
+import { useZxing } from 'react-zxing'
 
 const style = {
   position: 'absolute',
@@ -43,102 +48,16 @@ const style = {
   borderRadius: '10px',
   p: 4,
 }
-
-const ContentModal = () => {
-  const [filter, setFilter] = useState({ codeBill: '', page: 0 })
-  const [total, setTotal] = useState(1)
-  const [bills, setBills] = useState([])
-  useEffect(() => {
-    returnApi.getBill(filter).then((result) => {
-      setTotal(result.data.data.totalPages)
-      setBills(result.data.data.data)
-    })
-  }, [filter])
-  return (
-    <div>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <TextField
-          onChange={(e) => {
-            setFilter({ ...filter, codeBill: e.target.value })
-          }}
-          sx={{ width: '50%' }}
-          className="search-field"
-          size="small"
-          color="cam"
-          placeholder="Nhập mã hóa đơn cần trả hàng..."
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="cam" />
-              </InputAdornment>
-            ),
-          }}
-        />
-        {/* <Button color="cam" variant="outlined" className="them-moi">
-          <MdOutlineDocumentScanner style={{ marginRight: '5px', fontSize: '17px' }} />
-          Quét mã
-        </Button> */}
-      </Stack>
-      <Table className="tableCss">
-        <TableHead>
-          <TableRow>
-            <TableCell align="center" width={'7%'}>
-              STT
-            </TableCell>
-            <TableCell width={'15%'}>Mã hóa đơn</TableCell>
-            <TableCell width={'15%'}>Khách hàng</TableCell>
-            <TableCell align="center" width={'15%'}>
-              Số điện thoại
-            </TableCell>
-            <TableCell width={'20%'} align="center">
-              Tổng tiền
-            </TableCell>
-            <TableCell width={'10%'} align="center">
-              Thao tác
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {bills.map((bill) => {
-            return (
-              <TableRow>
-                <TableCell align="center">{bill.stt}</TableCell>
-                <TableCell sx={{ maxWidth: '0px', fontWeight: '600' }}>
-                  <span style={{ color: '#2874A6' }}>{bill.code}</span>
-                </TableCell>
-                <TableCell>{bill.name}</TableCell>
-                <TableCell align="center">{bill.phone}</TableCell>
-                <TableCell align="center">
-                  <Chip label={formatCurrency(bill.total)} size="small" />
-                </TableCell>
-                <TableCell align="center">
-                  <Button
-                    component={Link}
-                    to={`/admin/return-order/bill/${bill.id}`}
-                    size="small"
-                    variant="contained"
-                    color="cam">
-                    Chọn
-                  </Button>
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
-      <Stack mt={2} direction="row" justifyContent="center" alignItems="center" spacing={0}>
-        <Pagination
-          variant="outlined"
-          color="cam"
-          count={total}
-          page={filter.page + 1}
-          onChange={(_, value) => {
-            setFilter({ ...filter, page: value - 1 })
-          }}
-        />
-      </Stack>
-    </div>
-  )
+const styleModal = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
 }
 
 const TableReturn = ({ status }) => {
@@ -243,7 +162,7 @@ const TableReturn = ({ status }) => {
                             : data.status === 1
                             ? 'Hoàn thành'
                             : data.status === 2
-                            ? 'Đã hủy'
+                            ? 'Đã từ chối'
                             : 'Đang xử lý'
                         }
                       />
@@ -289,32 +208,105 @@ export default function ReturnOrder() {
   const validTabValue = Math.min(3, Math.max(0, parsedIndex)) || 0
 
   const [tabValue, setTabValue] = useState(validTabValue)
-  const [open, setOpen] = React.useState(false)
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
 
   const handleChange = (event, newValue) => {
     setTabValue(newValue)
+  }
+
+  const [code, setCode] = useState(null)
+  const navigate = useNavigate()
+  const [qrScannerVisible, setQrScannerVisible] = useState(false)
+
+  function createReturn(code) {
+    returnApi.getBill({ codeBill: code }).then((result) => {
+      if (result.data.success) {
+        navigate('/admin/return-order/bill/' + result.data.data)
+        setQrScannerVisible(false)
+      } else {
+        toast.warning('Hóa đơn không tồn tại, hoặc không đủ điều kiện!')
+      }
+    })
+  }
+
+  const RenderVideo = () => {
+    const { ref } = useZxing({
+      onDecodeResult(result) {
+        handleScan(result)
+        setQrScannerVisible(false)
+      },
+    })
+    return <video ref={ref} width="100%" />
+  }
+
+  const handleScan = (qrData) => {
+    if (qrData?.text) {
+      const qrDataText = qrData?.text
+      createReturn(qrDataText)
+    }
   }
 
   return (
     <div className="tra-hang">
       <BreadcrumbsCustom listLink={listBreadcrumbs} />
       <Paper sx={{ p: 2 }}>
-        <Button onClick={handleOpen} color="cam" variant="outlined" className="them-moi">
-          <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
-          Tạo mới
-        </Button>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
-          <Box sx={style}>
-            <ContentModal />
+        <h4 style={{ marginTop: '0px', marginBottom: '20px' }}>
+          <IoIosCreate fontSize={20} style={{ marginBottom: '-4px' }} /> Tạo hóa đơn trả hàng
+        </h4>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Box width={'600px'}>
+            <TextField
+              onChange={(e) => {
+                setCode(e.target.value)
+              }}
+              style={{ width: '400px' }}
+              className="search-field"
+              size="small"
+              color="cam"
+              placeholder="Nhập mã hóa đơn cần trả hàng..."
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="cam" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Button
+              onClick={() => {
+                createReturn(code)
+              }}
+              color="cam"
+              variant="contained"
+              className="them-moi"
+              sx={{ ml: 1 }}>
+              <FaCalendarPlus style={{ marginRight: '5px', fontSize: '17px' }} />
+              Tạo
+            </Button>
           </Box>
+          <Button
+            onClick={() => {
+              setQrScannerVisible(true)
+            }}
+            color="cam"
+            variant="outlined"
+            className="them-moi">
+            <MdOutlineDocumentScanner style={{ marginRight: '5px', fontSize: '17px' }} />
+            Quét mã
+          </Button>
+        </Stack>
+        <Modal
+          open={qrScannerVisible}
+          onClose={() => {
+            setQrScannerVisible(false)
+          }}>
+          <Box sx={styleModal}>{qrScannerVisible && <RenderVideo />}</Box>
         </Modal>
+      </Paper>
+      <Paper sx={{ p: 2, mt: 2 }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <h4 style={{ marginTop: '0px', marginBottom: '20px' }}>
+            <FaListAlt fontSize={20} style={{ marginBottom: '-4px' }} /> Danh sách hóa đơn tạo hàng
+          </h4>
           <Tabs value={tabValue} onChange={handleChange}>
             <Tab label="Chờ xác nhận trả hàng" />
             <Tab label="Đang xử lý" />

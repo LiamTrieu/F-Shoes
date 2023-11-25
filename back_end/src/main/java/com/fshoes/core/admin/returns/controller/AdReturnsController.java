@@ -56,6 +56,6 @@ public class AdReturnsController {
     }
     @PutMapping ("/huy/{id}")
     public ObjectRespone huyReturn(@PathVariable("id") String id){
-        return new ObjectRespone(returnService.huyReturn(id));
+        return new ObjectRespone(returnService.tuChoiReturn(id));
     }
 }

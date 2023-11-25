@@ -82,7 +82,7 @@ export default function Order() {
     ClientAccountApi.getAllBillReturn().then((response) => {
       setGetBillReturn(response.data.data)
     })
-  }, [])
+  }, [filter])
 
   const formatPrice = (price) => {
     return price.toLocaleString('vi-VN', {
@@ -182,7 +182,8 @@ export default function Order() {
             <MenuItem value={0}>Chờ phê duyệt</MenuItem>
             <MenuItem value={3}>Đang xử lý</MenuItem>
             <MenuItem value={1}>Hoàn thành</MenuItem>
-            <MenuItem value={2}>Đã hủy</MenuItem>
+            <MenuItem value={2}>Bị từ chối</MenuItem>
+            <MenuItem value={4}>Đã hủy</MenuItem>
           </Select>
         </Stack>
         <Table aria-label="simple table">
@@ -237,6 +238,8 @@ export default function Order() {
                           ? 'chip-hoat-dong'
                           : data.status === 2
                           ? 'chip-khong-hoat-dong'
+                          : data.status === 4
+                          ? 'chip-khong-hoat-dong'
                           : 'chip-dang'
                       }
                       size="small"
@@ -246,6 +249,8 @@ export default function Order() {
                           : data.status === 1
                           ? 'Hoàn thành'
                           : data.status === 2
+                          ? 'Bị từ chối'
+                          : data.status === 4
                           ? 'Đã hủy'
                           : 'Đang xử lý'
                       }

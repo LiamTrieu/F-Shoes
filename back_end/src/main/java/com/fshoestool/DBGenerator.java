@@ -67,19 +67,19 @@ public class DBGenerator implements CommandLineRunner {
     }
 
     public void run(String... args) throws Exception {
-        Account customer1 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn A").dateBirth(System.currentTimeMillis()).phoneNumber("0123456781").email("customer1@example.com").gender(true).password("password1").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer1 = Account.builder().code("KH1").role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn A").dateBirth(System.currentTimeMillis()).phoneNumber("0123456781").email("customer1@example.com").gender(true).password("password1").avatar(null).status(Status.HOAT_DONG).build();
         customer1.setId(accountRepository.save(customer1).getId());
 
-        Account customer2 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn B").dateBirth(System.currentTimeMillis()).phoneNumber("0234567890").email("customer2@example.com").gender(false).password("password2").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer2 = Account.builder().code("KH2").role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn B").dateBirth(System.currentTimeMillis()).phoneNumber("0234567890").email("customer2@example.com").gender(false).password("password2").avatar(null).status(Status.HOAT_DONG).build();
         customer2.setId(accountRepository.save(customer2).getId());
 
-        Account customer3 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn C").dateBirth(System.currentTimeMillis()).phoneNumber("0345678901").email("customer3@example.com").gender(true).password("password3").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer3 = Account.builder().code("KH3").role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn C").dateBirth(System.currentTimeMillis()).phoneNumber("0345678901").email("customer3@example.com").gender(true).password("password3").avatar(null).status(Status.HOAT_DONG).build();
         customer3.setId(accountRepository.save(customer3).getId());
 
-        Account customer4 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn D").dateBirth(System.currentTimeMillis()).phoneNumber("0456789012").email("customer4@example.com").gender(false).password("password4").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer4 = Account.builder().code("KH4").role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn D").dateBirth(System.currentTimeMillis()).phoneNumber("0456789012").email("customer4@example.com").gender(false).password("password4").avatar(null).status(Status.HOAT_DONG).build();
         customer4.setId(accountRepository.save(customer4).getId());
 
-        Account customer5 = Account.builder().role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn E").dateBirth(System.currentTimeMillis()).phoneNumber("0567890123").email("customer5@example.com").gender(true).password("password5").avatar(null).status(Status.HOAT_DONG).build();
+        Account customer5 = Account.builder().code("KH5").role(RoleAccount.KHACH_HANG).fullName("Nguyễn Văn E").dateBirth(System.currentTimeMillis()).phoneNumber("0567890123").email("customer5@example.com").gender(true).password("password5").avatar(null).status(Status.HOAT_DONG).build();
         customer5.setId(accountRepository.save(customer5).getId());
         //Customer
 
@@ -101,19 +101,19 @@ public class DBGenerator implements CommandLineRunner {
         //Promotion
 
         //Staff
-        Account staff1 = Account.builder().role(RoleAccount.NHAN_VIEN).fullName("Lê Thị A").dateBirth(System.currentTimeMillis()).CitizenId("1234567890123456").phoneNumber("0123456789").email("staff1@example.com").gender(true).password("password1").avatar("https://shorturl.at/CDP27").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
+        Account staff1 = Account.builder().code("NV1").role(RoleAccount.NHAN_VIEN).fullName("Lê Thị A").dateBirth(System.currentTimeMillis()).CitizenId("1234567890123456").phoneNumber("0123456789").email("staff1@example.com").gender(true).password("password1").avatar("https://shorturl.at/CDP27").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
         staff1.setId(accountRepository.save(staff1).getId());
 
-        Account staff2 = Account.builder().role(RoleAccount.NHAN_VIEN).fullName("Lê Thị B").dateBirth(System.currentTimeMillis()).CitizenId("2345678901234567").phoneNumber("0123456788").email("staff2@example.com").gender(true).password("password2").avatar("https://shorturl.at/eqIR9").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
+        Account staff2 = Account.builder().code("NV2").role(RoleAccount.NHAN_VIEN).fullName("Lê Thị B").dateBirth(System.currentTimeMillis()).CitizenId("2345678901234567").phoneNumber("0123456788").email("staff2@example.com").gender(true).password("password2").avatar("https://shorturl.at/eqIR9").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
         staff2.setId(accountRepository.save(staff2).getId());
 
-        Account staff3 = Account.builder().role(RoleAccount.NHAN_VIEN).fullName("Lê Thị C").dateBirth(System.currentTimeMillis()).CitizenId("3456789012345678").phoneNumber("0123456787").email("staff3@example.com").gender(true).password("password3").avatar("https://shorturl.at/juFOV").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
+        Account staff3 = Account.builder().code("NV3").role(RoleAccount.NHAN_VIEN).fullName("Lê Thị C").dateBirth(System.currentTimeMillis()).CitizenId("3456789012345678").phoneNumber("0123456787").email("staff3@example.com").gender(true).password("password3").avatar("https://shorturl.at/juFOV").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
         staff3.setId(accountRepository.save(staff3).getId());
 
-        Account staff4 = Account.builder().role(RoleAccount.NHAN_VIEN).fullName("Lê Thị D").dateBirth(System.currentTimeMillis()).CitizenId("4567890123456789").phoneNumber("0123456786").email("staff4@example.com").gender(true).password("password4").avatar("https://shorturl.at/pCFQU").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
+        Account staff4 = Account.builder().code("NV4").role(RoleAccount.NHAN_VIEN).fullName("Lê Thị D").dateBirth(System.currentTimeMillis()).CitizenId("4567890123456789").phoneNumber("0123456786").email("staff4@example.com").gender(true).password("password4").avatar("https://shorturl.at/pCFQU").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
         staff4.setId(accountRepository.save(staff4).getId());
 
-        Account staff5 = Account.builder().role(RoleAccount.NHAN_VIEN).fullName("Lê Thị E").dateBirth(System.currentTimeMillis()).CitizenId("5678901234567890").phoneNumber("0123456785").email("staff5@example.com").gender(true).password("password5").avatar("https://shorturl.at/rAGJV").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
+        Account staff5 = Account.builder().code("NV5").role(RoleAccount.NHAN_VIEN).fullName("Lê Thị E").dateBirth(System.currentTimeMillis()).CitizenId("5678901234567890").phoneNumber("0123456785").email("staff5@example.com").gender(true).password("password5").avatar("https://shorturl.at/rAGJV").role(RoleAccount.NHAN_VIEN).status(Status.HOAT_DONG).build();
         staff5.setId(accountRepository.save(staff5).getId());
         //Staff
 
@@ -841,6 +841,7 @@ public class DBGenerator implements CommandLineRunner {
         billHistory40.setId(billHistoryRepository.save(billHistory40).getId());
         //billhistory
         Account accountAdmin = Account.builder().role(RoleAccount.QUAN_LY)
+                .code("NV6")
                 .fullName("Nguyễn Văn Nhật")
                 .dateBirth(System.currentTimeMillis())
                 .CitizenId("1234999890123456")
@@ -852,6 +853,7 @@ public class DBGenerator implements CommandLineRunner {
                 .status(Status.HOAT_DONG)
                 .build();
         Account accountClient = Account.builder().role(RoleAccount.KHACH_HANG)
+                .code("KH6")
                 .fullName("Nguyễn Thị Thùy Dương")
                 .dateBirth(System.currentTimeMillis())
                 .CitizenId("077564778753")

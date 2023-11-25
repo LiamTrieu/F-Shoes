@@ -3,8 +3,9 @@ import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { useNavigate, useParams } from 'react-router-dom'
 import returnApi from '../../../api/admin/return/returnApi'
 import {
+  Box,
   Button,
-  ButtonGroup,
+  Checkbox,
   Chip,
   FormControlLabel,
   Grid,
@@ -16,9 +17,12 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from '@mui/material'
+import { MdAssignmentReturned } from 'react-icons/md'
 import './index.css'
 import { RemoveCircle } from '@mui/icons-material'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -26,6 +30,7 @@ import PersonIcon from '@mui/icons-material/Person'
 import Carousel from 'react-material-ui-carousel'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
+import { GrSelect } from 'react-icons/gr'
 
 const listBreadcrumbs = [{ name: 'Trả hàng', link: '/admin/return-order/0' }]
 export default function ReturnOrderBill() {
@@ -155,112 +160,306 @@ export default function ReturnOrderBill() {
     <div className="tra-hang">
       <BreadcrumbsCustom nameHere={bill?.code} listLink={listBreadcrumbs} />
       <Grid container spacing={2} mt={2}>
-        <Grid
-          sx={{
-            '::-webkit-scrollbar': {
-              width: '0px',
-            },
-          }}
-          item
-          xs={8}
-          style={{ overflow: 'auto', height: '77vh', paddingTop: 0 }}>
-          {billDetail.map((product) => (
-            <Paper className="paper-return" sx={{ mb: 2 }}>
+        <Grid xs={8} style={{ paddingTop: 0 }}>
+          <Paper className="paper-return" sx={{ mb: 2, p: 1 }}>
+            <h4 style={{ margin: '0' }}>
+              <GrSelect fontSize={20} style={{ marginBottom: '-6px' }} />
+              &nbsp; Chọn sản phẩm cần trả
+            </h4>
+            <hr style={{ marginBottom: '0px' }} />
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ padding: 0 }} width={'5%'}>
+                    <Checkbox
+                      onChange={(e) => {
+                        setBillDetail((prevBillDetail) => {
+                          const newBillDetail = [...prevBillDetail]
+
+                          if (e.target.checked) {
+                            newBillDetail.forEach((item) => {
+                              item.quantityReturn = item.quantity
+                            })
+                          } else {
+                            newBillDetail.forEach((item) => {
+                              item.quantityReturn = 0
+                            })
+                          }
+
+                          return newBillDetail
+                        })
+                      }}
+                      checked={billDetail.reduce((check, e) => {
+                        if (e.quantity !== e.quantityReturn) {
+                          check = false
+                        }
+                        return check
+                      }, true)}
+                    />
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{ padding: 0 }}
+                    width={'55%'}
+                    style={{ fontWeight: 'bold' }}>
+                    Sản phẩm
+                  </TableCell>
+                  <TableCell
+                    sx={{ padding: 0 }}
+                    width={'20%'}
+                    style={{ fontWeight: 'bold' }}
+                    align="center">
+                    Số lượng
+                  </TableCell>
+                  <TableCell
+                    sx={{ padding: 0 }}
+                    width={'20%'}
+                    style={{ fontWeight: 'bold' }}
+                    align="center">
+                    Đơn giá
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+            <Box
+              sx={{
+                '::-webkit-scrollbar': {
+                  width: '0px',
+                },
+              }}
+              style={{ overflow: 'auto', height: '24vh' }}>
               <Table>
-                <TableBody>
-                  <TableCell width={'20%'}>
-                    <div
-                      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <Carousel
-                        indicators={false}
-                        sx={{ minWidth: '60px', height: '60px' }}
-                        navButtonsAlwaysInvisible>
-                        {product.image.split(',').map((item, i) => (
-                          <img
-                            alt="anh-san-pham"
-                            width={'60px'}
-                            height={'60px'}
-                            key={'anh' + i}
-                            src={item}
-                          />
-                        ))}
-                      </Carousel>
-                      <div style={{ display: 'inline-block', paddingLeft: '10px' }}>
-                        {product.name}
+                {billDetail.map((product) => (
+                  <TableBody>
+                    <TableCell sx={{ padding: 0 }} width={'5%'}>
+                      <Checkbox
+                        checked={product.quantity === product.quantityReturn}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            changeSL(product.quantity, product)
+                          } else {
+                            changeSL(0, product)
+                          }
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ padding: '5px' }} width={'55%'}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          float: 'left',
+                        }}>
+                        <Carousel
+                          indicators={false}
+                          sx={{ minWidth: '60px', height: '60px' }}
+                          navButtonsAlwaysInvisible>
+                          {product.image.split(',').map((item, i) => (
+                            <img
+                              alt="anh-san-pham"
+                              width={'60px'}
+                              height={'60px'}
+                              key={'anh' + i}
+                              src={item}
+                            />
+                          ))}
+                        </Carousel>
+                        <div style={{ display: 'inline-block', paddingLeft: '10px' }}>
+                          {product.name}
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell width={'15%'}>
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        changeSL(product.quantityReturn - 1, product)
-                      }}>
-                      <RemoveCircle sx={{ color: '#BDC3C7' }} />
-                    </IconButton>
-                    <TextField
-                      className="input-soluong-return"
-                      sx={{ width: '60px' }}
-                      size="small"
-                      onChange={(e) => {
-                        changeSL(e.target.value, product)
-                      }}
-                      value={product.quantityReturn}
-                      variant="standard"
-                      InputLabelProps={{ shrink: true }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">/ {product.quantity}</InputAdornment>
-                        ),
-                      }}
-                    />
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        changeSL(product.quantityReturn + 1, product)
-                      }}>
-                      <AddCircleIcon sx={{ color: '#BDC3C7' }} />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell width={'5%'}>
-                    <TextField
-                      className="input-soluong-return"
-                      sx={{ width: '90px' }}
-                      size="small"
-                      disabled
-                      value={product.price.toLocaleString('en-US')}
-                      variant="standard"
-                    />
-                  </TableCell>
-                  <TableCell width={'5%'}>
-                    <b style={{ color: 'red' }}>
-                      {(product.price * product.quantityReturn).toLocaleString('en-US')}
-                    </b>
-                  </TableCell>
-                  <TableCell width={'15%'}>
-                    <TextField
-                      value={product?.note}
-                      onChange={(e) => {
-                        changeNote(e.target.value, product)
-                      }}
-                      disabled={product.quantityReturn <= 0}
-                      color="cam"
-                      placeholder="Ghi chú"
-                      multiline
-                      rows={2}
-                      sx={{ marginRight: '10px' }}
-                    />
-                  </TableCell>
-                </TableBody>
+                    </TableCell>
+                    <TableCell sx={{ padding: '5px' }} width={'20%'} align="center">
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          changeSL(product.quantityReturn - 1, product)
+                        }}>
+                        <RemoveCircle sx={{ color: '#BDC3C7' }} />
+                      </IconButton>
+                      <TextField
+                        className="input-soluong-return"
+                        sx={{ width: '60px' }}
+                        size="small"
+                        onChange={(e) => {
+                          changeSL(e.target.value, product)
+                        }}
+                        value={product.quantityReturn}
+                        variant="standard"
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">/ {product.quantity}</InputAdornment>
+                          ),
+                        }}
+                      />
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          changeSL(product.quantityReturn + 1, product)
+                        }}>
+                        <AddCircleIcon sx={{ color: '#BDC3C7' }} />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell sx={{ padding: '5px' }} width={'20%'} align="center">
+                      <TextField
+                        className="input-soluong-return"
+                        sx={{ width: '90px' }}
+                        size="small"
+                        disabled
+                        value={product.price.toLocaleString('en-US')}
+                        variant="standard"
+                      />
+                    </TableCell>
+                  </TableBody>
+                ))}
               </Table>
-            </Paper>
-          ))}
+            </Box>
+          </Paper>
+          <Paper className="paper-return" sx={{ mb: 2, p: 1 }}>
+            <h4 style={{ margin: '0' }}>
+              <MdAssignmentReturned fontSize={20} style={{ marginBottom: '-6px' }} />
+              &nbsp; Danh sách sản phẩm trả
+            </h4>
+            <hr style={{ marginBottom: '0px' }} />
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sx={{ padding: '10px' }}
+                    align="center"
+                    style={{ fontWeight: 'bold' }}
+                    width={'25%'}>
+                    Sản phẩm
+                  </TableCell>
+                  <TableCell
+                    sx={{ padding: '10px' }}
+                    align="center"
+                    style={{ fontWeight: 'bold' }}
+                    width={'15%'}>
+                    Số lượng
+                  </TableCell>
+                  <TableCell
+                    sx={{ padding: 0 }}
+                    align="center"
+                    style={{ fontWeight: 'bold' }}
+                    width={'15%'}>
+                    Đơn giá
+                  </TableCell>
+                  <TableCell
+                    sx={{ padding: '10px' }}
+                    align="center"
+                    style={{ fontWeight: 'bold' }}
+                    width={'15%'}>
+                    Tổng
+                  </TableCell>
+                  <TableCell
+                    sx={{ padding: '10px' }}
+                    align="center"
+                    style={{ fontWeight: 'bold' }}
+                    width={'20%'}>
+                    Ghi chú
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+            <Box
+              sx={{
+                '::-webkit-scrollbar': {
+                  width: '0px',
+                },
+              }}
+              style={{ overflow: 'auto', minHeight: '30vh' }}>
+              <Table>
+                {billDetail.filter((e) => e.quantityReturn > 0).length > 0 ? (
+                  billDetail
+                    .filter((e) => e.quantityReturn > 0)
+                    .map((product) => (
+                      <TableBody>
+                        <TableCell sx={{ padding: '5px' }} align="center" width={'25%'}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Carousel
+                              indicators={false}
+                              sx={{ minWidth: '60px', height: '60px' }}
+                              navButtonsAlwaysInvisible>
+                              {product.image.split(',').map((item, i) => (
+                                <img
+                                  alt="anh-san-pham"
+                                  width={'60px'}
+                                  height={'60px'}
+                                  key={'anh' + i}
+                                  src={item}
+                                />
+                              ))}
+                            </Carousel>
+                            <div style={{ display: 'inline-block', paddingLeft: '10px' }}>
+                              {product.name}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell sx={{ padding: '5px' }} align="center" width={'15%'}>
+                          <Chip label={product.quantityReturn} sx={{ fontWeight: 'bold' }} />
+                        </TableCell>
+                        <TableCell sx={{ padding: '5px' }} align="center" width={'15%'}>
+                          <TextField
+                            className="input-soluong-return"
+                            sx={{ width: '90px' }}
+                            size="small"
+                            disabled
+                            value={product.price.toLocaleString('en-US')}
+                            variant="standard"
+                          />
+                        </TableCell>
+                        <TableCell sx={{ padding: '5px' }} width={'15%'} align="center">
+                          <b style={{ color: 'red' }}>
+                            {(product.price * product.quantityReturn).toLocaleString('en-US')}
+                          </b>
+                        </TableCell>
+                        <TableCell sx={{ padding: '5px' }} width={'20%'} align="center">
+                          <TextField
+                            value={product?.note}
+                            onChange={(e) => {
+                              changeNote(e.target.value, product)
+                            }}
+                            disabled={product.quantityReturn <= 0}
+                            color="cam"
+                            placeholder="Ghi chú"
+                            multiline
+                            rows={2}
+                            sx={{ marginRight: '10px' }}
+                          />
+                        </TableCell>
+                      </TableBody>
+                    ))
+                ) : (
+                  <div
+                    style={{
+                      display: 'flex',
+                      textAlign: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <img
+                      width={'400px'}
+                      src={require('../../../assets/image/no-data.png')}
+                      alt="No-data"
+                    />
+                  </div>
+                )}
+              </Table>
+            </Box>
+          </Paper>
         </Grid>
         <Grid item xs={4} style={{ paddingTop: 0 }}>
           <Paper
             sx={{
               p: 2,
-              height: '77vh',
+              height: '82vh',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -277,7 +476,7 @@ export default function ReturnOrderBill() {
                 borderRadius: '10px',
               }}>
               <PersonIcon style={{ marginRight: '5px' }} />
-              <b>{bill?.fullName}</b>
+              <b>{bill?.fullName ? bill?.fullName : 'Khách lẻ'}</b>
             </div>
             <Grid container>
               <Grid xs={6}>

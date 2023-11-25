@@ -76,7 +76,7 @@ public class GenHoaDon {
             BarcodeQRCode qrcode = new BarcodeQRCode(bill.getCode(), 1, 1, null);
             Image qrcodeImage = qrcode.getImage();
             qrcodeImage.scaleAbsolute(100, 100);  // Điều chỉnh kích thước của mã QR Code
-            qrcodeImage.setAbsolutePosition(30, 700);
+            qrcodeImage.setAbsolutePosition(30, 710);
             document.add(qrcodeImage);
 
             // Thêm dòng trống

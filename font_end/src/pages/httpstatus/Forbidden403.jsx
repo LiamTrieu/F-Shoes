@@ -1,8 +1,12 @@
 import React from 'react'
 
-import { Box, Typography, Button } from '@mui/material'
+import { Box, Typography, Button, Stack } from '@mui/material'
+import { IoMdArrowRoundBack } from 'react-icons/io'
+import { useNavigate } from 'react-router-dom'
+import { removeCookie } from '../../services/cookie'
 
 export default function Forbidden403() {
+  const navigate = useNavigate()
   return (
     <Box
       sx={{
@@ -21,11 +25,28 @@ export default function Forbidden403() {
         403 - Access Denied
       </Typography>
       <Typography variant="h6" gutterBottom>
-        Sorry, you do not have permission to access this page.
+        Rất tiếc, bạn không có quyền truy cập trang này.
       </Typography>
-      <Button variant="contained" color="primary" href="/">
-        Go Back Home
-      </Button>
+      <Stack direction="row" spacing={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            navigate(-1)
+          }}>
+          <IoMdArrowRoundBack />
+          &nbsp; Quay lại
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            removeCookie('AdminToken')
+            navigate('/admin/login')
+          }}>
+          Đăng nhập tài khoản khác
+        </Button>
+      </Stack>
     </Box>
   )
 }

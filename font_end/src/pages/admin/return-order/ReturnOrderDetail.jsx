@@ -16,6 +16,8 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from '@mui/material'
@@ -78,16 +80,16 @@ export default function ReturnOrderDetail() {
   }
 
   function huy() {
-    const title = 'Hủy yêu cầu trả sản phẩm?'
+    const title = 'Từ chối yêu cầu trả sản phẩm?'
     confirmSatus(title, '').then((result) => {
       if (result.isConfirmed) {
         returnApi.huy(id).then(
           (res) => {
             if (res.data.success) {
-              toast.success('Hủy yêu cầu thành công!')
+              toast.success('Từ chối yêu cầu thành công!')
               navigate('/admin/return-order/0')
             } else {
-              toast.error('Hủy yêu cầu thất bại!')
+              toast.error('Từ chối yêu cầu thất bại!')
             }
           },
           () => {},
@@ -152,9 +154,28 @@ export default function ReturnOrderDetail() {
           item
           xs={8}
           style={{ overflow: 'auto', height: '77vh', paddingTop: 0 }}>
-          {billDetail.map((product) => (
-            <Paper className="paper-return" sx={{ mb: 2 }}>
-              <Table>
+          <Paper className="paper-return" sx={{ mb: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center" width={'20%'} style={{ fontWeight: 'bold' }}>
+                    Sản phẩm
+                  </TableCell>
+                  <TableCell width={'15%'} style={{ fontWeight: 'bold' }} align="center">
+                    Số lượng
+                  </TableCell>
+                  <TableCell width={'5%'} style={{ fontWeight: 'bold' }} align="center">
+                    Đơn giá
+                  </TableCell>
+                  <TableCell width={'5%'} style={{ fontWeight: 'bold' }} align="center">
+                    Tổng
+                  </TableCell>
+                  <TableCell width={'15%'} style={{ fontWeight: 'bold' }} align="center">
+                    Ghi chú
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              {billDetail.map((product) => (
                 <TableBody>
                   <TableCell width={'20%'}>
                     <div
@@ -178,10 +199,10 @@ export default function ReturnOrderDetail() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell width={'15%'}>
+                  <TableCell width={'15%'} align="center">
                     <Chip label={<b>Số lượng: {product.quantity}</b>} />
                   </TableCell>
-                  <TableCell width={'5%'}>
+                  <TableCell width={'5%'} align="center">
                     <TextField
                       className="input-soluong-return"
                       sx={{ width: '90px' }}
@@ -191,18 +212,18 @@ export default function ReturnOrderDetail() {
                       variant="standard"
                     />
                   </TableCell>
-                  <TableCell width={'5%'}>
+                  <TableCell width={'5%'} align="center">
                     <b style={{ color: 'red' }}>
                       {(product.price * product.quantity).toLocaleString('en-US')}
                     </b>
                   </TableCell>
-                  <TableCell width={'15%'}>
+                  <TableCell width={'15%'} align="center">
                     <b>{product?.note}</b>
                   </TableCell>
                 </TableBody>
-              </Table>
-            </Paper>
-          ))}
+              ))}
+            </Table>
+          </Paper>
         </Grid>
         <Grid item xs={4} style={{ paddingTop: 0 }}>
           <Paper
@@ -220,7 +241,9 @@ export default function ReturnOrderDetail() {
                     ? 'Chờ xác nhận'
                     : returnDetail?.status === 3
                     ? 'Đang xử lý'
-                    : 'Đã hủy'
+                    : returnDetail?.status === 4
+                    ? 'Đã hủy'
+                    : 'Đã từ chối'
                 }
                 style={{
                   color:
@@ -418,7 +441,7 @@ export default function ReturnOrderDetail() {
                       color="error"
                       variant="contained"
                       fullWidth>
-                      Hủy
+                      Từ chối
                     </Button>
                     {returnDetail?.status === 0 && (
                       <Button

@@ -31,6 +31,10 @@ public class JwtUtilities {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("id")).toString();
+    }
+
     public Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
@@ -45,8 +49,8 @@ public class JwtUtilities {
     }
 
     public Boolean validateToken(String token, Account userDetails) {
-        final String email = extractUsername(token);
-        return (email.equals(userDetails.getUsername()) &&
+        final String id = extractUserId(token);
+        return (id.equals(userDetails.getId()) &&
                 !isTokenExpired(token) &&
                 userDetails.getStatus() == 0);
     }
@@ -55,9 +59,10 @@ public class JwtUtilities {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String email) {
+    public String generateToken(Account account) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(account.getEmail())
+                .claim("id", account.getId())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(Date.from(Instant.now().plus(jwtExpiration, ChronoUnit.MILLIS)))
                 .signWith(SignatureAlgorithm.HS256, secret).compact();
