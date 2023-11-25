@@ -17,6 +17,7 @@ import Tracking from '../pages/client/Tracking'
 import TrackingDetail from '../pages/client/TrackingDetail'
 import ForgotPassword from '../pages/client/ForgotPassword'
 import ChangePassword from '../pages/client/profile/ChangePassword'
+import ReturnPolicy from '../pages/client/ReturnPolicy'
 
 const clientRoute = [
   { path: '/home', element: <Home />, index: true },
@@ -28,6 +29,7 @@ const clientRoute = [
   { path: '/login', element: <Login /> },
   { path: '/checkout', element: <Checkout /> },
   { path: '/profile', element: <Profile /> },
+  { path: '/return-policy-client', element: <ReturnPolicy /> },
   // { path: `/profile/get-by-idBill/:id`, element: <OrderDetail /> },
   { path: `/tracking/:code`, element: <TrackingDetail /> },
   { path: `/tracking`, element: <Tracking /> },

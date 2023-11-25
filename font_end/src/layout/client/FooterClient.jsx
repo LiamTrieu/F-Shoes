@@ -74,7 +74,7 @@ export default function FooterClient() {
                 F-Shoes
               </div>
               <Typography className="text-footer">
-                <span className="title-footer"> Chin Su:</span> nơi trao tặng các sản phẩm giày thời
+                <span className="title-footer"> F-Shoes:</span> nơi trao tặng các sản phẩm giày thời
                 trang trẻ trung, phong cách, bắt trend cho giới trẻ.
               </Typography>
               <Typography className="text-footer">
@@ -84,10 +84,11 @@ export default function FooterClient() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <Typography className="footerTitle">Các chính sách</Typography>
-              <Typography className="text-footer">Chính sách bảo mật của Chin Su</Typography>
-              <Typography className="text-footer">Chính sách bảo hành của Chin Su</Typography>
-              <Typography className="text-footer">Phương thức thanh toán của Chin Su</Typography>
-              <Typography className="text-footer">Chính sách vận chuyển của Chin Su</Typography>
+              <Link to="/return-policy-client">
+                <Typography className="text-footer">Chính sách đổi trả của F-SHoes</Typography>
+              </Link>
+              <Typography className="text-footer">Chính sách bảo hành của F-Shoes</Typography>
+              <Typography className="text-footer">Chính sách hoàn tiền của F-Shoes</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <Typography className="footerTitle">Hỗ trợ khách hàng</Typography>
