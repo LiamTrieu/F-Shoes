@@ -42,9 +42,11 @@ public class ClientReturnServiceImpl implements ClientReturnService {
     public Boolean requestReturn(ReturnRequest request) {
         try {
             Bill bill = billRepository.findById(request.getIdBill()).orElseThrow(() -> new RestApiException("Hóa đơn không tồn tại"));
-
+            bill.setStatus(10);
+            billRepository.save(bill);
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
+            billHistory.setStatusBill(10);
             billHistory.setAccount(userLogin.getUserLogin());
             billHistory.setNote("Gửi yêu cầu trả hàng: " +
                                 request.getListDetail().stream()
