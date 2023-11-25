@@ -56,7 +56,7 @@ public interface ClientBillDetailRepository extends BillDetailRepository {
                 LEFT JOIN bill b ON bd.id_bill = b.id
              WHERE b.id = :idBill
              GROUP BY bd.id, p.name, c.name, bd.price, pd.price, s.size, pd.id, bd.status;            """, nativeQuery = true)
-    ClientBillDetailResponse realTimeBillDetailByStatus(@Param("idBill") String idBill);
+    List<ClientBillDetailResponse> realTimeBillDetailByStatus(@Param("idBill") String idBill);
 
     @Query(value = """
             SELECT bd.id, MIN(i.url) as url,
