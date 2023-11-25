@@ -94,7 +94,8 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
                       {dayjs(row.createdAt).format('DD-MM-YYYY HH:mm:ss')}
                     </TableCell>
                     <TableCell align="center">
-                      {row.fullName} - {row.createdBy}
+                      {row.role === 2 ? 'Khách hàng - ' : 'Nhân viên - '}
+                      {row.fullName} - {row.codeAccount}
                     </TableCell>
                     <TableCell align="center">
                       <Chip

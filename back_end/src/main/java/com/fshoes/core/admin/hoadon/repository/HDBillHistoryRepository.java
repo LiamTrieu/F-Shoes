@@ -13,13 +13,13 @@ import java.util.List;
 public interface HDBillHistoryRepository extends BillHistoryRepository {
 
     @Query(value = """
-            SELECT bh.id, b.id as idBill, bh.created_at as createdAt, bh.status_bill as statusBill,
-            bh.note as note, bh.created_by as createdBy, a.email as email, a.full_name as fullName
-            FROM bill_history bh 
+            SELECT bh.id, b.id as idBill, bh.created_at as createdAt, bh.status_bill as statusBill,a.code as codeAccount,
+            bh.note as note, bh.created_by as createdBy, a.email as email, a.full_name as fullName, a.role
+            FROM bill_history bh
             LEFT JOIN bill b ON bh.id_bill = b.id
-            LEFT OUTER JOIN account a on a.id = bh.id_account
-            WHERE b.id = :idBill    
-            ORDER BY bh.created_at ASC                  
+            LEFT JOIN account a on a.email = bh.created_by
+            WHERE b.id = :idBill
+            ORDER BY bh.created_at
             """, nativeQuery = true)
     List<HDBillHistoryResponse> getListBillHistoryByIdBill(@Param("idBill") String idBill);
 

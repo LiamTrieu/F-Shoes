@@ -1,4 +1,4 @@
-import { Box, Button } from '@mui/material'
+import { Box, Button, Checkbox, TableHead, TableRow } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -20,6 +20,7 @@ import Carousel from 'react-material-ui-carousel'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import clientReturnApi from '../../../api/client/clientReturnApi'
+import { GrSelect } from 'react-icons/gr'
 
 export default function ModalReturn({ id, setTab, setOpen }) {
   const navigate = useNavigate()
@@ -146,13 +147,103 @@ export default function ModalReturn({ id, setTab, setOpen }) {
             item
             xs={12}
             style={{ overflow: 'auto', height: '500px', paddingTop: 0 }}>
-            {billDetail.map((product) => (
-              <Paper className="paper-return" sx={{ mb: 2 }}>
-                <Table>
+            <Paper className="paper-return" sx={{ mb: 2, p: 1 }}>
+              <h4 style={{ margin: '0' }}>
+                <GrSelect fontSize={20} style={{ marginBottom: '-6px' }} />
+                &nbsp; Chọn sản phẩm cần trả
+              </h4>
+              <hr style={{ marginBottom: '0px' }} />
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ padding: 0 }} width={'5%'}>
+                      <Checkbox
+                        onChange={(e) => {
+                          setBillDetail((prevBillDetail) => {
+                            const newBillDetail = [...prevBillDetail]
+
+                            if (e.target.checked) {
+                              newBillDetail.forEach((item) => {
+                                item.quantityReturn = item.quantity
+                              })
+                            } else {
+                              newBillDetail.forEach((item) => {
+                                item.quantityReturn = 0
+                              })
+                            }
+
+                            return newBillDetail
+                          })
+                        }}
+                        checked={billDetail.reduce((check, e) => {
+                          if (e.quantity !== e.quantityReturn) {
+                            check = false
+                          }
+                          return check
+                        }, true)}
+                      />
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ padding: 0 }}
+                      width={'30%'}
+                      style={{ fontWeight: 'bold' }}>
+                      Sản phẩm
+                    </TableCell>
+                    <TableCell
+                      sx={{ padding: 0 }}
+                      width={'15%'}
+                      style={{ fontWeight: 'bold' }}
+                      align="center">
+                      Số lượng
+                    </TableCell>
+                    <TableCell
+                      sx={{ padding: 0 }}
+                      width={'15%'}
+                      style={{ fontWeight: 'bold' }}
+                      align="center">
+                      Đơn giá
+                    </TableCell>
+                    <TableCell
+                      sx={{ padding: 0 }}
+                      width={'10%'}
+                      style={{ fontWeight: 'bold' }}
+                      align="center">
+                      Tổng
+                    </TableCell>
+                    <TableCell
+                      sx={{ padding: 0 }}
+                      width={'25%'}
+                      style={{ fontWeight: 'bold' }}
+                      align="center">
+                      Ghi chú
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+              </Table>
+              <Table>
+                {billDetail.map((product) => (
                   <TableBody>
-                    <TableCell width={'25%'}>
+                    <TableCell sx={{ padding: 0 }} width={'5%'}>
+                      <Checkbox
+                        checked={product.quantity === product.quantityReturn}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            changeSL(product.quantity, product)
+                          } else {
+                            changeSL(0, product)
+                          }
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell width={'30%'}>
                       <div
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          float: 'left',
+                        }}>
                         <Carousel
                           indicators={false}
                           sx={{ minWidth: '60px', height: '60px' }}
@@ -172,7 +263,7 @@ export default function ModalReturn({ id, setTab, setOpen }) {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell width={'15%'}>
+                    <TableCell width={'15%'} align="center">
                       <IconButton
                         size="small"
                         onClick={() => {
@@ -206,10 +297,10 @@ export default function ModalReturn({ id, setTab, setOpen }) {
                         <AddCircleIcon sx={{ color: '#BDC3C7' }} />
                       </IconButton>
                     </TableCell>
-                    <TableCell width={'10%'}>
+                    <TableCell width={'15%'} align="center">
                       <TextField
+                        fullWidth
                         className="input-soluong-return"
-                        sx={{ width: '150px' }}
                         size="small"
                         disabled
                         value={product.price.toLocaleString('it-IT', {
@@ -219,7 +310,7 @@ export default function ModalReturn({ id, setTab, setOpen }) {
                         variant="standard"
                       />
                     </TableCell>
-                    <TableCell width={'10%'}>
+                    <TableCell width={'10%'} align="center">
                       <b style={{ color: 'red' }}>
                         {(product.price * product.quantityReturn).toLocaleString('it-IT', {
                           style: 'currency',
@@ -227,8 +318,9 @@ export default function ModalReturn({ id, setTab, setOpen }) {
                         })}
                       </b>
                     </TableCell>
-                    <TableCell width={'20%'}>
+                    <TableCell width={'25%'} align="center">
                       <TextField
+                        fullWidth
                         value={product?.note}
                         onChange={(e) => {
                           changeNote(e.target.value, product)
@@ -238,13 +330,12 @@ export default function ModalReturn({ id, setTab, setOpen }) {
                         placeholder="Ghi chú"
                         multiline
                         rows={2}
-                        sx={{ marginRight: '10px' }}
                       />
                     </TableCell>
                   </TableBody>
-                </Table>
-              </Paper>
-            ))}
+                ))}
+              </Table>
+            </Paper>
           </Grid>
           <Grid item xs={12} style={{ paddingTop: 0 }}>
             <Paper

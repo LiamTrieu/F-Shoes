@@ -1,6 +1,5 @@
 package com.fshoes.core.admin.returns.repository;
 
-import com.fshoes.core.admin.returns.model.response.GetBillResponse;
 import com.fshoes.repository.BillRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,12 +11,16 @@ import org.springframework.stereotype.Repository;
 public interface BillReturnRepository extends BillRepository {
 
     @Query(value = """
-            select ROW_NUMBER() over (ORDER BY b.updated_at desc ) as stt, b.id,
-            b.code as code, b.full_name as name, b.phone_number as phone, b.money_after as total
-            from bill b join bill_detail bd on bd.id_bill = b.id
-            where b.code like concat('%', :code, '%') and b.status = 7
-            AND b.complete_date >= :date and bd.status = 0
-            GROUP BY b.id
+            SELECT b.id
+            FROM bill b
+            JOIN bill_detail bd ON bd.id_bill = b.id
+            LEFT JOIN returns r ON r.id_bill = b.id
+            WHERE b.code = :code
+              AND b.status = 7
+              AND b.complete_date >= :date
+              AND bd.status = 0
+              AND NOT EXISTS (SELECT 1 FROM returns WHERE id_bill = b.id AND status <> 4)
+            GROUP BY b.id;
             """, nativeQuery = true)
-    Page<GetBillResponse> getBillReturn(@Param("code") String code,@Param("date") Long date, Pageable pageable);
+    String getBillReturn(@Param("code") String code,@Param("date") Long date);
 }

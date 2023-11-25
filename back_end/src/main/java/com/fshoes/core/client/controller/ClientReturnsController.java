@@ -1,6 +1,5 @@
 package com.fshoes.core.client.controller;
 
-import com.fshoes.core.admin.returns.model.request.GetBillRequest;
 import com.fshoes.core.admin.returns.model.request.GetReturnRequest;
 import com.fshoes.core.admin.returns.model.request.ReturnRequest;
 import com.fshoes.core.admin.returns.service.ReturnService;

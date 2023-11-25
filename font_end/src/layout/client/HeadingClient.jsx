@@ -47,26 +47,33 @@ export default function HeadingClient() {
     setOpenDrawer(false)
     setActiveIndex(index)
   }
-  const handleDrawerToggle = () => {
-    setOpenDrawer(!openDrawer)
-  }
+
+  const user = useSelector(GetUser)
+
   useEffect(() => {
     if (getCookie('ClientToken')) {
-      dispatch(setCart([]))
-      clientCartApi.get().then(
-        (result) => {
-          if (result.data.success) {
-            dispatch(
-              setCart(
-                result.data.data.map((cart) => {
-                  return { ...cart, image: cart.image.split(',') }
-                }),
-              ),
-            )
-          }
-        },
-        () => {},
-      )
+      authenticationAPi.getClient().then((response) => {
+        if (response.data.success) {
+          dispatch(setCart([]))
+          clientCartApi.get().then(
+            (result) => {
+              if (result.data.success) {
+                dispatch(
+                  setCart(
+                    result.data.data.map((cart) => {
+                      return { ...cart, image: cart.image.split(',') }
+                    }),
+                  ),
+                )
+              }
+            },
+            () => {},
+          )
+        } else {
+          removeCookie('ClientToken')
+          dispatch(setCartLogout([]))
+        }
+      })
     }
   }, [])
 
@@ -232,7 +239,6 @@ export default function HeadingClient() {
       </Box>
     )
   }
-  const user = useSelector(GetUser)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 

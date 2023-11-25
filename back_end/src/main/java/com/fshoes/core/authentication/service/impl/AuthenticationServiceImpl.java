@@ -37,7 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String passwordEncode = MD5Util.getMD5(request.getPassword());
         Account account = accountRepository.findByEmailAndPassword(request.getEmail(), passwordEncode).orElse(null);
         if (account != null && account.getRole() != 2)
-            return jwtUtilities.generateToken(account.getEmail());
+            return jwtUtilities.generateToken(account);
         return null;
     }
 
@@ -46,7 +46,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String passwordEncode = MD5Util.getMD5(request.getPassword());
         Account account = accountRepository.findByEmailAndPassword(request.getEmail(), passwordEncode).orElse(null);
         if (account != null && account.getRole() == 2)
-            return jwtUtilities.generateToken(account.getEmail());
+            return jwtUtilities.generateToken(account);
         return null;
     }
 
@@ -60,6 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             response.setEmail(account.getEmail());
             response.setName(account.getFullName());
             response.setAvatar(account.getAvatar());
+            response.setRole(account.getRole());
         }
         return response;
     }
@@ -167,7 +168,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             accountRepository.save(account);
         }
         if (account.getRole() == 2) {
-            return jwtUtilities.generateToken(account.getEmail());
+            return jwtUtilities.generateToken(account);
         } else {
             throw new RestApiException("Email đã được sử dụng!");
         }

@@ -15,15 +15,133 @@ import authenticationAPi from '../api/authentication/authenticationAPi'
 import { Logout } from '@mui/icons-material'
 import confirmSatus from '../components/comfirmSwal'
 import KeyIcon from '@mui/icons-material/Key'
+import { useDispatch, useStore } from 'react-redux'
+import { addUserAdmin } from '../services/slices/userAdminSlice'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
 const drawerWidth = '17vw'
+var stompClient = null
+const NotificationButton = () => {
+  const [notification, setNotification] = useState([])
+  function getNotification(data) {
+    const preNotification = [...notification]
+    preNotification.push(data)
+    setNotification(preNotification)
+  }
 
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    stompClient = Stomp.over(socket)
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+  }, [])
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/thong-bao', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        getNotification(data)
+      }
+    })
+  }
+  const [anchorEl, setAnchorEl] = useState(null)
+
+  const handleButtonClick = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const navigate = useNavigate()
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const xemThongBao = (id, type, index) => {
+    setAnchorEl(null)
+    if (type === 'HOA_DON') {
+      navigate('/admin/bill-detail/' + id)
+      const preNotification = [...notification]
+      preNotification[index] = { ...preNotification[index], status: 'KHONG_HOAT_DONG' }
+      setNotification(preNotification)
+    }
+  }
+
+  return (
+    <div>
+      <Tooltip title="Thông báo">
+        <IconButton size="small" sx={{ m: 1.5, color: 'black' }} onClick={handleButtonClick}>
+          <Badge
+            invisible={notification.filter((e) => e.status === 'HOAT_DONG').length <= 0}
+            color="error"
+            badgeContent={notification.filter((e) => e.status === 'HOAT_DONG').length}>
+            <Box component={IoMdNotificationsOutline} sx={{ fontSize: '25px' }} />
+          </Badge>
+        </IconButton>
+      </Tooltip>
+
+      {notification.length > 0 && (
+        <Menu
+          slotProps={{
+            paper: {
+              elevation: 0,
+              sx: {
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                mt: 0.5,
+                padding: 1,
+                backgroundColor: 'rgba(194, 196, 197, 0.54)',
+                '&:before': {
+                  bgcolor: 'rgba(194, 196, 197, 0.54)',
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
+            },
+          }}
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
+          {notification.map((notification, index) => (
+            <MenuItem
+              key={index}
+              onClick={() => {
+                xemThongBao(notification.idRedirect, notification.type, index)
+              }}
+              style={{
+                borderRadius: '5px',
+                backgroundColor:
+                  notification.status === 'HOAT_DONG'
+                    ? 'rgba(19, 181, 53, 0.6)'
+                    : 'rgba(95, 95, 96, 0.6)',
+              }}>
+              <div>
+                <b>{notification.title}</b>
+              </div>
+            </MenuItem>
+          ))}
+        </Menu>
+      )}
+    </div>
+  )
+}
 export default function AppBarAdmin({ children }) {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
+  const token = getCookie('AdminToken')
   const [anchorEl, setAnchorEl] = useState(null)
   const [openMenuProfile, setOpenMenuProfile] = useState(false)
-  const token = getCookie('AdminToken')
   const handleClick = (event) => {
     anchorEl === null ? setAnchorEl(event.currentTarget) : setAnchorEl(null)
     openMenuProfile === false ? setOpenMenuProfile(true) : setOpenMenuProfile(false)
@@ -42,10 +160,12 @@ export default function AppBarAdmin({ children }) {
       navigate('/login')
     }
   }
+  const dispatch = useDispatch()
   useEffect(() => {
     if (token) {
       authenticationAPi.getAdmin().then((response) => {
         setUser(response.data.data)
+        dispatch(addUserAdmin(response.data.data))
       })
     }
   }, [token])
@@ -73,13 +193,7 @@ export default function AppBarAdmin({ children }) {
               <Box component={AiOutlineMenuFold} sx={{ fontSize: '25px' }} />
             </IconButton>
             <Box flexGrow={1} />
-            <Tooltip title="Thông báo">
-              <IconButton size="small" sx={{ m: 1.5, color: 'black' }}>
-                <Badge variant="dot" invisible={false} color="error">
-                  <Box component={IoMdNotificationsOutline} sx={{ fontSize: '25px' }} />
-                </Badge>
-              </IconButton>
-            </Tooltip>
+            <NotificationButton />
             <IconButton onClick={(event) => handleClick(event)} size="small">
               <Avatar src={user && user.avatar} sx={{ width: 35, height: 35 }} />
               <Menu

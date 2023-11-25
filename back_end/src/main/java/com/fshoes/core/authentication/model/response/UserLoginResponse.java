@@ -11,4 +11,5 @@ public class UserLoginResponse {
     private String email;
     private String name;
     private String avatar;
+    private Integer role;
 }

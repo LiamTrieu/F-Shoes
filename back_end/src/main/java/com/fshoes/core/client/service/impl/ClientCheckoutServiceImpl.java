@@ -9,6 +9,7 @@ import com.fshoes.core.client.repository.ClientBillDetailRepository;
 import com.fshoes.core.client.service.ClientCheckoutService;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
+import com.fshoes.infrastructure.constant.TypeNotification;
 import com.fshoes.infrastructure.email.Email;
 import com.fshoes.infrastructure.email.EmailSender;
 import com.fshoes.infrastructure.vnpay.VNPayConfig;
@@ -75,6 +76,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 newBill.setVoucher(voucher);
             }
         }
+        newBill.setReceivingMethod(1);
         newBill.setStatus(request.getStatus());
         newBill.setNote(request.getNote());
         newBill.setFullName(request.getFullName());
@@ -151,6 +153,11 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             sendMail(request, newBill.getCode(), dateNow, password);
             messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(newBill.getId()));
         }
+        Notification notification = new Notification();
+        notification.setTitle("Có hóa đơn cần xác nhận "+"#"+newBill.getCode());
+        notification.setType(TypeNotification.HOA_DON);
+        notification.setIdRedirect(newBill.getId());
+        messagingTemplate.convertAndSend("/topic/thong-bao", notification);
         return newBill;
     }
 
@@ -277,6 +284,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                         password = null;
                     }
                     bill.setCustomer(account);
+                    bill.setReceivingMethod(1);
                     billRepository.save(bill);
                     Transaction transaction = new Transaction();
                     transaction.setTransactionCode((String) fields.get("vnp_BankTranNo"));
@@ -325,6 +333,11 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     billHistoryRepository.save(billHistory);
                     sendMail(newRequest, bill.getCode(), Calendar.getInstance().getTimeInMillis(), password);
                     messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
+                    Notification notification = new Notification();
+                    notification.setTitle("Có hóa đơn cần xác nhận "+"#"+bill.getCode());
+                    notification.setType(TypeNotification.HOA_DON);
+                    notification.setIdRedirect(bill.getId());
+                    messagingTemplate.convertAndSend("/topic/thong-bao", notification);
                     return listBillDetails.stream().map(BillDetail::getProductDetail).toList();
                 }
             }

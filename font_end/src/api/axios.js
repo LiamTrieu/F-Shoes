@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { setLoading } from '../services/slices/loadingSlice'
 import store from '../services/store'
-import { getCookie } from '../services/cookie'
+import { getCookie, removeCookie } from '../services/cookie'
 import { toast } from 'react-toastify'
 
 const axiosAdmin = axios.create({
@@ -43,6 +43,7 @@ axiosApi.interceptors.response.use(
       store.dispatch(setLoading(false))
     }, 400)
     if (error.response && error.response.status === 403) {
+      removeCookie('ClientToken')
       window.location.href = '/login'
     }
     if (error.response && error.response.status === 400) {

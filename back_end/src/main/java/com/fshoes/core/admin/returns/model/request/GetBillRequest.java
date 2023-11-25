@@ -6,6 +6,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetBillRequest extends PageableRequest {
+public class GetBillRequest {
     private String codeBill;
 }

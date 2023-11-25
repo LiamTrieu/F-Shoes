@@ -18,4 +18,7 @@ public interface HDBillHistoryResponse extends IsIdentified {
 
     String getFullName();
 
+    Integer getRole();
+    String getCodeAccount();
+
 }
