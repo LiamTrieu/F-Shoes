@@ -46,7 +46,9 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Transactional
     public Account add(KhachHangRequest khachHangRequest) throws ParseException {
         Long dateBirth = DateUtil.parseDateLong(khachHangRequest.getDateBirth());
+        String setCodeCustomer = "KH" + khachHangRepository.findAll().size();
         Account customer = new Account();
+        customer.setCode(setCodeCustomer);
         customer.setFullName(khachHangRequest.getFullName());
         customer.setDateBirth(dateBirth);
         customer.setPhoneNumber(khachHangRequest.getPhoneNumber());

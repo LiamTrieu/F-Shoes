@@ -7,6 +7,7 @@ public interface KhachHangRespone extends IsIdentified {
 
     Integer getStt();
     String getAvatar();
+    String getCode();
     String getEmail();
     String getFullName();
     Long getDateBirth();

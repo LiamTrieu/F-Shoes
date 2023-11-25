@@ -5,6 +5,7 @@ import com.fshoes.repository.TransactionRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,5 +16,10 @@ public interface AdminTransactionRepository extends TransactionRepository {
     @Query(value = """
     SELECT * from transaction t where t.id_bill = :idBill 
 """,nativeQuery = true)
-    List<Transaction> getTransactionByIdBill(String idBill);
+    Transaction getTransactionByIdBill(String idBill);
+
+    @Query(value = """
+   select sum(total_money) as totalMoney from transaction where id_bill = :idBill
+""",nativeQuery = true)
+    BigDecimal getTotalMoneyPayOrder(String idBill);
 }

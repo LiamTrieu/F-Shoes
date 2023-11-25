@@ -7,6 +7,9 @@ public interface StaffRespone extends IsIdentified {
 
     Integer getStt();
 
+    @Value("#{target.code}")
+    String getCode();
+
     @Value("#{target.full_name}")
     String getfullName();
 

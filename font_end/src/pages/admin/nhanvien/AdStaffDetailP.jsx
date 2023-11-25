@@ -34,7 +34,7 @@ const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
 
 export default function AdStaffDetail() {
   const { id } = useParams()
-  const [staffDetail, setStaffDetail] = useState({ avatar: null, gender: '', role: '' })
+  const [staffDetail, setStaffDetail] = useState({ code: '', avatar: null, gender: '', role: '' })
   const [image, setImage] = useState(null)
   const [loading, setLoading] = useState(false)
   const [diaChi, setDiaChi] = useState([])
@@ -455,6 +455,24 @@ export default function AdStaffDetail() {
               accept="image/*"
               onChange={handleImageChange}
             />
+            <Grid sx={{ mb: 3 }}>
+              <TextField
+                size="small"
+                type="text"
+                value={staffDetail.code || ''}
+                onChange={(e) => {
+                  setStaffDetail({
+                    ...staffDetail,
+                    code: e.target.value,
+                  })
+                }}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ display: 'none' }}
+              />
+            </Grid>
             <Grid sx={{ mb: 3 }}>
               <Typography>
                 <span className="required"> *</span>Họ và tên

@@ -50,6 +50,7 @@ const imageStyle = {
 
 const AddStaff = () => {
   const initStaff = {
+    code: '',
     fullName: '',
     email: '',
     phoneNumber: '',

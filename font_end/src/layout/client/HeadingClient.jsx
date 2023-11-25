@@ -200,42 +200,6 @@ export default function HeadingClient() {
           color="inherit">
           Tra cứu
         </Typography>
-        <Typography
-          onClick={() => {
-            setOpenDrawer(false)
-            handleLinkClick(6)
-          }}
-          className={`link-with-underline ${activeIndex === 6 ? 'active-link' : ''}`}
-          sx={{
-            marginLeft: { md: 4 },
-            fontFamily: 'monospace',
-            fontSize: '17px',
-            fontWeight: 600,
-            textDecoration: 'none',
-          }}
-          component={Link}
-          to="/tracking"
-          color="inherit">
-          Tra cứu
-        </Typography>
-        <Typography
-          onClick={() => {
-            setOpenDrawer(false)
-            handleLinkClick(7)
-          }}
-          className={`link-with-underline ${activeIndex === 7 ? 'active-link' : ''}`}
-          sx={{
-            marginLeft: { md: 4 },
-            fontFamily: 'monospace',
-            fontSize: '17px',
-            fontWeight: 600,
-            textDecoration: 'none',
-          }}
-          component={Link}
-          to="/tracking"
-          color="inherit">
-          Tra cứu
-        </Typography>
       </Box>
     )
   }
@@ -260,7 +224,7 @@ export default function HeadingClient() {
     <>
       <div
         style={{
-          backgroundColor: '#f2741f',
+          backgroundColor: '#f2904f',
           alignItems: 'center',
           display: 'flex',
           justifyContent: 'center',
@@ -298,7 +262,7 @@ export default function HeadingClient() {
                 HOTLINE:1900 6750
               </Typography>{' '}
               <FiMapPin />
-              <Link to="/contact">
+              <Link to="/contact" style={{ textDecoration: 'none' }}>
                 <Typography
                   sx={{
                     color: 'black',
@@ -401,14 +365,6 @@ export default function HeadingClient() {
                     </Link>
                   )}
                 </Menu>
-                <Typography
-                  variant="subtitle2"
-                  sx={{
-                    textTransform: 'none',
-                    display: { md: 'block', xs: 'none' },
-                  }}>
-                  {user ? user.name : 'Đăng nhập'}
-                </Typography>
               </IconButton>
             </div>
           </Stack>
@@ -418,7 +374,7 @@ export default function HeadingClient() {
       <div
         style={{
           height: '60px',
-          backgroundColor: '#f2741f',
+          backgroundColor: '#f2904f',
           alignItems: 'center',
           display: 'flex',
           justifyContent: 'center',
