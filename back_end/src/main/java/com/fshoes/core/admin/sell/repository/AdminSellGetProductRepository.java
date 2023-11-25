@@ -1,7 +1,9 @@
 package com.fshoes.core.admin.sell.repository;
 
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
+import com.fshoes.core.admin.sell.model.response.AdminMinMaxPrice;
 import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
+import com.fshoes.core.client.model.response.ClientMinMaxPrice;
 import com.fshoes.repository.ProductRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,6 +37,8 @@ public interface AdminSellGetProductRepository extends ProductRepository {
                                                   AND (:#{#req.size} IS NULL OR s.id = :#{#req.size}) 
                                                   AND (:#{#req.brand} IS NULL OR b.id = :#{#req.brand}) 
                                                   AND (:#{#req.sole} IS NULL OR sl.id = :#{#req.sole}) 
+                                                  AND (:#{#req.minPrice} IS NULL OR pd.price >= :#{#req.minPrice}) 
+                                                  AND (:#{#req.maxPrice} IS NULL OR pd.price <= :#{#req.maxPrice}) 
                                                   AND (:#{#req.codeProductDetail} IS NULL OR pd.code = :#{#req.codeProductDetail}) 
                                                   AND (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) 
                                                   AND p.deleted = 0 AND pd.deleted = 0
@@ -99,6 +103,10 @@ public interface AdminSellGetProductRepository extends ProductRepository {
     List<GetAllProductResponse> getAllProductCart();
 
 
-
+    @Query(value = """
+            SELECT min(pd.price) as minPrice, max(pd.price) as maxPrice
+            FROM product_detail pd
+            """, nativeQuery = true)
+    AdminMinMaxPrice getMinMaxPriceProductAdmin();
 
 }

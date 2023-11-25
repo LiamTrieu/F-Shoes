@@ -10,6 +10,7 @@ import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface AdminSellService {
@@ -62,4 +63,8 @@ public interface AdminSellService {
     List<PayOrderResponse> getPayOrder(String idBill);
 
     Boolean deleteTransaction(String idBill);
+
+    BigDecimal getTotalMoneyPayOrder(String idBill);
+
+    AdminMinMaxPrice getMinMaxPrice();
 }
