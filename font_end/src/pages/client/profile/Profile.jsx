@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   Typography,
 } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import ListItemText from '@mui/material/ListItemText'
 import Collapse from '@mui/material/Collapse'
 import StarBorder from '@mui/icons-material/StarBorder'
@@ -16,7 +16,7 @@ import { RiBillLine } from 'react-icons/ri'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { FiUsers } from 'react-icons/fi'
 import EditIcon from '@mui/icons-material/Edit'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { GetUser } from '../../../services/slices/userSlice'
 import BadgeIcon from '@mui/icons-material/Badge'
@@ -30,7 +30,14 @@ export default function Profile({ children }) {
   const handleClick = () => {
     setOpen(!open)
   }
+  const location = useLocation()
   const userLogin = useSelector(GetUser)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!userLogin && location.pathname.startsWith('/profile')) {
+      navigate('/login')
+    }
+  }, [userLogin, location.pathname])
   return (
     <div className="profile">
       <Container maxWidth="xl">
