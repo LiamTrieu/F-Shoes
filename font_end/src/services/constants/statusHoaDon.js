@@ -20,6 +20,12 @@ export const getStatus = (status) => {
       return 'Tạo đơn hàng'
     case 9:
       return 'Trả hàng'
+    case 10:
+      return 'Yêu cầu trả hàng'
+    case 11:
+      return 'Huỷ yêu cầu trả hàng'
+    case 12:
+      return 'Từ chối trả hàng'
     default:
       console.error('Trạng thái hóa đơn không hợp lệ')
       break

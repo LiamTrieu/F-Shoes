@@ -148,8 +148,12 @@ export default function AdCustomerPage() {
           <TableHead>
             <TableRow>
               <TableCell width={'5%'}>STT</TableCell>
+
               <TableCell align="center" width={'7%'}>
                 Ảnh
+              </TableCell>
+              <TableCell align="center" width={'7%'}>
+                Code
               </TableCell>
               <TableCell align="center" width={'15%'}>
                 Họ và tên
@@ -163,14 +167,14 @@ export default function AdCustomerPage() {
               <TableCell align="center" width={'10%'}>
                 Ngày sinh
               </TableCell>
-              <TableCell align="center" width={'8%'}>
+              <TableCell align="center" width={'5%'}>
                 Giới tính
               </TableCell>
               <TableCell align="center" width={'8%'}>
                 Chức vụ
               </TableCell>
               {/* <TableCell align="center">CCCD</TableCell> */}
-              <TableCell align="center" width={'15%'}>
+              <TableCell align="center" width={'13%'}>
                 Trạng thái
               </TableCell>
               <TableCell align="center" width={'9%'}>
@@ -190,6 +194,7 @@ export default function AdCustomerPage() {
                       <Avatar />
                     )}
                   </TableCell>
+                  <TableCell align="center">{row.code}</TableCell>
                   <TableCell align="center">{row.fullName}</TableCell>
                   <TableCell align="center">{row.email}</TableCell>
                   <TableCell align="center">{row.phoneNumber}</TableCell>

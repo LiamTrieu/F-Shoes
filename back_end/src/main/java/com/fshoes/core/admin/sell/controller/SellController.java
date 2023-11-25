@@ -5,6 +5,8 @@ import com.fshoes.core.admin.sell.model.request.AddBillRequest;
 import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.service.AdminSellService;
+import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
+import com.fshoes.core.admin.voucher.service.AdVoucherService;
 import com.fshoes.core.authentication.model.response.UserLoginResponse;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.UserLogin;
@@ -22,6 +24,9 @@ public class SellController {
 
     @Autowired
     private AdminSellService getSell;
+
+    @Autowired
+    private AdVoucherService voucherService;
 
     @Autowired
     private UserLogin userLogin;
@@ -44,6 +49,11 @@ public class SellController {
     @GetMapping("/getProduct")
     public ObjectRespone getAllProduct(FilterProductDetailRequest request) {
         return new ObjectRespone(getSell.getAllProduct(request));
+    }
+
+    @GetMapping("/get-min-max-price")
+    public ObjectRespone getMinMaxPrice( ) {
+        return new ObjectRespone(getSell.getMinMaxPrice());
     }
 
     @GetMapping("/get-product/{id}")
@@ -69,6 +79,11 @@ public class SellController {
     @GetMapping("/get-pay_order/{idBill}")
     public ObjectRespone getPayOrder(@PathVariable String idBill) {
         return new ObjectRespone(getSell.getPayOrder(idBill));
+    }
+
+    @GetMapping("/get-total-money-pay_order/{idBill}")
+    public ObjectRespone getTotalMoneyPayOrder(@PathVariable String idBill) {
+        return new ObjectRespone(getSell.getTotalMoneyPayOrder(idBill));
     }
     @GetMapping("/get-product-detail-bill/{id}")
     public ObjectRespone getAllProductDetailBill(@PathVariable String id) {
@@ -155,6 +170,11 @@ public class SellController {
     @GetMapping("/max-price")
     public ObjectRespone nameById() {
         return new ObjectRespone(getSell.getMaxPriceProductId());
+    }
+
+    @GetMapping("/view/voucher-by-customer")
+    public ObjectRespone getAllVoucherByIdCustomer(@ModelAttribute AdCallVoucherOfSell adCallVoucherOfSell) {
+        return new ObjectRespone(voucherService.getAllVoucherByIdCustomer(adCallVoucherOfSell));
     }
 
     @GetMapping

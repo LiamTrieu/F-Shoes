@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 public interface PayOrderResponse extends IsIdentified {
 
+    String getIdTransaction();
 
     BigDecimal getCustomerAmount();
 
@@ -14,4 +15,6 @@ public interface PayOrderResponse extends IsIdentified {
     String getNote();
 
     BigDecimal getTotalMoney();
+
+    String getTransactionCode();
 }

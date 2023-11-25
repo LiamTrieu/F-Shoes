@@ -9,6 +9,10 @@ const sellApi = {
     const urlGet = `/sell/get-product/${id}`
     return axiosAdmin.get(urlGet)
   },
+  getMinMaxPrice: () => {
+    const urlGet = `/sell/get-min-max-price`
+    return axiosAdmin.get(urlGet)
+  },
 
   getAllProductCart: () => {
     const urlGetAll = `/sell/get-product-cart`
@@ -49,6 +53,10 @@ const sellApi = {
   },
   getPayOrderByIdBill: (idBill) => {
     const url = `/sell/get-pay_order/${idBill}`
+    return axiosAdmin.get(url)
+  },
+  getTotalMoneyPayOrderByIdBill: (idBill) => {
+    const url = `/sell/get-total-money-pay_order/${idBill}`
     return axiosAdmin.get(url)
   },
   getProductDetailBill: (id) => {
@@ -110,6 +118,10 @@ const sellApi = {
   getNameProduct: () => {
     const url = `/sell/max-price`
     return axiosAdmin.get(url)
+  },
+  getAllVoucherByIdCustomer: (adCallVoucherOfSell) => {
+    const url = `/sell/view/voucher-by-customer`
+    return axiosAdmin.get(url, { params: adCallVoucherOfSell })
   },
 }
 export default sellApi

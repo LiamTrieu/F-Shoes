@@ -56,6 +56,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import PaymentIcon from '@mui/icons-material/Payment'
 import { useZxing } from 'react-zxing'
+import DeleteIcon from '@mui/icons-material/Delete'
+import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -85,14 +87,14 @@ const styleCustomerPays = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 550,
-  height: 680,
+  height: 580,
   bgcolor: 'background.paper',
   borderRadius: '8px',
   boxShadow: 24,
   p: 4,
 }
 
-export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }) {
+export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, setSoluong }) {
   const theme = useTheme()
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
@@ -126,6 +128,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   }
   const [paymentMethod, setPaymentMethod] = useState('0')
   const [payOrderByIdBill, setPayOrderByIdBill] = useState([])
+  const [totalMoneyPayOrderByIdBill, setTotalMoneyPayOrderByIdBill] = useState('')
   const [transactionCode, setTransactionCode] = useState('')
   const [isTextFieldDisabled, setIsTextFieldDisabled] = useState(false)
   const [noteTransaction, setNoteTransaction] = useState('')
@@ -142,8 +145,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     })
   }
 
+  const fetchTotalMoneyPayOrderByIdBill = (idBill) => {
+    sellApi.getTotalMoneyPayOrderByIdBill(idBill).then((response) => {
+      setTotalMoneyPayOrderByIdBill(response.data.data)
+    })
+  }
+
   useEffect(() => {
     fetchPayOrderByIdBill(idBill)
+    fetchTotalMoneyPayOrderByIdBill(idBill)
   }, [])
 
   const [searchKhachHang, setSearchKhachHang] = useState({
@@ -295,7 +305,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
   }
 
   const fecthDataVoucherByIdCustomer = (adCallVoucherOfSell) => {
-    voucherApi
+    sellApi
       .getAllVoucherByIdCustomer(adCallVoucherOfSell)
       .then((response) => {
         setListVoucher(response.data.data.content)
@@ -1103,6 +1113,82 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     })
   }
 
+  const totalSum = listProductDetailBill.reduce((sum, cart) => {
+    if (cart.statusPromotion === 1) {
+      return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
+    } else {
+      return sum + cart.price * cart.quantity
+    }
+  }, 0)
+
+  const totalPriceCart = totalSum
+  const ShipingFree = giaoHang ? shipTotal : 0
+  // const moneyReducedVoucher = 0
+
+  const moneyVoucher =
+    voucher.typeValue === 0 ? (voucher.value * totalPriceCart) / 100 : voucher.value
+  const totalMoneyReduce = moneyVoucher > voucher.maximumValue ? voucher.maximumValue : moneyVoucher
+
+  const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce
+  const [qrScannerVisible, setQrScannerVisible] = useState(false)
+  const handleOpenQRScanner = () => {
+    setQrScannerVisible(true)
+  }
+  const handleCloseQRScanner = () => {
+    setQrScannerVisible(false)
+  }
+  const styleModal = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+  const RenderVideo = ({ show }) => {
+    const { ref } = useZxing({
+      onDecodeResult(result) {
+        handleScan(result)
+      },
+      paused: !show,
+    })
+    return show ? <video ref={ref} width="100%" /> : <></>
+  }
+
+  const handleScan = (qrData) => {
+    if (qrData?.text) {
+      sellApi
+        .addBillDetailByIdProductDetail(qrData?.text, idBill)
+        .then(() => {
+          toast.success('Thêm sản phẩm thành công', {
+            position: toast.POSITION.TOP_CENTER,
+          })
+        })
+        .finally(() => {
+          fectchProductBillSell(idBill)
+          setQrScannerVisible(false)
+        })
+    }
+  }
+
+  const deleteTransaction = (idBill) => {
+    sellApi
+      .deleteTransaction(idBill)
+      .then(() => {
+        toast.warning('Huỷ thanh toán thành công', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+      .finally(() => {
+        fetchPayOrderByIdBill(idBill)
+        fetchTotalMoneyPayOrderByIdBill(idBill)
+      })
+  }
+  const isAmountNegative = totalPrice - totalMoneyPayOrderByIdBill <= 0
+
   const addBillorder = (id) => {
     const newErrors = {}
     let checkAA = 0
@@ -1112,9 +1198,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
       checkAA++
     } else if (customerAmount < 0) {
       newErrors.customerAmount = 'Tiền khách đưa phải lớn hơn 0'
-      checkAA++
-    } else if (customerAmount < totalPrice) {
-      newErrors.customerAmount = 'Tiền khách đưa không được bé hơn tổng tiền'
       checkAA++
     } else {
       newErrors.customerAmount = ''
@@ -1213,87 +1296,22 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
     sellApi.payOrder(dataPay, id).then((response) => {
       // getAllBillTaoDonHang()
       // setSelectBill('')
+
+      setCustomerAmount(0)
+      setTransactionCode('')
       fetchPayOrderByIdBill(idBill)
+      fetchTotalMoneyPayOrderByIdBill(idBill)
     })
   }
 
-  const totalSum = listProductDetailBill.reduce((sum, cart) => {
-    if (cart.statusPromotion === 1) {
-      return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
-    } else {
-      return sum + cart.price * cart.quantity
-    }
-  }, 0)
-
-  const totalPriceCart = totalSum
-  const ShipingFree = giaoHang ? shipTotal : 0
-  // const moneyReducedVoucher = 0
-
-  const moneyVoucher =
-    voucher.typeValue === 0 ? (voucher.value * totalPriceCart) / 100 : voucher.value
-  const totalMoneyReduce = moneyVoucher > voucher.maximumValue ? voucher.maximumValue : moneyVoucher
-
-  const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce
-
-  const totalMoneyTransaction = payOrderByIdBill.find((bill) => bill.id === idBill)?.totalMoney
-
-  const excessMoney = customerAmount - totalPrice
-  const [qrScannerVisible, setQrScannerVisible] = useState(false)
-  const handleOpenQRScanner = () => {
-    setQrScannerVisible(true)
-  }
-  const handleCloseQRScanner = () => {
-    setQrScannerVisible(false)
-  }
-  const styleModal = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  }
-  const RenderVideo = ({ show }) => {
-    const { ref } = useZxing({
-      onDecodeResult(result) {
-        handleScan(result)
-      },
-      paused: !show,
+  useEffect(() => {
+    setSoluong({
+      idBill: idBill,
+      quantity: listProductDetailBill.reduce((count, cart) => {
+        return count + parseInt(cart.quantity)
+      }, 0),
     })
-    return show ? <video ref={ref} width="100%" /> : <></>
-  }
-
-  const handleScan = (qrData) => {
-    if (qrData?.text) {
-      sellApi
-        .addBillDetailByIdProductDetail(qrData?.text, idBill)
-        .then(() => {
-          toast.success('Thêm sản phẩm thành công', {
-            position: toast.POSITION.TOP_CENTER,
-          })
-        })
-        .finally(() => {
-          fectchProductBillSell(idBill)
-          setQrScannerVisible(false)
-        })
-    }
-  }
-
-  const deleteTransaction = (idBill) => {
-    sellApi
-      .deleteTransaction(idBill)
-      .then(() => {
-        toast.warning('Huỷ thanh toán thành công', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-      })
-      .finally(() => {
-        fetchPayOrderByIdBill(idBill)
-      })
-  }
+  }, [listProductDetailBill, idBill])
 
   return (
     <>
@@ -2506,7 +2524,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                     condition: totalSum,
                   })
                 }}>
-                <b>Chọn mã giảm giá</b>
+                <b>Chọn phiếu giảm giá</b>
               </Button>
               <Modal
                 className="modal-voucher"
@@ -2733,7 +2751,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
 
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>
-                  <b>Thanh toán ngay</b>
+                  <b>Khách thanh toán:</b>
                   <Button
                     style={{
                       color: 'black',
@@ -2746,6 +2764,14 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                     <PaymentIcon />
                   </Button>
                 </Typography>
+                <Typography style={{ fontWeight: 700, color: 'red' }}>
+                  {totalMoneyPayOrderByIdBill
+                    ? totalMoneyPayOrderByIdBill.toLocaleString('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })
+                    : '0 đ'}
+                </Typography>
               </Stack>
             </Box>
           </Grid2>
@@ -2757,9 +2783,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description">
             <Box sx={styleCustomerPays}>
+              <HighlightOffIcon onClick={() => handleClose()} sx={{ float: 'right' }} />
               <Typography
                 id="modal-modal-title"
-                sx={{ fontSize: '30px', fontWeight: 1000 }}
+                sx={{
+                  fontSize: '30px',
+                  fontWeight: 1000,
+                  textAlign: 'center',
+                  marginBottom: '10px',
+                }}
                 component="h2">
                 THANH TOÁN
               </Typography>
@@ -2774,21 +2806,31 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
               <div style={{ textAlign: 'center', marginTop: '30px' }}>
                 <Button
                   style={{
-                    backgroundColor: paymentMethod === '0' ? '#FF3333' : 'pink',
+                    backgroundColor: isAmountNegative
+                      ? '#808080'
+                      : paymentMethod === '0'
+                      ? '#FF3333'
+                      : 'pink',
                     borderRadius: '20px',
                     width: '200px',
                     color: 'white',
                   }}
+                  disabled={isAmountNegative}
                   onClick={() => setPaymentMethod('0')}>
                   Chuyển khoản
                 </Button>
                 <Button
                   style={{
-                    backgroundColor: paymentMethod === '1' ? '#32CD32' : 'pink',
+                    backgroundColor: isAmountNegative
+                      ? '#808080'
+                      : paymentMethod === '1'
+                      ? '#32CD32'
+                      : 'pink',
                     borderRadius: '20px',
                     width: '200px',
                     color: 'white',
                   }}
+                  disabled={isAmountNegative}
                   onClick={() => setPaymentMethod('1')}>
                   Tiền mặt
                 </Button>
@@ -2800,103 +2842,63 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                 spacing={2}
                 style={{ marginTop: '20px' }}>
                 <TextField
-                  label="Tiền khách đứa"
+                  color="cam"
+                  label="Tiền khách đưa"
+                  variant="standard"
+                  fullWidth
+                  disabled={isAmountNegative}
+                  sx={{
+                    width: paymentMethod === '0' ? '45%' : '100%',
+                    marginTop: '10px',
+                    display: paymentMethod === '0' || paymentMethod === '1' ? 'block' : 'none',
+                  }}
+                  size="small"
                   onChange={(e) => {
                     setCustomerAmount(e.target.value)
                     setErrorAddBill({ ...errorAddBill, customerAmount: '' })
-                  }}
-                  sx={{
-                    width: '45%',
-                    display: paymentMethod === '0' || paymentMethod === '1' ? 'block' : 'none',
-                  }}
-                  variant="standard"
-                  InputLabelProps={{
-                    shrink: true,
                   }}
                   error={Boolean(errorAddBill.customerAmount)}
                   helperText={errorAddBill.customerAmount}
                   value={customerAmount}
                   type="number"
-                />
-                <TextField
-                  label="Tiền thừa"
-                  value={formatPrice(excessMoney)}
-                  defaultValue={0}
-                  sx={{
-                    width: '45%',
-                    display: paymentMethod === '0' || paymentMethod === '1' ? 'block' : 'none',
-                  }}
-                  variant="standard"
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  InputProps={{
-                    readOnly: true,
-                    style: {
-                      color: excessMoney < 0 ? 'red' : 'black',
-                    },
+                />
+                <TextField
+                  color="cam"
+                  label="Mã giao dịch"
+                  variant="standard"
+                  disabled={isAmountNegative}
+                  fullWidth
+                  sx={{
+                    width: '45%',
+                    marginTop: '10px',
+                    display: paymentMethod === '0' ? 'block' : 'none',
+                  }}
+                  size="small"
+                  value={transactionCode}
+                  onChange={(e) => {
+                    setTransactionCode(e.target.value)
+                    setErrorAddBill({ ...errorAddBill, payMent: '' })
+                  }}
+                  error={Boolean(errorAddBill.payMent)}
+                  helperText={errorAddBill.payMent}
+                  InputLabelProps={{
+                    shrink: true,
                   }}
                 />
               </Stack>
-              <TextField
-                color="cam"
-                label="Mã giao dịch"
-                variant="standard"
-                fullWidth
-                sx={{
-                  width: '100%',
-                  marginTop: '10px',
-                  display: paymentMethod === '0' ? 'block' : 'none',
-                }}
-                size="small"
-                value={transactionCode}
-                onChange={(e) => {
-                  setTransactionCode(e.target.value)
-                  setErrorAddBill({ ...errorAddBill, payMent: '' })
-                }}
-                error={Boolean(errorAddBill.payMent)}
-                helperText={errorAddBill.payMent}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-
-              <TextField
-                color="cam"
-                className="search-field"
-                size="small"
-                fullWidth
-                label="Ghi chú"
-                onChange={(e) => setNoteTransaction(e.target.value)}
-                multiline
-                rows={4}
-                style={{ marginTop: '10px' }}
-              />
               <div className="css-table-sell">
-                {payOrderByIdBill.length > 0 && (
-                  <div style={{ float: 'right' }}>
-                    <Button
-                      onClick={() => deleteTransaction(idBill)}
-                      variant="contained"
-                      sx={{
-                        backgroundColor: '#FF3333',
-                        height: '20px',
-                        textTransform: 'lowercase',
-                      }}
-                      color="error">
-                      Hủy thanh toán
-                    </Button>
-                  </div>
-                )}
-
                 <TableContainer component={Paper}>
                   <Table aria-label="simple table" style={{ height: '150px' }}>
                     <TableHead sx={{ backgroundColor: '#FFA500' }}>
                       <TableRow>
                         <TableCell align="center">STT</TableCell>
+                        <TableCell align="center">Mã giao dịch</TableCell>
                         <TableCell align="center">Phương thức</TableCell>
                         <TableCell align="center">Số tiền</TableCell>
-                        <TableCell align="center">Ghi chú</TableCell>
+                        <TableCell align="center">Hành động</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -2905,17 +2907,41 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                           key={item.id}
                           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                           <TableCell align="center">{index + 1}</TableCell>
+                          <TableCell align="center">{item.transactionCode}</TableCell>
                           <TableCell align="center">
                             {item.paymentMethod === 1 ? 'Tiền mặt' : 'Chuyển khoản'}{' '}
                           </TableCell>
-                          <TableCell align="center">{item.totalMoney}</TableCell>
-                          <TableCell align="center">{item.note}</TableCell>
+                          <TableCell align="center">{formatPrice(item.totalMoney)}</TableCell>
+                          <TableCell align="center">
+                            <DeleteIcon
+                              disabled={isAmountNegative}
+                              style={{ color: 'red' }}
+                              onClick={() => deleteTransaction(item.idTransaction)}
+                            />
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
               </div>
+              <Stack
+                sx={{ marginTop: '20px' }}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={2}>
+                <Typography style={{ fontSize: '20px', fontWeight: 700 }}>
+                  {totalPrice < totalMoneyPayOrderByIdBill ? 'Tiền thừa:' : 'Tiền thiếu'}
+                </Typography>
+                <Typography style={{ color: 'red', fontWeight: 700 }}>
+                  {formatPrice(
+                    totalPrice - totalMoneyPayOrderByIdBill < 0
+                      ? Math.abs(totalPrice - totalMoneyPayOrderByIdBill)
+                      : totalPrice - totalMoneyPayOrderByIdBill,
+                  )}{' '}
+                </Typography>
+              </Stack>
 
               <div
                 style={{
@@ -2925,6 +2951,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill }
                   marginTop: '20px',
                 }}>
                 <Button
+                  disabled={isAmountNegative}
                   variant="contained"
                   sx={{ marginLeft: '20px' }}
                   color="success"

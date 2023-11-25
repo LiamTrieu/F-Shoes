@@ -186,7 +186,7 @@ export default function AdminMenu() {
                   <ListItemText
                     sx={{ m: 0, p: 0 }}
                     primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                    primary="&nbsp;	&bull; &nbsp; &nbsp; Đợi giảm giá"
+                    primary="&nbsp;	&bull; &nbsp; &nbsp; Đợt giảm giá"
                   />
                 </ListItemButton>
               </List>
@@ -194,7 +194,7 @@ export default function AdminMenu() {
           </>
         )}
 
-        {user?.role === 1 && (
+        {user?.role === 1 ? (
           <>
             <ListItemButton className="mt-3" sx={{ mb: 0 }} onClick={handleClickOpenMenuAccount}>
               <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
@@ -232,6 +232,14 @@ export default function AdminMenu() {
               </List>
             </Collapse>
           </>
+        ) : (
+          <ListItemButton sx={{ pb: 0 }} component={Link} to="/admin/customer">
+            <ListItemText
+              sx={{ m: 0, p: 0 }}
+              primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+              primary="&nbsp;	&bull; &nbsp; &nbsp; Khách hàng"
+            />
+          </ListItemButton>
         )}
       </Box>
       {/* <ListItemButton className="mt-3" component={Link} to="/admin/return-policy">
