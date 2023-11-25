@@ -15,15 +15,15 @@ import java.util.List;
 @Repository
 public interface StaffRepositorys extends JpaRepository<Account, String> {
 
-    @Query(value = "select id, full_name, date_birth, citizen_id, phone_number, email" +
+    @Query(value = "select id,code, full_name, date_birth, citizen_id, phone_number, email" +
             ", gender, password, avatar, role, status from account Where id = :id", nativeQuery = true)
     StaffRespone getOneStaff(String id);
 
-    @Query(value = "select id, full_name, date_birth,phone_number, citizen_id,email" +
+    @Query(value = "select id,code, full_name, date_birth,phone_number, citizen_id,email" +
             ", gender, password, avatar, role from account where role=0 or role=1", nativeQuery = true)
     List<StaffRespone> getAll(StaffRequest request);
 
-    @Query(value = "SELECT ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, full_name, date_birth, phone_number, citizen_id, email, gender, password, avatar, role, created_at, status FROM account " +
+    @Query(value = "SELECT ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id,code, full_name, date_birth, phone_number, citizen_id, email, gender, password, avatar, role, created_at, status FROM account " +
             "where id <> :idStaff and (role=0 or role=1) and" +
             "(:#{#x.searchTen} is null or full_name like %:#{#x.searchTen}% or email like %:#{#x.searchTen}% or phone_number like %:#{#x.searchTen}%) " +
             "and (:#{#x.genderSearch} is null or gender=:#{#x.genderSearch}) " +
