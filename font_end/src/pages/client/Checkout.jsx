@@ -389,6 +389,7 @@ export default function Checkout() {
           idVoucher: voucher === null ? null : voucher.id,
           moneyReduced: giamGia ? giamGia : '0',
           typePayment: selectedValue,
+          email: userLogin ? userLogin.email : request.email,
         }
         if (selectedValue === '0') {
           dispatch(setLoading(true))

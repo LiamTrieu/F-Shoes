@@ -223,9 +223,10 @@ export default function HeadingClient() {
           dispatch(setCartLogout([]))
           dispatch(removeUser())
         }
+        navigate('/home')
       })
     } else {
-      navigate('/login')
+      navigate('/home')
     }
   }
   return (

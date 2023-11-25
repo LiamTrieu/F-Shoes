@@ -1267,21 +1267,7 @@ export default function AdBillDetail() {
 
   const confirmPrintBill = (idBill) => {
     confirmSatus('Xác nhận in hoá đơn', 'Bạn có chắc chắn muốn in hoá đơn này?').then((result) => {
-      if (result.isConfirmed) {
-        hoaDonApi
-          .printBill(idBill)
-          .then(() => {
-            toast.success('In thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            setIsUpdateBill(true)
-          })
-          .catch(() => {
-            toast.error('Đã sảy ra lỗi', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          })
-      }
+      window.location.href = 'http://localhost:8080/in-hoa-don/' + idBill
     })
   }
 
