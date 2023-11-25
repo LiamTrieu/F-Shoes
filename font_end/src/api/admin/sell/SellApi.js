@@ -119,5 +119,9 @@ const sellApi = {
     const url = `/sell/max-price`
     return axiosAdmin.get(url)
   },
+  getAllVoucherByIdCustomer: (adCallVoucherOfSell) => {
+    const url = `/sell/view/voucher-by-customer`
+    return axiosAdmin.get(url, { params: adCallVoucherOfSell })
+  },
 }
 export default sellApi
