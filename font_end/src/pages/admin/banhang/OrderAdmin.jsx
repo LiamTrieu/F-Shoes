@@ -1,14 +1,46 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Button, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material'
 
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import SellFrom from './SellFrom'
 import sellApi from '../../../api/admin/sell/SellApi'
 import Empty from '../../../components/Empty'
 import { toast } from 'react-toastify'
+import Badge from '@mui/material/Badge'
+import { styled } from '@mui/material/styles'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: '0 4px',
+  },
+}))
+
 export default function OrderAdmin() {
   const [listBill, setlistBill] = useState([])
   const [selectBill, setSelectBill] = useState('')
+  const [soLuong, setSoLuong] = useState([])
+
+  function setSL(data) {
+    setSoLuong((prevSoLuong) => {
+      const isIdBillExist = prevSoLuong.some((e) => e.idBill === selectBill)
+
+      if (isIdBillExist) {
+        return prevSoLuong.map((e) => {
+          if (e.idBill === selectBill) {
+            return data
+          } else {
+            return e
+          }
+        })
+      } else {
+        return [...prevSoLuong, data]
+      }
+    })
+  }
 
   const getAllBillTaoDonHang = () => {
     sellApi.getAllBillTaoDonHang().then((response) => {
@@ -101,6 +133,13 @@ export default function OrderAdmin() {
                 label={
                   <div>
                     Đơn hàng {index + 1}
+                    <IconButton aria-label="cart">
+                      <StyledBadge
+                        badgeContent={soLuong.find((e) => e.idBill === Bill.id)?.quantity}
+                        color="secondary">
+                        <ShoppingCartIcon />
+                      </StyledBadge>
+                    </IconButton>
                     <span
                       onClick={() => {
                         deleteSellClick(Bill.id)
@@ -116,6 +155,7 @@ export default function OrderAdmin() {
       </Box>
       {selectBill !== '' && (
         <SellFrom
+          setSoluong={setSL}
           idBill={selectBill}
           getAllBillTaoDonHang={getAllBillTaoDonHang}
           setSelectBill={setSelectBill}

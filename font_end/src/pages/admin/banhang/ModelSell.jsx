@@ -4,9 +4,12 @@ import {
   Button,
   Container,
   IconButton,
+  ListItem,
   MenuItem,
   Modal,
   Select,
+  Slider,
+  SliderThumb,
   Stack,
   Table,
   TableBody,
@@ -29,6 +32,8 @@ import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
 import { toast } from 'react-toastify'
+import styled from '@emotion/styled'
+import { formatCurrency } from '../../../services/common/formatCurrency '
 
 const styleModalProduct = {
   position: 'absolute',
@@ -53,6 +58,38 @@ const styleModalProductDetail = {
   boxShadow: 24,
 }
 
+function AirbnbThumbComponent(props) {
+  const { children, ...other } = props
+  return <SliderThumb {...other}>{children}</SliderThumb>
+}
+
+const AirbnbSlider = styled(Slider)(() => ({
+  color: '#fc7c27',
+  height: 1,
+  padding: '13px 0',
+  '& .MuiSlider-thumb': {
+    height: 20,
+    width: 20,
+    backgroundColor: '#fff',
+    border: '1px solid currentColor',
+    '&:hover': {
+      boxShadow: '0 0 0 8px rgba(58, 133, 137, 0.16)',
+    },
+    '& .airbnb-bar': {
+      height: 1,
+      width: 1,
+      backgroundColor: '#fc7c27',
+      marginLeft: 1,
+      marginRight: 1,
+    },
+    '& .MuiSlider-valueLabel': {
+      lineHeight: 1.2,
+      fontSize: 12,
+      backgroundColor: '#fc7c27',
+    },
+  },
+}))
+
 export default function ModelSell({ open, setOPen, idBill, load }) {
   const [isShowProductDetail, setIsShowProductDetail] = useState(false)
   const [listProduct, setListProduct] = useState([])
@@ -66,8 +103,11 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     sole: null,
     category: null,
     size: null,
+    minPrice: null,
+    maxPrice: null,
     nameProductDetail: '',
   })
+  const [maxPrice, setMaxPrice] = useState(99999999999999)
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
   const [listColor, setListColor] = useState([])
@@ -75,6 +115,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
   const [listCategory, setListCategory] = useState([])
   const [listSize, setListSize] = useState([])
   const [getAmountProduct, setGetAmountProduct] = useState([])
+  const [minMaxPriceProduct, setMinMaxPriceProduct] = useState('')
 
   const [addAmount, setAddAmount] = useState(1)
   const handleInputChange = (e) => {
@@ -112,6 +153,19 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
         .catch((error) => {})
     }
   }
+
+  useEffect(() => {
+    sellApi.getMinMaxPrice().then((response) => {
+      setMinMaxPriceProduct(response.data.data)
+      console.log(response.data.data)
+      setFilter({
+        ...filter,
+        minPrice: response.data.data.minPrice,
+        maxPrice: response.data.data.maxPrice,
+      })
+      console.log(response.data.data.minPrice, '======')
+    })
+  }, [])
 
   useEffect(() => {
     bradApi.findAll().then((response) => {
@@ -215,20 +269,38 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
             </IconButton>
           </Toolbar>
           <Container>
-            <Box>
-              <TextField
-                sx={{
-                  width: '50%',
-                  '.MuiInputBase-input': { py: '7.5px' },
-                }}
-                size="small"
-                variant="outlined"
-                placeholder="Tên sản phẩm"
-                onChange={(e) => {
-                  setFilter({ ...filter, nameProductDetail: e.target.value })
-                }}
-              />
-            </Box>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+              <Box>
+                <TextField
+                  sx={{
+                    width: '160%',
+                    '.MuiInputBase-input': { py: '7.5px' },
+                  }}
+                  size="small"
+                  variant="outlined"
+                  placeholder="Tên sản phẩm"
+                  onChange={(e) => {
+                    setFilter({ ...filter, nameProductDetail: e.target.value })
+                  }}
+                />
+              </Box>
+              <div style={{ width: '30%' }}>
+                <ListItem className="list-item">
+                  <AirbnbSlider
+                    onChangeCommitted={(_, value) => {
+                      setFilter({ ...filter, minPrice: value[0], maxPrice: value[1] })
+                      setMaxPrice(value[1])
+                    }}
+                    min={minMaxPriceProduct.minPrice}
+                    max={minMaxPriceProduct.maxPrice}
+                    valueLabelDisplay="auto"
+                    slots={{ thumb: AirbnbThumbComponent }}
+                    defaultValue={[filter.minPrice, maxPrice]}
+                    valueLabelFormat={(value) => formatCurrency(value)}
+                  />
+                </ListItem>
+              </div>
+            </Stack>
             <Box>
               <b>Danh mục:</b>
               <Select

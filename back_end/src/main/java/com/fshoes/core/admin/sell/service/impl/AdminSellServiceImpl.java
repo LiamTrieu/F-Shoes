@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
@@ -472,17 +473,27 @@ public class AdminSellServiceImpl implements AdminSellService {
     @Override
     public Boolean deleteTransaction(String idBill) {
         try{
-            List<Transaction> getONe = adminTransactionRepository.getTransactionByIdBill(idBill);
+//            Transaction getONe = adminTransactionRepository.getTransactionByIdBill(idBill);
 
-            for (Transaction t: getONe) {
-                transactionRepository.delete(t);
-            }
+
+                transactionRepository.deleteById(idBill);
+
 
                 return true;
         }catch (Exception e){
             return false;
         }
 
+    }
+
+    @Override
+    public BigDecimal getTotalMoneyPayOrder(String idBill) {
+        return adminTransactionRepository.getTotalMoneyPayOrder(idBill);
+    }
+
+    @Override
+    public AdminMinMaxPrice getMinMaxPrice() {
+        return getProductRepository.getMinMaxPriceProductAdmin() ;
     }
 
     @Override
