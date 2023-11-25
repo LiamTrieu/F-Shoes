@@ -58,5 +58,33 @@ const ClientAccountApi = {
     const urlGetByIdBillAndStt = `/client/customer/get-billDetail-by-idBill-and-status/${idBill}`
     return axiosApi.get(urlGetByIdBillAndStt, { params: { status } })
   },
+  findAllBrand: () => {
+    const url = `/client/customer/find-all-brand`
+    return ClientAccountApi.get(url)
+  },
+  findAllMaterial: () => {
+    const url = `/client/customer/get-list-material`
+    return ClientAccountApi.get(url)
+  },
+  findAllColor: () => {
+    const url = `/client/customer/find-all-color`
+    return ClientAccountApi.get(url)
+  },
+  findAllSole: () => {
+    const url = `/client/customer/find-all-sole`
+    return ClientAccountApi.get(url)
+  },
+  findAllCategory: () => {
+    const url = `/client/customer/find-all-category`
+    return ClientAccountApi.get(url)
+  },
+  findAllSize: () => {
+    const url = `/client/customer/find-all-size`
+    return ClientAccountApi.get(url)
+  },
+  getAllProduct: () => {
+    const url = `/client/customer/getProduct`
+    return ClientAccountApi.get(url)
+  },
 }
 export default ClientAccountApi

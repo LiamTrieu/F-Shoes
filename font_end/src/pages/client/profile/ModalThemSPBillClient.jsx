@@ -21,13 +21,6 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
-import bradApi from '../../../api/admin/sanpham/bradApi'
-import materialApi from '../../../api/admin/sanpham/materialApi'
-import colorApi from '../../../api/admin/sanpham/colorApi'
-import categoryApi from '../../../api/admin/sanpham/categoryApi'
-import soleApi from '../../../api/admin/sanpham/soleApi'
-import sizeApi from '../../../api/admin/sanpham/sizeApi'
-import sellApi from '../../../api/admin/sell/SellApi'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import { toast } from 'react-toastify'
 import ClientAccountApi from '../../../api/client/clientAccount'
@@ -74,22 +67,22 @@ export default function ClientModalThemSP({ open, setOPen, idBill, load }) {
   const [isProductDetailModalOpen, setIsProductDetailModalOpen] = useState(false) // Trạng thái hiển thị modal
 
   useEffect(() => {
-    bradApi.findAll().then((response) => {
+    ClientAccountApi.findAllBrand().then((response) => {
       setListBrand(response.data.data)
     })
-    materialApi.findAll().then((response) => {
+    ClientAccountApi.findAllMaterial().then((response) => {
       setListMaterial(response.data.data)
     })
-    colorApi.findAll().then((response) => {
+    ClientAccountApi.findAllColor().then((response) => {
       setListColor(response.data.data)
     })
-    soleApi.findAll().then((response) => {
+    ClientAccountApi.findAllSole().then((response) => {
       setListSole(response.data.data)
     })
-    categoryApi.findAll().then((response) => {
+    ClientAccountApi.findAllCategory().then((response) => {
       setListCategory(response.data.data)
     })
-    sizeApi.findAll().then((response) => {
+    ClientAccountApi.findAllSize().then((response) => {
       setListSize(response.data.data)
     })
   }, [])
@@ -101,7 +94,7 @@ export default function ClientModalThemSP({ open, setOPen, idBill, load }) {
   }, [filter])
 
   const fecthData = (filter) => {
-    sellApi.getAllProduct(filter).then((response) => {
+    ClientAccountApi.getAllProduct(filter).then((response) => {
       setListProduct(response.data.data)
     })
   }
