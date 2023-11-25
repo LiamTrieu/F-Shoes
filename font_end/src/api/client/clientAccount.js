@@ -60,31 +60,35 @@ const ClientAccountApi = {
   },
   findAllBrand: () => {
     const url = `/client/customer/find-all-brand`
-    return ClientAccountApi.get(url)
+    return axiosApi.get(url)
   },
   findAllMaterial: () => {
     const url = `/client/customer/get-list-material`
-    return ClientAccountApi.get(url)
+    return axiosApi.get(url)
   },
   findAllColor: () => {
     const url = `/client/customer/find-all-color`
-    return ClientAccountApi.get(url)
+    return axiosApi.get(url)
   },
   findAllSole: () => {
     const url = `/client/customer/find-all-sole`
-    return ClientAccountApi.get(url)
+    return axiosApi.get(url)
   },
   findAllCategory: () => {
     const url = `/client/customer/find-all-category`
-    return ClientAccountApi.get(url)
+    return axiosApi.get(url)
   },
   findAllSize: () => {
     const url = `/client/customer/find-all-size`
-    return ClientAccountApi.get(url)
+    return axiosApi.get(url)
   },
   getAllProduct: () => {
     const url = `/client/customer/getProduct`
-    return ClientAccountApi.get(url)
+    return axiosApi.get(url)
+  },
+  getBillHByIdBill: (idBill) => {
+    const urlGetByIdBill = `/client/customer/get-billHistory-by-idBill/${idBill}`
+    return axiosApi.get(urlGetByIdBill)
   },
 }
 export default ClientAccountApi

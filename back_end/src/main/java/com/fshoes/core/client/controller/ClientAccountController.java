@@ -1,5 +1,6 @@
 package com.fshoes.core.client.controller;
 
+import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.sanpham.service.BrandService;
 import com.fshoes.core.admin.sanpham.service.CategoryService;
 import com.fshoes.core.admin.sanpham.service.ColorService;
@@ -61,6 +62,9 @@ public class ClientAccountController {
 
     @Autowired
     private AdminSellService getSell;
+
+    @Autowired
+    private HDBillHistoryService hdBillHistoryService;
 
     @PutMapping("/update")
     public ObjectRespone UpdateUser(@ModelAttribute ClientAccountRequest request) throws ParseException {
@@ -187,6 +191,11 @@ public class ClientAccountController {
     @GetMapping("/getProduct")
     public ObjectRespone getAllProduct(FilterProductDetailRequest request) {
         return new ObjectRespone(getSell.getAllProduct(request));
+    }
+
+    @GetMapping("/get-billHistory-by-idBill/{idBill}")
+    public ObjectRespone billHistoryByIdBill(@PathVariable("idBill") String idBill) {
+        return new ObjectRespone(hdBillHistoryService.getListBillHistoryByIdBill(idBill));
     }
 
 }
