@@ -10,6 +10,7 @@ import com.fshoes.core.authentication.service.AuthenticationService;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Account;
 import com.fshoes.infrastructure.constant.Message;
+import com.fshoes.infrastructure.constant.RoleAccount;
 import com.fshoes.infrastructure.email.Email;
 import com.fshoes.infrastructure.email.EmailSender;
 import com.fshoes.infrastructure.exception.RestApiException;
@@ -73,6 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             account.setFullName(request.getName());
             account.setPassword(MD5Util.getMD5(request.getPassword()));
             account.setRole(2);
+            account.setCode("KH"+(accountRepository.countAllByRole(RoleAccount.KHACH_HANG)+1));
             accountRepository.save(account);
             Email email = new Email();
             String[] emailSend = {request.getEmail()};
@@ -165,6 +167,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             account.setFullName(request.getName());
             account.setAvatar(request.getImage());
             account.setRole(2);
+            account.setCode("KH"+(accountRepository.countAllByRole(RoleAccount.KHACH_HANG)+1));
             accountRepository.save(account);
         }
         if (account.getRole() == 2) {

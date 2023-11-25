@@ -81,10 +81,12 @@ public class ReturnServiceImpl implements ReturnService {
             BigDecimal increasedReturnMoney = returnMoney.multiply(BigDecimal.valueOf(1 + percent / 100.0));
             bill.setTotalMoney(bill.getTotalMoney().subtract(increasedReturnMoney));
             bill.setMoneyAfter(bill.getMoneyAfter().subtract(increasedReturnMoney));
+            bill.setStatus(9);
             billRepository.save(bill);
 
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
+            billHistory.setStatusBill(9);
             billHistory.setAccount(userLogin.getUserLogin());
             billHistory.setNote("Hoàn sản phẩm: " +
                                 request.getListDetail().stream()
@@ -177,11 +179,13 @@ public class ReturnServiceImpl implements ReturnService {
             BigDecimal increasedReturnMoney = returnMoney.multiply(BigDecimal.valueOf(1 + percent / 100.0));
             bill.setTotalMoney(bill.getTotalMoney().subtract(increasedReturnMoney));
             bill.setMoneyAfter(bill.getMoneyAfter().subtract(increasedReturnMoney));
+            bill.setStatus(9);
             billRepository.save(bill);
 
             List<ReturnDetail> returnDetails = returnDetailRepository.findAllByReturnsId(returns.getId());
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
+            billHistory.setStatusBill(9);
             billHistory.setAccount(userLogin.getUserLogin());
             billHistory.setNote("Hoàn sản phẩm: " +
                                 returnDetails.stream()
@@ -244,6 +248,12 @@ public class ReturnServiceImpl implements ReturnService {
     public Returns xacNhanReturn(String id) {
         Returns returns = returnsRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(Message.API_ERROR));
+        Bill bill = billRepository.findById(returns.getBill().getId()).orElseThrow(() -> new RestApiException("Hóa đơn không tồn tại"));
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill);
+        billHistory.setAccount(userLogin.getUserLogin());
+        billHistory.setNote("Xác nhận yêu cầu hoàn trả");
+        billHistoryRepository.save(billHistory);
         returns.setStatus(3);
         Long dateNow = Calendar.getInstance().getTimeInMillis();
         returns.setReturnAt(dateNow);
@@ -281,6 +291,15 @@ public class ReturnServiceImpl implements ReturnService {
             returns.setStatus(2);
             Long dateNow = Calendar.getInstance().getTimeInMillis();
             returns.setReturnAt(dateNow);
+            Bill bill = billRepository.findById(returns.getBill().getId()).orElseThrow(() -> new RestApiException("Hóa đơn không tồn tại"));
+            bill.setStatus(12);
+            billRepository.save(bill);
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill);
+            billHistory.setStatusBill(12);
+            billHistory.setAccount(userLogin.getUserLogin());
+            billHistory.setNote("Từ chối yêu cầu hoàn trả");
+            billHistoryRepository.save(billHistory);
             return returnsRepository.save(returns);
         }catch (Exception e){
             e.printStackTrace();
@@ -324,6 +343,15 @@ public class ReturnServiceImpl implements ReturnService {
                         dt.setBillDetail(null);
                         return dt;
                     }).toList());
+            Bill bill = billRepository.findById(returns.getBill().getId()).orElseThrow(() -> new RestApiException("Hóa đơn không tồn tại"));
+            bill.setStatus(11);
+            billRepository.save(bill);
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill);
+            billHistory.setStatusBill(11);
+            billHistory.setAccount(userLogin.getUserLogin());
+            billHistory.setNote("Từ chối yêu cầu hoàn trả");
+            billHistoryRepository.save(billHistory);
             return returnsRepository.save(returns);
         } catch (Exception e) {
             e.printStackTrace();
