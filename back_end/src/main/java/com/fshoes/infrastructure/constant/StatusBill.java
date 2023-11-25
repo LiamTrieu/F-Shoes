@@ -10,6 +10,9 @@ public enum StatusBill {
     CHO_THANH_TOAN,
     HOAN_THANH,
     TAO_DON_HANG,
-    TRA_HANG
+    TRA_HANG, //9
+    YEU_CAU_TRA_HANG,
+    HUY_YEU_CAU_TRA_HANG,
+    TU_CHOI_TRA_HANG
 
 }
