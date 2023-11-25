@@ -46,6 +46,10 @@ const TimeLine = (props) => {
             icon = FaRegFileAlt
             break
           case 7:
+            color = '#00BB00'
+            icon = IoCloudDoneSharp
+            break
+          case 9:
             color = '#FF1233'
             icon = IoCloudDoneSharp
             break

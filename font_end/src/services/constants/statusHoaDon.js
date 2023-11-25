@@ -18,6 +18,8 @@ export const getStatus = (status) => {
       return 'Hoàn thành'
     case 8:
       return 'Tạo đơn hàng'
+    case 9:
+      return 'Trả hàng'
     default:
       console.error('Trạng thái hóa đơn không hợp lệ')
       break
