@@ -5,6 +5,8 @@ import com.fshoes.core.admin.sell.model.request.AddBillRequest;
 import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.service.AdminSellService;
+import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
+import com.fshoes.core.admin.voucher.service.AdVoucherService;
 import com.fshoes.core.authentication.model.response.UserLoginResponse;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.UserLogin;
@@ -22,6 +24,9 @@ public class SellController {
 
     @Autowired
     private AdminSellService getSell;
+
+    @Autowired
+    private AdVoucherService voucherService;
 
     @Autowired
     private UserLogin userLogin;
@@ -165,6 +170,11 @@ public class SellController {
     @GetMapping("/max-price")
     public ObjectRespone nameById() {
         return new ObjectRespone(getSell.getMaxPriceProductId());
+    }
+
+    @GetMapping("/view/voucher-by-customer")
+    public ObjectRespone getAllVoucherByIdCustomer(@ModelAttribute AdCallVoucherOfSell adCallVoucherOfSell) {
+        return new ObjectRespone(voucherService.getAllVoucherByIdCustomer(adCallVoucherOfSell));
     }
 
     @GetMapping

@@ -305,7 +305,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   }
 
   const fecthDataVoucherByIdCustomer = (adCallVoucherOfSell) => {
-    voucherApi
+    sellApi
       .getAllVoucherByIdCustomer(adCallVoucherOfSell)
       .then((response) => {
         setListVoucher(response.data.data.content)
@@ -2524,7 +2524,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                     condition: totalSum,
                   })
                 }}>
-                <b>Chọn mã giảm giá</b>
+                <b>Chọn phiếu giảm giá</b>
               </Button>
               <Modal
                 className="modal-voucher"
