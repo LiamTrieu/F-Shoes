@@ -79,7 +79,7 @@ axiosAdmin.interceptors.response.use(
       store.dispatch(setLoading(false))
     }, 400)
     if (error.response && error.response.status === 403) {
-      window.location.href = '/not-authorization'
+      // window.location.href = '/not-authorization'
     }
     if (error.response && error.response.status === 400) {
       toast.error(error.response.data.message)

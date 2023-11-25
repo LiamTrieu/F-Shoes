@@ -233,11 +233,14 @@ export default function AdminMenu() {
             </Collapse>
           </>
         ) : (
-          <ListItemButton sx={{ pb: 0 }} component={Link} to="/admin/customer">
+          <ListItemButton className="mt-3" sx={{ mb: 0 }} component={Link} to="/admin/customer">
+            <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+              <Box component={FiUsers} sx={{ fontSize: '25px' }} />
+            </ListItemIcon>
             <ListItemText
               sx={{ m: 0, p: 0 }}
               primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-              primary="&nbsp;	&bull; &nbsp; &nbsp; Khách hàng"
+              primary="Khách hàng"
             />
           </ListItemButton>
         )}
