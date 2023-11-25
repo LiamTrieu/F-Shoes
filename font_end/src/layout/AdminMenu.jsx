@@ -10,7 +10,7 @@ import { AiOutlineDashboard } from 'react-icons/ai'
 import { RiBillLine } from 'react-icons/ri'
 import { CiMoneyBill } from 'react-icons/ci'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
-import { MdOutlineAssignmentReturn } from 'react-icons/md'
+import { MdOutlineAssignmentReturn, MdOutlinePolicy } from 'react-icons/md'
 import { IoChevronForwardOutline } from 'react-icons/io5'
 import { FiUsers } from 'react-icons/fi'
 import { TbShoe } from 'react-icons/tb'
@@ -50,16 +50,18 @@ export default function AdminMenu() {
   return (
     <List component="nav" aria-labelledby="nested-list-subheader" className="admin-menu">
       <Box>
-        <ListItemButton className="mt-3" component={Link} to="/admin/dashboard">
-          <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
-            <Box component={AiOutlineDashboard} sx={{ fontSize: '25px' }} />
-          </ListItemIcon>
-          <ListItemText
-            sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-            primary="Thống kê"
-          />
-        </ListItemButton>
+        {user?.role === 1 && (
+          <ListItemButton className="mt-3" component={Link} to="/admin/dashboard">
+            <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+              <Box component={AiOutlineDashboard} sx={{ fontSize: '25px' }} />
+            </ListItemIcon>
+            <ListItemText
+              sx={{ m: 0, p: 0 }}
+              primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+              primary="Thống kê"
+            />
+          </ListItemButton>
+        )}
         <ListItemButton className="mt-3" component={Link} to="/admin/sell">
           <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
             <Box component={CiMoneyBill} sx={{ fontSize: '25px' }} />
@@ -240,6 +242,16 @@ export default function AdminMenu() {
           </ListItemButton>
         )}
       </Box>
+      {/* <ListItemButton className="mt-3" component={Link} to="/admin/return-policy">
+        <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+          <Box component={MdOutlinePolicy} sx={{ fontSize: '25px' }} />
+        </ListItemIcon>
+        <ListItemText
+          sx={{ m: 0, p: 0 }}
+          primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+          primary="Chính sách đổi trả"
+        />
+      </ListItemButton> */}
     </List>
   )
 }

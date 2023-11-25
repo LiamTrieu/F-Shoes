@@ -187,7 +187,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                             "</html>\n");
                     email.setToEmail(toMail);
                     email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
-                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn đã nhận được khuyễn mãi: </b><span>" + voucher.getName() + "</span>");
+                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn đã nhận được voucher: </b><span>" + voucher.getName() + "</span>");
                     emailSender.sendEmail(email);
                 }
             }
@@ -309,7 +309,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                             "</html>\n");
                     email.setToEmail(toMail);
                     email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
-                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn đã nhận được khuyễn mãi: </b><span>" + voucher.getName() + "</span>");
+                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn đã nhận được voucher: </b><span>" + voucher.getName() + "</span>");
                     emailSender.sendEmail(email);
                 }
             }

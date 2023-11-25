@@ -279,7 +279,7 @@ export default function Dashboard() {
   }, [filterInCustom])
 
   return (
-    <Container maxWidth="lg" sx={{ mb: 5 }}>
+    <Container maxWidth="lg" sx={{ mb: 5, ml: 0, mr: 0 }}>
       <Typography variant="h6" fontWeight={'bold'} my={2}>
         Thống kê
       </Typography>

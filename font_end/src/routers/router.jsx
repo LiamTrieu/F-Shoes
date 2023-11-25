@@ -24,6 +24,7 @@ import Forbidden403 from '../pages/httpstatus/Forbidden403'
 import NotFound404 from '../pages/httpstatus/NotFound404'
 import adReturnRoute from './adminroute/adreturnroute'
 import adChangeRoute from './adminroute/adchangepassword'
+import adReturnPolicy from './adminroute/adreturnpolicy'
 
 const router = createBrowserRouter([
   {
@@ -62,6 +63,7 @@ const router = createBrowserRouter([
       ...adSellRoute,
       ...adReturnRoute,
       ...adChangeRoute,
+      ...adReturnPolicy,
       { path: '/admin/dashboard', element: <Dashboard /> },
     ],
   },
