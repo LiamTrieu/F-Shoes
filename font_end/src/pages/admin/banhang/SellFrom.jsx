@@ -27,6 +27,7 @@ import {
   TableHead,
   TextField,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import TableCell from '@mui/material/TableCell'
@@ -1081,6 +1082,12 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       return
     }
 
+    if (totalPrice - totalMoneyPayOrderByIdBill < 0) {
+      toast.error('Khách thanh toán chưa đủ tiền', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
+
     const data = {
       fullName: detailDiaChi.name ? detailDiaChi.name : '',
       phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
@@ -1174,9 +1181,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     }
   }
 
-  const deleteTransaction = (idBill) => {
+  const deleteTransaction = (id) => {
     sellApi
-      .deleteTransaction(idBill)
+      .deleteTransaction(id)
       .then(() => {
         toast.warning('Huỷ thanh toán thành công', {
           position: toast.POSITION.TOP_CENTER,
@@ -2913,11 +2920,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                           </TableCell>
                           <TableCell align="center">{formatPrice(item.totalMoney)}</TableCell>
                           <TableCell align="center">
-                            <DeleteIcon
-                              disabled={isAmountNegative}
-                              style={{ color: 'red' }}
-                              onClick={() => deleteTransaction(item.idTransaction)}
-                            />
+                            <Tooltip title="Hủy thanh toán">
+                              <DeleteIcon
+                                style={{
+                                  color: 'red',
+                                  pointerEvents: isAmountNegative ? 'none' : 'auto',
+                                }}
+                                onClick={() => deleteTransaction(item.idTransaction)}
+                              />
+                            </Tooltip>
                           </TableCell>
                         </TableRow>
                       ))}

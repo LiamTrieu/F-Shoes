@@ -101,11 +101,10 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         newBill.setDesiredReceiptDate(request.getDuKien());
         String password = generatePassword();
         Account account;
-        if( userLogin.getUserLogin() != null) {
-             account = authenticationService.checkMail(userLogin.getUserLogin().getEmail());
-        }
-        else {
-             account = authenticationService.checkMail(request.getEmail());
+        if (userLogin.getUserLogin() != null) {
+            account = authenticationService.checkMail(userLogin.getUserLogin().getEmail());
+        } else {
+            account = authenticationService.checkMail(request.getEmail());
         }
         if (account == null) {
             account = new Account();
@@ -154,7 +153,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(newBill.getId()));
         }
         Notification notification = new Notification();
-        notification.setTitle("Có hóa đơn cần xác nhận "+"#"+newBill.getCode());
+        notification.setTitle("Có hóa đơn cần xác nhận " + "#" + newBill.getCode());
         notification.setType(TypeNotification.HOA_DON);
         notification.setIdRedirect(newBill.getId());
         messagingTemplate.convertAndSend("/topic/thong-bao", notification);
@@ -263,10 +262,9 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 if (bill != null && bill.getStatus() == 8) {
                     bill.setStatus(1);
                     Account account;
-                    if( userLogin.getUserLogin() != null) {
+                    if (userLogin.getUserLogin() != null) {
                         account = authenticationService.checkMail(userLogin.getUserLogin().getEmail());
-                    }
-                    else {
+                    } else {
                         account = authenticationService.checkMail(bill.getEmail());
                     }
 
@@ -334,7 +332,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     sendMail(newRequest, bill.getCode(), Calendar.getInstance().getTimeInMillis(), password);
                     messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
                     Notification notification = new Notification();
-                    notification.setTitle("Có hóa đơn cần xác nhận "+"#"+bill.getCode());
+                    notification.setTitle("Có hóa đơn cần xác nhận " + "#" + bill.getCode());
                     notification.setType(TypeNotification.HOA_DON);
                     notification.setIdRedirect(bill.getId());
                     messagingTemplate.convertAndSend("/topic/thong-bao", notification);
