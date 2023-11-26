@@ -4,7 +4,10 @@ FROM openjdk:17-jdk-alpine
 # Tạo thư mục /app trong hệ thống tệp Docker và đặt nó làm thư mục làm việc mặc định
 WORKDIR /app
 
-# Sao chép tệp JAR của ứng dụng Spring Boot vào thư mục /app trong hệ thống tệp Docker
+# Khởi tạo build
+RUN ./mvnw clean package
+
+# Sau khi build xong, sao chép tệp JAR của ứng dụng Spring Boot vào thư mục /app trong hệ thống tệp Docker
 COPY target/back_end-0.0.1-SNAPSHOT.jar ./app.jar
 
 # Đặt biến môi trường SPRING_PROFILES_ACTIVE (nếu cần)
