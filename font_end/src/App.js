@@ -2,13 +2,14 @@ import { RouterProvider } from 'react-router-dom'
 import router from './routers/router'
 import './assets/styles/main.css'
 import Toast from './components/Toast'
-import { Backdrop, CircularProgress } from '@mui/material'
+import { Backdrop } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { GetLoading } from './services/slices/loadingSlice'
-import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew'
 import Loading from './layout/Loading'
+
 function App() {
   const loading = useSelector(GetLoading)
+
   return (
     <div className="App">
       <Backdrop
@@ -19,7 +20,7 @@ function App() {
         <Loading />
       </Backdrop>
       <Toast />
-      <RouterProvider router={router}/>
+      <RouterProvider router={router} />
     </div>
   )
 }

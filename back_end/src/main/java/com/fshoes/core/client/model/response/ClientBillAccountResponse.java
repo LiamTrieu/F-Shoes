@@ -33,5 +33,4 @@ public interface ClientBillAccountResponse extends IsIdentified {
     String getUrl();
 
 
-
 }

@@ -3,7 +3,6 @@ package com.fshoes.core.admin.voucher.model.request;
 import com.fshoes.core.common.PageableRequest;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 

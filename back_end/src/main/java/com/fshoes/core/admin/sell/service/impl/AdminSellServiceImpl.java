@@ -18,22 +18,17 @@ import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
 import com.fshoes.infrastructure.constant.Message;
-import com.fshoes.infrastructure.constant.TypeBill;
 import com.fshoes.infrastructure.exception.RestApiException;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.TransactionRepository;
-import com.fshoes.util.GenHoaDon;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -230,7 +225,8 @@ public class AdminSellServiceImpl implements AdminSellService {
             Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
             assert account != null;
             bill.setCustomer(account);
-        };
+        }
+        ;
         bill.setNote(request.getNote());
         bill.setCustomerAmount(request.getCustomerAmount());
         bill.setReceivingMethod(request.getReceivingMethod());
@@ -295,16 +291,16 @@ public class AdminSellServiceImpl implements AdminSellService {
             existingBillDetail.setQuantity(newQuantity);
             return billDetailRepositoty.save(existingBillDetail);
         } else {
-        ProductDetail productDetail = productDetailRepository.findById(idProductDetail).orElse(null);
-        Bill bill = billRepository.findById(id).orElse(null);
-        BillDetail billDetail = new BillDetail();
-        billDetail.setQuantity(1);
-        billDetail.setProductDetail(productDetail);
-        billDetail.setPrice(productDetail.getPrice());
-        billDetail.setBill(bill);
-        billDetail.setStatus(0);
-        return billDetailRepositoty.save(billDetail);
-    }
+            ProductDetail productDetail = productDetailRepository.findById(idProductDetail).orElse(null);
+            Bill bill = billRepository.findById(id).orElse(null);
+            BillDetail billDetail = new BillDetail();
+            billDetail.setQuantity(1);
+            billDetail.setProductDetail(productDetail);
+            billDetail.setPrice(productDetail.getPrice());
+            billDetail.setBill(bill);
+            billDetail.setStatus(0);
+            return billDetailRepositoty.save(billDetail);
+        }
     }
 
 
@@ -472,15 +468,15 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Override
     public Boolean deleteTransaction(String idBill) {
-        try{
+        try {
 //            Transaction getONe = adminTransactionRepository.getTransactionByIdBill(idBill);
 
 
-                transactionRepository.deleteById(idBill);
+            transactionRepository.deleteById(idBill);
 
 
-                return true;
-        }catch (Exception e){
+            return true;
+        } catch (Exception e) {
             return false;
         }
 
@@ -493,7 +489,7 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Override
     public AdminMinMaxPrice getMinMaxPrice() {
-        return getProductRepository.getMinMaxPriceProductAdmin() ;
+        return getProductRepository.getMinMaxPriceProductAdmin();
     }
 
     @Override

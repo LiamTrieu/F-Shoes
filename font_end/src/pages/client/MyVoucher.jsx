@@ -9,6 +9,7 @@ import Empty from '../../components/Empty'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { formatCurrency } from '../../services/common/formatCurrency .js'
+import socketUrl from '../../api/socket.js'
 
 function CustomTabPanel(props) {
   const { children, value, index } = props
@@ -78,15 +79,16 @@ export default function MyVoucher() {
   }, [])
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
-    console.log('Socket created')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       console.log('Socket created1')
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voucherPublic, voucherPrivate])
 
   const onConnect = () => {

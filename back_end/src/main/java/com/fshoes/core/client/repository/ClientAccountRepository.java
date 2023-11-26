@@ -1,6 +1,5 @@
 package com.fshoes.core.client.repository;
 
-import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
 import com.fshoes.core.client.model.response.ClientCustomerResponse;
 import com.fshoes.core.client.model.response.ClientProfileBillDetailResponse;
 import com.fshoes.repository.AccountRepository;

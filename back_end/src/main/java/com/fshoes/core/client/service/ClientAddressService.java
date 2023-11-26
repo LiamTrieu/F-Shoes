@@ -1,6 +1,5 @@
 package com.fshoes.core.client.service;
 
-import com.fshoes.core.admin.khachhang.model.request.DiaChiRequest;
 import com.fshoes.core.client.model.request.ClientAddressRequest;
 import com.fshoes.core.client.model.response.ClientAddressResponse;
 import com.fshoes.core.common.UserLogin;
@@ -14,7 +13,7 @@ public interface ClientAddressService {
 
     Boolean updateDefault(UserLogin userLogin, String idAdrress);
 
-    Address add(ClientAddressRequest request , UserLogin userLogin);
+    Address add(ClientAddressRequest request, UserLogin userLogin);
 
     Boolean update(String id, ClientAddressRequest request);
 

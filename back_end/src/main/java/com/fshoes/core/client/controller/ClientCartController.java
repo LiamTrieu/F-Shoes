@@ -20,17 +20,17 @@ public class ClientCartController {
     }
 
     @PostMapping("/add")
-    public ObjectRespone addCart(@RequestBody ClientAddCartRequest request){
+    public ObjectRespone addCart(@RequestBody ClientAddCartRequest request) {
         return new ObjectRespone(cartService.addCart(request));
     }
 
     @PostMapping("/set")
-    public ObjectRespone setCart(@RequestBody List<ClientAddCartRequest> request){
+    public ObjectRespone setCart(@RequestBody List<ClientAddCartRequest> request) {
         return new ObjectRespone(cartService.setCart(request));
     }
 
     @GetMapping("/get-promotion-by-product-detail/{idProductDetail}")
-    public ObjectRespone getPromotionByProductDetail(@PathVariable("idProductDetail")  List<String> idProductDetail) {
+    public ObjectRespone getPromotionByProductDetail(@PathVariable("idProductDetail") List<String> idProductDetail) {
         return new ObjectRespone(cartService.getPromotionByProductDetail(idProductDetail));
     }
 }

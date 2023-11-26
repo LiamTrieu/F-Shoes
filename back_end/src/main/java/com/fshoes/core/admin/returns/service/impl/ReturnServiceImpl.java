@@ -135,7 +135,7 @@ public class ReturnServiceImpl implements ReturnService {
 
                 if (billDetail.getQuantity() <= 0) {
                     billDetailRepository.delete(billDetail);
-                }else {
+                } else {
                     billDetails.add(billDetail);
                 }
 
@@ -190,11 +190,11 @@ public class ReturnServiceImpl implements ReturnService {
             billHistory.setNote("Hoàn sản phẩm: " +
                                 returnDetails.stream()
                                         .map(e -> "x" + e.getQuantity() + " " +
-                                                e.getProductDetail().getProduct().getName() + " " +
-                                                e.getProductDetail().getMaterial().getName() + " " +
-                                                e.getProductDetail().getSole().getName() + " " +
-                                                e.getProductDetail().getColor().getName() + " [" +
-                                                e.getProductDetail().getSize().getSize() + " ]")
+                                                  e.getProductDetail().getProduct().getName() + " " +
+                                                  e.getProductDetail().getMaterial().getName() + " " +
+                                                  e.getProductDetail().getSole().getName() + " " +
+                                                  e.getProductDetail().getColor().getName() + " [" +
+                                                  e.getProductDetail().getSize().getSize() + " ]")
                                         .collect(Collectors.joining(", ")));
             billHistoryRepository.save(billHistory);
 
@@ -277,8 +277,8 @@ public class ReturnServiceImpl implements ReturnService {
                     billDetail = returnDetail.getBillDetail();
                     billDetail.setStatus(0);
                     newBillDetails.add(billDetail);
-                }else {
-                    billDetail.setQuantity(returnDetail.getQuantity()+billDetail.getQuantity());
+                } else {
+                    billDetail.setQuantity(returnDetail.getQuantity() + billDetail.getQuantity());
                     newBillDetails.add(billDetail);
                     removeBillDetails.add(returnDetail.getBillDetail());
                     returnDetail.setBillDetail(null);
@@ -301,7 +301,7 @@ public class ReturnServiceImpl implements ReturnService {
             billHistory.setNote("Từ chối yêu cầu hoàn trả");
             billHistoryRepository.save(billHistory);
             return returnsRepository.save(returns);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -340,9 +340,9 @@ public class ReturnServiceImpl implements ReturnService {
             Long dateNow = Calendar.getInstance().getTimeInMillis();
             returns.setReturnAt(dateNow);
             returnDetailRepository.saveAll(detailList.stream().map(dt -> {
-                        dt.setBillDetail(null);
-                        return dt;
-                    }).toList());
+                dt.setBillDetail(null);
+                return dt;
+            }).toList());
             Bill bill = billRepository.findById(returns.getBill().getId()).orElseThrow(() -> new RestApiException("Hóa đơn không tồn tại"));
             bill.setStatus(11);
             billRepository.save(bill);

@@ -7,10 +7,8 @@ import com.fshoes.core.admin.sell.model.response.GetProductDetailBillSellRespons
 import com.fshoes.core.admin.sell.model.response.GetSizeResponse;
 import com.fshoes.repository.ProductDetailRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Repository

@@ -15,7 +15,6 @@ public class ProductPromotionController {
     private ProductPromotionService productPromotionService;
 
 
-
     @GetMapping("/get-all")
     public ObjectRespone getAll() {
         return new ObjectRespone(productPromotionService.getAll());
@@ -37,17 +36,17 @@ public class ProductPromotionController {
     }
 
     @GetMapping("/page")
-    public ObjectRespone pageProductPromotion(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "2") Integer pageSize){
-        return new ObjectRespone(productPromotionService.ProductPromotionPage(page,pageSize));
+    public ObjectRespone pageProductPromotion(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "2") Integer pageSize) {
+        return new ObjectRespone(productPromotionService.ProductPromotionPage(page, pageSize));
     }
 
     @GetMapping("/list-product/{idPromotion}")
-    public ObjectRespone getIdProductAndProductDetailByIdPromotion(@PathVariable String idPromotion){
+    public ObjectRespone getIdProductAndProductDetailByIdPromotion(@PathVariable String idPromotion) {
         return new ObjectRespone(productPromotionService.getIdProductAndProductDetailByIdPromotion(idPromotion));
     }
 
     @GetMapping("/list-product-detail/{idPromotion}")
-    public ObjectRespone getIdProductDetailByIdPromotion(@PathVariable String idPromotion){
+    public ObjectRespone getIdProductDetailByIdPromotion(@PathVariable String idPromotion) {
         return new ObjectRespone(productPromotionService.getIdProductDetailByIdPromotion(idPromotion));
     }
 

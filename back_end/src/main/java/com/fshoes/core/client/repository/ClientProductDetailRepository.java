@@ -120,6 +120,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
     List<ClientProductResponse> getAllProductClient(@Param("request") ClientFindProductRequest request);
+
     @Query(value = """
                 SELECT 
                        pd.id as id,

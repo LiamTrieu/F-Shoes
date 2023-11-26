@@ -6,20 +6,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
 
 
 @Repository
 public interface AdminTransactionRepository extends TransactionRepository {
 
     @Query(value = """
-    SELECT * from transaction t where t.id_bill = :idBill 
-""",nativeQuery = true)
+                SELECT * from transaction t where t.id_bill = :idBill 
+            """, nativeQuery = true)
     Transaction getTransactionByIdBill(String idBill);
 
     @Query(value = """
-   select sum(total_money) as totalMoney from transaction where id_bill = :idBill
-""",nativeQuery = true)
+               select sum(total_money) as totalMoney from transaction where id_bill = :idBill
+            """, nativeQuery = true)
     BigDecimal getTotalMoneyPayOrder(String idBill);
 }

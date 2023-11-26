@@ -18,7 +18,7 @@ public class ProductPromotionRequest {
 
     private String idPromotion;
 
-    public ProductPromotion newProductProduct(ProductPromotion productPromotion){
+    public ProductPromotion newProductProduct(ProductPromotion productPromotion) {
         productPromotion.getPromotion().setId(idPromotion);
         productPromotion.getProductDetail().setId(idProductDetail);
 

@@ -3,7 +3,6 @@ package com.fshoes.core.admin.khuyenmai.repository;
 import com.fshoes.core.admin.khuyenmai.model.request.PromotionSearch;
 import com.fshoes.core.admin.khuyenmai.model.respone.PromotionRespone;
 import com.fshoes.entity.Promotion;
-import com.fshoes.entity.Voucher;
 import com.fshoes.repository.PromotionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,7 @@ public interface KMPromotionRepository extends PromotionRepository {
     List<PromotionRespone> getAllKhuyenMai();
 
     @Query(value = "select Id, Name, time_start as TimeStart, time_end as TimeEnd, Value, Status " +
-                   "from Promotion where Name like %:textSearch%",nativeQuery = true)
+                   "from Promotion where Name like %:textSearch%", nativeQuery = true)
     Page<PromotionRespone> searchByName(Pageable pageable, @Param("textSearch") String textSearch);
     // new
 
@@ -32,7 +31,7 @@ public interface KMPromotionRepository extends PromotionRepository {
             AND (:#{#reg.type} IS NULL OR type = :#{#reg.type})
             order by p.created_at desc 
             """, nativeQuery = true)
-        Page<PromotionRespone> getPromotion(@Param("reg") PromotionSearch reg, Pageable pageable);
+    Page<PromotionRespone> getPromotion(@Param("reg") PromotionSearch reg, Pageable pageable);
 
     @Query(value = """
             select p.Id, p.Name, p.time_start as TimeStart, p.time_end as timeEnd, p.Value, p.Status
@@ -41,10 +40,10 @@ public interface KMPromotionRepository extends PromotionRepository {
     Page<PromotionRespone> getPagePromotion(Pageable pageable);
 
     @Query("""
-    select p from Promotion p
-    where (p.timeStart > :dateNow and p.status != 0)
-    or (p.timeEnd <= :dateNow and p.status != 2)
-    or ((p.timeStart <= :dateNow and p.timeEnd > :dateNow) and p.status != 1)
-    """)
+            select p from Promotion p
+            where (p.timeStart > :dateNow and p.status != 0)
+            or (p.timeEnd <= :dateNow and p.status != 2)
+            or ((p.timeStart <= :dateNow and p.timeEnd > :dateNow) and p.status != 1)
+            """)
     List<Promotion> getAllPromotionWrong(Long dateNow);
 }

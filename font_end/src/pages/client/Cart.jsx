@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  Divider,
-  IconButton,
-  TableFooter,
-  TextField,
-  Typography,
-} from '@mui/material'
+import { Button, Checkbox, Container, Divider, TableFooter, Typography } from '@mui/material'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -20,17 +10,9 @@ import Paper from '@mui/material/Paper'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import PaidRoundedIcon from '@mui/icons-material/PaidRounded'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { Link } from 'react-router-dom'
-import {
-  OrderCartBody,
-  OrderCartFotter,
-  OrderCartHeading,
-  TableCellCustom,
-} from '../../layout/client/cartpage/OrderCart'
-import { BoderDotted, NoBoder } from '../../styles/TableStyle'
-import AddIcon from '@mui/icons-material/Add'
-import RemoveIcon from '@mui/icons-material/Remove'
+import { OrderCartFotter } from '../../layout/client/cartpage/OrderCart'
+import { NoBoder } from '../../styles/TableStyle'
 import './Cart.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
@@ -40,6 +22,7 @@ import clientProductApi from '../../api/client/clientProductApi'
 import clientCartApi from '../../api/client/clientCartApi'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../../api/socket'
 
 var stompClient = null
 export default function Cart() {
@@ -92,6 +75,7 @@ export default function Cart() {
     if (amountProduct > 0) {
       getPromotionProductDetails(productIds)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const dispatch = useDispatch()
@@ -361,13 +345,15 @@ export default function Cart() {
   }
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product])
 
   const onConnect = () => {
@@ -498,6 +484,8 @@ export default function Cart() {
                                           : parseFloat(size.size).toFixed(1)}
                                       </option>
                                     )
+                                  } else {
+                                    return <></>
                                   }
                                 })}
                             </select>

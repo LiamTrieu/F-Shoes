@@ -1,11 +1,7 @@
 package com.fshoes.core.admin.hoadon.model.request;
 
 import com.fshoes.entity.Bill;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

@@ -20,14 +20,13 @@ import java.util.List;
 @Service
 public class ClientCartServiceImpl implements ClientCartService {
     @Autowired
+    ClientProductDetailRepository productDetailRepository;
+    @Autowired
+    CLientPromotionRepository promotionRepository;
+    @Autowired
     private UserLogin userLogin;
     @Autowired
     private ClientCartRepository cartRepository;
-    @Autowired
-    ClientProductDetailRepository productDetailRepository;
-
-    @Autowired
-    CLientPromotionRepository promotionRepository;
 
     @Override
     public List<ClientCartResponse> getCart() {

@@ -48,6 +48,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import Carousel from 'react-material-ui-carousel'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../../../api/socket'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 
@@ -245,13 +246,15 @@ export default function AdProductPageDetail() {
   }
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listProductDetail])
 
   const onConnect = () => {

@@ -1,11 +1,7 @@
 package com.fshoes.core.admin.hoadon.model.request;
 
 import com.fshoes.core.common.PageableRequest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter

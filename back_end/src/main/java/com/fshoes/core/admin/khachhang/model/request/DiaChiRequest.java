@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DiaChiRequest {
-   private String name;
+    private String name;
 
     private String phoneNumber;
 
@@ -24,7 +24,7 @@ public class DiaChiRequest {
     private String wardId;
 
 
-    public Address newAddress (Address address) {
+    public Address newAddress(Address address) {
         address.setName(this.name);
         address.setPhoneNumber(this.phoneNumber);
         address.setSpecificAddress(this.specificAddress);

@@ -33,6 +33,7 @@ import hoaDonChiTietApi from '../../../api/admin/hoadon/hoaDonChiTiet'
 import { toast } from 'react-toastify'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../../../api/socket'
 const styleAdBillModalThemSP = {
   position: 'absolute',
   top: '50%',
@@ -175,13 +176,15 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
   }
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listProduct])
 
   const onConnect = () => {

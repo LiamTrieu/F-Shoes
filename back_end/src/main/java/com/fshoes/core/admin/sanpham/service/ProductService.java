@@ -26,7 +26,7 @@ public interface ProductService {
 
     List<String> uploadListImage(String folderName, List<MultipartFile> listImages);
 
-    void addProductDetail(List<ProductDetailRequest>  request);
+    void addProductDetail(List<ProductDetailRequest> request);
 
     PageReponse<ProductDetailResponse> getProductDetail(PrdDetailFilterRequest request);
 

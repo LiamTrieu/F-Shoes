@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
 @Service
 public class ProductPromotionServiceImpl implements ProductPromotionService {
 
@@ -21,6 +22,7 @@ public class ProductPromotionServiceImpl implements ProductPromotionService {
 
     @Autowired
     private KMProductPromotionRepository kmProductPromotionRepository;
+
     @Override
     public List<ProductPromotion> getAll() {
         return productPromotionRepository.findAll();
@@ -39,9 +41,9 @@ public class ProductPromotionServiceImpl implements ProductPromotionService {
 
     @Override
     public ProductPromotion updateProductPromotion(ProductPromotionRequest productPromotionRequest, String id) {
-        if(productPromotionRepository.existsById(id)){
-           ProductPromotion productPromotion =  productPromotionRequest.newProductProduct( new ProductPromotion());
-           productPromotion.setId(id);
+        if (productPromotionRepository.existsById(id)) {
+            ProductPromotion productPromotion = productPromotionRequest.newProductProduct(new ProductPromotion());
+            productPromotion.setId(id);
             return productPromotionRepository.save(productPromotion);
         }
         return null;
@@ -49,7 +51,7 @@ public class ProductPromotionServiceImpl implements ProductPromotionService {
 
     @Override
     public Page<ProductPromotion> ProductPromotionPage(Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page,pageSize);
+        Pageable pageable = PageRequest.of(page, pageSize);
         return productPromotionRepository.findAll(pageable);
     }
 

@@ -2,7 +2,6 @@ package com.fshoes.core.admin.sanpham.repository;
 
 import com.fshoes.core.admin.sanpham.model.request.ProductFilterRequest;
 import com.fshoes.core.admin.sanpham.model.respone.ProductResponse;
-import com.fshoes.entity.Product;
 import com.fshoes.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

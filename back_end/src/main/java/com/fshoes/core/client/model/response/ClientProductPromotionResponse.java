@@ -26,6 +26,7 @@ public interface ClientProductPromotionResponse extends IsIdentified {
 
     @Value("#{target.id_color}")
     String getIdColor();
+
     @Value("#{target.id_material}")
     String getIdMaterial();
 
@@ -37,8 +38,6 @@ public interface ClientProductPromotionResponse extends IsIdentified {
 
     @Value("#{target.id_brand}")
     String getIdBrand();
-
-
 
 
 }

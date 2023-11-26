@@ -35,6 +35,7 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Autowired
     private EmailSender emailSender;
+
     @Override
     public Page<KhachHangRespone> findKhachHang(AdKhachHangSearch adKhachHangSearch) {
         Pageable pageable = PageRequest.of(adKhachHangSearch.getPage() - 1, adKhachHangSearch.getSize());
@@ -57,13 +58,13 @@ public class KhachHangServiceImpl implements KhachHangService {
         customer.setRole(RoleAccount.values()[khachHangRequest.getRole()].ordinal());
         customer.setStatus(Status.values()[khachHangRequest.getStatus()].ordinal());
 
-        if (khachHangRequest.getAvatar() != null ) {
+        if (khachHangRequest.getAvatar() != null) {
             customer.setAvatar(cloudinaryImage.uploadAvatar(khachHangRequest.getAvatar()));
         }
         String password = generatePassword();
         String[] toMail = {khachHangRequest.getEmail()};
         Email email = new Email();
-        email.setBody("<b style=\"text-align: center;\">"+password+"</b>");
+        email.setBody("<b style=\"text-align: center;\">" + password + "</b>");
         email.setToEmail(toMail);
         email.setSubject("Tạo tài khoản thành công");
         email.setTitleEmail("Mật khẩu đăng nhập là:");
@@ -79,7 +80,7 @@ public class KhachHangServiceImpl implements KhachHangService {
         Optional<Account> optionalCustomer = khachHangRepository.findById(id);
         if (optionalCustomer.isPresent()) {
             Account customer = khachHangRequest.newCustomer(optionalCustomer.get());
-            if(khachHangRequest.getAvatar() != null) {
+            if (khachHangRequest.getAvatar() != null) {
                 customer.setAvatar(cloudinaryImage.uploadAvatar(khachHangRequest.getAvatar()));
             }
             khachHangRepository.save(customer);

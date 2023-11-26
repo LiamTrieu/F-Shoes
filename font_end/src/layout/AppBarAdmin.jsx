@@ -15,10 +15,11 @@ import authenticationAPi from '../api/authentication/authenticationAPi'
 import { Logout } from '@mui/icons-material'
 import confirmSatus from '../components/comfirmSwal'
 import KeyIcon from '@mui/icons-material/Key'
-import { useDispatch, useStore } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { addUserAdmin } from '../services/slices/userAdminSlice'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../api/socket'
 
 const drawerWidth = '17vw'
 var stompClient = null
@@ -31,13 +32,16 @@ export default function AppBarAdmin({ children }) {
     }
 
     useEffect(() => {
-      const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+      const socket = new SockJS(socketUrl)
       stompClient = Stomp.over(socket)
+      stompClient.debug = () => {}
       stompClient.connect({}, onConnect)
 
       return () => {
         stompClient.disconnect()
       }
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const onConnect = () => {
@@ -168,6 +172,7 @@ export default function AppBarAdmin({ children }) {
         dispatch(addUserAdmin(response.data.data))
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   return token ? (

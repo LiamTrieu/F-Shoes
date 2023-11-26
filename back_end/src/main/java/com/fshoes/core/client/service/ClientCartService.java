@@ -10,6 +10,7 @@ public interface ClientCartService {
     List<ClientCartResponse> getCart();
 
     Boolean addCart(ClientAddCartRequest request);
+
     Boolean setCart(List<ClientAddCartRequest> request);
 
     List<ClientPromotionResponse> getPromotionByProductDetail(List<String> idProductDetail);

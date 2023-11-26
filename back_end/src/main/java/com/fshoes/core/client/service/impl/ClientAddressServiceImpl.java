@@ -24,11 +24,12 @@ public class ClientAddressServiceImpl implements ClientAddressService {
 
     @Autowired
     private ClientAccountRepository userRepo;
+
     @Override
     public Page<ClientAddressResponse> getPageAddressByIdCustomer(int p, UserLogin userLogin) {
         try {
-            Pageable pageable = PageRequest.of(p,5);
-            return repository.getPageAddressByIdCustomer(pageable,userLogin.getUserLogin().getId());
+            Pageable pageable = PageRequest.of(p, 5);
+            return repository.getPageAddressByIdCustomer(pageable, userLogin.getUserLogin().getId());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -37,7 +38,7 @@ public class ClientAddressServiceImpl implements ClientAddressService {
 
     @Override
     public Address getAddressDefault(UserLogin userLogin) {
-        if(userLogin.getUserLogin() != null){
+        if (userLogin.getUserLogin() != null) {
             return repository.getAddressDefault(userLogin.getUserLogin().getId());
         }
         return null;

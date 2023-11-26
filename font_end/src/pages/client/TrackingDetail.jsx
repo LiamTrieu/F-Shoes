@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import TimeLine from '../admin/hoadon/TimeLine'
 import ClientAccountApi from '../../api/client/clientAccount'
 import { formatCurrency } from '../../services/common/formatCurrency '
@@ -53,6 +53,7 @@ export default function TrackingDetail() {
   useEffect(() => {
     getBillByIdBill(code)
     getBillHistoryByIdBill(code)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code])
   const totalMoney = billDetail.reduce((total, item) => total + item.totalMoney, 0)
   const moneyReduce = billDetail.reduce((reduce, item) => reduce + item.moneyReduced, 0)

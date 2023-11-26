@@ -14,7 +14,7 @@ public class AddProductRequest {
 
     private ProductDetail productDetail;
 
-    public ProductPromotion newProductPromoton(ProductPromotion productPromotion){
+    public ProductPromotion newProductPromoton(ProductPromotion productPromotion) {
         productPromotion.setPromotion(this.getPromotion());
         productPromotion.setProductDetail(this.getProductDetail());
         return productPromotion;

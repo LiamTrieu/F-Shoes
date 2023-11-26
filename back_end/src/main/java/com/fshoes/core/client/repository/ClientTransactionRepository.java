@@ -1,6 +1,5 @@
 package com.fshoes.core.client.repository;
 
-import com.fshoes.core.admin.hoadon.model.respone.HDTransactionResponse;
 import com.fshoes.core.client.model.response.ClientTransactionResponse;
 import com.fshoes.repository.TransactionRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
 public interface ClientTransactionRepository extends TransactionRepository {
     @Query(value = """

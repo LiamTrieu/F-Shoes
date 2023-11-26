@@ -3,7 +3,6 @@ package com.fshoes.core.admin.hoadon.service.impl;
 import com.fshoes.core.admin.hoadon.model.respone.HDTransactionResponse;
 import com.fshoes.core.admin.hoadon.repository.HDTransactionRepository;
 import com.fshoes.core.admin.hoadon.service.HDTransactionService;
-import com.fshoes.entity.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

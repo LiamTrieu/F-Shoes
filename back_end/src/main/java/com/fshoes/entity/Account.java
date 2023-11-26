@@ -57,14 +57,13 @@ public class Account extends PrimaryEntity implements Serializable, UserDetails 
         return status.ordinal();
     }
 
-    public Integer getRole() {
-        return role.ordinal();
-    }
-
     public void setStatus(Integer status) {
         this.status = Status.values()[status];
     }
 
+    public Integer getRole() {
+        return role.ordinal();
+    }
 
     public void setRole(Integer role) {
         this.role = RoleAccount.values()[role];

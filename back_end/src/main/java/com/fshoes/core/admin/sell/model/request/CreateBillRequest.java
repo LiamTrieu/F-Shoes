@@ -9,12 +9,12 @@ import java.math.BigDecimal;
 @Setter
 public class CreateBillRequest {
 
-   private String productDetailId;
+    private String productDetailId;
 
-   private String billId;
+    private String billId;
 
-   private Integer quantity;
+    private Integer quantity;
 
-   private BigDecimal price;
+    private BigDecimal price;
 
 }

@@ -49,12 +49,12 @@ public class Voucher extends PrimaryEntity {
         return type.ordinal();
     }
 
-    public Integer getStatus() {
-        return status.ordinal();
-    }
-
     public void setType(Integer type) {
         this.type = TypeVoucher.values()[type];
+    }
+
+    public Integer getStatus() {
+        return status.ordinal();
     }
 
     public void setStatus(Integer status) {

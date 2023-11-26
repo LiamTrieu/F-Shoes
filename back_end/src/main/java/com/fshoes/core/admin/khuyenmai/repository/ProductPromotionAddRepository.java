@@ -1,7 +1,6 @@
 package com.fshoes.core.admin.khuyenmai.repository;
 
 import com.fshoes.core.admin.khuyenmai.model.request.GetProductDetailByIdProduct;
-import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionRequest;
 import com.fshoes.core.admin.khuyenmai.model.request.ProductPromotionSearch;
 import com.fshoes.core.admin.khuyenmai.model.respone.AddProductPromotionResponse;
 import com.fshoes.repository.ProductRepository;
@@ -68,5 +67,5 @@ public interface ProductPromotionAddRepository extends ProductRepository {
             cate.id,
             b.id
             """, nativeQuery = true)
-    Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") List<String> id, Pageable pageable,@Param("req") GetProductDetailByIdProduct req);
+    Page<AddProductPromotionResponse> getProductDetailByIdProduct(@Param("id") List<String> id, Pageable pageable, @Param("req") GetProductDetailByIdProduct req);
 }

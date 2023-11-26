@@ -44,7 +44,7 @@ public class StaffController {
     }
 
     @PutMapping("/delete/{id}")
-    public ObjectRespone delete(@PathVariable("id") String id){
+    public ObjectRespone delete(@PathVariable("id") String id) {
         return new ObjectRespone(service.delete(id));
     }
 }

@@ -30,14 +30,13 @@ import java.util.Optional;
 @Service
 public class StaffServiceImpl implements StaffService {
     @Autowired
+    UserLogin userLogin;
+    @Autowired
     private StaffRepositorys repo;
     @Autowired
     private CloudinaryImage cloudinaryImage;
     @Autowired
     private EmailSender emailSender;
-
-    @Autowired
-    UserLogin userLogin;
 
     @Override
     public List<Account> getAll() {
@@ -48,7 +47,7 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public Page<StaffRespone> searchStaff(SearchStaff searchStaff) {
         Pageable pageable = PageRequest.of(searchStaff.getPage() - 1, searchStaff.getSize());
-        return repo.searchStaff(searchStaff, pageable,userLogin.getUserLogin().getId());
+        return repo.searchStaff(searchStaff, pageable, userLogin.getUserLogin().getId());
     }
 
     @Override

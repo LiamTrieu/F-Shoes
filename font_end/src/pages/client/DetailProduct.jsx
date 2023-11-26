@@ -5,16 +5,8 @@ import {
   Box,
   Button,
   Container,
-  Divider,
   IconButton,
   Modal,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   ThemeProvider,
   Typography,
@@ -30,41 +22,19 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import { useEffect } from 'react'
 import clientProductApi from '../../api/client/clientProductApi'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { GetCart, addCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
+import { useDispatch } from 'react-redux'
+import { addCart } from '../../services/slices/cartSlice'
 import ReactImageGallery from 'react-image-gallery'
-import { Drawer } from '@mui/material'
 import 'react-image-gallery/styles/css/image-gallery.css'
 import './DetailProduct.css'
 import { setCheckout } from '../../services/slices/checkoutSlice'
 import StraightenIcon from '@mui/icons-material/Straighten'
 import { toast } from 'react-toastify'
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import ReplyIcon from '@mui/icons-material/Reply'
 import ModalAddProductToCart from './ModalAddProductToCart'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { formatCurrency } from '../../services/common/formatCurrency '
-
-function calculateTotalPayment(cart) {
-  let total = 0
-  cart.forEach((item) => {
-    total += item.gia * item.soLuong
-  })
-  return formatCurrency(total)
-}
-
-const styleModalCart = {
-  position: 'absolute',
-  top: '45%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 1000,
-  height: '550px',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-}
+import socketUrl from '../../api/socket'
 
 var stompClient = null
 export default function DetailProduct() {
@@ -76,7 +46,6 @@ export default function DetailProduct() {
   const [product, setProduct] = useState({ image: [], price: '' })
   const [products, setProducts] = useState([])
   const [sizes, setSizes] = useState([])
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [sizeSelect, setSizeSelect] = useState()
   const { id } = useParams()
 
@@ -84,18 +53,16 @@ export default function DetailProduct() {
   const handleOpenModalCart = () => setOpenModalCart(true)
   const handleCloseModalCart = () => setOpenModalCart(false)
 
-  const openSidebar = () => {
-    setIsSidebarOpen(true)
-  }
-
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product])
 
   const onConnect = () => {
@@ -212,6 +179,7 @@ export default function DetailProduct() {
           }),
         )
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sizeSelect, id])
 
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
@@ -279,13 +247,7 @@ export default function DetailProduct() {
     transform: 'translate(-50%, -50%)',
     bgcolor: 'background.paper',
   }
-  const formatPrice = (price) => {
-    return price.toLocaleString('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    })
-  }
-  const amountProduct = useSelector(GetCart).length
+
   return (
     <div className="detail-product">
       <Container maxWidth="xl">

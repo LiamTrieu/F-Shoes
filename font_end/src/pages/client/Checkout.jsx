@@ -30,12 +30,12 @@ import ModalVoucher from './ModalVoucher'
 import ModalAddress from './ModalAddress'
 import { setLoading } from '../../services/slices/loadingSlice'
 import ClientAddressApi from '../../api/client/clientAddressApi'
-import authenticationAPi from '../../api/authentication/authenticationAPi'
 import { GetUser } from '../../services/slices/userSlice'
 import ReplyIcon from '@mui/icons-material/Reply'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import clientCartApi from '../../api/client/clientCartApi'
+import socketUrl from '../../api/socket'
 
 var stompClient = null
 export default function Checkout() {
@@ -64,6 +64,7 @@ export default function Checkout() {
     if (userLogin) {
       setRequest({ ...request, email: userLogin.email })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userLogin])
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
@@ -84,7 +85,7 @@ export default function Checkout() {
   const loadDetailAddress = () => {
     ClientAddressApi.getDefault().then((response) => {
       if (response.data.data !== null) {
-        const { id, name, phoneNumber, specificAddress, provinceId, districtId, wardId, type } =
+        const { id, name, phoneNumber, specificAddress, provinceId, districtId, wardId } =
           response.data.data
 
         loadTinh()
@@ -173,6 +174,7 @@ export default function Checkout() {
     }
     loadDetailAddress()
     loadTinh()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, arrData])
 
   useEffect(() => {
@@ -181,6 +183,7 @@ export default function Checkout() {
       return
     }
     getPromotionProductDetails(productIds)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadTinh = () => {
@@ -287,11 +290,6 @@ export default function Checkout() {
     wardId: '',
     address: '',
   })
-
-  async function checkMail(email) {
-    const response = await authenticationAPi.checkMail(email)
-    return response.data.success
-  }
 
   async function finishCheckout() {
     const newErrors = {}
@@ -431,13 +429,15 @@ export default function Checkout() {
   }
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arrData])
 
   const onConnect = () => {

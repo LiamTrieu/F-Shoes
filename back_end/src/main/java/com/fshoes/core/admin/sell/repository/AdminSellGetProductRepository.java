@@ -3,7 +3,6 @@ package com.fshoes.core.admin.sell.repository;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.model.response.AdminMinMaxPrice;
 import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
-import com.fshoes.core.client.model.response.ClientMinMaxPrice;
 import com.fshoes.repository.ProductRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -67,6 +66,7 @@ public interface AdminSellGetProductRepository extends ProductRepository {
                                                   group by p.id, pr.id, pd.id;
             """, nativeQuery = true)
     GetAllProductResponse realTimeProductModalAddAdmin(String id);
+
     @Query(value = """
                                                 SELECT  p.id, pr.id as promotion,pr.status as statusPromotion ,pr.value, p.name,
                                                 pd.price,pd.weight, s.size, MAX(i.url) as url, 

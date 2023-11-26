@@ -19,6 +19,7 @@ import com.fshoes.util.MD5Util;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -28,12 +29,14 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class ClientCheckoutServiceImpl implements ClientCheckoutService {
+
+    @Value("${client.domain}")
+    private String domain;
 
     @Autowired
     private BillRepository billRepository;
@@ -186,7 +189,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
 
-        vnp_Params.put("vnp_ReturnUrl", "http://localhost:3000" + VNPayConfig.vnp_Returnurl);
+        vnp_Params.put("vnp_ReturnUrl",domain + VNPayConfig.vnp_Returnurl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -317,11 +320,11 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     newRequest.setBillDetail(listBillDetails.stream().map(billDetail ->
                             new ClientBillDetaillRequest(
                                     billDetail.getProductDetail().getProduct().getName() + "" +
-                                            billDetail.getProductDetail().getColor().getName() + "" +
-                                            billDetail.getProductDetail().getMaterial().getName() + "" +
-                                            billDetail.getProductDetail().getSole().getName() + "" +
-                                            billDetail.getProductDetail().getCategory().getName() + "" +
-                                            billDetail.getProductDetail().getBrand().getName(),
+                                    billDetail.getProductDetail().getColor().getName() + "" +
+                                    billDetail.getProductDetail().getMaterial().getName() + "" +
+                                    billDetail.getProductDetail().getSole().getName() + "" +
+                                    billDetail.getProductDetail().getCategory().getName() + "" +
+                                    billDetail.getProductDetail().getBrand().getName(),
                                     billDetail.getProductDetail().getId(),
                                     billDetail.getQuantity(), String.valueOf(billDetail.getPrice().intValue()))
                     ).toList());
@@ -376,7 +379,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 "<div class=\"container\">" +
                 "<h1 style=\"text-align: center; \">Thông Tin Đơn Hàng</h1>" +
                 "<div class=\"email-container\">" +
-                "<br/>"+
+                "<br/>" +
                 htmlTable.toString() +
                 "        <div class=\"total-section\">" +
                 "            <p>Thành tiền: <strong>" + formatCurrency(request.getTotalMoney()) + " VNĐ</strong></p>" +
@@ -385,7 +388,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 "            <p>Tổng cộng: <strong>" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VNĐ</strong></p>" +
                 "        </div>" +
                 "<div>" +
-                "<br/>"+
+                "<br/>" +
                 "<p><b>THÔNG TIN ĐƠN HÀNG:</b></p>" +
                 "<ul>" +
                 "<li>Mã đơn hàng: <strong>" + codeBill + "</strong></li>" +
@@ -400,20 +403,20 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 "<li>Địa chỉ: <strong>" + request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh() + "</strong></li>" +
                 "</ul>" +
                 "</div>" +
-                "<hr/>"+
+                "<hr/>" +
                 "<p>" +
                 "Cảm ơn bạn đã tin tưởng và mua hàng tại cửa hàng của chúng tôi. " +
                 "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
                 "</p>" +
                 "</div>" +
-                "<a href='http://localhost:3000/tracking/" + codeBill + "' style=\"display: inline-block; text-align: center; text-decoration: none;\">" +
+                "<a href='"+domain+"/tracking/" + codeBill + "' style=\"display: inline-block; text-align: center; text-decoration: none;\">" +
                 " <button style=\"background-color: #000; color: #fff; padding: 10px 20px; border: none; cursor: pointer;\">Xem Chi Tiết</button>" +
                 "</div>" +
                 (password == null ? "" : "</div>" +
-                        "        <p style=\"color: #555;\">Hoặc đăng nhập vào hệ thống:</p>\n" +
-                        "        <p><strong>Email:</strong> " + request.getEmail() + "</p>\n" +
-                        "        <p><strong>Mật khẩu:</strong> " + password + "</p>\n" +
-                        "</div>");
+                                         "        <p style=\"color: #555;\">Hoặc đăng nhập vào hệ thống:</p>\n" +
+                                         "        <p><strong>Email:</strong> " + request.getEmail() + "</p>\n" +
+                                         "        <p><strong>Mật khẩu:</strong> " + password + "</p>\n" +
+                                         "</div>");
         newEmail.setBody(htmlContent);
         newEmail.setToEmail(toMail);
         newEmail.setSubject("Đơn hàng F-Shoes của bạn " + codeBill);

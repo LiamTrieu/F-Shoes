@@ -1,26 +1,17 @@
 package com.fshoes.infrastructure.vnpay;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @Component
 public class VNPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_Returnurl = "/vnpay-payment";
-
-//    @Value("${api.vnpay.vnp_TmnCode}")
     public static String vnp_TmnCode = "5YPT27KA";
-
-//    @Value("${api.vnpay.vnp_HashSecret}")
     public static String vnp_HashSecret = "MVBDWFVLPTCZEHSWFJYLUHPWQCLXRTGQ";
 
     public static String hashAllFields(Map fields) {

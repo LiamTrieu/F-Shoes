@@ -3,7 +3,6 @@ package com.fshoes.core.admin.sanpham.model.respone;
 import com.fshoes.entity.base.IsIdentified;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public interface ProductDetailResponse extends IsIdentified {
 
@@ -14,8 +13,11 @@ public interface ProductDetailResponse extends IsIdentified {
     String getColorName();
 
     String getBrand();
+
     String getCategory();
+
     String getSole();
+
     String getImage();
 
     String getMaterial();
@@ -31,5 +33,6 @@ public interface ProductDetailResponse extends IsIdentified {
     BigDecimal getPrice();
 
     Integer getDeleted();
+
     Integer getDeletedProduct();
 }

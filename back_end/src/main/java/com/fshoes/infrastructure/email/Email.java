@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Email {
-    private String [] toEmail;
+    private String[] toEmail;
     private String subject;
     private String body;
     private String titleEmail;

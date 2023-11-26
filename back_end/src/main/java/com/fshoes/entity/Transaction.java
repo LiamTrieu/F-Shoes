@@ -6,11 +6,7 @@ import com.fshoes.infrastructure.constant.PaymentMethod;
 import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.infrastructure.constant.TypeTransaction;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 

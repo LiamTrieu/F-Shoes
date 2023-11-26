@@ -1,13 +1,13 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import { Button, Container, Grid, Typography } from '@mui/material'
-import CartProduct from '../../layout/client/CartProduct'
 import './Home.css'
 import clientProductApi from '../../api/client/clientProductApi'
 import CartProductHome from '../../layout/client/CartProductHome'
 import CartSellingProduct from '../../layout/client/CartSellingProduct'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../../api/socket'
 
 var stompClient = null
 export default function Home() {
@@ -43,13 +43,15 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products])
 
   const onConnect = () => {

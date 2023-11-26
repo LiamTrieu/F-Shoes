@@ -10,7 +10,6 @@ import {
   Pagination,
   Button,
   TextField,
-  FormControl,
   Select,
   MenuItem,
   Chip,
@@ -42,6 +41,7 @@ import { AiOutlinePlusSquare } from 'react-icons/ai'
 import Empty from '../../../components/Empty'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../../../api/socket'
 
 var stompClient = null
 export default function AdBillPage() {
@@ -52,7 +52,7 @@ export default function AdBillPage() {
   const [inputSearch, setInputSearch] = useState('')
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
-  const [statusBill, setStatusBill] = useState('all')
+  // const [statusBill, setStatusBill] = useState('all')
   const [typeBill, setTypeBill] = useState('all')
   const [filter, setFilter] = useState({
     page: 1,
@@ -88,11 +88,11 @@ export default function AdBillPage() {
     setFilter(updatedFilter)
   }
 
-  const handleChangeSelectStatusBill = (event) => {
-    const updatedFilter = { ...filter, status: event.target.value, page: 1 }
-    setStatusBill(event.target.value)
-    setFilter(updatedFilter)
-  }
+  // const handleChangeSelectStatusBill = (event) => {
+  //   const updatedFilter = { ...filter, status: event.target.value, page: 1 }
+  //   setStatusBill(event.target.value)
+  //   setFilter(updatedFilter)
+  // }
 
   const handleChangeSelectTypeBill = (event) => {
     const updatedFilter = { ...filter, type: event.target.value, page: 1 }
@@ -138,16 +138,19 @@ export default function AdBillPage() {
           return hd
         }),
     ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoaDonUpdate])
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listHoaDon])
 
   const onConnect = () => {
