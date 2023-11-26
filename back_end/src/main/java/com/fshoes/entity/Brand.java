@@ -21,7 +21,7 @@ import lombok.Setter;
 @Table(name = "brand")
 public class Brand extends PrimaryEntity {
 
-    @Column(length = EntityProperties.LENGTH_NAME, unique = true)
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME, unique = true)
     private String name;
 
     private Status deleted = Status.HOAT_DONG;

@@ -24,7 +24,7 @@ import lombok.Setter;
 public class BillHistory extends PrimaryEntity {
     private StatusBill statusBill;
 
-    @Column(length = EntityProperties.LENGTH_DESCRIPTION)
+    @Column(columnDefinition = EntityProperties.DEFINITION_DESCRIPTION)
     private String note;
 
     @ManyToOne
