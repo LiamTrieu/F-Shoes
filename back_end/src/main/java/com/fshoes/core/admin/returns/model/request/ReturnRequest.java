@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ReturnRequest {
+    List<ReturnDetailRequest> listDetail;
     private String idReturn;
     private String idBill;
     private String returnMoney;
@@ -15,5 +16,4 @@ public class ReturnRequest {
     private Integer type;
     private String codePayment;
     private String fee;
-    List<ReturnDetailRequest> listDetail;
 }

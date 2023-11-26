@@ -24,7 +24,7 @@ public class ClientAddressRequest {
     private String wardId;
 
 
-    public Address newAddress (Address address) {
+    public Address newAddress(Address address) {
         address.setName(this.name);
         address.setPhoneNumber(this.phoneNumber);
         address.setSpecificAddress(this.specificAddress);

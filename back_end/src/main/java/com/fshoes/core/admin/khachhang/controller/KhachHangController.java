@@ -21,6 +21,7 @@ public class KhachHangController {
     public ObjectRespone search(@ModelAttribute AdKhachHangSearch adKhachHangSearch) {
         return new ObjectRespone(khachHangService.findKhachHang(adKhachHangSearch));
     }
+
     @PostMapping("/create")
     public ObjectRespone create(@ModelAttribute KhachHangRequest khachHangRequest) throws ParseException {
         khachHangRequest.setStatus(0);
@@ -34,7 +35,7 @@ public class KhachHangController {
 
     @PutMapping("/update/{id}")
     public ObjectRespone update(@PathVariable String id, @ModelAttribute KhachHangRequest khachHangRequest) throws ParseException {
-        return new ObjectRespone(khachHangService.update(id,khachHangRequest));
+        return new ObjectRespone(khachHangService.update(id, khachHangRequest));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -44,7 +45,7 @@ public class KhachHangController {
 
 
     @GetMapping("/get-all")
-    public List<KhachHangRespone> getAllAccount(){
+    public List<KhachHangRespone> getAllAccount() {
         return khachHangService.getAllAccount();
     }
 

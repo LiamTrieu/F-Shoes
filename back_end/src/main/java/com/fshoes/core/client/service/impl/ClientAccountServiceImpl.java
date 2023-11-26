@@ -3,33 +3,12 @@ package com.fshoes.core.client.service.impl;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
-import com.fshoes.core.admin.sell.repository.AdminBillDetailRepositoty;
-import com.fshoes.core.admin.sell.repository.AdminBillRepository;
-import com.fshoes.core.client.model.request.ClientAccountRequest;
-import com.fshoes.core.client.model.request.ClientBillAccountRequest;
-import com.fshoes.core.client.model.request.ClientBillDetailRequest;
-import com.fshoes.core.client.model.request.ClientBillRequest;
-import com.fshoes.core.client.model.request.ClientCancelBillRequest;
-import com.fshoes.core.client.model.response.CLientBillHistoryResponse;
-import com.fshoes.core.client.model.response.ClientBillAccountResponse;
-import com.fshoes.core.client.model.response.ClientBillDetailResponse;
-import com.fshoes.core.client.model.response.ClientBillResponse;
-import com.fshoes.core.client.model.response.ClientCustomerResponse;
-import com.fshoes.core.client.model.response.ClientGetAllBillTableResponse;
-import com.fshoes.core.client.model.response.ClientProfileBillDetailResponse;
-import com.fshoes.core.client.model.response.ClientTransactionResponse;
-import com.fshoes.core.client.repository.ClientAccountRepository;
-import com.fshoes.core.client.repository.ClientBillDetailRepository;
-import com.fshoes.core.client.repository.ClientBillHistoryRepository;
-import com.fshoes.core.client.repository.ClientBillRepository;
-import com.fshoes.core.client.repository.ClientTransactionRepository;
+import com.fshoes.core.client.model.request.*;
+import com.fshoes.core.client.model.response.*;
+import com.fshoes.core.client.repository.*;
 import com.fshoes.core.client.service.ClientAccountService;
 import com.fshoes.core.common.UserLogin;
-import com.fshoes.entity.Account;
-import com.fshoes.entity.Bill;
-import com.fshoes.entity.BillDetail;
-import com.fshoes.entity.BillHistory;
-import com.fshoes.entity.ProductDetail;
+import com.fshoes.entity.*;
 import com.fshoes.infrastructure.cloudinary.CloudinaryImage;
 import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.repository.ProductDetailRepository;
@@ -247,7 +226,7 @@ public class ClientAccountServiceImpl implements ClientAccountService {
             tienCanThanhToan = tienCanThanhToan.add(bill.getMoneyShip());
         }
         bill.setMoneyAfter(tienCanThanhToan);
-       billRepository.save(bill);
+        billRepository.save(bill);
         return billDetail;
     }
 

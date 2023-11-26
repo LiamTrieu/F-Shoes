@@ -7,8 +7,12 @@ import java.math.BigDecimal;
 public interface BillDetailReturnResponse extends IsIdentified {
 
     String getImage();
+
     String getName();
+
     Integer getQuantity();
+
     BigDecimal getPrice();
+
     String getNote();
 }

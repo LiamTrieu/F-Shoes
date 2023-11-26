@@ -20,6 +20,7 @@ import { setCheckout } from '../../services/slices/checkoutSlice'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import clientCartApi from '../../api/client/clientCartApi'
+import socketUrl from '../../api/socket'
 
 const styleModalCart = {
   position: 'absolute',
@@ -38,14 +39,6 @@ const formatPrice = (price) => {
     style: 'currency',
     currency: 'VND',
   })
-}
-
-function calculateTotalPayment(cart) {
-  let total = 0
-  cart.forEach((item) => {
-    total += item.gia * item.soLuong
-  })
-  return total.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
 }
 
 var stompClient = null
@@ -83,16 +76,19 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
     if (amountProduct > 0) {
       getPromotionProductDetails(productIds)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productCart])
 
   const onConnect = () => {

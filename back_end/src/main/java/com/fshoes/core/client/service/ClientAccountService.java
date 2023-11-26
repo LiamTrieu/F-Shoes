@@ -1,18 +1,7 @@
 package com.fshoes.core.client.service;
 
-import com.fshoes.core.client.model.request.ClientAccountRequest;
-import com.fshoes.core.client.model.request.ClientBillAccountRequest;
-import com.fshoes.core.client.model.request.ClientBillDetailRequest;
-import com.fshoes.core.client.model.request.ClientBillRequest;
-import com.fshoes.core.client.model.request.ClientCancelBillRequest;
-import com.fshoes.core.client.model.response.CLientBillHistoryResponse;
-import com.fshoes.core.client.model.response.ClientBillAccountResponse;
-import com.fshoes.core.client.model.response.ClientBillDetailResponse;
-import com.fshoes.core.client.model.response.ClientBillResponse;
-import com.fshoes.core.client.model.response.ClientCustomerResponse;
-import com.fshoes.core.client.model.response.ClientGetAllBillTableResponse;
-import com.fshoes.core.client.model.response.ClientProfileBillDetailResponse;
-import com.fshoes.core.client.model.response.ClientTransactionResponse;
+import com.fshoes.core.client.model.request.*;
+import com.fshoes.core.client.model.response.*;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Account;
 import com.fshoes.entity.Bill;

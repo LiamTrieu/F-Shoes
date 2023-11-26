@@ -34,6 +34,7 @@ import Empty from '../../../components/Empty'
 import { Stomp } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import socketUrl from '../../../api/socket'
 
 var stompClient = null
 
@@ -54,8 +55,9 @@ export default function AdVoucherPage() {
   })
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.debug = () => {}
 
     stompClient.connect({}, onConnect)

@@ -9,10 +9,8 @@ import com.fshoes.core.client.service.ClientReturnService;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
-import com.fshoes.infrastructure.constant.Message;
 import com.fshoes.infrastructure.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +36,7 @@ public class ClientReturnServiceImpl implements ClientReturnService {
     private ClientReturnDetailRepository returnDetailRepository;
     @Autowired
     private UserLogin userLogin;
+
     @Override
     public Boolean requestReturn(ReturnRequest request) {
         try {
@@ -82,7 +81,7 @@ public class ClientReturnServiceImpl implements ClientReturnService {
 
                 if (billDetail.getQuantity() <= 0) {
                     billDetailRepository.delete(billDetail);
-                }else {
+                } else {
                     billDetails.add(billDetail);
                 }
 

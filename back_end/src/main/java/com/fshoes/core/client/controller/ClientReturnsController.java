@@ -18,26 +18,27 @@ public class ClientReturnsController {
     private ClientReturnService clientReturnService;
 
     @GetMapping("/bill-id/{id}")
-    public ObjectRespone getBillId(@PathVariable("id") String id){
+    public ObjectRespone getBillId(@PathVariable("id") String id) {
         return new ObjectRespone(returnService.getBillId(id));
     }
 
     @GetMapping("/bill-detail/{id}")
-    public ObjectRespone getBillDetail(@PathVariable("id") String id){
+    public ObjectRespone getBillDetail(@PathVariable("id") String id) {
         return new ObjectRespone(returnService.getBillDetail(id));
     }
 
-    @PostMapping ("/request")
-    public ObjectRespone acceptReturn(@RequestBody ReturnRequest request){
+    @PostMapping("/request")
+    public ObjectRespone acceptReturn(@RequestBody ReturnRequest request) {
         return new ObjectRespone(clientReturnService.requestReturn(request));
     }
 
     @GetMapping("")
-    public ObjectRespone getReturn(GetReturnRequest request){
+    public ObjectRespone getReturn(GetReturnRequest request) {
         return new ObjectRespone(clientReturnService.getReturn(request));
     }
-    @PutMapping ("/huy/{id}")
-    public ObjectRespone huyReturn(@PathVariable("id") String id){
+
+    @PutMapping("/huy/{id}")
+    public ObjectRespone huyReturn(@PathVariable("id") String id) {
         return new ObjectRespone(returnService.huyReturn(id));
     }
 }

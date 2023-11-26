@@ -1,6 +1,5 @@
 package com.fshoes.core.client.repository;
 
-import com.fshoes.core.admin.hoadon.model.respone.HDBillHistoryResponse;
 import com.fshoes.core.client.model.response.CLientBillHistoryResponse;
 import com.fshoes.repository.BillHistoryRepository;
 import org.springframework.data.jpa.repository.Query;

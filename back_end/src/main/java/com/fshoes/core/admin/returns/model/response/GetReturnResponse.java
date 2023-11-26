@@ -6,11 +6,17 @@ import java.math.BigDecimal;
 
 public interface GetReturnResponse extends IsIdentified {
     Integer getStt();
+
     String getCode();
+
     String getCodeBill();
+
     String getIdBill();
+
     Long getDate();
+
     BigDecimal getTotal();
+
     Integer getStatus();
 
 }

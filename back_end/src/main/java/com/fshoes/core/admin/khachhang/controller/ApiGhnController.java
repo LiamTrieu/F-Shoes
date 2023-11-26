@@ -41,7 +41,7 @@ public class ApiGhnController {
     }
 
     @GetMapping("/get-time")
-    public ResponseEntity<?> getTime(@RequestParam("from_district_id") String from_district_id,@RequestParam("from_ward_code") String from_ward_code,@RequestParam("to_district_id") String to_district_id, @RequestParam("to_ward_code") String to_ward_code, @RequestParam("service_id") String service_id) {
+    public ResponseEntity<?> getTime(@RequestParam("from_district_id") String from_district_id, @RequestParam("from_ward_code") String from_ward_code, @RequestParam("to_district_id") String to_district_id, @RequestParam("to_ward_code") String to_ward_code, @RequestParam("service_id") String service_id) {
         return ResponseEntity.ok().body(diaChiService.getTimeGhn(from_district_id, from_ward_code, to_district_id, to_ward_code, service_id));
     }
 }

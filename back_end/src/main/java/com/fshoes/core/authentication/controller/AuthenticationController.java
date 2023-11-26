@@ -4,14 +4,8 @@ import com.fshoes.core.authentication.model.request.ChangeRequest;
 import com.fshoes.core.authentication.model.request.LoginGoogleRequest;
 import com.fshoes.core.authentication.model.request.LoginRequest;
 import com.fshoes.core.authentication.model.request.RegisterRequest;
-import com.fshoes.core.authentication.model.response.UserLoginResponse;
 import com.fshoes.core.authentication.service.AuthenticationService;
 import com.fshoes.core.common.ObjectRespone;
-import com.fshoes.core.common.UserLogin;
-import com.fshoes.entity.Account;
-import com.fshoes.infrastructure.security.JwtUtilities;
-import com.fshoes.repository.AccountRepository;
-import com.fshoes.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +24,7 @@ public class AuthenticationController {
     public ObjectRespone login(@RequestBody LoginRequest request) {
         return new ObjectRespone(authenticationService.login(request));
     }
+
     @PostMapping("/login-google")
     public ObjectRespone loginGoogle(@RequestBody LoginGoogleRequest request) {
         return new ObjectRespone(authenticationService.loginGoogle(request));
@@ -44,6 +39,7 @@ public class AuthenticationController {
     public ObjectRespone change(@RequestBody RegisterRequest request) {
         return new ObjectRespone(authenticationService.change(request));
     }
+
     @PostMapping("/doi-mat-khau")
     public ObjectRespone change(@RequestBody ChangeRequest request) {
         return new ObjectRespone(authenticationService.changePass(request));

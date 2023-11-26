@@ -25,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
@@ -106,16 +105,16 @@ public class ProductServiceImpl implements ProductService {
         }).toList();
         List<Image> newImages = new ArrayList<>();
         for (ProductDetail productDetail : productDetailRepository.saveAll(newProductDetail)) {
-            for (ProductDetailRequest prdReq :request) {
-               if (Objects.equals(prdReq.getIdColor(), productDetail.getColor().getId()) &&
-                   Objects.equals(prdReq.getIdSize(), productDetail.getSize().getId())){
-                   newImages.addAll(prdReq.getListImage().stream().map(img -> {
-                       Image image = new Image();
-                       image.setUrl(img);
-                       image.setProductDetail(productDetail);
-                       return image;
-                   }).toList());
-               }
+            for (ProductDetailRequest prdReq : request) {
+                if (Objects.equals(prdReq.getIdColor(), productDetail.getColor().getId()) &&
+                    Objects.equals(prdReq.getIdSize(), productDetail.getSize().getId())) {
+                    newImages.addAll(prdReq.getListImage().stream().map(img -> {
+                        Image image = new Image();
+                        image.setUrl(img);
+                        image.setProductDetail(productDetail);
+                        return image;
+                    }).toList());
+                }
             }
         }
         imageRepository.saveAll(newImages);
@@ -206,7 +205,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public List<ProductDetail> updateListProduct(List<UpdateListRequest> requests) {
-        List<ProductDetail> listUpdate = requests.stream().map(req->{
+        List<ProductDetail> listUpdate = requests.stream().map(req -> {
             ProductDetail productDetail = productDetailRepository.getReferenceById(req.getId());
             productDetail.setAmount(req.getAmount());
             productDetail.setPrice(BigDecimal.valueOf(req.getPrice()));

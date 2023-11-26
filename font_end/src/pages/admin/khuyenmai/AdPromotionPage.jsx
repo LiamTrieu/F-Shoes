@@ -36,8 +36,7 @@ import { toast } from 'react-toastify'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import FileUploadIcon from '@mui/icons-material/FileUpload'
-import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import socketUrl from '../../../api/socket'
 
 var stompClient = null
 export default function AdPromotionPage() {
@@ -56,13 +55,11 @@ export default function AdPromotionPage() {
     type: null,
     sortOrder: null,
   })
-  var client = Stomp.over(function () {
-    return new WebSocket('ws://localhost:15674/ws')
-  })
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
@@ -140,17 +137,6 @@ export default function AdPromotionPage() {
       ...prevFilter,
       name: inputValue.replace(/^\s+/g, ''), // Remove leading whitespaces
     }))
-  }
-
-  const handleExportTemplate = () => {
-    khuyenMaiApi
-      .exportExcel()
-      .then((response) => {
-        toast.success('export success!')
-      })
-      .catch((error) => {
-        console.error('Error exporting Excel template:', error)
-      })
   }
 
   return (

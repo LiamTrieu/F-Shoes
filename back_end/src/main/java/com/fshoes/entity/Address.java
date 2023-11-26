@@ -2,16 +2,8 @@ package com.fshoes.entity;
 
 import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter
@@ -23,7 +15,7 @@ import lombok.Setter;
 public class Address extends PrimaryEntity {
 
 
-    @Column(length = EntityProperties.LENGTH_NAME)
+    @Column(unique = true, columnDefinition = EntityProperties.DEFINITION_NAME)
     private String name;
 
     @Column(length = EntityProperties.LENGTH_PHONE)
@@ -39,7 +31,7 @@ public class Address extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_ID)
     private String wardId;
 
-    @Column(length = EntityProperties.LENGTH_ADDRESS)
+    @Column(columnDefinition = EntityProperties.DEFINITION_ADDRESS)
     private String specificAddress;
 
     private Boolean type;

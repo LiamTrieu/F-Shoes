@@ -25,8 +25,10 @@ import java.util.List;
 @Entity
 @Table(name = "account")
 public class Account extends PrimaryEntity implements Serializable, UserDetails {
+
     private String code;
-    @Column(length = EntityProperties.LENGTH_NAME)
+
+    @Column(unique = true, columnDefinition = EntityProperties.DEFINITION_NAME)
     private String fullName;
 
     private Long dateBirth;
@@ -55,14 +57,13 @@ public class Account extends PrimaryEntity implements Serializable, UserDetails 
         return status.ordinal();
     }
 
-    public Integer getRole() {
-        return role.ordinal();
-    }
-
     public void setStatus(Integer status) {
         this.status = Status.values()[status];
     }
 
+    public Integer getRole() {
+        return role.ordinal();
+    }
 
     public void setRole(Integer role) {
         this.role = RoleAccount.values()[role];

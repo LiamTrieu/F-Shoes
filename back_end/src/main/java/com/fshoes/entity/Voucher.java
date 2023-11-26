@@ -24,7 +24,7 @@ public class Voucher extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_CODE, unique = true)
     private String code;
 
-    @Column(length = EntityProperties.LENGTH_NAME)
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME, unique = true)
     private String name;
 
     private BigDecimal value;
@@ -49,12 +49,12 @@ public class Voucher extends PrimaryEntity {
         return type.ordinal();
     }
 
-    public Integer getStatus() {
-        return status.ordinal();
-    }
-
     public void setType(Integer type) {
         this.type = TypeVoucher.values()[type];
+    }
+
+    public Integer getStatus() {
+        return status.ordinal();
     }
 
     public void setStatus(Integer status) {

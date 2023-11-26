@@ -1,18 +1,22 @@
-# Sử dụng một hình ảnh cơ sở Java
-FROM openjdk:17-jdk-alpine
+# Stage 1: Build the Spring Boot application with Maven
+FROM maven:3.8.4-openjdk-17 AS builder
 
-# Tạo thư mục /app trong hệ thống tệp Docker và đặt nó làm thư mục làm việc mặc định
 WORKDIR /app
 
-# Sao chép tệp JAR của ứng dụng Spring Boot vào thư mục /app trong hệ thống tệp Docker
-COPY target/back_end-0.0.1-SNAPSHOT.jar ./app.jar
+COPY pom.xml .
+COPY src src
 
-# Đặt biến môi trường SPRING_PROFILES_ACTIVE (nếu cần)
-# ENV SPRING_PROFILES_ACTIVE=production
+# Show the directory contents before running the build
+RUN ls -al
 
-# Expose cổng mạng cho ứng dụng Spring Boot (thay đổi số cổng cần thiết)
-# khai báo rằng container sẽ lắng nghe kết nối đến cổng 8080
-EXPOSE 8080
+# Run the Maven build command with more detailed output
+RUN mvn clean package
 
-# Khởi chạy ứng dụng Spring Boot khi container được khởi động
+# Stage 2: Create the final image
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/target/*.jar /app/app.jar
+
 CMD ["java", "-jar", "app.jar"]

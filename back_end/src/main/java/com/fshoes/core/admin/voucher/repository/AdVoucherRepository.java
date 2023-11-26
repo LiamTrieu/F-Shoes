@@ -6,7 +6,6 @@ import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
 import com.fshoes.core.admin.voucher.model.respone.AdFindCustomerRespone;
 import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
-import com.fshoes.entity.Account;
 import com.fshoes.entity.Voucher;
 import com.fshoes.repository.VoucherRepository;
 import org.springframework.data.domain.Page;

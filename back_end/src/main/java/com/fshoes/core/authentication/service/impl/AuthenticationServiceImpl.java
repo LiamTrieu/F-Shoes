@@ -74,7 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             account.setFullName(request.getName());
             account.setPassword(MD5Util.getMD5(request.getPassword()));
             account.setRole(2);
-            account.setCode("KH"+(accountRepository.countAllByRole(RoleAccount.KHACH_HANG)+1));
+            account.setCode("KH" + (accountRepository.countAllByRole(RoleAccount.KHACH_HANG) + 1));
             accountRepository.save(account);
             Email email = new Email();
             String[] emailSend = {request.getEmail()};
@@ -88,8 +88,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                           "    <div class=\"success-message\" style=\"background-color: #ff7f50; color: white; padding: 20px; border-radius: 10px; margin-top: 50px;\">\n" +
                           "        <h2 style=\"color: #333;\">Tài khoản đã được tạo thành công!</h2>\n" +
                           "        <p style=\"color: #555;\">Cảm ơn bạn đã đăng ký tại FShoes. Dưới đây là thông tin đăng nhập của bạn:</p>\n" +
-                          "        <p><strong>Email:</strong> " + request.getEmail()+"</p>\n" +
-                          "        <p><strong>Mật khẩu:</strong> "+ request.getPassword()+"</p>\n" +
+                          "        <p><strong>Email:</strong> " + request.getEmail() + "</p>\n" +
+                          "        <p><strong>Mật khẩu:</strong> " + request.getPassword() + "</p>\n" +
                           "        <p style=\"color: #555;\">Đăng nhập ngay để trải nghiệm!</p>\n" +
                           "    </div>\n" +
                           "\n" +
@@ -97,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                           "</html>\n");
             emailSender.sendEmail(email);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RestApiException(Message.API_ERROR);
         }
     }
@@ -137,9 +137,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Boolean change(RegisterRequest request) {
         Account account = checkMail(request.getEmail());
-        if (account == null){
+        if (account == null) {
             return null;
-        }else {
+        } else {
             account.setPassword(MD5Util.getMD5(request.getPassword()));
             accountRepository.save(account);
             return true;
@@ -153,7 +153,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             account.setPassword(MD5Util.getMD5(request.getPassword()));
             accountRepository.save(account);
             return true;
-        }else {
+        } else {
             return null;
         }
     }
@@ -167,7 +167,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             account.setFullName(request.getName());
             account.setAvatar(request.getImage());
             account.setRole(2);
-            account.setCode("KH"+(accountRepository.countAllByRole(RoleAccount.KHACH_HANG)+1));
+            account.setCode("KH" + (accountRepository.countAllByRole(RoleAccount.KHACH_HANG) + 1));
             accountRepository.save(account);
         }
         if (account.getRole() == 2) {

@@ -3,7 +3,6 @@ package com.fshoes.core.admin.returns.repository;
 import com.fshoes.core.admin.returns.model.response.BillDetailReturnResponse;
 import com.fshoes.entity.ReturnDetail;
 import com.fshoes.repository.ReturnDetailRepository;
-import com.fshoes.repository.ReturnsRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

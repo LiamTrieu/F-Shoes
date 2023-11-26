@@ -42,10 +42,9 @@ public class AddBillRequest {
 
     private String noteTransaction;
 
-    private  Long desiredReceiptDate;
+    private Long desiredReceiptDate;
 
     private Integer receivingMethod;
-
 
 
 }

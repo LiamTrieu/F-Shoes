@@ -12,13 +12,9 @@ import java.util.Properties;
 @Slf4j
 public class PropertiesReader {
 
-    public PropertiesReader() {
-    }
-
     private static Properties applicationProperties = new Properties();
     private static Properties validationProperties = new Properties();
     private static Logger logger = Logger.getLogger(PropertiesReader.class);
-
 
     static {
         // Load application properties file
@@ -38,6 +34,10 @@ public class PropertiesReader {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+
+    public PropertiesReader() {
     }
 
     /**

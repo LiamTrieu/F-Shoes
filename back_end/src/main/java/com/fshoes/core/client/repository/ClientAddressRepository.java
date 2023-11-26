@@ -14,8 +14,8 @@ import java.util.List;
 @Repository
 public interface ClientAddressRepository extends AddressRepository {
     @Query(value = "Select ROW_NUMBER() over (ORDER BY created_at desc ) as stt, a.id, a.name, a.phone_number as phoneNumber, a.specific_address as specificAddress," +
-            " a.type , province_id as provinceId, district_id as districtId," +
-            " ward_id as wardId from address a where a.id_account = :idAccount order by created_at asc"
+                   " a.type , province_id as provinceId, district_id as districtId," +
+                   " ward_id as wardId from address a where a.id_account = :idAccount order by created_at asc"
             , nativeQuery = true)
     Page<ClientAddressResponse> getPageAddressByIdCustomer(Pageable pageable, @Param("idAccount") String idAccount);
 

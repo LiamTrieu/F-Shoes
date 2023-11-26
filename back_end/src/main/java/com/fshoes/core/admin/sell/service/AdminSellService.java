@@ -18,6 +18,7 @@ public interface AdminSellService {
     List<Bill> getAllBillTaoDonHang();
 
     List<GetAllProductResponse> getAllProduct(FilterProductDetailRequest request);
+
     List<GetAllProductResponse> getAllProductCart();
 
     PageReponse<GetALlCustomerResponse> getAllCustomer(AdCustomerRequest request);
@@ -40,6 +41,7 @@ public interface AdminSellService {
     List<CartDetailResponse> getCartDetail();
 
     List<GetSizeResponse> getListSize();
+
     List<GetColorResponse> getListColor();
 
     GetAmountProductResponse getAmount(String id);
@@ -48,9 +50,9 @@ public interface AdminSellService {
 
     Boolean rollBackQuantityProductDetail(String idBill, String idPrDetail);
 
-    Boolean increaseQuantityBillDetail(String idBillDetail,String idPrDetail);
+    Boolean increaseQuantityBillDetail(String idBillDetail, String idPrDetail);
 
-    Boolean decreaseQuantityBillDetail(String idBillDetail,String idPrDetail);
+    Boolean decreaseQuantityBillDetail(String idBillDetail, String idPrDetail);
 
     Boolean inputQuantityBillDetail(String idBillDetail, String idProDetail, Integer quantity);
 

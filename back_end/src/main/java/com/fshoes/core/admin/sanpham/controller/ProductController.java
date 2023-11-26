@@ -63,7 +63,7 @@ public class ProductController {
 
     @PostMapping("/update-list")
     public ObjectRespone updateListProduct(@RequestBody List<UpdateListRequest> requests) {
-       return new ObjectRespone( productService.updateListProduct(requests));
+        return new ObjectRespone(productService.updateListProduct(requests));
     }
 
     @GetMapping("/product-detail")

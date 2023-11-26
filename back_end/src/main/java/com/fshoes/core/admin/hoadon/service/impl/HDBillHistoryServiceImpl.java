@@ -2,12 +2,10 @@ package com.fshoes.core.admin.hoadon.service.impl;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillHistoryRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillHistoryResponse;
-import com.fshoes.core.admin.hoadon.repository.HDAccountRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.BillHistory;
-import com.fshoes.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

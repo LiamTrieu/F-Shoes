@@ -1,8 +1,6 @@
 package com.fshoes.core.client.model.request;
 
-import com.fshoes.entity.Bill;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 

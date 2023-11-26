@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ProductPromotionService {
 
-    List<ProductPromotion> getAll() ;
+    List<ProductPromotion> getAll();
 
 
     Optional<ProductPromotion> getOne(String id);
@@ -22,6 +22,7 @@ public interface ProductPromotionService {
 
 
     List<String> getIdProductAndProductDetailByIdPromotion(String idPromotion);
+
     List<String> getIdProductDetailByIdPromotion(String idPromotion);
 
 }

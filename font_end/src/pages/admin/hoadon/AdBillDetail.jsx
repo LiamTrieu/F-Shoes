@@ -22,16 +22,14 @@ import {
   Divider,
   Tooltip,
   Switch,
-  Modal,
-  Toolbar,
-  TableHead,
+  // Modal,
+  // Toolbar,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
-import { HiOutlineReceiptRefund } from 'react-icons/hi'
-import CloseIcon from '@mui/icons-material/Close'
+// import CloseIcon from '@mui/icons-material/Close'
 import { CiCircleRemove } from 'react-icons/ci'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
 import { getStatus } from '../../../services/constants/statusHoaDon'
 import { useParams } from 'react-router-dom'
@@ -52,6 +50,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import ModalAdBillUpdateAddress from './AdBillModalUpdateAddress'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../../../api/socket'
 
 const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
 
@@ -74,13 +73,12 @@ export default function AdBillDetail() {
   const [openModalConfirmDelive, setOpenModalConfirmDelive] = useState(false)
   const [openModalConfirmPayment, setOpenModalConfirmPayment] = useState(false)
   const [openModalConfirmComplete, setOpenModalConfirmComplete] = useState(false)
-  const [openModalReturnProduct, setOpenModalReturnProduct] = useState(false)
+  // const [openModalReturnProduct, setOpenModalReturnProduct] = useState(false)
   const [openCodalConfirmReceived, setOpenModalConfirmReceived] = useState(false)
   const [openModalCancelBill, setOpenModalCancelBill] = useState(false)
   const [isUpdateBill, setIsUpdateBill] = useState(false)
-  const [isShowBtnConfirmPayment, setIsShowBtnConfirmPayment] = useState(false)
   const [openModalThemSP, setOpenModalThemSP] = useState(false)
-  const [billDetailReturn, setBillDetailReturn] = useState()
+  // const [billDetailReturn, setBillDetailReturn] = useState()
 
   const [openModalUpdateAdd, setopenModalUpdateAdd] = useState(false)
 
@@ -209,13 +207,15 @@ export default function AdBillDetail() {
   }
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [billDetail])
 
   const onConnect = () => {
@@ -274,25 +274,6 @@ export default function AdBillDetail() {
   //     setListBillDetail(data)
   //   }
   // }
-
-  const showBtnConfirmPayment = useCallback(
-    (billDetail, listTransaction) => {
-      if (billDetail && billDetail.status !== 0) {
-        if (!loading && !loadingTransaction) {
-          if (billDetail.status === 1 || listTransaction.length === 0) {
-            setIsShowBtnConfirmPayment(true)
-          } else {
-            setIsShowBtnConfirmPayment(true)
-          }
-        }
-      }
-    },
-    [loading, loadingTransaction, setIsShowBtnConfirmPayment],
-  )
-
-  useEffect(() => {
-    showBtnConfirmPayment(billDetail, listTransaction)
-  }, [showBtnConfirmPayment, billDetail, listTransaction])
 
   const genBtnHandleBill = (billDetail, listTransaction) => {
     if (listTransaction.length > 0) {
@@ -681,7 +662,7 @@ export default function AdBillDetail() {
               <TextField
                 style={{ marginBottom: '10px' }}
                 color="cam"
-                value={(billDetail && formatCurrency(billDetail.totalMoney)) || '0'}
+                value={(billDetail && formatCurrency(billDetail.moneyAfter)) || '0'}
                 className="search-field"
                 size="small"
                 fullWidth
@@ -831,194 +812,194 @@ export default function AdBillDetail() {
     )
   }
 
-  function ModalReturnProduct({ open, setOpen, billDetailReturn, idBill }) {
-    const [ghiChu, setGhiChu] = useState('')
-    const [soLuong, setSoLuong] = useState(billDetailReturn ? billDetailReturn.quantity : 0)
+  // function ModalReturnProduct({ open, setOpen, billDetailReturn, idBill }) {
+  //   const [ghiChu, setGhiChu] = useState('')
+  //   const [soLuong, setSoLuong] = useState(billDetailReturn ? billDetailReturn.quantity : 0)
 
-    const hdBillDetailReq = {
-      productDetailId: billDetailReturn ? billDetailReturn.productDetailId : null,
-      idBill: idBill,
-      quantity: soLuong,
-      note: ghiChu,
-    }
-    const handleReturnProduct = (billDetailReturn, hdBillDetailReq) => {
-      hoaDonChiTietApi
-        .returnProduct(billDetailReturn.id, hdBillDetailReq)
-        .then(() => {
-          toast.success('Đã xác nhận hoàn trả', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          setIsUpdateBill(true)
-          setOpenModalReturnProduct(false)
-        })
-        .catch(() => {
-          toast.error('Đã xảy ra lỗi', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-        })
-    }
-    const confirmReturnProduct = () => {
-      if (isNaN(soLuong) || soLuong <= 0) {
-        toast.error('Số lượng không hợp lệ', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-        return
-      }
-      if (soLuong > billDetailReturn.quantity) {
-        toast.error('Số lượng hoàn trả lớn hơn số sản phẩm đã mua', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-        return
-      }
-      if (ghiChu.trim().length === 0) {
-        toast.error('Vui lòng nhập ghi chú', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-        return
-      }
-      confirmSatus('Xác nhận ', 'Xác nhận hoàn hàng?').then((result) => {
-        if (result.isConfirmed) {
-          handleReturnProduct(billDetailReturn, hdBillDetailReq)
-        }
-      })
-    }
+  //   const hdBillDetailReq = {
+  //     productDetailId: billDetailReturn ? billDetailReturn.productDetailId : null,
+  //     idBill: idBill,
+  //     quantity: soLuong,
+  //     note: ghiChu,
+  //   }
+  //   const handleReturnProduct = (billDetailReturn, hdBillDetailReq) => {
+  //     hoaDonChiTietApi
+  //       .returnProduct(billDetailReturn.id, hdBillDetailReq)
+  //       .then(() => {
+  //         toast.success('Đã xác nhận hoàn trả', {
+  //           position: toast.POSITION.TOP_RIGHT,
+  //         })
+  //         setIsUpdateBill(true)
+  //         setOpenModalReturnProduct(false)
+  //       })
+  //       .catch(() => {
+  //         toast.error('Đã xảy ra lỗi', {
+  //           position: toast.POSITION.TOP_RIGHT,
+  //         })
+  //       })
+  //   }
+  //   const confirmReturnProduct = () => {
+  //     if (isNaN(soLuong) || soLuong <= 0) {
+  //       toast.error('Số lượng không hợp lệ', {
+  //         position: toast.POSITION.TOP_CENTER,
+  //       })
+  //       return
+  //     }
+  //     if (soLuong > billDetailReturn.quantity) {
+  //       toast.error('Số lượng hoàn trả lớn hơn số sản phẩm đã mua', {
+  //         position: toast.POSITION.TOP_CENTER,
+  //       })
+  //       return
+  //     }
+  //     if (ghiChu.trim().length === 0) {
+  //       toast.error('Vui lòng nhập ghi chú', {
+  //         position: toast.POSITION.TOP_CENTER,
+  //       })
+  //       return
+  //     }
+  //     confirmSatus('Xác nhận ', 'Xác nhận hoàn hàng?').then((result) => {
+  //       if (result.isConfirmed) {
+  //         handleReturnProduct(billDetailReturn, hdBillDetailReq)
+  //       }
+  //     })
+  //   }
 
-    return (
-      <Modal
-        open={open}
-        setOpen={setOpen}
-        title={'Xác nhận hoàn hàng'}
-        onClose={() => {
-          setOpen(false)
-        }}>
-        <div>
-          <Box sx={styleModalReturnProduct}>
-            <Toolbar>
-              <Box
-                sx={{
-                  color: 'black',
-                  flexGrow: 1,
-                }}>
-                <Typography variant="h6" component="div">
-                  Xác nhận hoàn hàng
-                </Typography>
-              </Box>
-              <IconButton
-                onClick={() => {
-                  setOpen(false)
-                }}
-                aria-label="close"
-                color="error"
-                style={{
-                  boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
-                }}>
-                <CloseIcon />
-              </IconButton>
-            </Toolbar>
-            {billDetailReturn && (
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TableContainer
-                    sx={{ maxHeight: 300, marginBottom: 5 }}
-                    className="table-container-custom-scrollbar">
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableBody>
-                        <TableRow key={'billDetail' + billDetailReturn.id}>
-                          <TableCell align="center">
-                            <img src={billDetailReturn.productImg} alt="" width={'100px'} />
-                          </TableCell>
-                          <TableCell>
-                            {billDetailReturn.productName} <br></br>
-                            {billDetailReturn.price !== billDetailReturn.productPrice ? (
-                              <span>
-                                <del
-                                  style={{
-                                    color: 'gray',
-                                    textDecorationColor: 'gray',
-                                    textDecorationLine: 'line-through',
-                                  }}>
-                                  {formatCurrency(billDetailReturn.productPrice)}
-                                </del>
+  //   return (
+  //     <Modal
+  //       open={open}
+  //       setOpen={setOpen}
+  //       title={'Xác nhận hoàn hàng'}
+  //       onClose={() => {
+  //         setOpen(false)
+  //       }}>
+  //       <div>
+  //         <Box sx={styleModalReturnProduct}>
+  //           <Toolbar>
+  //             <Box
+  //               sx={{
+  //                 color: 'black',
+  //                 flexGrow: 1,
+  //               }}>
+  //               <Typography variant="h6" component="div">
+  //                 Xác nhận hoàn hàng
+  //               </Typography>
+  //             </Box>
+  //             <IconButton
+  //               onClick={() => {
+  //                 setOpen(false)
+  //               }}
+  //               aria-label="close"
+  //               color="error"
+  //               style={{
+  //                 boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
+  //               }}>
+  //               <CloseIcon />
+  //             </IconButton>
+  //           </Toolbar>
+  //           {billDetailReturn && (
+  //             <Grid container spacing={2}>
+  //               <Grid item xs={12}>
+  //                 <TableContainer
+  //                   sx={{ maxHeight: 300, marginBottom: 5 }}
+  //                   className="table-container-custom-scrollbar">
+  //                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
+  //                     <TableBody>
+  //                       <TableRow key={'billDetail' + billDetailReturn.id}>
+  //                         <TableCell align="center">
+  //                           <img src={billDetailReturn.productImg} alt="" width={'100px'} />
+  //                         </TableCell>
+  //                         <TableCell>
+  //                           {billDetailReturn.productName} <br></br>
+  //                           {billDetailReturn.price !== billDetailReturn.productPrice ? (
+  //                             <span>
+  //                               <del
+  //                                 style={{
+  //                                   color: 'gray',
+  //                                   textDecorationColor: 'gray',
+  //                                   textDecorationLine: 'line-through',
+  //                                 }}>
+  //                                 {formatCurrency(billDetailReturn.productPrice)}
+  //                               </del>
 
-                                <span
-                                  style={{
-                                    color: 'red',
-                                    marginLeft: 15,
-                                  }}>
-                                  {formatCurrency(billDetailReturn.price)}
-                                </span>
-                              </span>
-                            ) : (
-                              <span
-                                style={{
-                                  color: 'red',
-                                  marginLeft: 15,
-                                }}>
-                                {formatCurrency(billDetailReturn.productPrice)}
-                              </span>
-                            )}
-                            <br />
-                            Size: {billDetailReturn.size}
-                            <br />x{billDetailReturn.quantity}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <TextField
-                              color="cam"
-                              className="search-field"
-                              size="small"
-                              fullWidth
-                              label="Số lượng:"
-                              value={soLuong}
-                              onChange={(e) => setSoLuong(e.target.value)}
-                              sx={{ marginBottom: 2 }}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              color="cam"
-                              className="search-field"
-                              size="small"
-                              fullWidth
-                              label="Ghi chú"
-                              multiline
-                              rows={4}
-                              value={ghiChu}
-                              onChange={(e) => setGhiChu(e.target.value)}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <Box>
-                    <Button
-                      variant="outlined"
-                      color="cam"
-                      style={{ width: '90%', marginLeft: '5%', marginBottom: 10 }}
-                      onClick={() => confirmReturnProduct()}>
-                      <b>Xác nhận</b>
-                    </Button>
-                  </Box>
-                </Grid>
-              </Grid>
-            )}
-          </Box>
-        </div>
-      </Modal>
-    )
-  }
-  const styleModalReturnProduct = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '50vw', md: '50vw' },
-    bgcolor: 'white',
-    borderRadius: 1.5,
-    boxShadow: 24,
-  }
+  //                               <span
+  //                                 style={{
+  //                                   color: 'red',
+  //                                   marginLeft: 15,
+  //                                 }}>
+  //                                 {formatCurrency(billDetailReturn.price)}
+  //                               </span>
+  //                             </span>
+  //                           ) : (
+  //                             <span
+  //                               style={{
+  //                                 color: 'red',
+  //                                 marginLeft: 15,
+  //                               }}>
+  //                               {formatCurrency(billDetailReturn.productPrice)}
+  //                             </span>
+  //                           )}
+  //                           <br />
+  //                           Size: {billDetailReturn.size}
+  //                           <br />x{billDetailReturn.quantity}
+  //                         </TableCell>
+  //                       </TableRow>
+  //                       <TableRow>
+  //                         <TableCell>
+  //                           <TextField
+  //                             color="cam"
+  //                             className="search-field"
+  //                             size="small"
+  //                             fullWidth
+  //                             label="Số lượng:"
+  //                             value={soLuong}
+  //                             onChange={(e) => setSoLuong(e.target.value)}
+  //                             sx={{ marginBottom: 2 }}
+  //                           />
+  //                         </TableCell>
+  //                         <TableCell>
+  //                           <TextField
+  //                             color="cam"
+  //                             className="search-field"
+  //                             size="small"
+  //                             fullWidth
+  //                             label="Ghi chú"
+  //                             multiline
+  //                             rows={4}
+  //                             value={ghiChu}
+  //                             onChange={(e) => setGhiChu(e.target.value)}
+  //                           />
+  //                         </TableCell>
+  //                       </TableRow>
+  //                     </TableBody>
+  //                   </Table>
+  //                 </TableContainer>
+  //                 <Box>
+  //                   <Button
+  //                     variant="outlined"
+  //                     color="cam"
+  //                     style={{ width: '90%', marginLeft: '5%', marginBottom: 10 }}
+  //                     onClick={() => confirmReturnProduct()}>
+  //                     <b>Xác nhận</b>
+  //                   </Button>
+  //                 </Box>
+  //               </Grid>
+  //             </Grid>
+  //           )}
+  //         </Box>
+  //       </div>
+  //     </Modal>
+  //   )
+  // }
+  // const styleModalReturnProduct = {
+  //   position: 'absolute',
+  //   top: '50%',
+  //   left: '50%',
+  //   transform: 'translate(-50%, -50%)',
+  //   width: { xs: '50vw', md: '50vw' },
+  //   bgcolor: 'white',
+  //   borderRadius: 1.5,
+  //   boxShadow: 24,
+  // }
   function ModalCancelBill({ open, setOpen, billDetail }) {
     const [ghiChu, setGhiChu] = useState('')
 
@@ -1260,14 +1241,14 @@ export default function AdBillDetail() {
     })
   }
 
-  const handleReturnProduct = (item) => {
-    setBillDetailReturn(item)
-    setOpenModalReturnProduct(true)
-  }
+  // const handleReturnProduct = (item) => {
+  //   setBillDetailReturn(item)
+  //   setOpenModalReturnProduct(true)
+  // }
 
   const confirmPrintBill = (idBill) => {
-    confirmSatus('Xác nhận in hoá đơn', 'Bạn có chắc chắn muốn in hoá đơn này?').then((result) => {
-      window.location.href = 'http://localhost:8080/in-hoa-don/' + idBill
+    confirmSatus('Xác nhận in hoá đơn', 'Bạn có chắc chắn muốn in hoá đơn này?').then(() => {
+      window.location.href = process.env.URL + '/in-hoa-don/' + idBill
     })
   }
 
@@ -1295,12 +1276,12 @@ export default function AdBillDetail() {
         open={openModalConfirmComplete}
         billDetail={billDetail}
       />
-      <ModalReturnProduct
+      {/* <ModalReturnProduct
         setOpen={setOpenModalReturnProduct}
         open={openModalReturnProduct}
         billDetailReturn={billDetailReturn}
         idBill={billDetail ? billDetail.id : null}
-      />
+      /> */}
       <ModalCancelBill
         setOpen={setOpenModalCancelBill}
         open={openModalCancelBill}

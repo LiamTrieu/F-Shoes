@@ -21,4 +21,4 @@ public enum Message {
         this.message = message;
     }
 
-    }
+}

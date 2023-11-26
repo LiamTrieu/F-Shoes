@@ -4,17 +4,8 @@ import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
 import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.infrastructure.constant.TypeBill;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -31,13 +22,13 @@ public class Bill extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
 
-    @Column(length = EntityProperties.LENGTH_NAME)
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME)
     private String fullName;
 
     @Column(length = EntityProperties.LENGTH_PHONE)
     private String phoneNumber;
 
-    @Column(length = EntityProperties.LENGTH_ADDRESS)
+    @Column(columnDefinition = EntityProperties.DEFINITION_ADDRESS)
     private String address;
 
     private BigDecimal totalMoney;
@@ -56,7 +47,7 @@ public class Bill extends PrimaryEntity {
 
     private TypeBill type;
 
-    @Column(length = EntityProperties.LENGTH_DESCRIPTION)
+    @Column(columnDefinition = EntityProperties.DEFINITION_DESCRIPTION)
     private String note;
 
     private BigDecimal customerAmount;

@@ -1,18 +1,10 @@
 package com.fshoes.core.admin.sanpham.model.request;
 
-import com.fshoes.entity.Brand;
-import com.fshoes.entity.Category;
-import com.fshoes.entity.Color;
-import com.fshoes.entity.Material;
-import com.fshoes.entity.Product;
-import com.fshoes.entity.ProductDetail;
-import com.fshoes.entity.Size;
-import com.fshoes.entity.Sole;
+import com.fshoes.entity.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -50,8 +42,7 @@ public class ProductDetailRequest {
     private List<String> listImage;
 
 
-
-    public ProductDetail tranDetail(ProductDetail productDetail){
+    public ProductDetail tranDetail(ProductDetail productDetail) {
 
         Sole sole = new Sole();
         sole.setId(this.getIdSole());

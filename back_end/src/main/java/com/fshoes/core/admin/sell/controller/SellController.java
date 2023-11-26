@@ -52,7 +52,7 @@ public class SellController {
     }
 
     @GetMapping("/get-min-max-price")
-    public ObjectRespone getMinMaxPrice( ) {
+    public ObjectRespone getMinMaxPrice() {
         return new ObjectRespone(getSell.getMinMaxPrice());
     }
 
@@ -85,6 +85,7 @@ public class SellController {
     public ObjectRespone getTotalMoneyPayOrder(@PathVariable String idBill) {
         return new ObjectRespone(getSell.getTotalMoneyPayOrder(idBill));
     }
+
     @GetMapping("/get-product-detail-bill/{id}")
     public ObjectRespone getAllProductDetailBill(@PathVariable String id) {
         return new ObjectRespone(getSell.getProductDetailBillSell(id));
@@ -153,17 +154,17 @@ public class SellController {
 
 
     @PutMapping("/input-quantity-bill-detail")
-    public ObjectRespone inputQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail, @RequestParam("quantity") Integer quantity){
+    public ObjectRespone inputQuantityBillDetail(@RequestParam("idBillDetail") String idBillDetail, @RequestParam("idPrDetail") String idPrDetail, @RequestParam("quantity") Integer quantity) {
         return new ObjectRespone(getSell.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity));
     }
 
     @PutMapping("/increase-quantity-bill-detail")
-    public ObjectRespone increaseQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail){
+    public ObjectRespone increaseQuantityBillDetail(@RequestParam("idBillDetail") String idBillDetail, @RequestParam("idPrDetail") String idPrDetail) {
         return new ObjectRespone(getSell.increaseQuantityBillDetail(idBillDetail, idPrDetail));
     }
 
     @PutMapping("/decrease-quantity-bill-detail")
-    public ObjectRespone decreaseQuantityBillDetail(@RequestParam("idBillDetail")String idBillDetail, @RequestParam("idPrDetail") String idPrDetail){
+    public ObjectRespone decreaseQuantityBillDetail(@RequestParam("idBillDetail") String idBillDetail, @RequestParam("idPrDetail") String idPrDetail) {
         return new ObjectRespone(getSell.decreaseQuantityBillDetail(idBillDetail, idPrDetail));
     }
 

@@ -34,12 +34,10 @@ import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
 import styled from '@emotion/styled'
 import PropTypes from 'prop-types'
 import CancelIcon from '@mui/icons-material/Cancel'
-import { useParams } from 'react-router-dom'
-import { addCart } from '../../services/slices/cartSlice'
-import { useDispatch } from 'react-redux'
 import { formatCurrency } from '../../services/common/formatCurrency '
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../../api/socket'
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -87,7 +85,6 @@ export default function Product() {
   const [openSole, setOpenSole] = useState(false)
   const [openColor, setOpenColor] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false)
-  const [product, setProduct] = useState([])
   const [showMenuBar, setShowMenuBar] = useState(true)
   const [isMenuBarVisible, setIsMenuBarVisible] = useState(true)
   const [filter, setFilter] = useState({
@@ -101,7 +98,6 @@ export default function Product() {
     nameProductDetail: null,
   })
   const [minMaxPrice, setMinMaxPrice] = useState({})
-  const [idProduct, setIdProduct] = useState(null)
   // -------------------------------------- Filter ----------------------------------
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
@@ -154,13 +150,15 @@ export default function Product() {
   }, [filter])
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products])
 
   const onConnect = () => {
@@ -205,6 +203,7 @@ export default function Product() {
         maxPrice: response.data.data.maxPrice,
       })
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleDrawerToggle = () => {

@@ -40,10 +40,10 @@ import clientReturnApi from '../../../api/client/clientReturnApi'
 import ReturnDetailClient from './ReturnDetailClient'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import socketUrl from '../../../api/socket'
 
 var stompClient = null
 export default function Order() {
-  const [getBill, setGetBill] = useState([])
   const [getBillTable, setGetBillTable] = useState([])
   const [getBillReturn, setGetBillReturn] = useState([])
   const [valueTabHD, setValueTabHD] = React.useState('all')
@@ -61,12 +61,6 @@ export default function Order() {
       setFilter(updatedFilter)
     }
   }
-
-  useEffect(() => {
-    ClientAccountApi.getAllBill(filter).then((response) => {
-      setGetBill(response.data.data)
-    })
-  }, [filter])
 
   const fetchAllBillTable = (filter) => {
     ClientAccountApi.getAllBillTable(filter).then((response) => {
@@ -92,13 +86,15 @@ export default function Order() {
   }
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/shoes-websocket-endpoint')
+    const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
     stompClient.connect({}, onConnect)
 
     return () => {
       stompClient.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getBillTable])
 
   const onConnect = () => {

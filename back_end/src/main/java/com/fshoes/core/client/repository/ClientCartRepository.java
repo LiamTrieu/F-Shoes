@@ -3,7 +3,6 @@ package com.fshoes.core.client.repository;
 import com.fshoes.core.client.model.response.ClientCartResponse;
 import com.fshoes.entity.Cart;
 import com.fshoes.repository.CartRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -35,5 +34,6 @@ public interface ClientCartRepository extends CartRepository {
     List<ClientCartResponse> getAllCart(String idUser);
 
     Optional<Cart> findByAccountIdAndProductDetailId(String idUser, String idProductDetail);
+
     List<Cart> findAllByAccountId(String accountId);
 }

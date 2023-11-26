@@ -1,7 +1,6 @@
 package com.fshoes.core.admin.hoadon.repository;
 
 import com.fshoes.core.admin.hoadon.model.respone.HDTransactionResponse;
-import com.fshoes.entity.Transaction;
 import com.fshoes.repository.TransactionRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

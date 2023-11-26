@@ -42,7 +42,7 @@ const authenticationAPi = {
 
   getAdmin: () => {
     const token = getCookie('AdminToken')
-    const url = `http://localhost:8080/api/authentication`
+    const url = process.env.REACT_APP_API_URL + `/authentication`
     if (token) {
       return axios.get(url, { headers: { Authorization: `Bearer ${token}` } })
     }

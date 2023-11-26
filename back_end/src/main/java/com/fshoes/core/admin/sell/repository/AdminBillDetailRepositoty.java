@@ -40,12 +40,13 @@ public interface AdminBillDetailRepositoty extends BillDetailRepository {
             where id_bill = ? and id_product_detail = ?
             """, nativeQuery = true)
     String idBillDetailProductDetail(String idBill, String idPrDetail);
+
     @Query(value = """
             select id
             from bill_detail
             where id_bill = :idBill and id_product_detail in :idPrDetail
             """, nativeQuery = true)
-    List<String> deleteBillDetailProductDetail(String idBill,@Param("idPrDetail") List<String> idPrDetail);
+    List<String> deleteBillDetailProductDetail(String idBill, @Param("idPrDetail") List<String> idPrDetail);
 
 
     @Query(value = """

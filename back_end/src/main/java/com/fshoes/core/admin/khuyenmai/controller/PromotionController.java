@@ -28,45 +28,50 @@ public class PromotionController {
     @Autowired
 
     private ProductPromotionAddService productPromotionAddService;
+
     @GetMapping("/get-product-detail")
-    public ObjectRespone getAllProductDeatil(ProductPromotionSearch red){
-        return new ObjectRespone( productPromotionAddService.getAllProductDetail(red));
+    public ObjectRespone getAllProductDeatil(ProductPromotionSearch red) {
+        return new ObjectRespone(productPromotionAddService.getAllProductDetail(red));
     }
 
-        @GetMapping("/get-all")
-    public ObjectRespone getAll(){
+    @GetMapping("/get-all")
+    public ObjectRespone getAll() {
         return new ObjectRespone(khuyenMaiService.getAllPromotion());
     }
 
     @GetMapping("/get-product-detail-by-product/{id}")
-    public ObjectRespone getAllProductDeatilByProduct(GetProductDetailByIdProduct red, @PathVariable List<String> id){
-        return new ObjectRespone( productPromotionAddService.getProductDetailByProduct(red,id));
+    public ObjectRespone getAllProductDeatilByProduct(GetProductDetailByIdProduct red, @PathVariable List<String> id) {
+        return new ObjectRespone(productPromotionAddService.getProductDetailByProduct(red, id));
     }
+
     @GetMapping("/get-product")
-    public ObjectRespone getAllProduct(ProductPromotionSearch red){
-        return new ObjectRespone( productPromotionAddService.getAll(red));
+    public ObjectRespone getAllProduct(ProductPromotionSearch red) {
+        return new ObjectRespone(productPromotionAddService.getAll(red));
     }
 
     @GetMapping("/get-one/{id}")
     public ObjectRespone getOne(@PathVariable String id) {
         return new ObjectRespone(khuyenMaiService.getOne(id));
     }
+
     @Transactional
     @PutMapping("/update/{id}")
     public ObjectRespone updateKhuyenMai(@RequestBody ProductPromotionAddRequest promotionRequest, @PathVariable String id) throws ParseException {
         return new ObjectRespone(khuyenMaiService.updateKhuyenMai(promotionRequest, id));
     }
-@Transactional
+
+    @Transactional
     @PutMapping("/delete/{id}")
-    public ObjectRespone deleteKhuyenMai( @PathVariable String id) throws ParseException {
+    public ObjectRespone deleteKhuyenMai(@PathVariable String id) throws ParseException {
         return new ObjectRespone(khuyenMaiService.deleteKhuyenMai(id));
     }
 
     @GetMapping("/get-Promotion-filter")
-    public PageReponse<PromotionRespone> getAllPro(PromotionSearch filter){
+    public PageReponse<PromotionRespone> getAllPro(PromotionSearch filter) {
         return new PageReponse<>(khuyenMaiService.getAllPromotion(filter));
     }
-@Transactional
+
+    @Transactional
     @PostMapping("/add-product-promotion")
     public ObjectRespone addProductPromotion(@RequestBody ProductPromotionAddRequest request) throws ParseException {
         return new ObjectRespone(khuyenMaiService.addKhuyenMaiOnProduct(request));

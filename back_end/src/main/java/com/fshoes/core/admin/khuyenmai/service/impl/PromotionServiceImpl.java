@@ -13,14 +13,7 @@ import com.fshoes.infrastructure.constant.StatusVoucher;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.ProductPromotionRepository;
 import com.fshoes.util.DateUtil;
-import org.apache.http.client.utils.DateUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,13 +24,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -60,25 +51,25 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Scheduled(cron = "0 * * * * ?")
     @Transactional
-    public void cronJobCheckPromotion(){
+    public void cronJobCheckPromotion() {
         boolean flag = true;
         long dateNow = Calendar.getInstance().getTimeInMillis();
         List<Promotion> promotionList = khuyenMaiRepository.getAllPromotionWrong(dateNow);
-        for (Promotion promotion: promotionList){
-            if(promotion.getTimeStart() >dateNow && promotion.getStatus() != StatusVoucher.SAP_DIEN_RA.ordinal()){
+        for (Promotion promotion : promotionList) {
+            if (promotion.getTimeStart() > dateNow && promotion.getStatus() != StatusVoucher.SAP_DIEN_RA.ordinal()) {
                 promotion.setStatus((StatusVoucher.SAP_DIEN_RA.ordinal()));
                 flag = true;
-            }else if(promotion.getTimeEnd() < dateNow && promotion.getStatus() != StatusVoucher.DA_KET_THUC.ordinal()){
+            } else if (promotion.getTimeEnd() < dateNow && promotion.getStatus() != StatusVoucher.DA_KET_THUC.ordinal()) {
                 promotion.setStatus(StatusVoucher.DA_KET_THUC.ordinal());
                 flag = true;
             } else if (promotion.getTimeStart() <= dateNow && promotion.getTimeEnd() > dateNow
-                      && promotion.getStatus() != StatusVoucher.DANG_DIEN_RA.ordinal()) {
+                       && promotion.getStatus() != StatusVoucher.DANG_DIEN_RA.ordinal()) {
                 promotion.setStatus(StatusVoucher.DANG_DIEN_RA.ordinal());
-                flag= true;
+                flag = true;
             }
         }
-        if(flag){
-            messagingTemplate.convertAndSend("/topic/promotionUpdates",khuyenMaiRepository.saveAll(promotionList));
+        if (flag) {
+            messagingTemplate.convertAndSend("/topic/promotionUpdates", khuyenMaiRepository.saveAll(promotionList));
         }
     }
 
@@ -117,7 +108,7 @@ public class PromotionServiceImpl implements PromotionService {
             productPromotionRepository.deleteById(productPromotion.getId());
         }
         Promotion promotionUpdate = new Promotion();
-        if(getOnePromotion != null){
+        if (getOnePromotion != null) {
             Promotion promotion = getOnePromotion;
 //            khuyenMaiRepository.save(request.newPromotionAddProduct(promotion));
             promotionUpdate = khuyenMaiRepository.save(request.newPromotionAddProduct(promotion));
@@ -130,8 +121,8 @@ public class PromotionServiceImpl implements PromotionService {
                     ProductPromotion productPromotion = addRequest.newProductPromoton(new ProductPromotion());
                     productPromotionList1.add(productPromotion);
                 }
-            }else {
-                for (String idProductDetail: request.getIdProductDetail()) {
+            } else {
+                for (String idProductDetail : request.getIdProductDetail()) {
                     ProductDetail productDetail = productDetailRepository.findById(idProductDetail).get();
                     AddProductRequest addRequest = new AddProductRequest();
                     addRequest.setPromotion(promotion);
@@ -143,11 +134,11 @@ public class PromotionServiceImpl implements PromotionService {
             productPromotionRepository.saveAll(productPromotionList1);
             List<Promotion> promotionList = new ArrayList<>();
             promotionList.add(promotionUpdate);
-            messagingTemplate.convertAndSend("/topic/promotionUpdates",promotionList);
+            messagingTemplate.convertAndSend("/topic/promotionUpdates", promotionList);
             return promotion;
         }
 
-            return null;
+        return null;
 
     }
 
@@ -166,8 +157,8 @@ public class PromotionServiceImpl implements PromotionService {
                 ProductPromotion productPromotion = addRequest.newProductPromoton(new ProductPromotion());
                 productPromotionList.add(productPromotion);
             }
-        }else {
-            for (String idProductDetail: request.getIdProductDetail()) {
+        } else {
+            for (String idProductDetail : request.getIdProductDetail()) {
                 ProductDetail productDetail = productDetailRepository.findById(idProductDetail).get();
                 AddProductRequest addRequest = new AddProductRequest();
                 addRequest.setPromotion(promotion);
@@ -221,12 +212,12 @@ public class PromotionServiceImpl implements PromotionService {
         cell4.setCellValue("Đến ngày");
         cell4.setCellStyle(headerStyle);
 
-        try{
+        try {
             FileOutputStream outputStream = new FileOutputStream(outputPath);
             workbook.write(outputStream);
             outputStream.close();
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

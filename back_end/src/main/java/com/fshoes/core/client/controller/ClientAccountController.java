@@ -1,34 +1,16 @@
 package com.fshoes.core.client.controller;
 
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
-import com.fshoes.core.admin.sanpham.service.BrandService;
-import com.fshoes.core.admin.sanpham.service.CategoryService;
-import com.fshoes.core.admin.sanpham.service.ColorService;
-import com.fshoes.core.admin.sanpham.service.MaterialService;
-import com.fshoes.core.admin.sanpham.service.SizeService;
-import com.fshoes.core.admin.sanpham.service.SoleService;
+import com.fshoes.core.admin.sanpham.service.*;
 import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
 import com.fshoes.core.admin.sell.service.AdminSellService;
-import com.fshoes.core.client.model.request.ClientAccountRequest;
-import com.fshoes.core.client.model.request.ClientBillAccountRequest;
-import com.fshoes.core.client.model.request.ClientBillDetailRequest;
-import com.fshoes.core.client.model.request.ClientBillRequest;
-import com.fshoes.core.client.model.request.ClientCancelBillRequest;
+import com.fshoes.core.client.model.request.*;
 import com.fshoes.core.client.model.response.ClientCustomerResponse;
 import com.fshoes.core.client.service.ClientAccountService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.UserLogin;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
