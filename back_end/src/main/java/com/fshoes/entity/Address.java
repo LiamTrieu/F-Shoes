@@ -23,7 +23,7 @@ import lombok.Setter;
 public class Address extends PrimaryEntity {
 
 
-    @Column(length = EntityProperties.LENGTH_NAME)
+    @Column(unique = true, columnDefinition = EntityProperties.DEFINITION_NAME)
     private String name;
 
     @Column(length = EntityProperties.LENGTH_PHONE)
@@ -39,7 +39,7 @@ public class Address extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_ID)
     private String wardId;
 
-    @Column(length = EntityProperties.LENGTH_ADDRESS)
+    @Column(columnDefinition = EntityProperties.DEFINITION_ADDRESS)
     private String specificAddress;
 
     private Boolean type;

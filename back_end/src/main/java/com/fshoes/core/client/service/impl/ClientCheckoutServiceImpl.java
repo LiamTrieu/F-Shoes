@@ -148,6 +148,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             billHistory.setBill(newBill);
             billHistory.setStatusBill(newBill.getStatus());
             billHistory.setNote(request.getNote());
+            billHistory.setAccount(account);
             billHistoryRepository.save(billHistory);
             sendMail(request, newBill.getCode(), dateNow, password);
             messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(newBill.getId()));
@@ -326,6 +327,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     ).toList());
                     BillHistory billHistory = new BillHistory();
                     billHistory.setBill(bill);
+                    billHistory.setAccount(account);
                     billHistory.setStatusBill(bill.getStatus());
                     billHistory.setNote(bill.getNote());
                     billHistoryRepository.save(billHistory);

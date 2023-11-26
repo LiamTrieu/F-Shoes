@@ -44,7 +44,7 @@ public class ProductDetail extends PrimaryEntity {
 
     private Integer amount;
 
-    @Column(length = EntityProperties.LENGTH_DESCRIPTION)
+    @Column(columnDefinition = EntityProperties.DEFINITION_DESCRIPTION)
     private String description;
 
     @ManyToOne

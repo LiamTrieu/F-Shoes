@@ -681,7 +681,7 @@ export default function AdBillDetail() {
               <TextField
                 style={{ marginBottom: '10px' }}
                 color="cam"
-                value={(billDetail && formatCurrency(billDetail.totalMoney)) || '0'}
+                value={(billDetail && formatCurrency(billDetail.moneyAfter)) || '0'}
                 className="search-field"
                 size="small"
                 fullWidth

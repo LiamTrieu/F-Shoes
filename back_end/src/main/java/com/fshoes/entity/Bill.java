@@ -31,13 +31,13 @@ public class Bill extends PrimaryEntity {
     @Column(length = EntityProperties.LENGTH_CODE)
     private String code;
 
-    @Column(length = EntityProperties.LENGTH_NAME)
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME)
     private String fullName;
 
     @Column(length = EntityProperties.LENGTH_PHONE)
     private String phoneNumber;
 
-    @Column(length = EntityProperties.LENGTH_ADDRESS)
+    @Column(columnDefinition = EntityProperties.DEFINITION_ADDRESS)
     private String address;
 
     private BigDecimal totalMoney;
@@ -56,7 +56,7 @@ public class Bill extends PrimaryEntity {
 
     private TypeBill type;
 
-    @Column(length = EntityProperties.LENGTH_DESCRIPTION)
+    @Column(columnDefinition = EntityProperties.DEFINITION_DESCRIPTION)
     private String note;
 
     private BigDecimal customerAmount;
