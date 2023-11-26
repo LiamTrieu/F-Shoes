@@ -1,13 +1,11 @@
 package com.fshoes.entity;
 
 import com.fshoes.entity.base.PrimaryEntity;
+import com.fshoes.infrastructure.constant.EntityProperties;
 import com.fshoes.infrastructure.constant.PaymentMethod;
 import com.fshoes.infrastructure.constant.Status;
 import com.fshoes.infrastructure.constant.TypeTransaction;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +29,7 @@ public class Transaction extends PrimaryEntity {
 
     private PaymentMethod paymentMethod;
 
+    @Column(columnDefinition = EntityProperties.DEFINITION_DESCRIPTION)
     private String note;
 
     private String transactionCode;
