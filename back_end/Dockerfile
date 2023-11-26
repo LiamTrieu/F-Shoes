@@ -8,7 +8,8 @@ WORKDIR /app
 RUN ./mvnw clean package
 
 # Sau khi build xong, sao chép tệp JAR của ứng dụng Spring Boot vào thư mục /app trong hệ thống tệp Docker
-COPY target/back_end-0.0.1-SNAPSHOT.jar ./app.jar
+    COPY /absolute/path/to/target/back_end-0.0.1-SNAPSHOT.jar /app/app.jar
+
 
 # Đặt biến môi trường SPRING_PROFILES_ACTIVE (nếu cần)
 # ENV SPRING_PROFILES_ACTIVE=production
