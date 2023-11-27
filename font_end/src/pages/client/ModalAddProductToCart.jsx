@@ -68,7 +68,6 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
   const getPromotionProductDetails = (id) => {
     clientCartApi.getPromotionByProductDetail(id).then((response) => {
       setGromotionByProductDetail(response.data.data)
-      console.log(response.data.data)
     })
   }
 
@@ -234,7 +233,8 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                         <button onClick={() => onChangeSL(cart, -1)}>-</button>
                         <input
                           onChange={(e) => {
-                            const newValue = Math.floor(Number(e.target.value))
+                            let newValue = e.target.value.replace(/\D/, '')
+                            newValue = newValue !== '' ? Math.max(1, Number(newValue)) : 1
                             dispatch(updateCart({ ...cart, soLuong: newValue }))
                           }}
                           value={cart.soLuong}
@@ -277,6 +277,9 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                         onClick={() => {
                           const updatedProduct = productCart.filter((item) => item.id !== cart.id)
                           dispatch(setCart(updatedProduct))
+                          if (updatedProduct.length === 0) {
+                            handleCloseModal()
+                          }
                         }}
                       />
                     </TableCell>

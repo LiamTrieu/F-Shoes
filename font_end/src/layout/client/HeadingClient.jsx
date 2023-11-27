@@ -243,7 +243,7 @@ export default function HeadingClient() {
           Chào mừng bạn đến với shop giày thể thao F-SHOES
         </Typography>
       </div>
-      <AppBar position="sticky" sx={{ height: '150px', backgroundColor: 'white', color: 'black' }}>
+      <AppBar position="sticky" sx={{ height: '180px', backgroundColor: 'white', color: 'black' }}>
         {/* <Toolbar>
           <IconButton
             color="inherit"
@@ -379,21 +379,21 @@ export default function HeadingClient() {
           </Stack>
         </Container>
         {/* </Toolbar> */}
-      </AppBar>
-      <div
-        style={{
-          height: '60px',
-          backgroundColor: '#f2904f',
-          alignItems: 'center',
-          display: 'flex',
-          justifyContent: 'center',
-        }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Box sx={{ display: { md: 'block', xs: 'none' } }}>
-            <BarSelect />
+        <div
+          style={{
+            height: '60px',
+            backgroundColor: '#f2904f',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+          }}>
+          <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ display: { md: 'block', xs: 'none' } }}>
+              <BarSelect />
+            </Box>
           </Box>
-        </Box>
-      </div>
+        </div>
+      </AppBar>
     </>
   )
 }

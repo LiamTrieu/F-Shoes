@@ -197,7 +197,8 @@ const ChangePassword = () => {
         <Button
           type="button"
           fullWidth
-          variant="contained"
+          variant="outlined"
+          className="btn-luupf"
           sx={{ mt: 3, mb: 2 }}
           onClick={handleChangePassword}>
           Đổi Mật Khẩu

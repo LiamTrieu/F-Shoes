@@ -340,11 +340,7 @@ export default function AddressUser() {
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <p className="hs-user">Địa Chỉ của tôi</p>
-          <Button
-            onClick={handleAddAddress}
-            sx={{ textTransform: 'none' }}
-            variant="contained"
-            startIcon={<AddIcon />}>
+          <Button onClick={handleAddAddress} className="btn-xnck" startIcon={<AddIcon />}>
             Thêm địa chỉ
           </Button>
           <Modal
@@ -353,7 +349,8 @@ export default function AddressUser() {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description">
             <Box sx={style}>
-              <h1>{diaChi.id ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ'}</h1>
+              <p className="hs-user">{diaChi.id ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ'}</p>
+              <hr />
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                   <Typography>
@@ -501,11 +498,7 @@ export default function AddressUser() {
 
               <Grid container spacing={2} sx={{ mt: 3 }}>
                 <Grid item xs={12}>
-                  <Button
-                    onClick={onCreateDiaChi}
-                    variant="contained"
-                    color="success"
-                    sx={{ float: 'right' }}>
+                  <Button onClick={onCreateDiaChi} className="btn-xnck" sx={{ float: 'right' }}>
                     Hoàn tất
                   </Button>
                 </Grid>

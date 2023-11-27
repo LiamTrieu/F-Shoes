@@ -110,7 +110,9 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             account = authenticationService.checkMail(request.getEmail());
         }
         if (account == null) {
+            String setCodeCustomer = "KH" + accountRepository.findAll().size();
             account = new Account();
+            account.setCode(setCodeCustomer);
             account.setRole(2);
             account.setGender(true);
             account.setFullName(request.getFullName());
@@ -273,7 +275,9 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     }
 
                     if (account == null) {
+                        String setCodeCustomer = "KH" + accountRepository.findAll().size();
                         account = new Account();
+                        account.setCode(setCodeCustomer);
                         account.setRole(2);
                         account.setGender(true);
                         account.setPhoneNumber(bill.getPhoneNumber());
