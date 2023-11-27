@@ -123,7 +123,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     const numericValue = parseInt(inputValue, 10)
 
     if (inputValue === '' || isNaN(numericValue) || numericValue < 1) {
-      setAddAmount(0)
+      setAddAmount(1)
     } else {
       setAddAmount(numericValue)
     }
@@ -608,7 +608,7 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                       {getAmountProduct.brand}
                     </div>
                     <p style={{ color: 'red', margin: '5px 0' }}>
-                      {getAmountProduct.promotion && getAmountProduct.statusPromotion === 1 ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
+                      {getAmountProduct.promotion && getAmountProduct.statusPromotion === 1 ? (
                         <div style={{ display: 'flex' }}>
                           <div className="promotion-price">{`${formatPrice(
                             getAmountProduct.price,

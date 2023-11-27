@@ -108,6 +108,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const [initPage, setInitPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
 
+  const [totalPagesAd, setTotalPagesAd] = useState(0)
+
   const [listKhachHang, setlistKhachHang] = useState([])
   const [listVoucher, setListVoucher] = useState([])
   const [listProductDetailBill, setListProductDetailBill] = useState([])
@@ -276,6 +278,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
         }
     })
   }
+  const handleOnChangePage = (page) => {
+    setInitPage(page)
+  }
 
   const rollBackQuantityProductDetail = (idBill, idPrDetail) => {
     sellApi
@@ -289,25 +294,23 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       })
   }
 
-  const increaseQuantityBillDetail = (idBillDetail, idPrDetail) => {
-    sellApi.increaseQuantityBillDetail(idBillDetail, idPrDetail).then((response) => {
-      toast.success('Tăng số lượng sản phẩm thành công', { position: toast.POSITION.TOP_CENTER })
+  const increaseQuantityBillDetail = (idBillDetail, idPrDetail, currentQuantity) => {
+    const updatedQuantity = currentQuantity + 1
+    sellApi.increaseQuantityBillDetail(idBillDetail, idPrDetail, updatedQuantity).then(() => {
       fectchProductBillSell(idBill)
     })
   }
 
-  const decreaseQuantityBillDetail = (idBillDetail, idPrDetail) => {
-    sellApi.decreaseQuantityBillDetail(idBillDetail, idPrDetail).then((response) => {
-      toast.success('Giảm số lượng sản phẩm thành công', { position: toast.POSITION.TOP_CENTER })
+  const decreaseQuantityBillDetail = (idBillDetail, idPrDetail, currentQuantity) => {
+    const updatedQuantity = Math.max(currentQuantity - 1, 1)
+
+    sellApi.decreaseQuantityBillDetail(idBillDetail, idPrDetail, updatedQuantity).then(() => {
       fectchProductBillSell(idBill)
     })
   }
 
   const inputQuantityBillDetail = (idBillDetail, idPrDetail, quantity) => {
-    sellApi.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity).then((response) => {
-      toast.success('Thay đổi số lượng sản phẩm thành công', {
-        position: toast.POSITION.TOP_CENTER,
-      })
+    sellApi.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity).then(() => {
       fectchProductBillSell(idBill)
     })
   }
@@ -341,7 +344,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const loadDiaChi = (initPage, idCustomer) => {
     DiaChiApi.getAll(initPage - 1, idCustomer).then((response) => {
       setListDiaChiDetail(response.data.data.content)
-      setTotalPages(response.data.data.totalPages)
+      setTotalPagesAd(response.data.data.totalPages)
     })
   }
 
@@ -1474,9 +1477,12 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                         }}
                         p={'3px'}>
                         <IconButton
-                          sx={{ p: 0 }}
                           size="small"
-                          onClick={() => decreaseQuantityBillDetail(cart.idBillDetail, cart.id)}>
+                          sx={{ p: 0 }}
+                          onClick={() =>
+                            decreaseQuantityBillDetail(cart.idBillDetail, cart.id, cart.quantity)
+                          }
+                          disabled={cart.quantity <= 1}>
                           <RemoveIcon fontSize="1px" />
                         </IconButton>
                         <TextField
@@ -1491,13 +1497,20 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                             },
                           }}
                           onChange={(e) => {
-                            inputQuantityBillDetail(cart.idBillDetail, cart.id, e.target.value)
+                            const inputValue = e.target.value
+                            const numericValue = Number(inputValue)
+
+                            if (!isNaN(numericValue) && numericValue >= 1) {
+                              inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue)
+                            }
                           }}
                         />
                         <IconButton
                           size="small"
                           sx={{ p: 0 }}
-                          onClick={() => increaseQuantityBillDetail(cart.idBillDetail, cart.id)}>
+                          onClick={() =>
+                            increaseQuantityBillDetail(cart.idBillDetail, cart.id, cart.quantity)
+                          }>
                           <AddIcon fontSize="1px" />
                         </IconButton>
                       </Box>
@@ -1625,9 +1638,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                       clearSelectAddress()
                     }}
                     sx={{ ml: 2 }}
-                    variant="contained"
-                    color="success">
-                    Thêm
+                    variant="outlined"
+                    color="cam">
+                    <AddIcon fontSize="small" /> Thêm khách hàng
                   </Button>
                 </Box>
                 <Box
@@ -1872,10 +1885,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                         justifyContent="flex-end"
                         alignItems="flex-end"
                         spacing={2}>
-                        <Button
-                          onClick={() => onSubmit(khachHang)}
-                          variant="contained"
-                          color="success">
+                        <Button onClick={() => onSubmit(khachHang)} variant="outlined" color="cam">
                           <b>Thêm</b>
                         </Button>
                       </Stack>
@@ -1944,12 +1954,12 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                         </TableCell>
                         <TableCell align="center">
                           <Button
-                            variant="contained"
+                            variant="outlined"
+                            color="cam"
                             onClick={() => {
                               handleDiaChi(row.id)
                               setNameCustomer(row.fullName)
-                            }}
-                            color="success">
+                            }}>
                             <b>chọn</b>
                           </Button>
                         </TableCell>
@@ -1957,6 +1967,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                     ))}
                   </TableBody>
                 </Table>
+
                 <Stack
                   mt={2}
                   direction="row"
@@ -2101,9 +2112,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                           <TableCell align="center">{row.specificAddress}</TableCell>
                           <TableCell align="center">
                             <Button
-                              variant="contained"
                               onClick={() => handleDetailDiaChi(row.id)}
-                              color="success">
+                              variant="outlined"
+                              color="cam">
                               <b>chọn</b>
                             </Button>
                           </TableCell>
@@ -2130,6 +2141,14 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                     }}>
                     Thêm địa chỉ
                   </Button>
+                  <Pagination
+                    page={initPage}
+                    onChange={(_, page) => handleOnChangePage(page)}
+                    count={totalPagesAd}
+                    color="cam"
+                    sx={{ float: 'right', mt: 3 }}
+                    variant="outlined"
+                  />
                   <Box
                     sx={{
                       mt: 3,
