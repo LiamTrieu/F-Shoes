@@ -8,7 +8,6 @@ import {
   Container,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Grid,
   IconButton,
   InputAdornment,
@@ -150,6 +149,14 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     sellApi.getTotalMoneyPayOrderByIdBill(idBill).then((response) => {
       setTotalMoneyPayOrderByIdBill(response.data.data)
     })
+  }
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      currencyDisplay: 'code',
+    })
+    return formatter.format(value)
   }
 
   useEffect(() => {
@@ -1082,6 +1089,14 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       return
     }
 
+    if (totalMoneyPayOrderByIdBill < totalPrice) {
+      console.log('Condition met')
+      toast.error('Khách thanh toán chưa đủ tiền', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      return
+    }
+
     const data = {
       fullName: detailDiaChi.name ? detailDiaChi.name : '',
       phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
@@ -1282,17 +1297,17 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       })
       return
     }
-
     const dataPay = {
       note: noteTransaction ? noteTransaction : '',
       moneyAfter: totalPrice ? totalPrice : '',
-      customerAmount: customerAmount,
+      customerAmount: customerAmount.replace(/\D/g, ''),
       transactionCode: transactionCode ? transactionCode : null,
       paymentMethod: paymentMethod === '1' ? 1 : 0,
       noteTransaction: noteTransaction ? noteTransaction : null,
       desiredReceiptDate: timeShip ? timeShip : '',
-      totalMoney: customerAmount ? customerAmount : '',
+      totalMoney: customerAmount.replace(/\D/g, '') ? customerAmount.replace(/\D/g, '') : '',
     }
+    console.log(dataPay)
 
     sellApi.payOrder(dataPay, id).then((response) => {
       // getAllBillTaoDonHang()
@@ -2855,13 +2870,14 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                   }}
                   size="small"
                   onChange={(e) => {
-                    setCustomerAmount(e.target.value)
+                    const inputValue = e.target.value.replace(/\D/g, '')
+
+                    setCustomerAmount(formatCurrency(inputValue))
                     setErrorAddBill({ ...errorAddBill, customerAmount: '' })
                   }}
+                  value={customerAmount}
                   error={Boolean(errorAddBill.customerAmount)}
                   helperText={errorAddBill.customerAmount}
-                  value={customerAmount}
-                  type="number"
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -2912,7 +2928,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                           <TableCell align="center">
                             {item.paymentMethod === 1 ? 'Tiền mặt' : 'Chuyển khoản'}{' '}
                           </TableCell>
-                          <TableCell align="center">{formatPrice(item.totalMoney)}</TableCell>
+                          <TableCell align="center">
+                            {item.totalMoney ? formatPrice(item.totalMoney) : 0}
+                          </TableCell>
                           <TableCell align="center">
                             <Tooltip title="Hủy thanh toán">
                               <DeleteIcon
