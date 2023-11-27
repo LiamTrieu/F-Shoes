@@ -516,6 +516,7 @@ export default function Checkout() {
                     onClick={() => {
                       setIsShowDiaChi(true)
                       loadListAd()
+                      setErrors({ ...errors, provinceId: '', districtId: '', wardId: '' })
                     }}>
                     <b>Chọn Địa chỉ</b>
                   </Button>

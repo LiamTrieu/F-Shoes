@@ -509,7 +509,8 @@ export default function ModalAddress({
       {updateModalOpen && (
         <Modal open={updateModalOpen} onClose={handleClose}>
           <Box sx={style}>
-            <h1>{diaChi.id ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ'}</h1>
+            <p className="hs-user">{diaChi.id ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ'}</p>
+            <hr />
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 <Typography>
@@ -653,11 +654,7 @@ export default function ModalAddress({
 
             <Grid container spacing={2} sx={{ mt: 3 }}>
               <Grid item xs={12}>
-                <Button
-                  onClick={onCreateDiaChi}
-                  variant="contained"
-                  color="success"
-                  sx={{ float: 'right' }}>
+                <Button onClick={onCreateDiaChi} className="btn-xnck" sx={{ float: 'right' }}>
                   Hoàn tất
                 </Button>
               </Grid>

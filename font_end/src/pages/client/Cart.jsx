@@ -23,6 +23,7 @@ import clientCartApi from '../../api/client/clientCartApi'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import socketUrl from '../../api/socket'
+import confirmSatus from '../../components/comfirmSwal'
 
 var stompClient = null
 export default function Cart() {
@@ -32,20 +33,34 @@ export default function Cart() {
 
   const onChangeSL = (cart, num) => {
     const soluong = cart.soLuong + num
-    const preProductSelect = [...productSelect]
-    const index = preProductSelect.findIndex((e) => e.id === cart.id)
+
     if (soluong <= 0) {
-      dispatch(removeCart(cart))
+      const title = 'Bạn có muốn xóa sản phẩm ra khỏi giỏ hàng không?'
+      const text = ''
+      confirmSatus(title, text).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(removeCart(cart))
+          const preProductSelect = [...productSelect]
+          const index = preProductSelect.findIndex((e) => e.id === cart.id)
+          if (index !== -1) {
+            preProductSelect.splice(index, 1)
+            setProductSelect(preProductSelect)
+          }
+        }
+      })
     } else {
       const updatedProduct = {
         ...cart,
         soLuong: soluong,
       }
+      dispatch(updateCart(updatedProduct))
+
+      const preProductSelect = [...productSelect]
+      const index = preProductSelect.findIndex((e) => e.id === cart.id)
       if (index !== -1) {
         preProductSelect[index] = updatedProduct
         setProductSelect(preProductSelect)
       }
-      dispatch(updateCart(updatedProduct))
     }
   }
 
@@ -67,7 +82,6 @@ export default function Cart() {
   const getPromotionProductDetails = (id) => {
     clientCartApi.getPromotionByProductDetail(id).then((response) => {
       setGromotionByProductDetail(response.data.data)
-      console.log(response.data.data)
     })
   }
 
@@ -523,12 +537,12 @@ export default function Cart() {
                           </Typography>
                         </TableCell>
                         <TableCell align="center">
-                          {' '}
                           <div className="quantity-control">
                             <button onClick={() => onChangeSL(cart, -1)}>-</button>
                             <input
                               onChange={(e) => {
-                                const newValue = Math.floor(Number(e.target.value))
+                                let newValue = e.target.value.replace(/\D/, '')
+                                newValue = newValue !== '' ? Math.max(1, Number(newValue)) : 1
                                 dispatch(updateCart({ ...cart, soLuong: newValue }))
                               }}
                               value={cart.soLuong}
@@ -622,6 +636,7 @@ export default function Cart() {
                 }}
                 size="sm"
                 variant="contained"
+                disabled={productSelect.length > 0 ? false : true}
                 sx={{
                   minWidth: '100%',
                   backgroundColor: '#333',

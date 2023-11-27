@@ -22,8 +22,8 @@ export default function FooterClient() {
         />
       </div>
       <Typography style={{ textAlign: 'center' }}>
-        Được thành lập vào năm 2019, trải qua những năm hoạt động và phát triển, Dola Watch trở
-        thành đại lý ủy quyền cho rất nhiều thương hiệu trên thế giới, chuyên bán đồng hồ chính
+        Được thành lập vào năm 2019, trải qua những năm hoạt động và phát triển, F-Shoes trở thành
+        đại lý ủy quyền cho rất nhiều thương hiệu trên thế giới, chuyên bán giày thể thao chính
         hãng.
       </Typography>
       <div

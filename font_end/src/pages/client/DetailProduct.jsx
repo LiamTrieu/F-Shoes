@@ -210,6 +210,15 @@ export default function DetailProduct() {
       handleOpenModalCart()
     }
   }
+  const handleQuantityChange = (e) => {
+    const inputValue = e.target.value
+    const numericValue = inputValue.replace(/[^0-9]/g, '')
+    if (numericValue !== '' && !isNaN(parseInt(numericValue)) && parseInt(numericValue) > 0) {
+      setSoluong(parseInt(numericValue))
+    } else {
+      setSoluong(1)
+    }
+  }
   const checkOut = () => {
     if (
       isNaN(parseInt(soLuong.toString().trim())) ||
@@ -360,17 +369,15 @@ export default function DetailProduct() {
                   }}
                   p={'3px'}>
                   <IconButton
-                    onClick={(e) => {
-                      setSoluong(parseInt(soLuong) - 1)
+                    onClick={() => {
+                      setSoluong((prevQuantity) => Math.max(prevQuantity - 1, 1))
                     }}
                     sx={{ p: 0 }}
                     size="small">
                     <RemoveIcon fontSize="1px" />
                   </IconButton>
                   <TextField
-                    onChange={(e) => {
-                      setSoluong(e.target.value)
-                    }}
+                    onChange={handleQuantityChange}
                     value={soLuong}
                     inputProps={{ min: 1 }}
                     size="small"
