@@ -13,8 +13,6 @@ public interface HDBillDetailService {
 
     BillDetail updateBillDetail(String idBillDetail, HDBillDetailRequest hdBillDetailRequest);
 
-    List<HDBillDetailResponse> getBillDetailByBillIdAndStatus(String idBill, Integer status);
-
     BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
 
     BillDetail decrementQuantity(String idBillDetail);

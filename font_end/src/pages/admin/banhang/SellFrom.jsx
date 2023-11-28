@@ -1091,13 +1091,14 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       })
       return
     }
-
-    if (totalMoneyPayOrderByIdBill < totalPrice) {
-      console.log('Condition met')
-      toast.error('Khách thanh toán chưa đủ tiền', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
-      return
+    if (!giaoHang) {
+      if (totalMoneyPayOrderByIdBill < totalPrice) {
+        console.log('Condition met')
+        toast.error('Khách thanh toán chưa đủ tiền', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
     }
 
     const data = {

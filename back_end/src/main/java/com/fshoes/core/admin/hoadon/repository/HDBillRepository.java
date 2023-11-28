@@ -101,7 +101,7 @@ public interface HDBillRepository extends BillRepository {
                   c.email as emailCustomer,
                   b.desired_receipt_date as desiredReceiptDate, b.customer_amount as customerAmount, b.receiving_method as receivingMethod            FROM bill b
                   LEFT JOIN bill_detail bt ON b.id = bt.id_bill
-                  LEFT JOIN Account c ON b.id_customer= c.id
+                  LEFT JOIN account c ON b.id_customer= c.id
             WHERE b.id = :id AND b.status <> 8
                    
             """, nativeQuery = true)

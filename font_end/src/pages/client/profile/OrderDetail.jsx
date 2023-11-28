@@ -47,8 +47,6 @@ export default function OrderDetail() {
   const [openModalThemSP, setOpenModalThemSP] = useState(false)
   const [listTransaction, setListTransaction] = useState([])
   const [openModalCancelBill, setOpenModalCancelBill] = useState(false)
-  const [listBillDetailUnactive, setListBillDetailUnactive] = useState([])
-  const [lstBillDetailWaitingReturn, setLstBillDetailWaitingReturn] = useState([])
   const [isUpdate, setIsUpdate] = useState(false)
   const [openDialog, setOpenDialog] = useState(false)
 
@@ -235,25 +233,6 @@ export default function OrderDetail() {
     )
   }
 
-  const getBillDetailByIdBillAndStt = (id) => {
-    const UnActiveStt = 1
-    ClientAccountApi.getBillDetailsByIdBillAndStt(id, UnActiveStt)
-      .then((response) => {
-        setListBillDetailUnactive(response.data.data)
-      })
-      .catch((error) => {
-        console.error('Lỗi khi gửi yêu cầu API get bill detail by bill: ', error)
-      })
-    const waitingSTT = 2
-    ClientAccountApi.getBillDetailsByIdBillAndStt(id, waitingSTT)
-      .then((response) => {
-        setLstBillDetailWaitingReturn(response.data.data)
-      })
-      .catch((error) => {
-        console.error('Lỗi khi gửi yêu cầu API get bill detail by bill: ', error)
-      })
-  }
-
   useEffect(() => {
     const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
@@ -408,38 +387,42 @@ export default function OrderDetail() {
     getBillHistoryByIdBill(id)
     getBillClient(id)
     getTransactionByIdbill(id)
-    getBillDetailByIdBillAndStt(id)
     if (isUpdate) {
       getBillByIdBill(id)
       getBillHistoryByIdBill(id)
       getBillClient(id)
       getTransactionByIdbill(id)
-      getBillDetailByIdBillAndStt(id)
       setIsUpdate(false)
     }
   }, [id, isUpdate])
 
   return (
     <div>
-      <ModalUpdateAddressBillClient
-        loading={setIsUpdate}
-        open={openModalUpdateAdd}
-        setOPen={setopenModalUpdateAdd}
-        billDetail={billClient}
-        listBillDetail={billDetail}
-      />
-      <ClientModalThemSP
-        open={openModalThemSP}
-        setOPen={setOpenModalThemSP}
-        billDetail={billClient ? billClient : null}
-        idBill={billClient ? billClient.id : null}
-        load={setIsUpdate}
-      />
-      <ModalCancelBill
-        setOpen={setOpenModalCancelBill}
-        open={openModalCancelBill}
-        billDetail={billClient}
-      />
+      {openModalUpdateAdd && (
+        <ModalUpdateAddressBillClient
+          loading={setIsUpdate}
+          open={openModalUpdateAdd}
+          setOPen={setopenModalUpdateAdd}
+          billDetail={billClient}
+          listBillDetail={billDetail}
+        />
+      )}
+      {openModalThemSP && (
+        <ClientModalThemSP
+          open={openModalThemSP}
+          setOPen={setOpenModalThemSP}
+          billDetail={billClient ? billClient : null}
+          idBill={billClient ? billClient.id : null}
+          load={setIsUpdate}
+        />
+      )}
+      {openModalCancelBill && (
+        <ModalCancelBill
+          setOpen={setOpenModalCancelBill}
+          open={openModalCancelBill}
+          billDetail={billClient}
+        />
+      )}
       {/* <Container maxWidth="xl"> */}
       <Paper elevation={3} className="time-line" sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
         <h3>Lịch sử đơn hàng</h3>
@@ -533,165 +516,175 @@ export default function OrderDetail() {
             <TableContainer sx={{ maxHeight: 300, marginBottom: 5 }}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableBody>
-                  {billDetail.map((row, index) => (
-                    <TableRow key={row.id + index}>
-                      <TableCell>
-                        <img src={row.url} alt="" width={'100px'} />
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
-                          {row.productName + ' ' + row.material + ' ' + row.sole} "{row.color}"
-                        </Typography>
-                        <Typography>
-                          Phân loại hàng: {row.category} - {row.size}
-                        </Typography>
-                        <Typography color={'red'}>
-                          {row.price !== null ? formatCurrency(row.price) : 0}
-                        </Typography>
-                        <Typography>X{row.quantity}</Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Box
-                          width={'65px'}
-                          display="flex"
-                          alignItems="center"
-                          sx={{ border: '1px solid gray', borderRadius: '20px' }}
-                          p={'3px'}>
-                          <IconButton
-                            sx={{ p: 0 }}
-                            size="small"
-                            onClick={() => handleDecrementQuantity(row, index)}
-                            disabled={
-                              (billClient && billClient.status !== 1) || listTransaction.length > 0
-                            }>
-                            <RemoveIcon fontSize="1px" />
-                          </IconButton>
-                          <TextField
-                            value={row.quantity}
-                            inputProps={{ min: 1 }}
-                            size="small"
-                            sx={{
-                              width: '30px',
-                              '& input': { p: 0, textAlign: 'center' },
-                              '& fieldset': {
-                                border: 'none',
-                              },
-                            }}
-                            onChange={(e) =>
-                              handleTextFieldQuantityChange(row, index, e.target.value)
-                            }
-                            disabled={
-                              (billClient && billClient.status !== 1) || listTransaction.length > 0
-                            }
-                          />
+                  {billDetail
+                    .filter((row) => row.status === 0)
+                    .map((row, index) => (
+                      <TableRow key={row.id + index}>
+                        <TableCell>
+                          <img src={row.url} alt="" width={'100px'} />
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
+                            {row.productName + ' ' + row.material + ' ' + row.sole} "{row.color}"
+                          </Typography>
+                          <Typography>
+                            Phân loại hàng: {row.category} - {row.size}
+                          </Typography>
+                          <Typography color={'red'}>
+                            {row.price !== null ? formatCurrency(row.price) : 0}
+                          </Typography>
+                          <Typography>X{row.quantity}</Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box
+                            width={'65px'}
+                            display="flex"
+                            alignItems="center"
+                            sx={{ border: '1px solid gray', borderRadius: '20px' }}
+                            p={'3px'}>
+                            <IconButton
+                              sx={{ p: 0 }}
+                              size="small"
+                              onClick={() => handleDecrementQuantity(row, index)}
+                              disabled={
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0 ||
+                                row.quantity - 1 === 0
+                              }>
+                              <RemoveIcon fontSize="1px" />
+                            </IconButton>
+                            <TextField
+                              value={row.quantity}
+                              inputProps={{ min: 1 }}
+                              size="small"
+                              sx={{
+                                width: '30px',
+                                '& input': { p: 0, textAlign: 'center' },
+                                '& fieldset': {
+                                  border: 'none',
+                                },
+                              }}
+                              onChange={(e) =>
+                                handleTextFieldQuantityChange(row, index, e.target.value)
+                              }
+                              disabled={
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0
+                              }
+                            />
 
-                          <IconButton
-                            sx={{ p: 0 }}
-                            size="small"
-                            onClick={() => handleIncrementQuantity(row, index)}
-                            disabled={
-                              (billClient && billClient.status !== 1) || listTransaction.length > 0
-                            }>
-                            <AddIcon fontSize="1px" />
-                          </IconButton>
-                        </Box>
-                      </TableCell>
-                      <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
-                        {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
-                        <br />
-                      </TableCell>
-                      <TableCell>
-                        {billClient &&
-                          billClient.status === 1 &&
-                          billDetail.length > 1 &&
-                          listTransaction.length < 1 && (
-                            <Tooltip title="Xoá sản phẩm">
-                              <IconButton onClick={() => handleDeleteSPConfirmation(row)}>
-                                <CiCircleRemove />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                            <IconButton
+                              sx={{ p: 0 }}
+                              size="small"
+                              onClick={() => handleIncrementQuantity(row, index)}
+                              disabled={
+                                (billClient && billClient.status !== 1) ||
+                                listTransaction.length > 0
+                              }>
+                              <AddIcon fontSize="1px" />
+                            </IconButton>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
+                          {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
+                          <br />
+                        </TableCell>
+                        <TableCell>
+                          {billClient &&
+                            billClient.status === 1 &&
+                            billDetail.length > 1 &&
+                            listTransaction.length < 1 && (
+                              <Tooltip title="Xoá sản phẩm">
+                                <IconButton onClick={() => handleDeleteSPConfirmation(row)}>
+                                  <CiCircleRemove />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
               {/*chờ hoàn trả */}
-              {billClient && lstBillDetailWaitingReturn.length > 0 ? (
+              {billClient && billDetail.filter((row) => row.status === 2).length > 0 && (
                 <Table sx={{ minWidth: 650, marginTop: 2 }} aria-label="simple table">
                   <TableHead style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '20px' }}>
                     Đang chờ hoàn trả
                   </TableHead>
 
                   <TableBody>
-                    {lstBillDetailWaitingReturn.map((row, index) => (
-                      <TableRow key={row.id + index}>
-                        <TableCell align="center">
-                          <img src={row.productImg} alt="" width={'100px'} />
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
-                            {row.productName}"
-                          </Typography>
-                          <Typography>
-                            Phân loại hàng: {row.category} - {row.size}
-                          </Typography>
+                    {billDetail
+                      .filter((row) => row.status === 2)
+                      .map((row, index) => (
+                        <TableRow key={row.id + index}>
+                          <TableCell>
+                            <img src={row.url} alt="" width={'100px'} />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
+                              {row.productName + ' ' + row.material + ' ' + row.sole} "{row.color}"
+                            </Typography>
+                            <Typography>
+                              Phân loại hàng: {row.category} - {row.size}
+                            </Typography>
 
-                          <Typography>
-                            {row.price !== null ? formatCurrency(row.price) : 0} <br /> X
-                            {row.quantity}
-                          </Typography>
-                        </TableCell>
+                            <Typography>
+                              {row.price !== null ? formatCurrency(row.price) : 0} <br /> X
+                              {row.quantity}
+                            </Typography>
+                          </TableCell>
 
-                        <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
-                          {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
-                        </TableCell>
-                        <TableCell>
-                          <Typography>{row.note}</Typography>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
+                            {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
+                          </TableCell>
+                          <TableCell>
+                            <Typography>{row.note}</Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
-              ) : null}
+              )}
               {/* hoàn trả */}
-              {billClient && listBillDetailUnactive.length > 0 ? (
+              {billClient && billDetail.filter((row) => row.status === 1).length > 0 && (
                 <Table sx={{ minWidth: 650, marginTop: 2 }} aria-label="simple table">
                   <TableHead style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '20px' }}>
                     Danh sách hoàn trả
                   </TableHead>
 
                   <TableBody>
-                    {listBillDetailUnactive.map((row, index) => (
-                      <TableRow key={row.id + index}>
-                        <TableCell align="center">
-                          <img src={row.productImg} alt="" width={'100px'} />
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
-                            {row.productName}"
-                          </Typography>
-                          <Typography>
-                            Phân loại hàng: {row.category} - {row.size}
-                          </Typography>
+                    {billDetail
+                      .filter((row) => row.status === 1)
+                      .map((row, index) => (
+                        <TableRow key={row.id + index}>
+                          <TableCell>
+                            <img src={row.url} alt="" width={'100px'} />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="h6" fontFamily={'monospace'} fontWeight={'bolder'}>
+                              {row.productName + ' ' + row.material + ' ' + row.sole} "{row.color}"
+                            </Typography>
+                            <Typography>
+                              Phân loại hàng: {row.category} - {row.size}
+                            </Typography>
 
-                          <Typography>
-                            {row.price !== null ? formatCurrency(row.price) : 0} <br /> X
-                            {row.quantity}
-                          </Typography>
-                        </TableCell>
+                            <Typography>
+                              {row.price !== null ? formatCurrency(row.price) : 0} <br /> X
+                              {row.quantity}
+                            </Typography>
+                          </TableCell>
 
-                        <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
-                          {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
-                        </TableCell>
-                        <TableCell>
-                          <Typography>{row.note}</Typography>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          <TableCell align="center" style={{ fontWeight: 'bold', color: 'red' }}>
+                            {row.price !== null ? formatCurrency(row.price * row.quantity) : 0}
+                          </TableCell>
+                          <TableCell>
+                            <Typography>{row.note}</Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
-              ) : null}
+              )}
             </TableContainer>
             <Container maxWidth="xl">
               <Grid container spacing={2}>

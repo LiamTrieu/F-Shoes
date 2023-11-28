@@ -173,13 +173,14 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     @Transactional
     @Override
     public BillDetail saveBillDetail(ClientBillDetailRequest clientBillDetailRequest) {
+        System.out.println("");
         Bill bill = billRepository.findById(clientBillDetailRequest.getIdBill()).get();
         ProductDetail productDetail = productDetailRepository.findById(clientBillDetailRequest.getProductDetailId()).get();
 
         BillDetail billDetail = billDetailRepository.getBillDetailByBillIdAndProductDetailId(clientBillDetailRequest.getIdBill(), clientBillDetailRequest.getProductDetailId());
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill);
-
+        billHistory.setAccount(userLogin.getUserLogin());
         if (billDetail == null) {
 
             BillDetail newBillDetail = BillDetail.builder()
@@ -190,28 +191,27 @@ public class ClientAccountServiceImpl implements ClientAccountService {
                     .status(StatusBillDetail.values()[clientBillDetailRequest.getStatus()])
                     .build();
             billHistory.setNote("Đã thêm " + clientBillDetailRequest.getQuantity() + " sản phẩm" + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
-            billHistoryRepository.save(billHistory);
 //            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-client-by-add-in-bill-detail",
 //                    hdBillDetailRepository.getBillDetailsByBillIdAndStatus(bill.getId(),0));
             billDetail = billDetailRepository.save(newBillDetail);
         } else {
-            billDetail.setQuantity(clientBillDetailRequest.getQuantity());
             billDetail.setStatus(clientBillDetailRequest.getStatus());
             billDetail.setPrice(clientBillDetailRequest.getPrice());
             int differenceQuantity = billDetail.getQuantity() - clientBillDetailRequest.getQuantity();
             if (differenceQuantity > 0) {
                 billHistory.setNote("Đã xoá " + differenceQuantity + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
             } else if (differenceQuantity < 0) {
-                billHistory.setNote("Đã thêm " + differenceQuantity + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+                billHistory.setNote("Đã thêm " + (clientBillDetailRequest.getQuantity() - billDetail.getQuantity()) + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+            } else {
+                billHistory.setNote("Đã thay đổi sp trong đơn hàng");
             }
-            billHistory.setAccount(userLogin.getUserLogin());
-            billHistoryRepository.save(billHistory);
-
 //            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-client-by-add-in-bill-detail",
 //                    hdBillDetailRepository.getBillDetailsByBillIdAndStatus(bill.getId(),0));
+            billDetail.setQuantity(clientBillDetailRequest.getQuantity());
             billDetail = billDetailRepository.save(billDetail);
 
         }
+        billHistoryRepository.save(billHistory);
         List<BillDetail> listBillDetail = billDetailRepository.findAllByBillId(bill.getId());
         BigDecimal totalAmount = listBillDetail.stream()
                 .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
@@ -285,9 +285,5 @@ public class ClientAccountServiceImpl implements ClientAccountService {
         }
     }
 
-    @Override
-    public List<ClientProfileBillDetailResponse> getBillDetailsByBillIdAndStatus(String idBill, Integer status) {
-        return repository.getBillDetailsByBillIdAndStatus(idBill, status);
-    }
 
 }
