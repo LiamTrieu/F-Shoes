@@ -6,7 +6,7 @@ const hoaDonChiTietApi = {
     return axiosAdmin.get(urlGetByIdBill, { params: { status } })
   },
   getByIdBill: (idBill) => {
-    const urlGetByIdBill = `/billDetail/get-by-idBill-and-status/${idBill}`
+    const urlGetByIdBill = `/billDetail/get-by-idBill/${idBill}`
     return axiosAdmin.get(urlGetByIdBill)
   },
   decrementQuantity: (idBillDetail) => {

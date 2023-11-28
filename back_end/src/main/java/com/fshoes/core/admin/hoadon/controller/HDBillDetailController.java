@@ -29,14 +29,6 @@ public class HDBillDetailController {
         return new ObjectRespone(hdBillDetailService.updateBillDetail(id, hdBillDetailRequest));
     }
 
-    @GetMapping("/get-by-idBill-and-status/{idBill}")
-    public ObjectRespone getBillDetailByBillIdAndStatus(
-            @PathVariable("idBill") String idBill,
-            @RequestParam("status") Integer status
-    ) {
-        return new ObjectRespone(hdBillDetailService.getBillDetailByBillIdAndStatus(idBill, status));
-    }
-
     @GetMapping("/get-by-billAndProductDetail")
     public ObjectRespone getByBillAndProductDetail(@RequestParam(name = "idBill") String idBill,
                                                    @RequestParam(name = "idProductDetail") String idProductDetail) {

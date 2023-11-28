@@ -14,25 +14,6 @@ import java.util.List;
 @Repository
 public interface HDBillDetailRepository extends BillDetailRepository {
 
-
-    @Query(value = """
-            SELECT bd.id, b.id as idBill, MIN(i.url) as productImg,
-                   CONCAT(p.name, ' ', c.name) as productName,
-                   bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId,
-                   bd.status as status, MAX(pd.weight) as weight, bd.note as note
-            FROM bill_detail bd
-                LEFT JOIN product_detail pd ON bd.id_product_detail = pd.id
-                LEFT JOIN image i ON pd.id = i.id_product_detail
-                LEFT JOIN product p ON pd.id_product = p.id
-                LEFT JOIN size s ON pd.id_size = s.id
-                LEFT JOIN bill b ON bd.id_bill = b.id
-                LEFT JOIN color c ON pd.id_color = c.id
-            WHERE b.id = :idBill AND bd.status = :status
-            GROUP BY bd.id, p.name, c.name, bd.price, pd.price, s.size, pd.id, bd.status;
-                        
-            """, nativeQuery = true)
-    List<HDBillDetailResponse> getBillDetailsByBillIdAndStatus(@Param("idBill") String idBill, @Param(("status")) Integer status);
-
     BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
 
     @Transactional
@@ -46,7 +27,7 @@ public interface HDBillDetailRepository extends BillDetailRepository {
             SELECT bd.id, b.id as idBill, MIN(i.url) as productImg,
                     CONCAT(p.name, ' ', c.name) as productName,
                     bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId,
-                    bd.status as status
+                    bd.status as status, bd.note as note
              FROM bill_detail bd
                  LEFT JOIN product_detail pd ON bd.id_product_detail = pd.id
                  LEFT JOIN image i ON pd.id = i.id_product_detail

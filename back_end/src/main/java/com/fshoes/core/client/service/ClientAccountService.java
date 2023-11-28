@@ -44,7 +44,4 @@ public interface ClientAccountService {
 
     Boolean cancelBill(String idBill, ClientCancelBillRequest clientCancelBillRequest);
 
-    List<ClientProfileBillDetailResponse> getBillDetailsByBillIdAndStatus(String idBill, Integer status);
-
-
 }

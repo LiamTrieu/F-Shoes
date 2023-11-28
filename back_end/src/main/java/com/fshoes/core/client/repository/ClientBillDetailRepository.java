@@ -31,7 +31,7 @@ public interface ClientBillDetailRepository extends BillDetailRepository {
               left join color c on c.id = pd.id_color
               left join image i on i.id_product_detail = pd.id
                 LEFT JOIN bill b ON bd.id_bill = b.id
-             WHERE b.id = :idBill AND bd.status = 0
+             WHERE b.id = :idBill 
              GROUP BY bd.id, p.name, c.name, bd.price, pd.price, s.size, pd.id, bd.status;            """, nativeQuery = true)
     List<ClientBillDetailResponse> getBillDetailsByBillId(@Param("idBill") String idBill);
 
