@@ -31,7 +31,8 @@ import '../../../assets/styles/admin.css'
 import './voucher.css'
 import Empty from '../../../components/Empty'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
+import { AiOutlineDollar, AiOutlineNumber } from 'react-icons/ai'
+import SearchIcon from '@mui/icons-material/Search'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 
 const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
@@ -42,7 +43,7 @@ const initialVoucher = {
   value: null,
   maximumValue: null,
   type: 0,
-  typeValue: 0,
+  typeValue: 1,
   minimumAmount: null,
   quantity: null,
   startDate: '',
@@ -73,6 +74,7 @@ export default function AdVoucherAdd() {
   const [allNameVoucher, setAllNameVoucher] = useState([])
   const [voucherAdd, setVoucherAdd] = useState(initialVoucher)
   const [allCustomer, setAllCustomer] = useState([])
+  const [findCustomer, setFindCustomer] = useState({ page: 1, size: 5, textSearch: '' })
 
   const listCode = []
   allCodeVoucher.map((m) => listCode.push(m.toLowerCase()))
@@ -85,11 +87,11 @@ export default function AdVoucherAdd() {
   const [quantityDefault, setQuantityDefault] = useState(0)
 
   useEffect(() => {
-    handelCustomeFill(initPage)
+    handelCustomeFill(findCustomer)
     haldleAllCodeVoucher()
     haldleAllNameVoucher()
     haldleAllCustomer()
-  }, [initPage])
+  }, [findCustomer])
 
   const haldleAllCodeVoucher = () => {
     voucherApi
@@ -311,9 +313,9 @@ export default function AdVoucherAdd() {
     }
   }
 
-  const handelCustomeFill = (initPage) => {
+  const handelCustomeFill = (findCustomer) => {
     voucherApi
-      .getPageCustomer(initPage - 1)
+      .getPageCustomer(findCustomer)
       .then((response) => {
         setListCustomer(response.data.data.content)
         setTotalPages(response.data.data.totalPages)
@@ -329,7 +331,7 @@ export default function AdVoucherAdd() {
 
   const handelOnchangePage = (page) => {
     setInitPage(page)
-    handelCustomeFill(page)
+    setFindCustomer({ ...findCustomer, page: page })
   }
 
   const handleSelectAllChange = (event) => {
@@ -410,16 +412,16 @@ export default function AdVoucherAdd() {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <AiOutlinePercentage
+                        {/* <AiOutlinePercentage
                           color={voucherAdd.typeValue === 0 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => {
                             setVoucherAdd({ ...voucherAdd, typeValue: 0, value: 0 })
                             setValueDefault(0)
                           }}
-                        />
+                        /> */}
                         <AiOutlineDollar
-                          color={voucherAdd.typeValue === 1 ? '#fc7c27' : ''}
+                          // color={voucherAdd.typeValue === 1 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => {
                             setVoucherAdd({ ...voucherAdd, typeValue: 1, value: 0 })
@@ -610,6 +612,23 @@ export default function AdVoucherAdd() {
             </div>
           </Grid>
           <Grid item xs={7}>
+            <TextField
+              className="search-customer-voucher"
+              placeholder="Tìm kiếm khách hàng"
+              type="text"
+              size="small"
+              fullWidth
+              onChange={(e) =>
+                setFindCustomer({ ...findCustomer, textSearch: e.target.value, page: 1 })
+              }
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
             {dataFetched && (
               <Table className="tableCss" aria-label="simple table">
                 <TableHead>

@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.voucher.controller;
 
 import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
+import com.fshoes.core.admin.voucher.model.request.AdFindCustomerVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
@@ -39,8 +40,8 @@ public class AdVoucherController {
     }
 
     @GetMapping("/view/all/customer")
-    public ObjectRespone getFindAllCustomer(@RequestParam(name = "numberPage", defaultValue = "0") Integer page) {
-        return new ObjectRespone(voucherService.getFindAllCustomer(page));
+    public ObjectRespone getFindAllCustomer(@ModelAttribute AdFindCustomerVoucherRequest request) {
+        return new ObjectRespone(voucherService.getFindAllCustomer(request));
     }
 
     @GetMapping("/view/voucher-by-customer")

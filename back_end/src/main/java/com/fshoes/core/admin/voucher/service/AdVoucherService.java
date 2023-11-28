@@ -2,6 +2,7 @@ package com.fshoes.core.admin.voucher.service;
 
 import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
+import com.fshoes.core.admin.voucher.model.request.AdFindCustomerVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherRequest;
 import com.fshoes.core.admin.voucher.model.request.AdVoucherSearch;
 import com.fshoes.core.admin.voucher.model.respone.AdFindCustomerRespone;
@@ -21,7 +22,7 @@ public interface AdVoucherService {
 
     Page<AdVoucherRespone> getPageVoucher(Integer page);
 
-    Page<AdFindCustomerRespone> getFindAllCustomer(Integer page);
+    Page<AdFindCustomerRespone> getFindAllCustomer(AdFindCustomerVoucherRequest request);
 
     Voucher addVoucher(AdVoucherRequest voucherRequest);
 
