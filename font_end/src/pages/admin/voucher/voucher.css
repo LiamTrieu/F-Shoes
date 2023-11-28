@@ -156,6 +156,10 @@
   background-color: #fc7c27 !important;
 }
 
+.voucher-add .search-customer-voucher:hover fieldset {
+  border-color: #fc7c27 !important;
+}
+
 /*---------------------------------------------------------- DETAIL ----------------------------------------------------------*/
 .voucher-detail .icons-css {
   font-size: 25px !important;

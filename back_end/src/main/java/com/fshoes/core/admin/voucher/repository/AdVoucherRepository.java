@@ -61,9 +61,13 @@ public interface AdVoucherRepository extends VoucherRepository {
             from account
             where role = 2
             and status = 0
+            and (:#{#textSearch} IS NULL
+            OR full_name like %:#{#textSearch}%
+            OR phone_number like %:#{#textSearch}%
+            OR email like %:#{#textSearch}%)
             order by created_at DESC 
             """, nativeQuery = true)
-    Page<AdFindCustomerRespone> getFindAllCustomer(Pageable pageable);
+    Page<AdFindCustomerRespone> getFindAllCustomer(String textSearch, Pageable pageable);
 
     @Query(value = """
             SELECT DISTINCT code FROM Voucher

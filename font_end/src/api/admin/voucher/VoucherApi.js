@@ -33,9 +33,9 @@ const voucherApi = {
     const urlSearchVoucher = `/voucher/search`
     return axiosAdmin.get(urlSearchVoucher, { params: adVoucherSearch })
   },
-  getPageCustomer: (p) => {
-    const url = `/voucher/view/all/customer?numberPage=${p}`
-    return axiosAdmin.get(url)
+  getPageCustomer: (filter) => {
+    const url = `/voucher/view/all/customer`
+    return axiosAdmin.get(url, { params: filter })
   },
   getListIdCustomerByIdVoucher: (idVoucher) => {
     const urlListIdCustomerByIdVoucher = `/customerVoucher/view/list-id-customer/${idVoucher}`
