@@ -42,6 +42,8 @@ import Empty from '../../../components/Empty'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import socketUrl from '../../../api/socket'
+import { toast } from 'react-toastify'
+import sellApi from '../../../api/admin/sell/SellApi'
 
 var stompClient = null
 export default function AdBillPage() {
@@ -52,6 +54,7 @@ export default function AdBillPage() {
   const [inputSearch, setInputSearch] = useState('')
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
+  const [listBill, setlistBill] = useState([])
   // const [statusBill, setStatusBill] = useState('all')
   const [typeBill, setTypeBill] = useState('all')
   const [filter, setFilter] = useState({
@@ -200,6 +203,25 @@ export default function AdBillPage() {
       setListHoaDon(preProduct)
     }
   }
+  const getAllBillTaoDonHang = () => {
+    sellApi.getAllBillTaoDonHang().then((response) => {
+      setlistBill(response.data.data)
+    })
+  }
+  const handleAddSellClick = async () => {
+    if (listBill.length === 5) {
+      toast.warning('Tối đa 5 hóa đơn', { position: toast.POSITION.TOP_CENTER })
+      return
+    }
+    sellApi.createBill().then((res) => {
+      if (res.data.success) {
+        setlistBill([...listBill, res.data.data])
+      }
+    })
+  }
+  useEffect(() => {
+    getAllBillTaoDonHang()
+  }, [])
 
   return (
     <div className="hoa-don">
@@ -229,6 +251,7 @@ export default function AdBillPage() {
             }}
           />
           <Button
+            onClick={handleAddSellClick}
             component={Link}
             to="/admin/sell"
             color="cam"

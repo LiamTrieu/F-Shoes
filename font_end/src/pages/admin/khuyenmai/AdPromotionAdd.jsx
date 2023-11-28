@@ -37,7 +37,7 @@ import soleApi from '../../../api/admin/sanpham/soleApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
 
-const listBreadcrumbs = [{ name: 'Khuyến mại', link: '/admin/promotion' }]
+const listBreadcrumbs = [{ name: 'Đợt giảm giá', link: '/admin/promotion' }]
 
 export default function AdPromotionAdd() {
   const theme = useTheme()
@@ -106,6 +106,8 @@ export default function AdPromotionAdd() {
     setSelectedRowsProduct(selectedIds)
     setSelectedRows(selectedIds)
     setSelectAll(event.target.checked)
+
+    console.log(selectedIds, '==========')
   }
 
   useEffect(() => {
@@ -129,6 +131,8 @@ export default function AdPromotionAdd() {
 
     setSelectedRows(newSelected)
     setSelectAll(newSelected.length === getProductDetailByProduct.length)
+
+    console.log(newSelected, '==========')
   }
 
   const handleSelectAllChangeProduct = (event) => {
@@ -305,7 +309,7 @@ export default function AdPromotionAdd() {
   return (
     <>
       <div className="promotionAdd">
-        <BreadcrumbsCustom nameHere={'Thêm khuyến mại'} listLink={listBreadcrumbs} />
+        <BreadcrumbsCustom nameHere={'Thêm đợt giảm giá'} listLink={listBreadcrumbs} />
         <Paper elevation={3} sx={{ mt: 2, padding: 2, width: '100%' }}>
           <Grid container spacing={2} sx={{ mt: 2 }}>
             <Grid item xs={5} sx={{ mt: 2 }}>

@@ -173,6 +173,7 @@ export default function AdPromotionDetail() {
 
   useEffect(() => {
     getProductDetailById(filterProductDetail, selectedProductIds)
+    // handleRowCheckboxChange1(selectedProductIds)
   }, [filterProductDetail, selectedProductIds])
 
   const validate = () => {
@@ -331,7 +332,7 @@ export default function AdPromotionDetail() {
   return (
     <>
       <div className="promotionUpdate">
-        <BreadcrumbsCustom nameHere={'Chi tiết khuyến mại'} listLink={listBreadcrumbs} />
+        <BreadcrumbsCustom nameHere={'Chi tiết đợt giảm giá'} listLink={listBreadcrumbs} />
         <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%' }}>
           <Grid container spacing={2} sx={{ pl: 2 }}>
             <Grid item xs={5.5} sx={{ mt: 4 }}>

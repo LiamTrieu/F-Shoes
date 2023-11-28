@@ -123,12 +123,25 @@ public class PromotionServiceImpl implements PromotionService {
                 }
             } else {
                 for (String idProductDetail : request.getIdProductDetail()) {
-                    ProductDetail productDetail = productDetailRepository.findById(idProductDetail).get();
-                    AddProductRequest addRequest = new AddProductRequest();
-                    addRequest.setPromotion(promotion);
-                    addRequest.setProductDetail(productDetail);
-                    ProductPromotion productPromotion = addRequest.newProductPromoton(new ProductPromotion());
-                    productPromotionList1.add(productPromotion);
+                    if (idProductDetail.contains(",")) {
+                        String[] ids = idProductDetail.split(",");
+                        for (String singleId : ids) {
+                            ProductDetail productDetail = productDetailRepository.findById(singleId).get();
+                            AddProductRequest addRequest = new AddProductRequest();
+                            addRequest.setPromotion(promotion);
+                            addRequest.setProductDetail(productDetail);
+                            ProductPromotion productPromotion = addRequest.newProductPromoton(new ProductPromotion());
+                            productPromotionList1.add(productPromotion);
+                        }
+                    }else{
+                        ProductDetail productDetail = productDetailRepository.findById(idProductDetail).get();
+                        AddProductRequest addRequest = new AddProductRequest();
+                        addRequest.setPromotion(promotion);
+                        addRequest.setProductDetail(productDetail);
+                        ProductPromotion productPromotion = addRequest.newProductPromoton(new ProductPromotion());
+                        productPromotionList1.add(productPromotion);
+                    }
+
                 }
             }
             productPromotionRepository.saveAll(productPromotionList1);
@@ -145,6 +158,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     @Transactional
     public Promotion addKhuyenMaiOnProduct(ProductPromotionAddRequest request) throws ParseException {
+        System.out.println("");
         Promotion promotion = request.newPromotionAddProduct(new Promotion());
         khuyenMaiRepository.save(promotion);
         List<ProductDetail> productList = productDetailRepository.findAll();
@@ -158,14 +172,29 @@ public class PromotionServiceImpl implements PromotionService {
                 productPromotionList.add(productPromotion);
             }
         } else {
+
             for (String idProductDetail : request.getIdProductDetail()) {
-                ProductDetail productDetail = productDetailRepository.findById(idProductDetail).get();
-                AddProductRequest addRequest = new AddProductRequest();
-                addRequest.setPromotion(promotion);
-                addRequest.setProductDetail(productDetail);
-                ProductPromotion productPromotion = addRequest.newProductPromoton(new ProductPromotion());
-                productPromotionList.add(productPromotion);
+                if (idProductDetail.contains(",")) {
+                    String[] ids = idProductDetail.split(",");
+                    for (String singleId : ids) {
+                        ProductDetail productDetail = productDetailRepository.findById(singleId).get();
+                        AddProductRequest addRequest = new AddProductRequest();
+                        addRequest.setPromotion(promotion);
+                        addRequest.setProductDetail(productDetail);
+                        ProductPromotion productPromotion = addRequest.newProductPromoton(new ProductPromotion());
+                        productPromotionList.add(productPromotion);
+                    }
+                }else{
+                    ProductDetail productDetail = productDetailRepository.findById(idProductDetail).get();
+                    AddProductRequest addRequest = new AddProductRequest();
+                    addRequest.setPromotion(promotion);
+                    addRequest.setProductDetail(productDetail);
+                    ProductPromotion productPromotion = addRequest.newProductPromoton(new ProductPromotion());
+                    productPromotionList.add(productPromotion);
+                }
+
             }
+
         }
         productPromotionRepository.saveAll(productPromotionList);
         return promotion;

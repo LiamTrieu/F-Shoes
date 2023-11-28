@@ -20,7 +20,7 @@ public interface AdminBillRepository extends BillRepository {
 
     @Query(value = """
             select t.id as idTransaction, t.transaction_code as transactionCode, b.id, t.total_money as totalMoney, b.customer_amount as customerAmount , b.note, t.payment_method as paymentMethod from bill b  
-            join  transaction t on t.id_bill = b.id where b.id = :idBill 
+            join  transaction t on t.id_bill = b.id where t.id_bill = :idBill 
             """, nativeQuery = true)
     List<PayOrderResponse> getPayOrder(String idBill);
 

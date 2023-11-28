@@ -142,7 +142,7 @@ export default function AdPromotionPage() {
   return (
     <>
       <div className="promotion">
-        <BreadcrumbsCustom nameHere={'Khuyến mại'} />
+        <BreadcrumbsCustom nameHere={'Đợt giảm giá'} />
         <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
           <Box sx={{ width: '100%' }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
