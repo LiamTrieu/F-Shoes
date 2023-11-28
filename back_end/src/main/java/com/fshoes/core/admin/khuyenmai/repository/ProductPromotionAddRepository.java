@@ -30,13 +30,13 @@ public interface ProductPromotionAddRepository extends ProductRepository {
     @Query(value = """
             select  p.id, p.name
                 from product p
-               order by p.name, p.id
+               order by p.created_at desc
                 """, nativeQuery = true)
     Page<AddProductPromotionResponse> getAllProduct(@Param("req") ProductPromotionSearch req, Pageable pageable);
 
     @Query(value = """
             SELECT MAX(cate.name) AS category, MAX(b.name) AS brand, (p.name) , 
-            MAX(pd.id) as productDetail , MAX(p.id) ,GROUP_CONCAT(DISTINCT i.url) as url,
+            GROUP_CONCAT(DISTINCT pd.id ORDER BY pd.id ) AS productDetail  , MAX(p.id) ,GROUP_CONCAT(DISTINCT i.url) as url,
             MAX(sl.name) as sole , MAX(c.name) as color, MAX(m.name) as material  ,
              GROUP_CONCAT(DISTINCT si.size ORDER BY si.size) AS size 
             FROM product_detail pd 
