@@ -51,5 +51,9 @@ const clientProductApi = {
     const url = `/client/min-max-price`;
     return axiosApi.get(url);
   },
+  check: () => {
+    const url = `/check-start`;
+    return axiosApi.get(url);
+  },
 };
 export default clientProductApi;

@@ -34,7 +34,7 @@ import ModalAddProductToCart from './ModalAddProductToCart'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { formatCurrency } from '../../services/common/formatCurrency '
-import socketUrl from '../../api/socket'
+import { socketUrl } from '../../services/url'
 
 var stompClient = null
 export default function DetailProduct() {

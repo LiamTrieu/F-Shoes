@@ -1427,8 +1427,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                                 cart.value >= 1 && cart.value <= 50
                                   ? '#66CC00'
                                   : cart.value >= 51 && cart.value <= 80
-                                  ? '#FF9900'
-                                  : '#FF0000',
+                                    ? '#FF9900'
+                                    : '#FF0000',
                               color: 'white',
                               padding: '6px 5px',
                               borderRadius: '0 0 0 10px',
@@ -2845,8 +2845,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                     backgroundColor: isAmountNegative
                       ? '#808080'
                       : paymentMethod === '0'
-                      ? '#FF3333'
-                      : 'pink',
+                        ? '#FF3333'
+                        : 'pink',
                     borderRadius: '20px',
                     width: '200px',
                     color: 'white',
@@ -2860,8 +2860,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                     backgroundColor: isAmountNegative
                       ? '#808080'
                       : paymentMethod === '1'
-                      ? '#32CD32'
-                      : 'pink',
+                        ? '#32CD32'
+                        : 'pink',
                     borderRadius: '20px',
                     width: '200px',
                     color: 'white',

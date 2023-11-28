@@ -34,7 +34,7 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import BillHistoryDialog from '../../admin/hoadon/AdDialogOrderTimeLine'
-import socketUrl from '../../../api/socket'
+import { socketUrl } from '../../../services/url'
 
 var stompClient = null
 export default function OrderDetail() {

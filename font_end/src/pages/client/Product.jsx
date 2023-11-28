@@ -37,7 +37,7 @@ import CancelIcon from '@mui/icons-material/Cancel'
 import { formatCurrency } from '../../services/common/formatCurrency '
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import socketUrl from '../../api/socket'
+import { socketUrl } from '../../services/url'
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>

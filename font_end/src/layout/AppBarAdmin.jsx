@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux'
 import { addUserAdmin } from '../services/slices/userAdminSlice'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import socketUrl from '../api/socket'
+import {socketUrl} from '../services/url'
 
 const drawerWidth = '17vw'
 var stompClient = null

@@ -20,7 +20,7 @@ import { setCheckout } from '../../services/slices/checkoutSlice'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import clientCartApi from '../../api/client/clientCartApi'
-import socketUrl from '../../api/socket'
+import { socketUrl } from '../../services/url'
 
 const styleModalCart = {
   position: 'absolute',

@@ -41,7 +41,7 @@ import { AiOutlinePlusSquare } from 'react-icons/ai'
 import Empty from '../../../components/Empty'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import socketUrl from '../../../api/socket'
+import { socketUrl } from '../../../services/url'
 import { toast } from 'react-toastify'
 import sellApi from '../../../api/admin/sell/SellApi'
 
