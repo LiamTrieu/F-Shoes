@@ -48,7 +48,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import Carousel from 'react-material-ui-carousel'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import socketUrl from '../../../api/socket'
+import { socketUrl } from '../../../services/url'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 

@@ -22,7 +22,7 @@ import clientProductApi from '../../api/client/clientProductApi'
 import clientCartApi from '../../api/client/clientCartApi'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import socketUrl from '../../api/socket'
+import {socketUrl} from '../../services/url'
 import confirmSatus from '../../components/comfirmSwal'
 
 var stompClient = null

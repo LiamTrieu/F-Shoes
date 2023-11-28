@@ -33,7 +33,7 @@ import hoaDonChiTietApi from '../../../api/admin/hoadon/hoaDonChiTiet'
 import { toast } from 'react-toastify'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import socketUrl from '../../../api/socket'
+import { socketUrl } from '../../../services/url'
 const styleAdBillModalThemSP = {
   position: 'absolute',
   top: '50%',
@@ -487,8 +487,8 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
                                   cart.value >= 1 && cart.value <= 50
                                     ? '#66CC00'
                                     : cart.value >= 51 && cart.value <= 80
-                                    ? '#FF9900'
-                                    : '#FF0000',
+                                      ? '#FF9900'
+                                      : '#FF0000',
                                 color: 'white',
                                 padding: '6px 5px',
                                 borderRadius: '0 0 0 10px',

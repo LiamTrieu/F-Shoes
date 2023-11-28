@@ -34,7 +34,7 @@ import Empty from '../../../components/Empty'
 import { Stomp } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import socketUrl from '../../../api/socket'
+import { socketUrl } from '../../../services/url'
 
 var stompClient = null
 

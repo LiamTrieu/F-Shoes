@@ -36,7 +36,7 @@ import { toast } from 'react-toastify'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import socketUrl from '../../../api/socket'
+import { socketUrl } from '../../../services/url'
 
 var stompClient = null
 export default function AdPromotionPage() {
@@ -316,16 +316,16 @@ export default function AdPromotionPage() {
                         promotion.status === 0
                           ? 'chip-sap-hoat-dong'
                           : promotion.status === 1
-                          ? 'chip-hoat-dong'
-                          : 'chip-khong-hoat-dong'
+                            ? 'chip-hoat-dong'
+                            : 'chip-khong-hoat-dong'
                       }
                       size="small"
                       label={
                         promotion.status === 0
                           ? 'Sắp diễn ra'
                           : promotion.status === 1
-                          ? 'Đang diễn ra'
-                          : 'Đã kết thúc'
+                            ? 'Đang diễn ra'
+                            : 'Đã kết thúc'
                       }
                     />
                   </TableCell>

@@ -40,7 +40,7 @@ import clientReturnApi from '../../../api/client/clientReturnApi'
 import ReturnDetailClient from './ReturnDetailClient'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import socketUrl from '../../../api/socket'
+import { socketUrl } from '../../../services/url'
 
 var stompClient = null
 export default function Order() {
@@ -231,24 +231,24 @@ export default function Order() {
                         data.status === 0
                           ? 'chip-cho'
                           : data.status === 1
-                          ? 'chip-hoat-dong'
-                          : data.status === 2
-                          ? 'chip-khong-hoat-dong'
-                          : data.status === 4
-                          ? 'chip-khong-hoat-dong'
-                          : 'chip-dang'
+                            ? 'chip-hoat-dong'
+                            : data.status === 2
+                              ? 'chip-khong-hoat-dong'
+                              : data.status === 4
+                                ? 'chip-khong-hoat-dong'
+                                : 'chip-dang'
                       }
                       size="small"
                       label={
                         data.status === 0
                           ? 'Chờ phê duyệt'
                           : data.status === 1
-                          ? 'Hoàn thành'
-                          : data.status === 2
-                          ? 'Bị từ chối'
-                          : data.status === 4
-                          ? 'Đã hủy'
-                          : 'Đang xử lý'
+                            ? 'Hoàn thành'
+                            : data.status === 2
+                              ? 'Bị từ chối'
+                              : data.status === 4
+                                ? 'Đã hủy'
+                                : 'Đang xử lý'
                       }
                     />
                   </TableCell>

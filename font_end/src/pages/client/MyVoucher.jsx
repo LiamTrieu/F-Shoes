@@ -9,7 +9,7 @@ import Empty from '../../components/Empty'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { formatCurrency } from '../../services/common/formatCurrency .js'
-import socketUrl from '../../api/socket.js'
+import { socketUrl } from '../../services/url'
 
 function CustomTabPanel(props) {
   const { children, value, index } = props

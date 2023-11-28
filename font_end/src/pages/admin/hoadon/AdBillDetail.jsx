@@ -47,7 +47,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import ModalAdBillUpdateAddress from './AdBillModalUpdateAddress'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import socketUrl from '../../../api/socket'
+import {socketUrl} from '../../../services/url'
 
 const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
 
