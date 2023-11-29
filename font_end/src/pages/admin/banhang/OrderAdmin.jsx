@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Button, Container, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material'
 
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import SellFrom from './SellFrom'
@@ -9,6 +9,7 @@ import { toast } from 'react-toastify'
 import Badge from '@mui/material/Badge'
 import { styled } from '@mui/material/styles'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import AddIcon from '@mui/icons-material/Add'
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -87,7 +88,7 @@ export default function OrderAdmin() {
   }, [])
 
   return (
-    <>
+    <Container maxWidth="xl" sx={{ backgroundColor: 'white', borderRadius: '10px', pt: 7 }}>
       <Stack
         mt={1}
         direction="row"
@@ -106,13 +107,13 @@ export default function OrderAdmin() {
               fontWeight: 'bold',
               borderRadius: '8px',
             }}
-            variant="outlined"
+            variant="contained"
             color="cam">
-            Tạo đơn hàng
+            <AddIcon fontSize="small" /> Tạo đơn hàng
           </Button>
         </Box>
       </Stack>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }} mb={2}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }} mt={5} mb={2}>
         <Tabs value={selectBill}>
           {listBill.length <= 0 ? (
             <Empty />
@@ -131,21 +132,25 @@ export default function OrderAdmin() {
                   fontWeight: 'bold',
                 }}
                 label={
-                  <div>
-                    Đơn hàng {index + 1}
-                    <IconButton aria-label="cart">
-                      <StyledBadge
-                        badgeContent={soLuong.find((e) => e.idBill === Bill.id)?.quantity}
-                        color="secondary">
-                        <ShoppingCartIcon />
-                      </StyledBadge>
-                    </IconButton>
+                  <div style={{ marginRight: '20px' }}>
                     <span
                       onClick={() => {
                         deleteSellClick(Bill.id)
-                      }}>
-                      <HighlightOffIcon style={{ paddingLeft: 3 }} color="error" fontSize="small" />
+                      }}
+                      style={{ marginBottom: '10px' }}>
+                      <HighlightOffIcon color="error" fontSize="small" />
                     </span>
+                    Đơn hàng {index + 1}
+                    <Badge
+                      badgeContent={soLuong.find((e) => e.idBill === Bill.id)?.quantity}
+                      color="cam">
+                      <img
+                        src={require('../../../assets/image/TinTuc/xe_giao_hang_otto.webp')}
+                        alt=""
+                        height="30px"
+                        style={{ marginLeft: '4px', marginRight: '4px' }}
+                      />
+                    </Badge>
                   </div>
                 }
               />
@@ -161,6 +166,6 @@ export default function OrderAdmin() {
           setSelectBill={setSelectBill}
         />
       )}
-    </>
+    </Container>
   )
 }

@@ -509,8 +509,8 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                                   cart.value >= 1 && cart.value <= 50
                                     ? '#66CC00'
                                     : cart.value >= 51 && cart.value <= 80
-                                    ? '#FF9900'
-                                    : '#FF0000',
+                                      ? '#FF9900'
+                                      : '#FF0000',
                                 color: 'white',
                                 padding: '6px 5px',
                                 borderRadius: '0 0 0 10px',
@@ -625,7 +625,9 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
                           </div>
                         </div>
                       ) : (
-                        <span>{`${getAmountProduct.price}`}</span>
+                        <span>{`${
+                          getAmountProduct.price ? formatPrice(getAmountProduct.price) : '0đ'
+                        }`}</span>
                       )}
                     </p>
                     {'size:' + getAmountProduct.size}
