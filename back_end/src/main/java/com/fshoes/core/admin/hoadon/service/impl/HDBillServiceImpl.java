@@ -202,7 +202,7 @@ public class HDBillServiceImpl implements HDBillService {
                                 clientBillRepository.realTimeBillMyProfile(bill.getId()));
                         hdBillRepository.save(bill);
                         messagingTemplate.convertAndSend("/topic/realtime-bill-history-client-by-bill-huy-don",
-                                clientBillHistoryRepository.getListBillHistoryByIdBill(billHistory1.getBill().getId()));
+                                hdBillHistoryRepository.getListBillHistoryByIdBill(billHistory1.getBill().getId()));
                     }
                 }
             } catch (Exception exception) {
@@ -292,7 +292,7 @@ public class HDBillServiceImpl implements HDBillService {
                     .build();
             BillHistory billHistory = hdBillHistoryService.save(hdBillHistoryRequest);
             messagingTemplate.convertAndSend("/topic/realtime-bill-history-client-by-bill-comfirm",
-                    clientBillHistoryRepository.getListBillHistoryByIdBill(billHistory.getBill().getId()));
+                    hdBillHistoryRepository.getListBillHistoryByIdBill(billHistory.getBill().getId()));
 
             return bill;
         } else {
@@ -332,7 +332,7 @@ public class HDBillServiceImpl implements HDBillService {
         messagingTemplate.convertAndSend("/topic/realtime-bill-detail-client-by-bill-update-status",
                 clientBillDetailRepository.realTimeBillDetailByStatus(bill.getId()));
         messagingTemplate.convertAndSend("/topic/realtime-bill-history-client-by-bill-update-status",
-                clientBillHistoryRepository.getListBillHistoryByIdBill(billHistory.getBill().getId()));
+                hdBillHistoryRepository.getListBillHistoryByIdBill(billHistory.getBill().getId()));
         return hdBillRepository.save(bill);
     }
 
@@ -365,7 +365,7 @@ public class HDBillServiceImpl implements HDBillService {
             messagingTemplate.convertAndSend("/topic/realtime-bill-detail-client-by-bill-confirm-payment",
                     clientBillDetailRepository.realTimeBillDetailByStatus(bill.getId()));
             messagingTemplate.convertAndSend("/topic/realtime-bill-history-client-by-bill-confirm-payment",
-                    clientBillHistoryRepository.getListBillHistoryByIdBill(billHistory.getBill().getId()));
+                    hdBillHistoryRepository.getListBillHistoryByIdBill(billHistory.getBill().getId()));
             return bill;
         } else {
             BillHistory hdBillHistory = BillHistory.builder()
