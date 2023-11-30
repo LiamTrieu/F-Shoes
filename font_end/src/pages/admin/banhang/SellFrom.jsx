@@ -58,6 +58,8 @@ import PaymentIcon from '@mui/icons-material/Payment'
 import { useZxing } from 'react-zxing'
 import DeleteIcon from '@mui/icons-material/Delete'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
+import { RiDeleteBin6Line } from 'react-icons/ri'
+import QrCodeIcon from '@mui/icons-material/QrCode'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -1354,7 +1356,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
             size="small"
             variant="outlined"
             color="cam">
-            <AddIcon fontSize="small" /> Thêm sản phẩm
+            Thêm sản phẩm
           </Button>
           <Button
             sx={{
@@ -1366,7 +1368,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
             size="small"
             variant="outlined"
             onClick={handleOpenQRScanner}>
-            Quét QR
+            <QrCodeIcon /> Quét QR sản phẩm
           </Button>
           <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
             <Box sx={styleModal}>
@@ -1388,21 +1390,17 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
               listProductDetailBill.map((cart, index) => (
                 <Table>
                   <TableRow sx={{ border: 0 }} key={cart.id}>
-                    <TableCell>
+                    <TableCell width={'5%'}>
                       <Checkbox
                         key={cart.id}
                         checked={selectedRows.indexOf(cart.id) !== -1}
                         onChange={(event) => handleRowCheckboxChange(event, cart.id)}
+                        style={{ color: selectedRows.indexOf(cart.id) !== -1 ? 'orange' : 'black' }}
+                        size="small"
                       />
                     </TableCell>
-                    <TableCell sx={{ px: 0 }} width={'5%'}>
-                      <IconButton
-                        color="error"
-                        onClick={() => rollBackQuantityProductDetail(idBill, cart.id)}>
-                        <CloseIcon />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }} width={'70%'}>
+
+                    <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }} width={'40%'}>
                       <Box
                         component="span"
                         display={{ sm: 'inline', xs: 'none' }}
@@ -1411,18 +1409,19 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                           alt="error"
                           src={cart.image}
                           style={{
-                            minHeight: '200px',
-                            height: '200px',
-                            width: '200px',
+                            height: '120px',
+                            width: '120px',
                             verticalAlign: 'middle',
+                            borderRadius: '10px',
                           }}
                         />
                         {cart.value && cart.statusPromotion === 1 && (
                           <div
                             style={{
                               position: 'absolute',
-                              top: '-530%',
-                              right: '0',
+                              top: '-270%',
+                              left: '0',
+                              marginLeft: '10px',
                               backgroundColor:
                                 cart.value >= 1 && cart.value <= 50
                                   ? '#66CC00'
@@ -1430,11 +1429,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                                     ? '#FF9900'
                                     : '#FF0000',
                               color: 'white',
-                              padding: '6px 5px',
-                              borderRadius: '0 0 0 10px',
+                              padding: '3px 15px',
+                              borderRadius: '10px',
                             }}
                             className="discount">
-                            {cart.value}% OFF
+                            {cart.value}%
                           </div>
                         )}
                       </Box>
@@ -1451,17 +1450,19 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                         <p style={{ color: 'red', margin: '5px 0' }}>
                           {cart.promotion && cart.statusPromotion === 1 ? (
                             <div>
-                              <div className="promotion-price">{`${formatPrice(cart.price)}đ`}</div>{' '}
+                              <div className="promotion-price">{`${formatCurrency(
+                                cart.price,
+                              )}`}</div>{' '}
                               <div>
                                 <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                  {`${formatPrice(
+                                  {`${formatCurrency(
                                     calculateDiscountedPrice(cart.price, cart.value),
                                   )}`}
                                 </span>{' '}
                               </div>
                             </div>
                           ) : (
-                            <span>{`${formatPrice(cart.price)}đ`}</span>
+                            <div>{`${formatCurrency(cart.price)}`}</div>
                           )}
                         </p>
                         <p style={{ margin: 0 }}>size:{cart.size}</p>
@@ -1522,14 +1523,33 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                         fontWeight: 'bold',
                       }}
                       width={'20%'}
-                      align="right">
+                      align="center">
                       {cart.statusPromotion === 1 ? (
-                        formatPrice(
+                        formatCurrency(
                           calculateDiscountedPrice(cart.price, cart.value) * cart.quantity,
                         )
                       ) : (
-                        <span>{`${formatPrice(cart.price * cart.quantity)}`}</span>
+                        <span>{`${formatCurrency(cart.price * cart.quantity)}`}</span>
                       )}
+                    </TableCell>
+                    <TableCell align="center" width={'10%'}>
+                      <Tooltip title="Xóa sản phẩm">
+                        <div
+                          style={{
+                            backgroundColor: 'red',
+                            color: 'white',
+                            width: '45px',
+                            height: '30px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => rollBackQuantityProductDetail(idBill, cart.id)}>
+                          <RiDeleteBin6Line />
+                        </div>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 </Table>
@@ -1541,13 +1561,15 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
           <Stack
             m={2}
             direction="row"
-            justifyContent="space-between"
+            justifyContent="flex-end"
             alignItems="flex-start"
-            spacing={2}>
-            <Typography fontWeight={'bold'}>Tổng tiền</Typography>
+            spacing={12}>
+            <Typography sx={{ marginRight: '30px' }} fontWeight={'bold'}>
+              Tổng tiền
+            </Typography>
             <Box>
               <Typography fontWeight={'bold'} style={{ color: 'red' }}>
-                {formatPrice(totalSum)}
+                {formatCurrency(totalSum)}
               </Typography>
             </Box>
           </Stack>
@@ -2548,20 +2570,32 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
             </Grid>
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
-            <Box sx={{ m: 1, ml: 3 }}>
-              <TextField label="Mã giảm giá" value={voucher?.code} size="small" disabled />
-              <Button
-                sx={{ py: '6.7px', ml: 1 }}
-                variant="outlined"
-                onClick={() => {
-                  setIsShowVoucher(true)
-                  setAdCallVoucherOfSell({
-                    ...adCallVoucherOfSell,
-                    condition: totalSum,
-                  })
-                }}>
-                <b>Chọn phiếu giảm giá</b>
-              </Button>
+            <Box sx={{ ml: 3 }}>
+              <TextField
+                sx={{ width: '70%' }}
+                label="Mã giảm giá"
+                value={voucher?.code}
+                size="small"
+                className="input-voucher-sell"
+                disabled
+                InputProps={{
+                  endAdornment: (
+                    <Button
+                      variant="contained"
+                      color="cam"
+                      onClick={() => {
+                        setIsShowVoucher(true)
+                        setAdCallVoucherOfSell({
+                          ...adCallVoucherOfSell,
+                          condition: totalSum,
+                        })
+                      }}>
+                      <b>Chọn </b>
+                    </Button>
+                  ),
+                }}
+              />
+
               <Modal
                 className="modal-voucher"
                 open={isShowVoucher}
