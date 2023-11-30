@@ -45,7 +45,6 @@ function App() {
     <div className="App">
       <Backdrop
         sx={{
-          backgroundColor: 'white',
           zIndex: (theme) => theme.zIndex.drawer + 999,
         }}
         open={loading}>
