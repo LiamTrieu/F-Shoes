@@ -357,7 +357,6 @@ export default function OrderDetail() {
   }
 
   function realtimeBillHistoryBill(data) {
-    console.log('=====', data)
     const index = id === data[0].idBill ? 0 : -1
     if (index !== -1) {
       setListOrderTimeLine(data)
