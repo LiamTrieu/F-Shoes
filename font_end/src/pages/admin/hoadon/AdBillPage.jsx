@@ -33,7 +33,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import SearchIcon from '@mui/icons-material/Search'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import { getStatusStyle } from './getStatusStyle'
 import { TbEyeEdit } from 'react-icons/tb'
@@ -208,16 +208,22 @@ export default function AdBillPage() {
       setlistBill(response.data.data)
     })
   }
+  let navigate = useNavigate()
   const handleAddSellClick = async () => {
     if (listBill.length === 5) {
       toast.warning('Tối đa 5 hóa đơn', { position: toast.POSITION.TOP_CENTER })
       return
     }
-    sellApi.createBill().then((res) => {
-      if (res.data.success) {
-        setlistBill([...listBill, res.data.data])
-      }
-    })
+    sellApi
+      .createBill()
+      .then((res) => {
+        if (res.data.success) {
+          setlistBill([...listBill, res.data.data])
+        }
+      })
+      .finally(() => {
+        navigate('/admin/sell')
+      })
   }
   useEffect(() => {
     getAllBillTaoDonHang()
@@ -250,13 +256,7 @@ export default function AdBillPage() {
               ),
             }}
           />
-          <Button
-            onClick={handleAddSellClick}
-            component={Link}
-            to="/admin/sell"
-            color="cam"
-            variant="outlined"
-            className="them-moi">
+          <Button onClick={handleAddSellClick} color="cam" variant="outlined" className="them-moi">
             <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
             Tạo hoá đơn
           </Button>
