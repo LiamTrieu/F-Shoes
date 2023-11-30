@@ -22,6 +22,7 @@ import {
   Divider,
   Tooltip,
   Switch,
+  Modal,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -47,7 +48,8 @@ import confirmSatus from '../../../components/comfirmSwal'
 import ModalAdBillUpdateAddress from './AdBillModalUpdateAddress'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import {socketUrl} from '../../../services/url'
+import { socketUrl, url } from '../../../services/url'
+import axios from 'axios'
 
 const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
 
@@ -1216,14 +1218,59 @@ export default function AdBillDetail() {
   //   setOpenModalReturnProduct(true)
   // }
 
-  const confirmPrintBill = (idBill) => {
-    confirmSatus('Xác nhận in hoá đơn', 'Bạn có chắc chắn muốn in hoá đơn này?').then(() => {
-      window.location.href = process.env.URL + '/in-hoa-don/' + idBill
-    })
+  const confirmPrintBill = async (idBill) => {
+    try {
+      await confirmSatus('Xác nhận in hoá đơn', 'Bạn có chắc chắn muốn in hoá đơn này?')
+
+      const response = await axios.get(url + '/in-hoa-don/' + idBill, { responseType: 'blob' })
+      const pdfContent = await new Response(response.data).blob()
+      handleOpenModal(pdfContent)
+    } catch (error) {
+      console.error('Error fetching PDF:', error)
+    }
+  }
+
+  const PDFViewerModal = ({ open, handleClose, pdfContent }) => {
+    const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' })
+    const pdfUrl = URL.createObjectURL(pdfBlob)
+
+    return (
+      <Modal
+        open={open}
+        onClose={handleClose}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Paper style={{ width: '80%', height: '90%' }}>
+          <iframe
+            style={{ borderRadius: '10px', width: '100%', height: '100%' }}
+            src={pdfUrl}
+            title="PDF Viewer"></iframe>
+        </Paper>
+      </Modal>
+    )
+  }
+
+  const [modalOpen, setModalOpen] = useState(false)
+  const [pdfContent, setPdfContent] = useState('')
+
+  const handleOpenModal = (pdfContent) => {
+    setPdfContent(pdfContent)
+    setModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setPdfContent('')
+    setModalOpen(false)
   }
 
   return (
     <div className="hoa-don">
+      {modalOpen && (
+        <PDFViewerModal open={modalOpen} handleClose={handleCloseModal} pdfContent={pdfContent} />
+      )}
       {openModalConfirm && (
         <ModalConfirmBill
           setOpen={setOpenModalConfirm}
