@@ -271,8 +271,8 @@ export default function AdVoucherDetail() {
       errors.minimumAmount = 'Điều kiện không được để trống'
     } else if (!Number.isInteger(parseInt(voucherDetail.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
-    } else if (voucherDetail.minimumAmount < 1) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 1 (vnđ)'
+    } else if (voucherDetail.minimumAmount < 0) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
     }
 
     if (voucherDetail.startDate.trim() === '') {
@@ -597,7 +597,7 @@ export default function AdVoucherDetail() {
                     setErrorStartDate('')
                   }}
                   ampm={false}
-                  minDateTime={dayjs()}
+                  // minDateTime={dayjs()}
                   slotProps={{
                     actionBar: {
                       actions: ['clear'],
@@ -625,7 +625,7 @@ export default function AdVoucherDetail() {
                     setErrorEndDate('')
                   }}
                   ampm={false}
-                  minDateTime={dayjs()}
+                  // minDateTime={dayjs()}
                   slotProps={{
                     actionBar: {
                       actions: ['clear'],

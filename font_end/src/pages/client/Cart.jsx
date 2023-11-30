@@ -22,7 +22,7 @@ import clientProductApi from '../../api/client/clientProductApi'
 import clientCartApi from '../../api/client/clientCartApi'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import {socketUrl} from '../../services/url'
+import { socketUrl } from '../../services/url'
 import confirmSatus from '../../components/comfirmSwal'
 
 var stompClient = null
@@ -626,7 +626,7 @@ export default function Cart() {
                 . Phí vận chuyển sẽ được tính ở trang thanh toán.
               </Typography>
               <Typography sx={{ fontSize: '14px', marginBottom: '20px' }}>
-                .Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.
+                .Bạn cũng có thể nhập phiếu giảm giá ở trang thanh toán.
               </Typography>
               <Button
                 component={Link}

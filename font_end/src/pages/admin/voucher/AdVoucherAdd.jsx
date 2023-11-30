@@ -31,7 +31,7 @@ import '../../../assets/styles/admin.css'
 import './voucher.css'
 import Empty from '../../../components/Empty'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
-import { AiOutlineDollar, AiOutlineNumber } from 'react-icons/ai'
+import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
 import SearchIcon from '@mui/icons-material/Search'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 
@@ -43,7 +43,7 @@ const initialVoucher = {
   value: null,
   maximumValue: null,
   type: 0,
-  typeValue: 1,
+  typeValue: 0,
   minimumAmount: null,
   quantity: null,
   startDate: '',
@@ -237,8 +237,8 @@ export default function AdVoucherAdd() {
       setVoucherAdd({ ...voucherAdd, minimumAmount: 0 })
     } else if (!Number.isInteger(parseInt(voucherAdd.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
-    } else if (voucherAdd.minimumAmount < 1) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 1 (vnđ)'
+    } else if (voucherAdd.minimumAmount < 0) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
     }
 
     if (voucherAdd.startDate.trim() === '') {
@@ -412,16 +412,16 @@ export default function AdVoucherAdd() {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        {/* <AiOutlinePercentage
+                        <AiOutlinePercentage
                           color={voucherAdd.typeValue === 0 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => {
                             setVoucherAdd({ ...voucherAdd, typeValue: 0, value: 0 })
                             setValueDefault(0)
                           }}
-                        /> */}
+                        />
                         <AiOutlineDollar
-                          // color={voucherAdd.typeValue === 1 ? '#fc7c27' : ''}
+                          color={voucherAdd.typeValue === 1 ? '#fc7c27' : ''}
                           className="icons-css"
                           onClick={() => {
                             setVoucherAdd({ ...voucherAdd, typeValue: 1, value: 0 })

@@ -35,7 +35,7 @@ import ReplyIcon from '@mui/icons-material/Reply'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import clientCartApi from '../../api/client/clientCartApi'
-import {socketUrl} from '../../services/url'
+import { socketUrl } from '../../services/url'
 
 var stompClient = null
 export default function Checkout() {
@@ -839,7 +839,7 @@ export default function Checkout() {
               <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
                 <TextField
                   sx={{ flex: 1, minWidth: '100px', width: '100%' }}
-                  value={voucher === null ? 'Mã khuyễn mãi' : voucher.name}
+                  value={voucher === null ? 'Phiếu giảm giá' : voucher.name}
                   size="small"
                   className="input-voucher"
                   disabled

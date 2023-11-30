@@ -438,8 +438,10 @@ export default function Dashboard() {
                   <img
                     style={{
                       textAlign: 'center',
+                      alignItems: 'center',
                     }}
                     width={'200px'}
+                    height={'100%'}
                     src={require('../../../assets/image/no-data.png')}
                     alt="No-data"
                   />

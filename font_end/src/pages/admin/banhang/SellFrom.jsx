@@ -1000,7 +1000,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
         // setCodeVoucher(response.data.data.code)
       })
       .catch(() => {
-        toast.error(`Không tồn tại khuyến mãi với id : ${idVoucher}`, {
+        toast.error(`Không tồn tại phiếu giảm giá với id : ${idVoucher}`, {
           position: toast.POSITION.TOP_RIGHT,
         })
       })
@@ -2573,7 +2573,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
             <Box sx={{ ml: 3 }}>
               <TextField
                 sx={{ width: '70%' }}
-                label="Mã giảm giá"
+                label="Phiếu giảm giá"
                 value={voucher?.code}
                 size="small"
                 className="input-voucher-sell"
@@ -2615,7 +2615,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                         flexGrow: 1,
                       }}>
                       <Typography variant="h6" component="div">
-                        Danh sách mã khuyến mãi
+                        Danh sách phiếu giảm giá
                       </Typography>
                     </Box>
                     <IconButton
@@ -2641,7 +2641,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                             }}
                             size="small"
                             variant="outlined"
-                            placeholder="Tìm khuyến mãi"
+                            placeholder="Tìm phiếu giảm giá"
                             onChange={(e) =>
                               setAdCallVoucherOfSell({
                                 ...adCallVoucherOfSell,
@@ -2750,10 +2750,12 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                             <TableCell align="center">{row.code}</TableCell>
                             <TableCell align="center">{row.name}</TableCell>
                             <TableCell align="center">
-                              {row.typeValue === 0 ? row.value + '%' : row.value + ' VNĐ'}
+                              {row.typeValue === 0 ? row.value + '%' : formatCurrency(row.value)}
                             </TableCell>
-                            <TableCell align="center">{row.maximumValue + ' VNĐ'}</TableCell>
-                            <TableCell align="center">{row.minimumAmount + ' VNĐ'}</TableCell>
+                            <TableCell align="center">{formatCurrency(row.maximumValue)}</TableCell>
+                            <TableCell align="center">
+                              {formatCurrency(row.minimumAmount)}
+                            </TableCell>
                             <TableCell align="center">
                               {row.type === 0 ? (
                                 <Chip className="chip-tat-ca" size="small" label="Công khai" />

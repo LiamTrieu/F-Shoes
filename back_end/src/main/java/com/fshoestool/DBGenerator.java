@@ -118,13 +118,13 @@
 //        //Staff
 //
 //        //Voucher
-//        Voucher voucher1 = Voucher.builder().code("VC12345").name("Voucher 1").value(BigDecimal.valueOf(25)).maximumValue(BigDecimal.valueOf(100)).type(TypeVoucher.CA_NHAN).typeValue(TypeValue.PHAN_TRAM).minimumAmount(BigDecimal.valueOf(50)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
+//        Voucher voucher1 = Voucher.builder().code("VC12345").name("Voucher 1").value(BigDecimal.valueOf(25000)).maximumValue(BigDecimal.valueOf(25000)).type(TypeVoucher.TAT_CA).typeValue(TypeValue.GIA_TIEN).minimumAmount(BigDecimal.valueOf(50000)).quantity(10).startDate(System.currentTimeMillis()).endDate(System.currentTimeMillis() + 604800000).status(StatusVoucher.DANG_DIEN_RA).build();
 //        voucher1.setId(voucherRepository.save(voucher1).getId());
 //
 //        //CustomerVoucher
 //        //Cá nhân
-//        CustomerVoucher customerVoucher1 = CustomerVoucher.builder().account(customer1).voucher(voucher1).build();
-//        customerVoucher1.setId(customerVoucherRepository.save(customerVoucher1).getId());
+////        CustomerVoucher customerVoucher1 = CustomerVoucher.builder().account(customer1).voucher(voucher1).build();
+////        customerVoucher1.setId(customerVoucherRepository.save(customerVoucher1).getId());
 //
 //        //tất cả
 ////        CustomerVoucher customerVoucher6 = CustomerVoucher.builder().account(customer1).voucher(voucher6).build();
