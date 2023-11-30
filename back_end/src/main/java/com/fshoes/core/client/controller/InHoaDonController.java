@@ -2,6 +2,7 @@ package com.fshoes.core.client.controller;
 
 import com.fshoes.core.admin.hoadon.service.HDBillService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,9 @@ public class InHoaDonController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData(pdfFile.getName(), pdfFile.getName());
+            headers.setContentDisposition(ContentDisposition.attachment().filename(pdfFile.getName()).build());
+
+            pdfFile.delete();
 
             return ResponseEntity.ok()
                     .headers(headers)
@@ -40,4 +43,5 @@ public class InHoaDonController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
 }
