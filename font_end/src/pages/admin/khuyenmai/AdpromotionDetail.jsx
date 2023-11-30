@@ -173,7 +173,6 @@ export default function AdPromotionDetail() {
 
   useEffect(() => {
     getProductDetailById(filterProductDetail, selectedProductIds)
-    // handleRowCheckboxChange1(selectedProductIds)
   }, [filterProductDetail, selectedProductIds])
 
   const validate = () => {
@@ -527,7 +526,7 @@ export default function AdPromotionDetail() {
                     }}
                   />
                 </Box>
-                <Box>
+                {/* <Box>
                   <b>Danh mục:</b>
                   <Select
                     displayEmpty
@@ -675,7 +674,7 @@ export default function AdPromotionDetail() {
                       </MenuItem>
                     ))}
                   </Select>
-                </Box>
+                </Box> */}
                 <Table sx={{ minWidth: 650 }} aria-label="simple table" className="tableCss">
                   <TableHead>
                     <TableRow>

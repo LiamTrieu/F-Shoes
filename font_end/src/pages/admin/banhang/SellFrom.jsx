@@ -1017,7 +1017,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     customerAmount: '',
     payMent: '',
   })
-
   const addBill = (id) => {
     const newErrors = {}
     let checkAA = 0
@@ -1292,10 +1291,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       } else {
         newErrors.wardId = ''
       }
-      if (checkAA > 0) {
-        setErrorAddBill(newErrors)
-        return
-      }
+    }
+    if (checkAA > 0) {
+      setErrorAddBill(newErrors)
+      return
     }
     if (listProductDetailBill.length === 0) {
       toast.error('Giỏ hàng chưa có sản phẩm', {
@@ -1382,6 +1381,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
           idBill={idBill}
           open={showModal}
           setOPen={setShowModal}
+          listProductBill={listProductDetailBill}
         />
 
         <Box>
@@ -1498,16 +1498,17 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                               border: 'none',
                             },
                           }}
-                          onChange={(e) => {
-                            const inputValue = e.target.value
-                            const numericValue = Number(inputValue)
+                          // onChange={(e) => {
+                          //   const inputValue = e.target.value
+                          //   const numericValue = Number(inputValue)
 
-                            if (!isNaN(numericValue) && numericValue >= 1) {
-                              inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue)
-                            }
-                          }}
+                          //   if (!isNaN(numericValue) && numericValue >= 1) {
+                          //     inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue)
+                          //   }
+                          // }}
                         />
                         <IconButton
+                          // disabled={listProductDetailBill.reduce((total, cart) => total + cart.quantity, 0) >= 5}
                           size="small"
                           sx={{ p: 0 }}
                           onClick={() =>

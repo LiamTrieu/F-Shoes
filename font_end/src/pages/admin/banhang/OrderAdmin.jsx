@@ -132,18 +132,18 @@ export default function OrderAdmin() {
                   fontWeight: 'bold',
                 }}
                 label={
-                  <div style={{ marginRight: '20px' }}>
-                    <span
-                      onClick={() => {
-                        deleteSellClick(Bill.id)
-                      }}
-                      style={{ marginBottom: '10px' }}>
-                      <HighlightOffIcon color="error" fontSize="small" />
-                    </span>
+                  <div
+                    style={{
+                      marginRight: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
                     Đơn hàng {index + 1}
                     <Badge
                       badgeContent={soLuong.find((e) => e.idBill === Bill.id)?.quantity}
-                      color="cam">
+                      color="cam"
+                      sx={{ marginRight: '10px' }}>
                       <img
                         src={require('../../../assets/image/TinTuc/xe_giao_hang_otto.webp')}
                         alt=""
@@ -151,6 +151,12 @@ export default function OrderAdmin() {
                         style={{ marginLeft: '4px', marginRight: '4px' }}
                       />
                     </Badge>
+                    <span
+                      onClick={() => {
+                        deleteSellClick(Bill.id)
+                      }}>
+                      <HighlightOffIcon color="error" fontSize="small" />
+                    </span>
                   </div>
                 }
               />
