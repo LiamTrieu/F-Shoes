@@ -135,13 +135,18 @@ export default function Home() {
           <Box>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <video
+                {/* <video
                   ref={videoRef}
                   autoPlay
                   muted
                   onEnded={handleVideoEnded}
                   style={{ width: '100%', height: '100%' }}
-                  src="https://brand.assets.adidas.com/video/upload/if_w_gt_1920,w_1920/running_fw23_adizero_boston12_launch_hp_masthead_d_dcb43d7604.mp4"></video>
+                  src="https://brand.assets.adidas.com/video/upload/if_w_gt_1920,w_1920/running_fw23_adizero_boston12_launch_hp_masthead_d_dcb43d7604.mp4"></video> */}
+                <img
+                  src={require('../../assets/image/TinTuc/image_baner_home.webp')}
+                  alt=""
+                  style={{ width: '100%' }}
+                />
               </Grid>
             </Grid>
           </Box>

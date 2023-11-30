@@ -290,6 +290,9 @@ export default function Checkout() {
     wardId: '',
     address: '',
   })
+  function renderRawPrice(cart, promotionByProductDetail) {
+    return <div style={{ color: 'red' }}>{`${cart.gia} `}</div>
+  }
 
   async function finishCheckout() {
     const newErrors = {}
@@ -368,6 +371,7 @@ export default function Checkout() {
       setErrors(newErrors)
       return
     }
+
     const title = 'Xác nhận đặt hàng?'
     confirmSatus(title, '').then((result) => {
       if (result.isConfirmed) {
@@ -375,13 +379,17 @@ export default function Checkout() {
           ...request,
           shipMoney: phiShip,
           duKien: timeShip,
-          totalMoney: arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0),
+          totalMoney: arrData.reduce(
+            (total, cart) => total + calculateProductTotalPayment(cart, promotionByProductDetail),
+
+            0,
+          ),
           billDetail: arrData.map((product) => {
             return {
               nameProduct: product.name + ' - ' + product.size,
               idProduct: product.id,
               quantity: product.soLuong,
-              price: product.gia,
+              price: calculateProductTotalPaymentBillDetail(product, promotionByProductDetail),
             }
           }),
           idVoucher: voucher === null ? null : voucher.id,
@@ -394,6 +402,8 @@ export default function Checkout() {
           clientCheckoutApi
             .datHang({ ...preRequest, status: 1 })
             .then((response) => {
+              console.log('pre request')
+              console.log(preRequest)
               if (response.data.success) {
                 arrData.forEach((e) => {
                   dispatch(removeCart(e))
@@ -482,10 +492,26 @@ export default function Checkout() {
         .filter((item) => item.idProductDetail === cart.id && item.id)
         .map((item) => cart.soLuong * calculateDiscountedPrice(cart.gia, item.value))
         .reduce((total, price) => total + price, 0)
-
+      console.log('')
       return discountedPrice
     } else {
       return cart.soLuong * cart.gia
+    }
+  }
+  function calculateProductTotalPaymentBillDetail(cart, promotionByProductDetail) {
+    const isDiscounted = promotionByProductDetail.some(
+      (item) => item.idProductDetail === cart.id && item.id,
+    )
+
+    if (isDiscounted) {
+      const discountedPrice = promotionByProductDetail
+        .filter((item) => item.idProductDetail === cart.id && item.id)
+        .map((item) => calculateDiscountedPrice(cart.gia, item.value))
+        .reduce((total, price) => total + price, 0)
+      console.log('')
+      return discountedPrice
+    } else {
+      return cart.gia
     }
   }
 

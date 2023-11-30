@@ -94,13 +94,13 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 .append(request.getTinh())
                 .toString());
         newBill.setTotalMoney(new BigDecimal(request.getTotalMoney()));
-        newBill.setMoneyAfter(new BigDecimal(request.getTotalMoney()).add(new BigDecimal(request.getShipMoney())));
         Long dateNow = Calendar.getInstance().getTimeInMillis();
         newBill.setCode("HD" + dateNow);
         newBill.setEmail(request.getEmail());
         newBill.setType(1);
         newBill.setMoneyReduced(new BigDecimal(request.getMoneyReduced()));
         newBill.setMoneyShip(new BigDecimal(request.getShipMoney()));
+        newBill.setMoneyAfter(new BigDecimal(request.getTotalMoney()).add(new BigDecimal(request.getShipMoney()).subtract(new BigDecimal(request.getMoneyReduced()))));
         newBill.setDesiredReceiptDate(request.getDuKien());
         String password = generatePassword();
         Account account;
@@ -191,7 +191,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
 
-        vnp_Params.put("vnp_ReturnUrl",domain + VNPayConfig.vnp_Returnurl);
+        vnp_Params.put("vnp_ReturnUrl", domain + VNPayConfig.vnp_Returnurl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -324,11 +324,11 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     newRequest.setBillDetail(listBillDetails.stream().map(billDetail ->
                             new ClientBillDetaillRequest(
                                     billDetail.getProductDetail().getProduct().getName() + "" +
-                                    billDetail.getProductDetail().getColor().getName() + "" +
-                                    billDetail.getProductDetail().getMaterial().getName() + "" +
-                                    billDetail.getProductDetail().getSole().getName() + "" +
-                                    billDetail.getProductDetail().getCategory().getName() + "" +
-                                    billDetail.getProductDetail().getBrand().getName(),
+                                            billDetail.getProductDetail().getColor().getName() + "" +
+                                            billDetail.getProductDetail().getMaterial().getName() + "" +
+                                            billDetail.getProductDetail().getSole().getName() + "" +
+                                            billDetail.getProductDetail().getCategory().getName() + "" +
+                                            billDetail.getProductDetail().getBrand().getName(),
                                     billDetail.getProductDetail().getId(),
                                     billDetail.getQuantity(), String.valueOf(billDetail.getPrice().intValue()))
                     ).toList());
@@ -358,13 +358,11 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         String[] toMail = {request.getEmail()};
 
         StringBuilder htmlTable = new StringBuilder("<table><tr style=\"background-color: #F2904F; border: 1px solid #ddd;\">\n" +
-                                                    "    <th style=\"width: 70%; border: 1px solid #ddd;\">Tên sản phẩm</th>\n" +
-                                                    "    <th style=\"width: 10%; border: 1px solid #ddd;\">Số lượng</th>\n" +
-                                                    "    <th style=\"width: 20%; border: 1px solid #ddd;\">Giá tiền</th></tr>");
-
+                "    <th style=\"width: 70%; border: 1px solid #ddd;\">Tên sản phẩm</th>\n" +
+                "    <th style=\"width: 10%; border: 1px solid #ddd;\">Số lượng</th>\n" +
+                "    <th style=\"width: 20%; border: 1px solid #ddd;\">Đơn giá</th></tr>");
         for (ClientBillDetaillRequest detail : request.getBillDetail()) {
-            int totalPrice = Integer.parseInt(detail.getPrice()) * detail.getQuantity();
-            String formattedPrice = String.format("%,d VNĐ", totalPrice);
+            String formattedPrice = String.format("%,d VNĐ", Integer.parseInt(detail.getPrice()));
 
             htmlTable.append("<tr><td style=\"border: 1px solid #ddd; padding: 8px;\">")
                     .append(detail.getNameProduct())
@@ -381,46 +379,46 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
 
         String htmlContent =
                 "<div class=\"container\">" +
-                "<h1 style=\"text-align: center; \">Thông Tin Đơn Hàng</h1>" +
-                "<div class=\"email-container\">" +
-                "<br/>" +
-                htmlTable.toString() +
-                "        <div class=\"total-section\">" +
-                "            <p>Thành tiền: <strong>" + formatCurrency(request.getTotalMoney()) + " VNĐ</strong></p>" +
-                "            <p>Phí vận chuyển: <strong>" + formatCurrency(request.getShipMoney()) + " VNĐ</strong></p>" +
-                "            <p>Giảm giá: <strong>" + formatCurrency(request.getMoneyReduced()) + " VNĐ</strong></p>" +
-                "            <p>Tổng cộng: <strong>" + formatCurrency(String.valueOf(Integer.parseInt(request.getTotalMoney()) + Integer.parseInt(request.getShipMoney()))) + " VNĐ</strong></p>" +
-                "        </div>" +
-                "<div>" +
-                "<br/>" +
-                "<p><b>THÔNG TIN ĐƠN HÀNG:</b></p>" +
-                "<ul>" +
-                "<li>Mã đơn hàng: <strong>" + codeBill + "</strong></li>" +
-                "<li>Ngày đặt hàng: <strong>" + DateUtil.converDateTimeString(dateNow) + "</strong></li>" +
-                "<li>Ngày nhận dự kiến: <strong>" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>" +
-                "<li>Hình thức thanh toán: <strong>" + valueType + "</strong></li>" +
-                "</ul>" +
-                "<p><b>ĐỊA CHỈ GIAO HÀNG:</b></p>" +
-                "<ul>" +
-                "<li>Họ và tên: <strong>" + request.getFullName() + "</strong></li>" +
-                "<li>Số điện thoại: <strong>" + request.getPhone() + "</strong></li>" +
-                "<li>Địa chỉ: <strong>" + request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh() + "</strong></li>" +
-                "</ul>" +
-                "</div>" +
-                "<hr/>" +
-                "<p>" +
-                "Cảm ơn bạn đã tin tưởng và mua hàng tại cửa hàng của chúng tôi. " +
-                "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
-                "</p>" +
-                "</div>" +
-                "<a href='"+domain+"/tracking/" + codeBill + "' style=\"display: inline-block; text-align: center; text-decoration: none;\">" +
-                " <button style=\"background-color: #000; color: #fff; padding: 10px 20px; border: none; cursor: pointer;\">Xem Chi Tiết</button>" +
-                "</div>" +
-                (password == null ? "" : "</div>" +
-                                         "        <p style=\"color: #555;\">Hoặc đăng nhập vào hệ thống:</p>\n" +
-                                         "        <p><strong>Email:</strong> " + request.getEmail() + "</p>\n" +
-                                         "        <p><strong>Mật khẩu:</strong> " + password + "</p>\n" +
-                                         "</div>");
+                        "<h1 style=\"text-align: center; \">Thông Tin Đơn Hàng</h1>" +
+                        "<div class=\"email-container\">" +
+                        "<br/>" +
+                        htmlTable.toString() +
+                        "        <div class=\"total-section\">" +
+                        "            <p>Thành tiền: <strong>" + formatCurrency(String.valueOf(new BigDecimal(request.getTotalMoney()))) + " VNĐ</strong></p>" +
+                        "            <p>Phí vận chuyển: <strong>" + formatCurrency(request.getShipMoney()) + " VNĐ</strong></p>" +
+                        "            <p>Giảm giá: <strong>" + formatCurrency(request.getMoneyReduced()) + " VNĐ</strong></p>" +
+                        "            <p>Tổng cộng: <strong>" + formatCurrency(String.valueOf((Integer.parseInt(request.getTotalMoney()) - Integer.parseInt(request.getMoneyReduced()) + Integer.parseInt(request.getShipMoney())))) + " VNĐ</strong></p>" +
+                        "        </div>" +
+                        "<div>" +
+                        "<br/>" +
+                        "<p><b>THÔNG TIN ĐƠN HÀNG:</b></p>" +
+                        "<ul>" +
+                        "<li>Mã đơn hàng: <strong>" + codeBill + "</strong></li>" +
+                        "<li>Ngày đặt hàng: <strong>" + DateUtil.converDateTimeString(dateNow) + "</strong></li>" +
+                        "<li>Ngày nhận dự kiến: <strong>" + DateUtil.converDateTimeString(request.getDuKien()) + "</strong></li>" +
+                        "<li>Hình thức thanh toán: <strong>" + valueType + "</strong></li>" +
+                        "</ul>" +
+                        "<p><b>ĐỊA CHỈ GIAO HÀNG:</b></p>" +
+                        "<ul>" +
+                        "<li>Họ và tên: <strong>" + request.getFullName() + "</strong></li>" +
+                        "<li>Số điện thoại: <strong>" + request.getPhone() + "</strong></li>" +
+                        "<li>Địa chỉ: <strong>" + request.getAddress() + ", " + request.getXa() + ", " + request.getHuyen() + ", " + request.getTinh() + "</strong></li>" +
+                        "</ul>" +
+                        "</div>" +
+                        "<hr/>" +
+                        "<p>" +
+                        "Cảm ơn bạn đã tin tưởng và mua hàng tại cửa hàng của chúng tôi. " +
+                        "Chúng tôi sẽ liên hệ với bạn sớm nhất có thể." +
+                        "</p>" +
+                        "</div>" +
+                        "<a href='" + domain + "/tracking/" + codeBill + "' style=\"display: inline-block; text-align: center; text-decoration: none;\">" +
+                        " <button style=\"background-color: #000; color: #fff; padding: 10px 20px; border: none; cursor: pointer;\">Xem Chi Tiết</button>" +
+                        "</div>" +
+                        (password == null ? "" : "</div>" +
+                                "        <p style=\"color: #555;\">Hoặc đăng nhập vào hệ thống:</p>\n" +
+                                "        <p><strong>Email:</strong> " + request.getEmail() + "</p>\n" +
+                                "        <p><strong>Mật khẩu:</strong> " + password + "</p>\n" +
+                                "</div>");
         newEmail.setBody(htmlContent);
         newEmail.setToEmail(toMail);
         newEmail.setSubject("Đơn hàng F-Shoes của bạn " + codeBill);
