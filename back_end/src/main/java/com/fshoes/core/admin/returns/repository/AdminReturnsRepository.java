@@ -25,9 +25,11 @@ public interface AdminReturnsRepository extends ReturnsRepository {
 
     @Query(value = """
             select r.id, r.code, b.code as codeBill, b.id as idBill,
+            a.full_name as fullName, b.address,
             b.full_name as customer, r.return_money as total, r.fee, r.status
             from returns r
             join bill b on b.id = r.id_bill
+            join account a on b.id_customer = a.id
             where r.id = :id
             """, nativeQuery = true)
     GetReturnDetailResponse getReturnDetail(@Param("id") String id);

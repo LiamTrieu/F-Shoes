@@ -164,24 +164,24 @@ export default function ReturnDetailClient({ id, setOpen, setTab }) {
                   returnDetail?.status === 1
                     ? 'Hoàn thành'
                     : returnDetail?.status === 0
-                    ? 'Chờ xác nhận'
-                    : returnDetail?.status === 3
-                    ? 'Đang xử lý'
-                    : returnDetail?.status === 4
-                    ? 'Đã hủy'
-                    : 'Bị từ chối'
+                      ? 'Chờ xác nhận'
+                      : returnDetail?.status === 3
+                        ? 'Đang xử lý'
+                        : returnDetail?.status === 4
+                          ? 'Đã hủy'
+                          : 'Bị từ chối'
                 }
                 style={{
                   color:
                     returnDetail?.status === 1
                       ? 'green'
                       : returnDetail?.status === 0
-                      ? '#F2741F'
-                      : returnDetail?.status === 3
-                      ? 'blue'
-                      : returnDetail?.status === 4
-                      ? 'red'
-                      : 'red',
+                        ? '#F2741F'
+                        : returnDetail?.status === 3
+                          ? 'blue'
+                          : returnDetail?.status === 4
+                            ? 'red'
+                            : 'red',
                 }}
                 size="small"
               />
@@ -229,7 +229,7 @@ export default function ReturnDetailClient({ id, setOpen, setTab }) {
               </Grid>
             </Grid>
             <Grid container mt={2}>
-              <Grid xs={6}>Tổng tiền </Grid>
+              <Grid xs={6}>Số tiền hoàn trả </Grid>
               <Grid xs={6} sx={{ textAlign: 'right' }}>
                 <b style={{ color: 'red' }}>
                   {billDetail
@@ -244,12 +244,6 @@ export default function ReturnDetailClient({ id, setOpen, setTab }) {
               </Grid>
             </Grid>
 
-            <Grid container mt={2}>
-              <Grid xs={6}>Phí trả hàng</Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <b>{returnDetail?.fee}%</b>
-              </Grid>
-            </Grid>
             <Grid container mt={2}>
               <Grid xs={6}>
                 <b>Số tiền hoàn</b>

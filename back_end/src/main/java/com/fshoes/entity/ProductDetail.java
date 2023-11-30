@@ -25,7 +25,12 @@ public class ProductDetail extends PrimaryEntity {
     private Integer weight;
 
     private Status deleted = Status.HOAT_DONG;
+
     private Integer amount;
+
+    private Integer quantityReturn = 0;
+
+
     @Column(columnDefinition = EntityProperties.DEFINITION_DESCRIPTION)
     private String description;
     @ManyToOne

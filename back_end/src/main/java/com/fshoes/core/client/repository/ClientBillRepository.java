@@ -56,6 +56,7 @@ public interface ClientBillRepository extends BillRepository {
             LEFT JOIN returns r ON r.id_bill = b.id
             where b.status = 7 AND b.id_customer = :idAccount
             AND b.complete_date >= :date and bd.status = 0
+            AND b.id_voucher is null
             AND NOT EXISTS (SELECT 1 FROM returns WHERE id_bill = b.id AND status <> 4)
             GROUP BY b.id
             """, nativeQuery = true)

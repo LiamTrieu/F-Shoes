@@ -18,4 +18,6 @@ public interface GetReturnDetailResponse extends IsIdentified {
     Integer getFee();
 
     Integer getStatus();
+    String getFullName();
+    String getAddress();
 }

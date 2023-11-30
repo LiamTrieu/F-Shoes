@@ -17,6 +17,7 @@ public interface BillReturnRepository extends BillRepository {
               AND b.status = 7
               AND b.complete_date >= :date
               AND bd.status = 0
+              AND b.id_voucher is null
               AND NOT EXISTS (SELECT 1 FROM returns WHERE id_bill = b.id AND status <> 4)
             GROUP BY b.id;
             """, nativeQuery = true)

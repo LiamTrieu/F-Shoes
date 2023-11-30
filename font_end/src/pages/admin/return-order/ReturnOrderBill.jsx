@@ -12,8 +12,6 @@ import {
   IconButton,
   InputAdornment,
   Paper,
-  Radio,
-  RadioGroup,
   Table,
   TableBody,
   TableCell,
@@ -27,6 +25,7 @@ import './index.css'
 import { RemoveCircle } from '@mui/icons-material'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import PersonIcon from '@mui/icons-material/Person'
+import BusinessIcon from '@mui/icons-material/Business'
 import Carousel from 'react-material-ui-carousel'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
@@ -127,15 +126,8 @@ export default function ReturnOrderBill() {
       fee: phi,
       listDetail: detail,
     }
-    if (
-      traKhach -
-        billDetail.reduce((total, e) => {
-          return total + e.quantity * e.price
-        }, 0) *
-          (1 - phi / 100) <
-      0
-    ) {
-      toast.warning('Tiền trả khác phải lớn hơn hoặc bằng tiền khách nhận!')
+    if (returnBill.listDetail && returnBill.listDetail.length <= 0) {
+      toast.warning('Vui lòng chọn sản phẩm cần trả!')
     } else {
       const title = 'Xác nhận hoàn trả sản phẩm?'
       confirmSatus(title, '').then((result) => {
@@ -160,8 +152,8 @@ export default function ReturnOrderBill() {
     <div className="tra-hang">
       <BreadcrumbsCustom nameHere={bill?.code} listLink={listBreadcrumbs} />
       <Grid container spacing={2} mt={2}>
-        <Grid xs={8} style={{ paddingTop: 0 }}>
-          <Paper className="paper-return" sx={{ mb: 2, p: 1 }}>
+        <Grid xs={12} style={{ paddingTop: 0 }}>
+          <Paper className="paper-return" sx={{ mb: 2, p: 1, marginLeft: '14px' }}>
             <h4 style={{ margin: '0' }}>
               <GrSelect fontSize={20} style={{ marginBottom: '-6px' }} />
               &nbsp; Chọn sản phẩm cần trả
@@ -317,302 +309,208 @@ export default function ReturnOrderBill() {
               </Table>
             </Box>
           </Paper>
-          <Paper className="paper-return" sx={{ mb: 2, p: 1 }}>
-            <h4 style={{ margin: '0' }}>
-              <MdAssignmentReturned fontSize={20} style={{ marginBottom: '-6px' }} />
-              &nbsp; Danh sách sản phẩm trả
-            </h4>
-            <hr style={{ marginBottom: '0px' }} />
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    sx={{ padding: '10px' }}
-                    align="center"
-                    style={{ fontWeight: 'bold' }}
-                    width={'25%'}>
-                    Sản phẩm
-                  </TableCell>
-                  <TableCell
-                    sx={{ padding: '10px' }}
-                    align="center"
-                    style={{ fontWeight: 'bold' }}
-                    width={'15%'}>
-                    Số lượng
-                  </TableCell>
-                  <TableCell
-                    sx={{ padding: 0 }}
-                    align="center"
-                    style={{ fontWeight: 'bold' }}
-                    width={'15%'}>
-                    Đơn giá
-                  </TableCell>
-                  <TableCell
-                    sx={{ padding: '10px' }}
-                    align="center"
-                    style={{ fontWeight: 'bold' }}
-                    width={'15%'}>
-                    Tổng
-                  </TableCell>
-                  <TableCell
-                    sx={{ padding: '10px' }}
-                    align="center"
-                    style={{ fontWeight: 'bold' }}
-                    width={'20%'}>
-                    Ghi chú
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-            </Table>
-            <Box
-              sx={{
-                '::-webkit-scrollbar': {
-                  width: '0px',
-                },
-              }}
-              style={{ overflow: 'auto', minHeight: '30vh' }}>
-              <Table>
-                {billDetail.filter((e) => e.quantityReturn > 0).length > 0 ? (
-                  billDetail
-                    .filter((e) => e.quantityReturn > 0)
-                    .map((product) => (
-                      <TableBody>
-                        <TableCell sx={{ padding: '5px' }} align="center" width={'25%'}>
-                          <div
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                            }}>
-                            <Carousel
-                              indicators={false}
-                              sx={{ minWidth: '60px', height: '60px' }}
-                              navButtonsAlwaysInvisible>
-                              {product.image.split(',').map((item, i) => (
-                                <img
-                                  alt="anh-san-pham"
-                                  width={'60px'}
-                                  height={'60px'}
-                                  key={'anh' + i}
-                                  src={item}
-                                />
-                              ))}
-                            </Carousel>
-                            <div style={{ display: 'inline-block', paddingLeft: '10px' }}>
-                              {product.name}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell sx={{ padding: '5px' }} align="center" width={'15%'}>
-                          <Chip label={product.quantityReturn} sx={{ fontWeight: 'bold' }} />
-                        </TableCell>
-                        <TableCell sx={{ padding: '5px' }} align="center" width={'15%'}>
-                          <TextField
-                            className="input-soluong-return"
-                            sx={{ width: '90px' }}
-                            size="small"
-                            disabled
-                            value={product.price.toLocaleString('en-US')}
-                            variant="standard"
-                          />
-                        </TableCell>
-                        <TableCell sx={{ padding: '5px' }} width={'15%'} align="center">
-                          <b style={{ color: 'red' }}>
-                            {(product.price * product.quantityReturn).toLocaleString('en-US')}
-                          </b>
-                        </TableCell>
-                        <TableCell sx={{ padding: '5px' }} width={'20%'} align="center">
-                          <TextField
-                            value={product?.note}
-                            onChange={(e) => {
-                              changeNote(e.target.value, product)
-                            }}
-                            disabled={product.quantityReturn <= 0}
-                            color="cam"
-                            placeholder="Ghi chú"
-                            multiline
-                            rows={2}
-                            sx={{ marginRight: '10px' }}
-                          />
-                        </TableCell>
-                      </TableBody>
-                    ))
-                ) : (
-                  <div
-                    style={{
-                      display: 'flex',
-                      textAlign: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <img
-                      width={'400px'}
-                      src={require('../../../assets/image/no-data.png')}
-                      alt="No-data"
-                    />
+          <Grid container spacing={2} mt={2}>
+            <Grid xs={8} style={{ paddingTop: 0 }}>
+              <Paper className="paper-return" sx={{ mb: 2, p: 1, marginLeft: '30px' }}>
+                <h4 style={{ margin: '0' }}>
+                  <MdAssignmentReturned fontSize={20} style={{ marginBottom: '-6px' }} />
+                  &nbsp; Danh sách sản phẩm trả
+                </h4>
+                <hr style={{ marginBottom: '0px' }} />
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        sx={{ padding: '10px' }}
+                        align="center"
+                        style={{ fontWeight: 'bold' }}
+                        width={'25%'}>
+                        Sản phẩm
+                      </TableCell>
+                      <TableCell
+                        sx={{ padding: '10px' }}
+                        align="center"
+                        style={{ fontWeight: 'bold' }}
+                        width={'15%'}>
+                        Số lượng
+                      </TableCell>
+                      <TableCell
+                        sx={{ padding: 0 }}
+                        align="center"
+                        style={{ fontWeight: 'bold' }}
+                        width={'15%'}>
+                        Đơn giá
+                      </TableCell>
+                      <TableCell
+                        sx={{ padding: '10px' }}
+                        align="center"
+                        style={{ fontWeight: 'bold' }}
+                        width={'15%'}>
+                        Tổng
+                      </TableCell>
+                      <TableCell
+                        sx={{ padding: '10px' }}
+                        align="center"
+                        style={{ fontWeight: 'bold' }}
+                        width={'20%'}>
+                        Ghi chú
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                </Table>
+                <Box
+                  sx={{
+                    '::-webkit-scrollbar': {
+                      width: '0px',
+                    },
+                  }}
+                  style={{ overflow: 'auto', minHeight: '30vh' }}>
+                  <Table>
+                    {billDetail.filter((e) => e.quantityReturn > 0).length > 0 ? (
+                      billDetail
+                        .filter((e) => e.quantityReturn > 0)
+                        .map((product) => (
+                          <TableBody>
+                            <TableCell sx={{ padding: '5px' }} align="center" width={'25%'}>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}>
+                                <Carousel
+                                  indicators={false}
+                                  sx={{ minWidth: '60px', height: '60px' }}
+                                  navButtonsAlwaysInvisible>
+                                  {product.image.split(',').map((item, i) => (
+                                    <img
+                                      alt="anh-san-pham"
+                                      width={'60px'}
+                                      height={'60px'}
+                                      key={'anh' + i}
+                                      src={item}
+                                    />
+                                  ))}
+                                </Carousel>
+                                <div style={{ display: 'inline-block', paddingLeft: '10px' }}>
+                                  {product.name}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell sx={{ padding: '5px' }} align="center" width={'15%'}>
+                              <Chip label={product.quantityReturn} sx={{ fontWeight: 'bold' }} />
+                            </TableCell>
+                            <TableCell sx={{ padding: '5px' }} align="center" width={'15%'}>
+                              <TextField
+                                className="input-soluong-return"
+                                sx={{ width: '90px' }}
+                                size="small"
+                                disabled
+                                value={product.price.toLocaleString('en-US')}
+                                variant="standard"
+                              />
+                            </TableCell>
+                            <TableCell sx={{ padding: '5px' }} width={'15%'} align="center">
+                              <b style={{ color: 'red' }}>
+                                {(product.price * product.quantityReturn).toLocaleString('en-US')}
+                              </b>
+                            </TableCell>
+                            <TableCell sx={{ padding: '5px' }} width={'20%'} align="center">
+                              <TextField
+                                value={product?.note}
+                                onChange={(e) => {
+                                  changeNote(e.target.value, product)
+                                }}
+                                disabled={product.quantityReturn <= 0}
+                                color="cam"
+                                placeholder="Ghi chú"
+                                multiline
+                                rows={2}
+                                sx={{ marginRight: '10px' }}
+                              />
+                            </TableCell>
+                          </TableBody>
+                        ))
+                    ) : (
+                      <div
+                        style={{
+                          display: 'flex',
+                          textAlign: 'center',
+                          justifyContent: 'center',
+                        }}>
+                        <img
+                          width={'400px'}
+                          src={require('../../../assets/image/no-data.png')}
+                          alt="No-data"
+                        />
+                      </div>
+                    )}
+                  </Table>
+                </Box>
+              </Paper>
+            </Grid>
+            <Grid item xs={4} style={{ paddingTop: 0 }}>
+              <Paper
+                sx={{
+                  p: 2,
+                  height: '43vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}>
+                <Typography variant="h6" textAlign={'center'} color={'#229954'} fontWeight={'600'}>
+                  Thông tin hoàn trả
+                </Typography>
+                <div
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: '#EBEBEB',
+                    padding: '10px',
+                    borderRadius: '10px',
+                  }}>
+                  <div>
+                    <PersonIcon style={{ marginRight: '5px', marginBottom: '-5px' }} />
+                    <span>
+                      <b>Khách hàng: </b>
+                      {bill?.customer?.fullName ? bill?.customer?.fullName : 'Khách lẻ'}
+                    </span>
                   </div>
-                )}
-              </Table>
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={4} style={{ paddingTop: 0 }}>
-          <Paper
-            sx={{
-              p: 2,
-              height: '82vh',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}>
-            <Typography variant="h6" textAlign={'center'} color={'#229954'} fontWeight={'600'}>
-              Thông tin hoàn trả
-            </Typography>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                backgroundColor: '#EBEBEB',
-                padding: '10px',
-                borderRadius: '10px',
-              }}>
-              <PersonIcon style={{ marginRight: '5px' }} />
-              <b>{bill?.fullName ? bill?.fullName : 'Khách lẻ'}</b>
-            </div>
-            <Grid container>
-              <Grid xs={6}>
-                Tổng tiền{' '}
-                <Chip
-                  label={billDetail.reduce((total, e) => {
-                    return total + (e.quantityReturn || 0)
-                  }, 0)}
-                  size="small"
-                />
-              </Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <b style={{ color: 'red' }}>
-                  {billDetail
-                    .reduce((total, e) => {
-                      return total + e.quantityReturn * e.price
-                    }, 0)
-                    .toLocaleString('it-IT', {
-                      style: 'currency',
-                      currency: 'VND',
-                    })}
-                </b>
-              </Grid>
+                  <div style={{ marginTop: '5px' }}>
+                    <PersonIcon style={{ marginRight: '5px', marginBottom: '-5px' }} />
+                    <span>
+                      <b>Người nhận: </b>
+                      {bill?.fullName ? bill?.fullName : 'Khách lẻ'}
+                    </span>
+                  </div>
+                  <div style={{ marginTop: '5px' }}>
+                    <BusinessIcon style={{ marginRight: '5px', marginBottom: '-5px' }} />
+                    <span>
+                      <b>Địa chỉ: </b>
+                      {bill?.address ? bill?.address : ''}
+                    </span>
+                  </div>
+                </div>
+                <Grid container>
+                  <Grid xs={6}>Số tiền hoàn trả </Grid>
+                  <Grid xs={6} sx={{ textAlign: 'right' }}>
+                    <b style={{ color: 'red' }}>
+                      {billDetail
+                        .reduce((total, e) => {
+                          return total + e.quantityReturn * e.price
+                        }, 0)
+                        .toLocaleString('it-IT', {
+                          style: 'currency',
+                          currency: 'VND',
+                        })}
+                    </b>
+                  </Grid>
+                </Grid>
+                <Button onClick={traHang} color="cam" variant="contained" fullWidth>
+                  TRẢ HÀNG
+                </Button>
+              </Paper>
             </Grid>
-
-            <Grid container>
-              <Grid xs={6}>Phí trả hàng</Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <TextField
-                  className="input-soluong-return-2"
-                  sx={{ width: '150px' }}
-                  size="small"
-                  value={phi}
-                  onChange={(e) => {
-                    const inputValue = e.target.value.trim() === '' ? 0 : parseInt(e.target.value)
-
-                    if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 100) {
-                      setPhi(inputValue)
-                    }
-                  }}
-                  variant="standard"
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                  }}
-                />
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid xs={6}>
-                <b>Cần trả khách</b>
-              </Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <b style={{ color: '#2874A6' }}>
-                  {(
-                    billDetail.reduce((total, e) => {
-                      return total + e.quantityReturn * e.price
-                    }, 0) *
-                    (1 - phi / 100)
-                  ).toLocaleString('it-IT', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })}
-                </b>
-              </Grid>
-            </Grid>
-
-            <Grid container>
-              <Grid xs={6}>
-                <b>Tiền trả khách</b>
-              </Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <TextField
-                  className="input-soluong-return-2"
-                  sx={{ width: '150px' }}
-                  size="small"
-                  value={traKhach}
-                  onChange={(e) => {
-                    const inputValue = e.target.value.trim() === '' ? 0 : parseInt(e.target.value)
-
-                    if (!isNaN(inputValue) && inputValue >= 0) {
-                      setTraKhach(inputValue)
-                    }
-                  }}
-                  variant="standard"
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">VND</InputAdornment>,
-                  }}
-                />
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid xs={6}>
-                <b>Tiền dư</b>
-              </Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <b>
-                  {(
-                    traKhach -
-                    billDetail.reduce((total, e) => {
-                      return total + e.quantityReturn * e.price
-                    }, 0) *
-                      (1 - phi / 100)
-                  ).toLocaleString('it-IT', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })}
-                </b>
-              </Grid>
-            </Grid>
-            <RadioGroup
-              row
-              name="row-radio-buttons-group"
-              value={typePay}
-              onChange={(e) => {
-                setTypePay(parseInt(e.target.value))
-              }}>
-              <FormControlLabel value={0} control={<Radio />} label="Tiền mặt" />
-              <FormControlLabel value={1} control={<Radio />} label="Chuyển khoản" />
-            </RadioGroup>
-            {typePay === 1 && (
-              <TextField
-                onChange={(e) => {
-                  setCodePay(e.target.value)
-                }}
-                placeholder="Mã giao dịch"
-                size="small"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-            <Button onClick={traHang} sx={{ mt: 5 }} color="cam" variant="contained" fullWidth>
-              TRẢ HÀNG
-            </Button>
-          </Paper>
+          </Grid>
         </Grid>
       </Grid>
     </div>

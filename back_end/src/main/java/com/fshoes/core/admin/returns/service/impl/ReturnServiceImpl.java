@@ -147,7 +147,7 @@ public class ReturnServiceImpl implements ReturnService {
                 returnDetail.setQuantity(req.getQuantity());
                 returnDetails.add(returnDetail);
 
-                productDetail.setAmount(productDetail.getAmount() + req.getQuantity());
+                productDetail.setQuantityReturn(productDetail.getQuantityReturn() + req.getQuantity());
                 productDetailRepository.save(productDetail);
             }
             billDetailRepository.saveAll(billDetails);
@@ -344,13 +344,13 @@ public class ReturnServiceImpl implements ReturnService {
                 return dt;
             }).toList());
             Bill bill = billRepository.findById(returns.getBill().getId()).orElseThrow(() -> new RestApiException("Hóa đơn không tồn tại"));
-            bill.setStatus(11);
+            bill.setStatus(7);
             billRepository.save(bill);
             BillHistory billHistory = new BillHistory();
             billHistory.setBill(bill);
             billHistory.setStatusBill(11);
             billHistory.setAccount(userLogin.getUserLogin());
-            billHistory.setNote("Từ chối yêu cầu hoàn trả");
+            billHistory.setNote("Hủy yêu cầu hoàn trả");
             billHistoryRepository.save(billHistory);
             return returnsRepository.save(returns);
         } catch (Exception e) {

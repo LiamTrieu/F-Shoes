@@ -27,6 +27,8 @@ import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import QRCode from 'react-qr-code'
 
+import { formatCurrency } from '../../../services/common/formatCurrency '
+
 export default function AdModalDetailProductDetail({
   productDetail,
   open,
@@ -72,6 +74,7 @@ export default function AdModalDetailProductDetail({
     amount: productDetail.amount,
     price: productDetail.price,
     description: productDetail.description,
+    quantityReturn: productDetail.quantityReturn,
   })
   const [images, setImages] = useState([])
   const [newCategory, setNewCategory] = useState({ name: '' })
@@ -853,16 +856,15 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Đơn giá
               </b>
               <TextField
-                InputProps={{
-                  style: { paddingRight: '4px' },
-                  endAdornment: '₫',
-                }}
                 size="small"
                 color="cam"
-                value={preProductDetail.price}
+                value={formatCurrency(preProductDetail.price)}
                 onChange={(e) => {
-                  validate({ ...preProductDetail, price: e.target.value })
-                  setPreProductDetail({ ...preProductDetail, price: e.target.value })
+                  validate({ ...preProductDetail, price: e.target.value.replace(/\D/g, '') })
+                  setPreProductDetail({
+                    ...preProductDetail,
+                    price: e.target.value.replace(/\D/g, ''),
+                  })
                 }}
                 className="search-field"
                 placeholder="Nhập đơn giá"
@@ -870,6 +872,20 @@ export default function AdModalDetailProductDetail({
                 fullWidth
               />
               {err.price && <span style={{ color: 'red' }}>{err.price}</span>}
+            </div>
+            <div style={{ width: '100%' }}>
+              <b>
+                <span style={{ color: 'red' }}></span>Số lượng sản phẩm lỗi
+              </b>
+              <TextField
+                size="small"
+                color="cam"
+                value={preProductDetail.quantityReturn}
+                disabled
+                className="search-field"
+                variant="outlined"
+                fullWidth
+              />
             </div>
           </Stack>
           <b>Mô tả sản phẩm</b>

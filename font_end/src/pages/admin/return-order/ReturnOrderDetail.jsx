@@ -5,13 +5,8 @@ import returnApi from '../../../api/admin/return/returnApi'
 import {
   Button,
   Chip,
-  FormControlLabel,
   Grid,
-  IconButton,
-  InputAdornment,
   Paper,
-  Radio,
-  RadioGroup,
   Stack,
   Table,
   TableBody,
@@ -26,6 +21,9 @@ import { RiBillLine } from 'react-icons/ri'
 import Carousel from 'react-material-ui-carousel'
 import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
+
+import PersonIcon from '@mui/icons-material/Person'
+import BusinessIcon from '@mui/icons-material/Business'
 
 const listBreadcrumbs = [{ name: 'Trả hàng', link: '/admin/return-order/0' }]
 export default function ReturnOrderDetail() {
@@ -112,15 +110,8 @@ export default function ReturnOrderDetail() {
       fee: returnDetail.fee,
       listDetail: [],
     }
-    if (
-      traKhach -
-        billDetail.reduce((total, e) => {
-          return total + e.quantity * e.price
-        }, 0) *
-          (1 - returnDetail?.fee / 100) <
-      0
-    ) {
-      toast.warning('Tiền trả khác phải lớn hơn hoặc bằng tiền khách nhận!')
+    if (returnBill.listDetail && returnBill.listDetail.length <= 0) {
+      toast.warning('Vui lòng chọn sản phẩm cần trả!')
     } else {
       const title = 'Xác nhận hoàn trả sản phẩm?'
       confirmSatus(title, '').then((result) => {
@@ -238,22 +229,22 @@ export default function ReturnOrderDetail() {
                   returnDetail?.status === 1
                     ? 'Hoàn thành'
                     : returnDetail?.status === 0
-                    ? 'Chờ xác nhận'
-                    : returnDetail?.status === 3
-                    ? 'Đang xử lý'
-                    : returnDetail?.status === 4
-                    ? 'Đã hủy'
-                    : 'Đã từ chối'
+                      ? 'Chờ xác nhận'
+                      : returnDetail?.status === 3
+                        ? 'Đang xử lý'
+                        : returnDetail?.status === 4
+                          ? 'Đã hủy'
+                          : 'Đã từ chối'
                 }
                 style={{
                   color:
                     returnDetail?.status === 1
                       ? 'green'
                       : returnDetail?.status === 0
-                      ? '#F2741F'
-                      : returnDetail?.status === 3
-                      ? 'blue'
-                      : 'red',
+                        ? '#F2741F'
+                        : returnDetail?.status === 3
+                          ? 'blue'
+                          : 'red',
                 }}
                 size="small"
               />
@@ -262,36 +253,44 @@ export default function ReturnOrderDetail() {
               style={{
                 marginTop: '10px',
                 marginBottom: '10px',
-                display: 'flex',
                 alignItems: 'center',
                 backgroundColor: '#EBEBEB',
                 padding: '10px',
                 borderRadius: '10px',
               }}>
-              <RiBillLine style={{ marginRight: '5px' }} />
-              <b>
-                Mã hóa đơn: &nbsp;
-                <Link to={`/admin/bill-detail/${returnDetail?.idBill}`}>
-                  {returnDetail?.codeBill}
-                </Link>
-              </b>
+              <div>
+                <RiBillLine style={{ marginRight: '5px' }} />
+                <b>
+                  Mã hóa đơn: &nbsp;
+                  <Link to={`/admin/bill-detail/${returnDetail?.idBill}`}>
+                    {returnDetail?.codeBill}
+                  </Link>
+                </b>
+              </div>
+              <div style={{ marginTop: '10px' }}>
+                <PersonIcon style={{ marginRight: '5px', marginBottom: '-5px' }} />
+                <span>
+                  <b>Khách hàng: </b>
+                  {returnDetail?.fullName ? returnDetail?.fullName : 'Khách lẻ'}
+                </span>
+              </div>
+              <div style={{ marginTop: '10px' }}>
+                <PersonIcon style={{ marginRight: '5px', marginBottom: '-5px' }} />
+                <span>
+                  <b>Người nhận: </b>
+                  {returnDetail?.customer ? returnDetail?.customer : 'Khách lẻ'}
+                </span>
+              </div>
+              <div style={{ marginTop: '10px' }}>
+                <BusinessIcon style={{ marginRight: '5px', marginBottom: '-5px' }} />
+                <span>
+                  <b>Địa chỉ: </b>
+                  {returnDetail?.address ? returnDetail?.address : ''}
+                </span>
+              </div>
             </div>
             <Grid container mt={2}>
-              <Grid xs={6}>Tên người mua</Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <b>{returnDetail?.customer}</b>
-              </Grid>
-            </Grid>
-            <Grid container mt={2}>
-              <Grid xs={6}>
-                Tổng tiền{' '}
-                <Chip
-                  label={billDetail.reduce((total, e) => {
-                    return total + (e.quantity || 0)
-                  }, 0)}
-                  size="small"
-                />
-              </Grid>
+              <Grid xs={6}>Số tiền hoàn trả </Grid>
               <Grid xs={6} sx={{ textAlign: 'right' }}>
                 <b style={{ color: 'red' }}>
                   {billDetail
@@ -306,133 +305,8 @@ export default function ReturnOrderDetail() {
               </Grid>
             </Grid>
 
-            <Grid container mt={2}>
-              <Grid xs={6}>Phí trả hàng</Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <TextField
-                  className="input-soluong-return-2"
-                  sx={{ width: '150px' }}
-                  size="small"
-                  value={returnDetail?.fee}
-                  onChange={(e) => {
-                    const inputValue = e.target.value.trim() === '' ? 0 : parseInt(e.target.value)
-
-                    if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 100) {
-                      setReturnDetail({ ...returnDetail, fee: inputValue })
-                    }
-                  }}
-                  disabled={returnDetail?.status !== 3}
-                  variant="standard"
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                  }}
-                />
-              </Grid>
-            </Grid>
-            <Grid container mt={2}>
-              <Grid xs={6}>
-                <b>{returnDetail?.status === 1 ? 'Đã' : 'Cần'} trả khách</b>
-              </Grid>
-              <Grid xs={6} sx={{ textAlign: 'right' }}>
-                <b style={{ color: '#2874A6' }}>
-                  {returnDetail?.status === 2
-                    ? '0 VND'
-                    : (
-                        billDetail.reduce((total, e) => {
-                          return total + e.quantity * e.price
-                        }, 0) *
-                        (1 - returnDetail?.fee / 100)
-                      ).toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'VND',
-                      })}
-                </b>
-              </Grid>
-            </Grid>
-
             {returnDetail?.status !== 1 && returnDetail?.status !== 2 && (
               <>
-                <Grid container mt={2}>
-                  <Grid xs={6}>
-                    <b>Tiền trả khách</b>
-                  </Grid>
-                  <Grid xs={6} sx={{ textAlign: 'right' }}>
-                    <TextField
-                      disabled={returnDetail?.status !== 3}
-                      className="input-soluong-return-2"
-                      sx={{ width: '150px' }}
-                      size="small"
-                      value={traKhach}
-                      onChange={(e) => {
-                        const inputValue =
-                          e.target.value.trim() === '' ? 0 : parseInt(e.target.value)
-
-                        if (!isNaN(inputValue) && inputValue >= 0) {
-                          setTraKhach(inputValue)
-                        }
-                      }}
-                      variant="standard"
-                      InputLabelProps={{ shrink: true }}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">VND</InputAdornment>,
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container mt={2}>
-                  <Grid xs={6}>
-                    <b>Tiền dư</b>
-                  </Grid>
-                  <Grid xs={6} sx={{ textAlign: 'right' }}>
-                    <b>
-                      {returnDetail?.status === 3
-                        ? (
-                            traKhach -
-                            billDetail.reduce((total, e) => {
-                              return total + e.quantity * e.price
-                            }, 0) *
-                              (1 - returnDetail?.fee / 100)
-                          ).toLocaleString('it-IT', {
-                            style: 'currency',
-                            currency: 'VND',
-                          })
-                        : '0 VND'}
-                    </b>
-                  </Grid>
-                </Grid>
-                <RadioGroup
-                  sx={{ mt: 2 }}
-                  row
-                  name="row-radio-buttons-group"
-                  value={typePay}
-                  onChange={(e) => {
-                    setTypePay(parseInt(e.target.value))
-                  }}>
-                  <FormControlLabel
-                    disabled={returnDetail?.status !== 3}
-                    value={0}
-                    control={<Radio />}
-                    label="Tiền mặt"
-                  />
-                  <FormControlLabel
-                    disabled={returnDetail?.status !== 3}
-                    value={1}
-                    control={<Radio />}
-                    label="Chuyển khoản"
-                  />
-                </RadioGroup>
-                {typePay === 1 && (
-                  <TextField
-                    onChange={(e) => {
-                      setCodePay(e.target.value)
-                    }}
-                    placeholder="Mã giao dịch"
-                    size="small"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
                 {returnDetail?.status !== 2 && (
                   <Stack direction="row" spacing={2} mt={2}>
                     <Button
