@@ -22,13 +22,15 @@ import clientProductApi from '../../api/client/clientProductApi'
 import clientCartApi from '../../api/client/clientCartApi'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import {socketUrl} from '../../services/url'
+import { socketUrl } from '../../services/url'
 import confirmSatus from '../../components/comfirmSwal'
+import { toast } from 'react-toastify'
 
 var stompClient = null
 export default function Cart() {
   const [productSelect, setProductSelect] = useState([])
   const [promotionByProductDetail, setGromotionByProductDetail] = useState([])
+  const [selectAll, setSelectAll] = useState(false)
   // const dispatch = useDispatch()
 
   const onChangeSL = (cart, num) => {
@@ -71,14 +73,32 @@ export default function Cart() {
 
   const onChangeCheck = (cart, checked) => {
     const preProductSelect = [...productSelect]
+
     if (checked) {
-      preProductSelect.push(cart)
+      if (preProductSelect.length < 5) {
+        const totalSelectedQuantity = preProductSelect.reduce(
+          (total, item) => total + item.soLuong,
+          0,
+        )
+
+        if (totalSelectedQuantity + cart.soLuong <= 5) {
+          preProductSelect.push(cart)
+        } else {
+          toast.error('Tổng số lượng sản phẩm được chọn cao nhất là 5')
+          return
+        }
+      } else {
+        toast.error('Chỉ được chọn cao nhất 5 sản phẩm')
+        return
+      }
     } else {
       const index = preProductSelect.findIndex((e) => e.id === cart.id)
       preProductSelect.splice(index, 1)
     }
+
     setProductSelect(preProductSelect)
   }
+
   const getPromotionProductDetails = (id) => {
     clientCartApi.getPromotionByProductDetail(id).then((response) => {
       setGromotionByProductDetail(response.data.data)
@@ -339,12 +359,20 @@ export default function Cart() {
   //   })
   // }
 
-  function checkAll(checked) {
-    if (checked) {
-      setProductSelect([...product])
-    } else {
-      setProductSelect([])
+  const checkAll = (checked) => {
+    const newProductSelect = checked ? [...product] : []
+    const newTotalSelectedQuantity = newProductSelect.reduce(
+      (total, item) => total + item.soLuong,
+      0,
+    )
+
+    if (checked && newTotalSelectedQuantity > 5) {
+      toast.error('Tổng số lượng sản phẩm được chọn cao nhất là 5')
+      return
     }
+
+    setSelectAll(checked)
+    setProductSelect(newProductSelect)
   }
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
@@ -414,7 +442,7 @@ export default function Cart() {
                         {' '}
                         <Checkbox
                           size="small"
-                          checked={productSelect.length === product.length}
+                          checked={selectAll}
                           onClick={(e) => {
                             checkAll(e.target.checked)
                           }}
