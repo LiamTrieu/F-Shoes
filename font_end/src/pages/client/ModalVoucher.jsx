@@ -110,7 +110,7 @@ export default function ModalVoucher({
           <Grid className="grid-apply-modal-voucher">
             <TextField
               className="text-field-apply-modal-voucher"
-              placeholder="Mã giảm giá"
+              placeholder="phiếu giảm giá"
               size="small"
               value={codeVoucher}
               onChange={(e) => setCodeVoucher(e.target.value)}

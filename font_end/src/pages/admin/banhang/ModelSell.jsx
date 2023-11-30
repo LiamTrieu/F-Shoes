@@ -90,7 +90,7 @@ const AirbnbSlider = styled(Slider)(() => ({
   },
 }))
 
-export default function ModelSell({ open, setOPen, idBill, load }) {
+export default function ModelSell({ open, setOPen, idBill, load, listProductBill }) {
   const [isShowProductDetail, setIsShowProductDetail] = useState(false)
   const [listProduct, setListProduct] = useState([])
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -163,7 +163,6 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
         minPrice: response.data.data.minPrice,
         maxPrice: response.data.data.maxPrice,
       })
-      console.log(response.data.data.minPrice, '======')
     })
   }, [])
 
@@ -204,6 +203,26 @@ export default function ModelSell({ open, setOPen, idBill, load }) {
     } else {
       priceToAdd = selectedProduct.price
     }
+    if (listProductBill.length > 5) {
+      setIsShowProductDetail(false)
+      toast.warning('Giỏ hàng chỉ chứa được 5 sản phẩm', {
+        position: toast.POSITION.TOP_CENTER,
+      })
+      return
+    }
+    const totalQuantityInCart = listProductBill.reduce(
+      (total, product) => total + product.quantity,
+      0,
+    )
+
+    if (Number(totalQuantityInCart) + Number(addAmount) > 5) {
+      setIsShowProductDetail(false)
+      toast.warning('Tổng số lượng sản phẩm trong giỏ hàng không được quá 5', {
+        position: toast.POSITION.TOP_CENTER,
+      })
+      return
+    }
+
     if (addAmount > getAmountProduct.amount) {
       setErrorQuantity('Số lượng không còn đủ')
       return

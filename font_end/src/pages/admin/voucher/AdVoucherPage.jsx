@@ -245,7 +245,7 @@ export default function AdVoucherPage() {
                   <MenuItem value={0}>Công khai</MenuItem>
                   <MenuItem value={1}>Cá nhân</MenuItem>
                 </Select>
-                {/* <b>Loại</b>
+                <b>Loại</b>
                 <Select
                   displayEmpty
                   size="small"
@@ -256,7 +256,7 @@ export default function AdVoucherPage() {
                   <MenuItem value={''}>Loại</MenuItem>
                   <MenuItem value={0}>Phần trăm</MenuItem>
                   <MenuItem value={1}>Giá tiền</MenuItem>
-                </Select> */}
+                </Select>
                 <b>Trạng thái</b>
                 <Select
                   displayEmpty
@@ -291,9 +291,9 @@ export default function AdVoucherPage() {
                   <TableCell align="center" width={'15%'}>
                     Kiểu
                   </TableCell>
-                  {/* <TableCell align="center" width={'15%'}>
+                  <TableCell align="center" width={'15%'}>
                     Loại
-                  </TableCell> */}
+                  </TableCell>
                   <TableCell align="center" width={'17.5%'}>
                     Ngày bắt đầu
                   </TableCell>
@@ -321,13 +321,13 @@ export default function AdVoucherPage() {
                         <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
                       )}
                     </TableCell>
-                    {/* <TableCell align="center">
+                    <TableCell align="center">
                       {row.typeValue === 0 ? (
                         <Chip className="chip-tat-ca" size="small" label="Phần trăm" />
                       ) : (
                         <Chip className="chip-gioi-han" size="small" label="Giá tiền" />
                       )}
-                    </TableCell> */}
+                    </TableCell>
                     <TableCell align="center">
                       {dayjs(row.startDate).format('DD/MM/YYYY HH:mm')}
                     </TableCell>
@@ -345,7 +345,12 @@ export default function AdVoucherPage() {
                           onClick={() => handelDeleteVoucher(row.id)}
                         />
                       ) : (
-                        <Chip className="chip-sap-hoat-dong" size="small" label="Sắp diễn ra" />
+                        <Chip
+                          className="chip-sap-hoat-dong"
+                          size="small"
+                          label="Sắp diễn ra"
+                          onClick={() => handelDeleteVoucher(row.id)}
+                        />
                       )}
                     </TableCell>
                     <TableCell align="center">

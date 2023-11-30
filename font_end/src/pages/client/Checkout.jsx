@@ -865,7 +865,7 @@ export default function Checkout() {
               <Grid sx={{ mt: 2, ml: 2, mr: 2, display: 'flex', alignItems: 'center' }}>
                 <TextField
                   sx={{ flex: 1, minWidth: '100px', width: '100%' }}
-                  value={voucher === null ? 'Mã khuyễn mãi' : voucher.name}
+                  value={voucher === null ? 'Phiếu giảm giá' : voucher.name}
                   size="small"
                   className="input-voucher"
                   disabled
