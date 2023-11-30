@@ -111,7 +111,11 @@ public class HDBillServiceImpl implements HDBillService {
         }
         Pageable pageable = PageRequest.of(billFilterRequest.getPage() > 0 ? billFilterRequest.getPage() - 1 : billFilterRequest.getPage(), billFilterRequest.getSize());
 
-        return hdBillRepository.filterBill(pageable, status, startDate, endDate, type, billFilterRequest.getInputSearch());
+        if (userLogin.getUserLogin().getRole() == 1) {
+            return hdBillRepository.filterBill(pageable, status, startDate, endDate, type, billFilterRequest.getInputSearch());
+        } else {
+            return hdBillRepository.filterBillByStaff(pageable, status, startDate, endDate, type, billFilterRequest.getInputSearch(), userLogin.getUserLogin().getEmail());
+        }
     }
 
     //staff create bill - type = 0: tại quầy, 1: qua web

@@ -19,7 +19,7 @@ public interface HDBillRepository extends BillRepository {
             b.total_money as totalMoney, b.money_reduced as moneyReduced,
             b.money_after as moneyAfter, b.money_ship as moneyShip,
             b.type, b.note, b.created_at as createdAt,
-            b.created_by as creatdeBy, sum(bt.quantity) as totalProduct, b.status
+            b.created_by as createdBy, sum(bt.quantity) as totalProduct, b.status
             FROM bill b
             LEFT JOIN bill_detail bt ON b.id = bt.id_bill
             LEFT JOIN account c ON b.id_customer = c.id
@@ -48,6 +48,49 @@ public interface HDBillRepository extends BillRepository {
             @Param("endDate") Long endDate,
             @Param("type") Boolean type,
             @Param("inputSearch") String inputSearch
+    );
+
+    @Query(value = """
+            SELECT ROW_NUMBER() over (ORDER BY b.created_at desc ) as stt,
+            b.id, b.code, c.full_name as fullName,
+            c.phone_number as phoneNumber, b.address,
+            b.total_money as totalMoney, b.money_reduced as moneyReduced,
+            b.money_after as moneyAfter, b.money_ship as moneyShip,
+            b.type, b.note, b.created_at as createdAt,
+            b.created_by as createdBy, sum(bt.quantity) as totalProduct, b.status
+            FROM bill b
+            LEFT JOIN bill_detail bt ON b.id = bt.id_bill
+            LEFT JOIN account c ON b.id_customer = c.id
+            WHERE (:status IS NULL OR b.status = :status)
+            AND (:startDate IS NULL OR b.created_at >= :startDate
+            AND :endDate IS NULL OR b.created_at <= :endDate)
+            AND (:type IS NULL OR b.type = :type)
+            AND (
+                    (b.type = 1) OR
+                    (b.type = 0 AND b.created_by = :email)
+            )
+            AND (
+                b.code like concat('%', :inputSearch, '%')
+                OR b.full_name LIKE concat('%', :inputSearch, '%')
+                OR b.phone_number LIKE CONCAT('%', :inputSearch, '%')
+                OR c.full_name LIKE CONCAT('%', :inputSearch, '%')
+                OR c.phone_number LIKE CONCAT('%', :inputSearch, '%')
+                OR c.email LIKE CONCAT('%', :inputSearch, '%')
+            )
+            AND b.status <> 8
+            GROUP BY b.id, b.code, c.full_name, c.phone_number, b.address,
+            b.total_money, b.money_reduced, b.money_after, b.money_ship,
+            b.type,b.note, b.created_at,b.created_by,b.status
+            ORDER BY b.created_at DESC
+            """, nativeQuery = true)
+    Page<HDBillResponse> filterBillByStaff(
+            Pageable pageable,
+            @Param("status") Integer status,
+            @Param("startDate") Long startDate,
+            @Param("endDate") Long endDate,
+            @Param("type") Boolean type,
+            @Param("inputSearch") String inputSearch,
+            @Param("email") String email
     );
 
     @Query(value = """
