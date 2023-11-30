@@ -29,7 +29,7 @@ export default function ModalVoucherDetail({ openModal, setOpenModal, voucher })
                 flexGrow: 1,
               }}>
               <Typography variant="h6" component="div">
-                Thông tin mã khuyễn mãi
+                Thông tin phiếu giảm giá
               </Typography>
             </Box>
             <IconButton
@@ -132,8 +132,8 @@ export default function ModalVoucherDetail({ openModal, setOpenModal, voucher })
                   </span>
                   <br />
                   <span>
-                    Đối với những mã khuyễn mãi thuộc kiểu <b>công khai</b> mã giảm giá sẽ được sử
-                    dụng bởi tất cả khách hàng!
+                    Đối với những phiếu giảm giá thuộc kiểu <b>công khai</b> phiếu giảm giá sẽ được
+                    sử dụng bởi tất cả khách hàng!
                   </span>
                 </Grid>
               </Grid>
