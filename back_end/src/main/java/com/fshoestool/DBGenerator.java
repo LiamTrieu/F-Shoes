@@ -387,80 +387,80 @@
 //        //Category
 //
 //        //product detail
-//        ProductDetail productDetail1 = ProductDetail.builder().weight(1000).code("PD001").price(BigDecimal.valueOf(100000)).deleted(Status.HOAT_DONG).amount(500).description("Mô tả sản phẩm 1").brand(brand1).sole(sole1).size(size1)
+//        ProductDetail productDetail1 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD001").price(BigDecimal.valueOf(100000)).deleted(Status.HOAT_DONG).amount(500).description("Mô tả sản phẩm 1").brand(brand1).sole(sole1).size(size1)
 //                .product(product1).material(material1).color(color1).category(category1).build();
 //        productDetail1.setId(productDetailRepository.save(productDetail1).getId());
 //
-//        ProductDetail productDetail2 = ProductDetail.builder().weight(1000).code("PD002").price(BigDecimal.valueOf(90000)).deleted(Status.HOAT_DONG).amount(450).description("Mô tả sản phẩm 2").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+//        ProductDetail productDetail2 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD002").price(BigDecimal.valueOf(90000)).deleted(Status.HOAT_DONG).amount(450).description("Mô tả sản phẩm 2").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
 //        productDetail2.setId(productDetailRepository.save(productDetail2).getId());
 //
-//        ProductDetail productDetail3 = ProductDetail.builder().weight(1000).code("PD003").price(BigDecimal.valueOf(80000)).deleted(Status.HOAT_DONG).amount(400).description("Mô tả sản phẩm 3").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
+//        ProductDetail productDetail3 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD003").price(BigDecimal.valueOf(80000)).deleted(Status.HOAT_DONG).amount(400).description("Mô tả sản phẩm 3").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
 //        productDetail3.setId(productDetailRepository.save(productDetail3).getId());
 //
-//        ProductDetail productDetail4 = ProductDetail.builder().weight(1000).code("PD004").price(BigDecimal.valueOf(70000)).deleted(Status.HOAT_DONG).amount(350).description("Mô tả sản phẩm 4").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
+//        ProductDetail productDetail4 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD004").price(BigDecimal.valueOf(70000)).deleted(Status.HOAT_DONG).amount(350).description("Mô tả sản phẩm 4").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color4).category(category4).build();
 //        productDetail4.setId(productDetailRepository.save(productDetail4).getId());
 //
-//        ProductDetail productDetail5 = ProductDetail.builder().weight(1000).code("PD005").price(BigDecimal.valueOf(60000)).deleted(Status.HOAT_DONG).amount(300).description("Mô tả sản phẩm 5").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
+//        ProductDetail productDetail5 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD005").price(BigDecimal.valueOf(60000)).deleted(Status.HOAT_DONG).amount(300).description("Mô tả sản phẩm 5").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color5).category(category5).build();
 //        productDetail5.setId(productDetailRepository.save(productDetail5).getId());
 //
-//        ProductDetail productDetail6 = ProductDetail.builder().weight(1000).code("PD006").price(BigDecimal.valueOf(55000)).deleted(Status.HOAT_DONG).amount(280).description("Mô tả sản phẩm 6").brand(brand1).sole(sole5).size(size1).product(product1).material(material1).color(color1).category(category1).build();
+//        ProductDetail productDetail6 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD006").price(BigDecimal.valueOf(55000)).deleted(Status.HOAT_DONG).amount(280).description("Mô tả sản phẩm 6").brand(brand1).sole(sole5).size(size1).product(product1).material(material1).color(color1).category(category1).build();
 //        productDetail6.setId(productDetailRepository.save(productDetail6).getId());
 //
-//        ProductDetail productDetail7 = ProductDetail.builder().weight(1000).code("PD007").price(BigDecimal.valueOf(48000)).deleted(Status.HOAT_DONG).amount(240).description("Mô tả sản phẩm 7").brand(brand2).sole(sole4).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+//        ProductDetail productDetail7 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD007").price(BigDecimal.valueOf(48000)).deleted(Status.HOAT_DONG).amount(240).description("Mô tả sản phẩm 7").brand(brand2).sole(sole4).size(size2).product(product2).material(material2).color(color2).category(category2).build();
 //        productDetail7.setId(productDetailRepository.save(productDetail7).getId());
 //
-//        ProductDetail productDetail8 = ProductDetail.builder().weight(1000).code("PD008").price(BigDecimal.valueOf(50000)).deleted(Status.HOAT_DONG).amount(250).description("Mô tả sản phẩm 8").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
+//        ProductDetail productDetail8 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD008").price(BigDecimal.valueOf(50000)).deleted(Status.HOAT_DONG).amount(250).description("Mô tả sản phẩm 8").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
 //        productDetail8.setId(productDetailRepository.save(productDetail8).getId());
 //
-//        ProductDetail productDetail9 = ProductDetail.builder().weight(1000).code("PD009").price(BigDecimal.valueOf(45000)).deleted(Status.HOAT_DONG).amount(230).description("Mô tả sản phẩm 9").brand(brand4).sole(sole2).size(size4).product(product4).material(material4).color(color4).category(category4).build();
+//        ProductDetail productDetail9 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD009").price(BigDecimal.valueOf(45000)).deleted(Status.HOAT_DONG).amount(230).description("Mô tả sản phẩm 9").brand(brand4).sole(sole2).size(size4).product(product4).material(material4).color(color4).category(category4).build();
 //        productDetail9.setId(productDetailRepository.save(productDetail9).getId());
 //
-//        ProductDetail productDetail10 = ProductDetail.builder().weight(1000).code("PD010").price(BigDecimal.valueOf(40000)).deleted(Status.HOAT_DONG).amount(200).description("Mô tả sản phẩm 10").brand(brand5).sole(sole1).size(size5).product(product5).material(material5).color(color5).category(category5).build();
+//        ProductDetail productDetail10 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD010").price(BigDecimal.valueOf(40000)).deleted(Status.HOAT_DONG).amount(200).description("Mô tả sản phẩm 10").brand(brand5).sole(sole1).size(size5).product(product5).material(material5).color(color5).category(category5).build();
 //        productDetail10.setId(productDetailRepository.save(productDetail10).getId());
 //
-//        ProductDetail productDetail11 = ProductDetail.builder().weight(1000).code("PD011").price(BigDecimal.valueOf(35000)).deleted(Status.HOAT_DONG).amount(180).description("Mô tả sản phẩm 11").brand(brand1).sole(sole1).size(size5).product(product1).material(material1).color(color1).category(category1).build();
+//        ProductDetail productDetail11 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD011").price(BigDecimal.valueOf(35000)).deleted(Status.HOAT_DONG).amount(180).description("Mô tả sản phẩm 11").brand(brand1).sole(sole1).size(size5).product(product1).material(material1).color(color1).category(category1).build();
 //        productDetail11.setId(productDetailRepository.save(productDetail11).getId());
 //
-//        ProductDetail productDetail12 = ProductDetail.builder().weight(1000).code("PD012").price(BigDecimal.valueOf(30000)).deleted(Status.HOAT_DONG).amount(150).description("Mô tả sản phẩm 12").brand(brand2).sole(sole2).size(size4).product(product2).material(material2).color(color2).category(category2).build();
+//        ProductDetail productDetail12 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD012").price(BigDecimal.valueOf(30000)).deleted(Status.HOAT_DONG).amount(150).description("Mô tả sản phẩm 12").brand(brand2).sole(sole2).size(size4).product(product2).material(material2).color(color2).category(category2).build();
 //        productDetail12.setId(productDetailRepository.save(productDetail12).getId());
 //
-//        ProductDetail productDetail13 = ProductDetail.builder().weight(1000).code("PD013").price(BigDecimal.valueOf(25000)).deleted(Status.HOAT_DONG).amount(130).description("Mô tả sản phẩm 13").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
+//        ProductDetail productDetail13 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD013").price(BigDecimal.valueOf(25000)).deleted(Status.HOAT_DONG).amount(130).description("Mô tả sản phẩm 13").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color3).category(category3).build();
 //        productDetail13.setId(productDetailRepository.save(productDetail13).getId());
 //
-//        ProductDetail productDetail14 = ProductDetail.builder().weight(1000).code("PD014").price(BigDecimal.valueOf(20000)).deleted(Status.HOAT_DONG).amount(100).description("Mô tả sản phẩm 14").brand(brand4).sole(sole4).size(size2).product(product4).material(material4).color(color4).category(category4).build();
+//        ProductDetail productDetail14 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD014").price(BigDecimal.valueOf(20000)).deleted(Status.HOAT_DONG).amount(100).description("Mô tả sản phẩm 14").brand(brand4).sole(sole4).size(size2).product(product4).material(material4).color(color4).category(category4).build();
 //        productDetail14.setId(productDetailRepository.save(productDetail14).getId());
 //
-//        ProductDetail productDetail15 = ProductDetail.builder().weight(1000).code("PD015").price(BigDecimal.valueOf(15000)).deleted(Status.HOAT_DONG).amount(80).description("Mô tả sản phẩm 15").brand(brand5).sole(sole5).size(size1).product(product5).material(material5).color(color5).category(category5).build();
+//        ProductDetail productDetail15 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD015").price(BigDecimal.valueOf(15000)).deleted(Status.HOAT_DONG).amount(80).description("Mô tả sản phẩm 15").brand(brand5).sole(sole5).size(size1).product(product5).material(material5).color(color5).category(category5).build();
 //        productDetail15.setId(productDetailRepository.save(productDetail15).getId());
 //
-//        ProductDetail productDetail16 = ProductDetail.builder().weight(1000).code("PD016").price(BigDecimal.valueOf(12000)).deleted(Status.HOAT_DONG).amount(60).description("Mô tả sản phẩm 16").brand(brand1).sole(sole1).size(size1).product(product1).material(material5).color(color1).category(category1).build();
+//        ProductDetail productDetail16 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD016").price(BigDecimal.valueOf(12000)).deleted(Status.HOAT_DONG).amount(60).description("Mô tả sản phẩm 16").brand(brand1).sole(sole1).size(size1).product(product1).material(material5).color(color1).category(category1).build();
 //        productDetail16.setId(productDetailRepository.save(productDetail16).getId());
 //
-//        ProductDetail productDetail17 = ProductDetail.builder().weight(1000).code("PD017").price(BigDecimal.valueOf(10000)).deleted(Status.HOAT_DONG).amount(50).description("Mô tả sản phẩm 17").brand(brand2).sole(sole2).size(size2).product(product2).material(material4).color(color2).category(category2).build();
+//        ProductDetail productDetail17 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD017").price(BigDecimal.valueOf(10000)).deleted(Status.HOAT_DONG).amount(50).description("Mô tả sản phẩm 17").brand(brand2).sole(sole2).size(size2).product(product2).material(material4).color(color2).category(category2).build();
 //        productDetail17.setId(productDetailRepository.save(productDetail17).getId());
 //
-//        ProductDetail productDetail18 = ProductDetail.builder().weight(1000).code("PD018").price(BigDecimal.valueOf(18000)).deleted(Status.HOAT_DONG).amount(90).description("Mô tả sản phẩm 18").brand(brand1).sole(sole1).size(size1).product(product1).material(material3).color(color1).category(category1).build();
+//        ProductDetail productDetail18 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD018").price(BigDecimal.valueOf(18000)).deleted(Status.HOAT_DONG).amount(90).description("Mô tả sản phẩm 18").brand(brand1).sole(sole1).size(size1).product(product1).material(material3).color(color1).category(category1).build();
 //        productDetail18.setId(productDetailRepository.save(productDetail18).getId());
 //
-//        ProductDetail productDetail19 = ProductDetail.builder().weight(1000).code("PD019").price(BigDecimal.valueOf(19000)).deleted(Status.HOAT_DONG).amount(90).description("Mô tả sản phẩm 19").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
+//        ProductDetail productDetail19 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD019").price(BigDecimal.valueOf(19000)).deleted(Status.HOAT_DONG).amount(90).description("Mô tả sản phẩm 19").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color2).category(category2).build();
 //        productDetail19.setId(productDetailRepository.save(productDetail19).getId());
 //
-//        ProductDetail productDetail20 = ProductDetail.builder().weight(1000).code("PD020").price(BigDecimal.valueOf(20000)).deleted(Status.HOAT_DONG).amount(100).description("Mô tả sản phẩm 20").brand(brand3).sole(sole3).size(size3).product(product3).material(material1).color(color3).category(category3).build();
+//        ProductDetail productDetail20 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD020").price(BigDecimal.valueOf(20000)).deleted(Status.HOAT_DONG).amount(100).description("Mô tả sản phẩm 20").brand(brand3).sole(sole3).size(size3).product(product3).material(material1).color(color3).category(category3).build();
 //        productDetail20.setId(productDetailRepository.save(productDetail20).getId());
 //
-//        ProductDetail productDetail21 = ProductDetail.builder().weight(1000).code("PD021").price(BigDecimal.valueOf(21000)).deleted(Status.HOAT_DONG).amount(100).description("Mô tả sản phẩm 21").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color1).category(category4).build();
+//        ProductDetail productDetail21 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD021").price(BigDecimal.valueOf(21000)).deleted(Status.HOAT_DONG).amount(100).description("Mô tả sản phẩm 21").brand(brand4).sole(sole4).size(size4).product(product4).material(material4).color(color1).category(category4).build();
 //        productDetail21.setId(productDetailRepository.save(productDetail21).getId());
 //
-//        ProductDetail productDetail22 = ProductDetail.builder().weight(1000).code("PD022").price(BigDecimal.valueOf(22000)).deleted(Status.HOAT_DONG).amount(110).description("Mô tả sản phẩm 22").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color2).category(category5).build();
+//        ProductDetail productDetail22 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD022").price(BigDecimal.valueOf(22000)).deleted(Status.HOAT_DONG).amount(110).description("Mô tả sản phẩm 22").brand(brand5).sole(sole5).size(size5).product(product5).material(material5).color(color2).category(category5).build();
 //        productDetail22.setId(productDetailRepository.save(productDetail22).getId());
 //
-//        ProductDetail productDetail23 = ProductDetail.builder().weight(1000).code("PD023").price(BigDecimal.valueOf(23000)).deleted(Status.HOAT_DONG).amount(110).description("Mô tả sản phẩm 23").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color3).category(category1).build();
+//        ProductDetail productDetail23 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD023").price(BigDecimal.valueOf(23000)).deleted(Status.HOAT_DONG).amount(110).description("Mô tả sản phẩm 23").brand(brand1).sole(sole1).size(size1).product(product1).material(material1).color(color3).category(category1).build();
 //        productDetail23.setId(productDetailRepository.save(productDetail23).getId());
 //
-//        ProductDetail productDetail24 = ProductDetail.builder().weight(1000).code("PD024").price(BigDecimal.valueOf(24000)).deleted(Status.HOAT_DONG).amount(120).description("Mô tả sản phẩm 24").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color1).category(category2).build();
+//        ProductDetail productDetail24 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD024").price(BigDecimal.valueOf(24000)).deleted(Status.HOAT_DONG).amount(120).description("Mô tả sản phẩm 24").brand(brand2).sole(sole2).size(size2).product(product2).material(material2).color(color1).category(category2).build();
 //        productDetail24.setId(productDetailRepository.save(productDetail24).getId());
 //
-//        ProductDetail productDetail25 = ProductDetail.builder().weight(1000).code("PD025").price(BigDecimal.valueOf(25000)).deleted(Status.HOAT_DONG).amount(120).description("Mô tả sản phẩm 25").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color1).category(category3).build();
+//        ProductDetail productDetail25 = ProductDetail.builder().weight(1000).quantityReturn(0).code("PD025").price(BigDecimal.valueOf(25000)).deleted(Status.HOAT_DONG).amount(120).description("Mô tả sản phẩm 25").brand(brand3).sole(sole3).size(size3).product(product3).material(material3).color(color1).category(category3).build();
 //        productDetail25.setId(productDetailRepository.save(productDetail25).getId());
 //        //product detail
 //
