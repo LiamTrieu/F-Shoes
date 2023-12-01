@@ -147,9 +147,10 @@ export default function AdVoucherPage() {
     fetchData(searchVoucher)
   }, [searchVoucher])
 
+  const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
   return (
     <div className="voucher-css">
-      <BreadcrumbsCustom nameHere={'Phiếu giảm giá'} />
+      <BreadcrumbsCustom listLink={listBreadcrumbs} />
       <Paper elevation={3}>
         <Grid container spacing={2}>
           <Grid item xs={6}>

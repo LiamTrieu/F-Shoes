@@ -358,6 +358,7 @@ export default function AdProductAdd() {
     let errors = []
 
     newProductDetails.forEach((product) => {
+      console.log(product.price)
       if (isNaN(product.price) || product.price <= 0 || product.price >= 100000000) {
         errors.push({
           key: product.key,
@@ -397,34 +398,36 @@ export default function AdProductAdd() {
     try {
       const title = 'Xác nhận thêm sản phẩm?'
       const text = ''
-      confirmSatus(title, text).then((result) => {
-        if (result.isConfirmed && validate()) {
-          const newProductAdd = newProductDetails.map((product) => {
-            return {
-              idSole: product.sole.value,
-              idBrand: product.brand.value,
-              idCategory: product.category.value,
-              idMaterial: product.material.value,
-              idSize: product.size.value,
-              idColor: product.color.value,
-              nameProduct: product.product.label,
-              idProduct: product.product.value,
-              price: product.price,
-              amount: product.amount,
-              weight: product.weight,
-              description: product.description,
-              listImage: product.images,
-            }
-          })
-          sanPhamApi
-            .addProuct(newProductAdd)
-            .then()
-            .finally(() => {
-              toast.success('Thêm sản phẩm thành công')
-              navigator('/admin/product')
+      if (validate()) {
+        confirmSatus(title, text).then((result) => {
+          if (result.isConfirmed) {
+            const newProductAdd = newProductDetails.map((product) => {
+              return {
+                idSole: product.sole.value,
+                idBrand: product.brand.value,
+                idCategory: product.category.value,
+                idMaterial: product.material.value,
+                idSize: product.size.value,
+                idColor: product.color.value,
+                nameProduct: product.product.label,
+                idProduct: product.product.value,
+                price: product.price,
+                amount: product.amount,
+                weight: product.weight,
+                description: product.description,
+                listImage: product.images,
+              }
             })
-        }
-      })
+            sanPhamApi
+              .addProuct(newProductAdd)
+              .then()
+              .finally(() => {
+                toast.success('Thêm sản phẩm thành công')
+                navigator('/admin/product')
+              })
+          }
+        })
+      }
     } catch (error) {
       console.error(error)
       toast.error('Thêm sản phẩm thất bại')
@@ -1461,7 +1464,7 @@ export default function AdProductAdd() {
                                   onChange={(e) => {
                                     updateNewProductDetail({
                                       ...productDetail,
-                                      price: e.target.value,
+                                      price: e.target.value.replace(/\D/g, ''),
                                     })
                                   }}
                                   sx={{

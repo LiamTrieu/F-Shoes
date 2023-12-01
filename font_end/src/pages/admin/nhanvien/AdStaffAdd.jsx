@@ -27,6 +27,7 @@ import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 import confirmSatus from '../../../components/comfirmSwal'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
+import Scanner from '../../../layout/Scanner'
 
 const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
 
@@ -176,8 +177,8 @@ const AddStaff = () => {
   }
 
   const handleScan = (qrData) => {
-    if (qrData?.text) {
-      const qrDataArray = qrData?.text.split('|')
+    if (qrData) {
+      const qrDataArray = qrData.split('|')
       const citizenId = qrDataArray[0]
       const fullName = qrDataArray[2]
       const dateOfBirthRaw = qrDataArray[3]
@@ -461,7 +462,9 @@ const AddStaff = () => {
         </Button>
 
         <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
-          <Box sx={styleModal}>{qrScannerVisible && <RenderVideo />}</Box>
+          <Box sx={styleModal}>
+            <Scanner handleScan={handleScan} setOpen={setQrScannerVisible} />
+          </Box>
         </Modal>
 
         <Grid container spacing={2} sx={{ mb: 3 }}>

@@ -558,7 +558,7 @@ export default function AdCustomerDetail() {
   }
   return (
     <div className="khachhangdetail">
-      <BreadcrumbsCustom nameHere={'Chi tiết khách hàng'} listLink={listBreadcrumbs} />
+      <BreadcrumbsCustom nameHere={khachHang?.code} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Toast />
         <Box>

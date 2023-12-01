@@ -29,6 +29,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import { useTheme } from '@emotion/react'
 import SearchIcon from '@mui/icons-material/Search'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
 export default function AdCustomerPage() {
   const theme = useTheme()
@@ -73,9 +74,11 @@ export default function AdCustomerPage() {
     })
   }
 
+  const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
   return (
     <div className="nhanvien">
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+      <BreadcrumbsCustom listLink={listBreadcrumbs} />
+      <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
           <TextField
             onChange={(e) => {

@@ -427,7 +427,7 @@ export default function AdStaffDetail() {
 
   return (
     <div className="nhanvienadd">
-      <BreadcrumbsCustom nameHere={'Chi tiết nhân viên'} listLink={listBreadcrumbs} />
+      <BreadcrumbsCustom nameHere={staffDetail?.code} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={4}>
