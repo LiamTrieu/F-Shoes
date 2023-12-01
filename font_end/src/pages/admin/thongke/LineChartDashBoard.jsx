@@ -24,7 +24,11 @@ export default function LineChartDashBoard(props) {
 
   const data = {
     labels: dataBieuDo.map(
-      (d) => getStatus(d.status) + ' - ' + ((d.soLuong / totalQuantity) * 100).toFixed(2) + '% ',
+      (d) =>
+        getStatus(d.status) +
+        ' - ' +
+        (d.soLuong === 0 ? 0 : ((d.soLuong / totalQuantity) * 100).toFixed(2)) +
+        '% ',
     ),
     datasets: [
       {
@@ -58,12 +62,25 @@ export default function LineChartDashBoard(props) {
 
   return (
     <Box mt={2} width={'99%'} height={400}>
-      <Pie
-        className="legend-container"
-        style={{ paddingTop: '20px' }}
-        data={data}
-        options={options}
-      />
+      {console.log(data)}
+      {dataBieuDo.filter((d) => d.soLuong > 0).length > 0 ? (
+        <Pie
+          className="legend-container"
+          style={{ paddingTop: '20px' }}
+          data={data}
+          options={options}
+        />
+      ) : (
+        <div
+          style={{
+            height: 400,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <img width={'400px'} src={require('../../../assets/image/no-data.png')} alt="No-data" />
+        </div>
+      )}
     </Box>
   )
 }

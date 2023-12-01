@@ -33,21 +33,9 @@ import { TbEyeEdit } from 'react-icons/tb'
 import Empty from '../../../components/Empty'
 import { IoIosCreate } from 'react-icons/io'
 import { FaListAlt } from 'react-icons/fa'
-import { SignalCellularNullRounded } from '@mui/icons-material'
 import { toast } from 'react-toastify'
-import { useZxing } from 'react-zxing'
+import Scanner from '../../../layout/Scanner'
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 900,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  borderRadius: '10px',
-  p: 4,
-}
 const styleModal = {
   position: 'absolute',
   top: '50%',
@@ -150,20 +138,20 @@ const TableReturn = ({ status }) => {
                           data.status === 0
                             ? 'chip-cho'
                             : data.status === 1
-                            ? 'chip-hoat-dong'
-                            : data.status === 2
-                            ? 'chip-khong-hoat-dong'
-                            : 'chip-dang'
+                              ? 'chip-hoat-dong'
+                              : data.status === 2
+                                ? 'chip-khong-hoat-dong'
+                                : 'chip-dang'
                         }
                         size="small"
                         label={
                           data.status === 0
                             ? 'Chờ phê duyệt'
                             : data.status === 1
-                            ? 'Hoàn thành'
-                            : data.status === 2
-                            ? 'Đã từ chối'
-                            : 'Đang xử lý'
+                              ? 'Hoàn thành'
+                              : data.status === 2
+                                ? 'Đã từ chối'
+                                : 'Đang xử lý'
                         }
                       />
                     </TableCell>
@@ -228,23 +216,6 @@ export default function ReturnOrder() {
     })
   }
 
-  const RenderVideo = () => {
-    const { ref } = useZxing({
-      onDecodeResult(result) {
-        handleScan(result)
-        setQrScannerVisible(false)
-      },
-    })
-    return <video ref={ref} width="100%" />
-  }
-
-  const handleScan = (qrData) => {
-    if (qrData?.text) {
-      const qrDataText = qrData?.text
-      createReturn(qrDataText)
-    }
-  }
-
   return (
     <div className="tra-hang">
       <BreadcrumbsCustom listLink={listBreadcrumbs} />
@@ -299,7 +270,9 @@ export default function ReturnOrder() {
           onClose={() => {
             setQrScannerVisible(false)
           }}>
-          <Box sx={styleModal}>{qrScannerVisible && <RenderVideo />}</Box>
+          <Box sx={styleModal}>
+            <Scanner handleScan={createReturn} setOpen={setQrScannerVisible} />
+          </Box>
         </Modal>
       </Paper>
       <Paper sx={{ p: 2, mt: 2 }}>

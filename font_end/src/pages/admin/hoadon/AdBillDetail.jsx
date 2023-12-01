@@ -51,7 +51,7 @@ import { Stomp } from '@stomp/stompjs'
 import { socketUrl, url } from '../../../services/url'
 import axios from 'axios'
 
-const listHis = [{ link: '/admin/bill', name: 'Hoá đơn' }]
+const listHis = [{ link: '/admin/bill', name: 'Quản lý đơn hàng' }]
 
 var stompClient = null
 export default function AdBillDetail() {
@@ -1339,7 +1339,7 @@ export default function AdBillDetail() {
           listBillDetail={listBillDetail}
         />
       )}
-      <BreadcrumbsCustom listLink={listHis} nameHere={'Chi tiết hoá đơn'} />
+      <BreadcrumbsCustom listLink={listHis} nameHere={billDetail?.code} />
       <Paper className="time-line" elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
         <h3>Lịch sử đơn hàng</h3>
         {loadingTimeline ? <div>Loading...</div> : <TimeLine orderTimeLine={listOrderTimeLine} />}

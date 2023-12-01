@@ -139,10 +139,11 @@ export default function AdPromotionPage() {
     }))
   }
 
+  const listBreadcrumbs = [{ name: 'Đợt giảm giá', link: '/admin/promotion' }]
   return (
     <>
       <div className="promotion">
-        <BreadcrumbsCustom nameHere={'Đợt giảm giá'} />
+        <BreadcrumbsCustom listLink={listBreadcrumbs} />
         <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
           <Box sx={{ width: '100%' }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>

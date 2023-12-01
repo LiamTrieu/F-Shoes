@@ -33,6 +33,7 @@ import { formatCurrency } from '../../../services/common/formatCurrency '
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
 const DashboardCard = function ({ iconCart, title, total, product, order, color }) {
   return (
@@ -302,12 +303,10 @@ export default function Dashboard() {
     fecthDoanhThu()
     fecthDoanhThuCu()
   }, [])
-
+  const listBreadcrumbs = [{ name: 'Thống kê', link: '  /admin/dashboard' }]
   return (
-    <Container maxWidth="lg" sx={{ mb: 5, ml: 0, mr: 0 }}>
-      <Typography variant="h6" fontWeight={'bold'} my={2}>
-        Thống kê
-      </Typography>
+    <div>
+      <BreadcrumbsCustom listLink={listBreadcrumbs} />
       <Grid2 container spacing={2} mb={2}>
         <DashboardCard
           iconCart={<EventNoteIcon />}
@@ -344,13 +343,12 @@ export default function Dashboard() {
       </Grid2>
       {/* ------------------------------------------------------------------------- */}
       <Paper elevation={3} className="paper-css">
-        <Grid container spacing={2}>
-          <Grid item xs={7}>
-            <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
-              Danh sách sản phẩm bán chạy theo tháng
-            </Typography>
+        <Grid container spacing={2} sx={{ px: 1 }}>
+          <Grid item xs={7} mt={3}>
             <Grid>
               <Button
+                variant="outlined"
+                color="cam"
                 className="button-css"
                 sx={{
                   backgroundColor: indexButton === 1 ? '#f26b16' : 'white',
@@ -360,6 +358,8 @@ export default function Dashboard() {
                 Ngày
               </Button>
               <Button
+                variant="outlined"
+                color="cam"
                 className="button-css"
                 sx={{
                   backgroundColor: indexButton === 2 ? '#f26b16' : 'white',
@@ -369,6 +369,8 @@ export default function Dashboard() {
                 Tuần
               </Button>
               <Button
+                variant="outlined"
+                color="cam"
                 className="button-css"
                 sx={{
                   backgroundColor: indexButton === 3 ? '#f26b16' : 'white',
@@ -378,6 +380,8 @@ export default function Dashboard() {
                 Tháng
               </Button>
               <Button
+                variant="outlined"
+                color="cam"
                 className="button-css"
                 sx={{
                   backgroundColor: indexButton === 4 ? '#f26b16' : 'white',
@@ -387,6 +391,8 @@ export default function Dashboard() {
                 Năm
               </Button>
               <Button
+                variant="outlined"
+                color="cam"
                 className="button-css"
                 sx={{
                   backgroundColor: indexButton === 5 ? '#f26b16' : 'white',
@@ -396,18 +402,22 @@ export default function Dashboard() {
                 Tùy chỉnh
               </Button>
             </Grid>
+            <Typography variant="h6" fontWeight={'bold'} my={1} className="typography-css">
+              Danh sách sản phẩm bán chạy theo tháng
+            </Typography>
+
             <Table aria-label="simple table" className="table-css">
               <TableHead>
                 <TableRow>
-                  <TableCell width="15%">Ảnh sản phẩm</TableCell>
+                  <TableCell width="5%">Ảnh</TableCell>
                   <TableCell width="45%">Tên sản phẩm</TableCell>
-                  <TableCell align="right" width="10%">
+                  <TableCell align="center" width="15%">
                     Số lượng
                   </TableCell>
-                  <TableCell align="right" width="20%">
+                  <TableCell align="center" width="20%">
                     Giá tiền
                   </TableCell>
-                  <TableCell align="right" width="10%">
+                  <TableCell align="center" width="15%">
                     Kích cỡ
                   </TableCell>
                 </TableRow>
@@ -418,39 +428,42 @@ export default function Dashboard() {
                     <TableRow
                       key={row.name}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align="left" width={'20%'}>
-                        <img src={row.image[0]} width={'40%'} alt="error" />
+                      <TableCell align="left" width={'5%'}>
+                        <img src={row.image[0]} width={'100%'} alt="error" />
                       </TableCell>
                       <TableCell component="th" scope="row">
                         {row.nameProduct}
                       </TableCell>
-                      <TableCell align="right">{row.quantity}</TableCell>
-                      <TableCell align="right">{formatCurrency(row.price)}</TableCell>
-                      <TableCell align="right">{row.size}</TableCell>
+                      <TableCell align="center">{row.quantity}</TableCell>
+                      <TableCell align="center">{formatCurrency(row.price)}</TableCell>
+                      <TableCell align="center">{row.size}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               ) : (
-                <div
-                  style={{
-                    width: '100%',
-                  }}>
-                  <img
-                    style={{
-                      textAlign: 'center',
-                      alignItems: 'center',
-                    }}
-                    width={'200px'}
-                    height={'100%'}
-                    src={require('../../../assets/image/no-data.png')}
-                    alt="No-data"
-                  />
-                </div>
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={5}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <img
+                          width={'400px'}
+                          src={require('../../../assets/image/no-data.png')}
+                          alt="No-data"
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               )}
             </Table>
             {dataProductSelling.length > 0 && (
               <Stack
-                mt={2}
+                sx={{ marginTop: '-5px', paddingTop: '10px', paddingBottom: '10px' }}
                 direction="row"
                 justifyContent="space-between"
                 alignItems="flex-start"
@@ -490,10 +503,7 @@ export default function Dashboard() {
             )}
           </Grid>
           <Grid item xs={5}>
-            <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
-              Trạng thái đơn hàng
-            </Typography>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} mt={1}>
               <Grid item xs={6} className="dateTime-dashboard">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
@@ -537,14 +547,17 @@ export default function Dashboard() {
                 </LocalizationProvider>
               </Grid>
             </Grid>
-            <Paper elevation={3} sx={{ height: '400px' }}>
+            <Typography variant="h6" fontWeight={'bold'} my={1} mt={3} className="typography-css">
+              Biểu đồ trạng thái
+            </Typography>
+            <Paper elevation={3} sx={{ height: '415px', border: '3px solid rgb(211, 211, 211)' }}>
               <LineChartDashBoard dataBieuDo={dataBieuDo} />
             </Paper>
           </Grid>
         </Grid>
       </Paper>
       {/* ------------------------------------------------------------------------- */}
-      <Grid container spacing={2} sx={{ marginBottom: '20px' }}>
+      <Grid container spacing={2} sx={{ marginBottom: '20px', px: 1 }}>
         <Grid item xs={7}>
           <Paper elevation={3} className="paper-css">
             <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
@@ -553,15 +566,15 @@ export default function Dashboard() {
             <Table aria-label="simple table" className="table-css">
               <TableHead>
                 <TableRow>
-                  <TableCell width="15%">Ảnh sản phẩm</TableCell>
-                  <TableCell width="45%">Tên sản phẩm</TableCell>
-                  <TableCell align="right" width="10%">
+                  <TableCell width="10%">Ảnh</TableCell>
+                  <TableCell width="40%">Tên sản phẩm</TableCell>
+                  <TableCell align="center" width="15%">
                     Số lượng
                   </TableCell>
-                  <TableCell align="right" width="20%">
+                  <TableCell align="center" width="15%">
                     Giá tiền
                   </TableCell>
-                  <TableCell align="right" width="10%">
+                  <TableCell align="center" width="10%">
                     Kích cỡ
                   </TableCell>
                 </TableRow>
@@ -572,32 +585,39 @@ export default function Dashboard() {
                     <TableRow
                       key={row.name}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align="left" width={'20%'}>
-                        <img src={row.image[0]} width={'40%'} alt="error" />
+                      <TableCell align="left" width={'10%'}>
+                        <img src={row.image[0]} width={'100%'} alt="error" />
                       </TableCell>
-                      <TableCell component="th" scope="row">
+                      <TableCell component="th" scope="row" width="40%">
                         {row.nameProduct}
                       </TableCell>
-                      <TableCell align="right">{row.quantity}</TableCell>
-                      <TableCell align="right">{formatCurrency(row.price)}</TableCell>
-                      <TableCell align="right">{row.size}</TableCell>
+                      <TableCell align="center" width="15%">
+                        {row.quantity}
+                      </TableCell>
+                      <TableCell align="center">{formatCurrency(row.price)}</TableCell>
+                      <TableCell align="center">{row.size}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               ) : (
-                <div
-                  style={{
-                    width: '100%',
-                  }}>
-                  <img
-                    style={{
-                      textAlign: 'center',
-                    }}
-                    width={'200px'}
-                    src={require('../../../assets/image/no-data.png')}
-                    alt="No-data"
-                  />
-                </div>
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={5}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <img
+                          width={'400px'}
+                          src={require('../../../assets/image/no-data.png')}
+                          alt="No-data"
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               )}
             </Table>
             {dataProductTakeOut.length > 0 && (
@@ -916,6 +936,6 @@ export default function Dashboard() {
           </Paper>
         </Grid>
       </Grid>
-    </Container>
+    </div>
   )
 }

@@ -32,6 +32,7 @@ import Empty from '../../../components/Empty'
 import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
 import { toast } from 'react-toastify'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
 export default function AdProductPage() {
   const [listProduct, setListProduct] = useState([])
@@ -73,8 +74,10 @@ export default function AdProductPage() {
     })
   }
 
+  const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
   return (
     <div className="san-pham">
+      <BreadcrumbsCustom listLink={listBreadcrumbs} />
       <Container component={Paper} sx={{ py: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <TextField

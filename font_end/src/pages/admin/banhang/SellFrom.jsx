@@ -60,6 +60,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import QrCodeIcon from '@mui/icons-material/QrCode'
+import Scanner from '../../../layout/Scanner'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -1169,30 +1170,19 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     boxShadow: 24,
     p: 4,
   }
-  const RenderVideo = ({ show }) => {
-    const { ref } = useZxing({
-      onDecodeResult(result) {
-        handleScan(result)
-      },
-      paused: !show,
-    })
-    return show ? <video ref={ref} width="100%" /> : <></>
-  }
 
   const handleScan = (qrData) => {
-    if (qrData?.text) {
-      sellApi
-        .addBillDetailByIdProductDetail(qrData?.text, idBill)
-        .then(() => {
-          toast.success('Thêm sản phẩm thành công', {
-            position: toast.POSITION.TOP_CENTER,
-          })
+    sellApi
+      .addBillDetailByIdProductDetail(qrData, idBill)
+      .then(() => {
+        toast.success('Thêm sản phẩm thành công', {
+          position: toast.POSITION.TOP_CENTER,
         })
-        .finally(() => {
-          fectchProductBillSell(idBill)
-          setQrScannerVisible(false)
-        })
-    }
+      })
+      .finally(() => {
+        fectchProductBillSell(idBill)
+        setQrScannerVisible(false)
+      })
   }
 
   const deleteTransaction = (id) => {
@@ -1371,7 +1361,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
           </Button>
           <Modal open={qrScannerVisible} onClose={handleCloseQRScanner}>
             <Box sx={styleModal}>
-              <RenderVideo show={qrScannerVisible} />
+              <Scanner handleScan={handleScan} setOpen={setQrScannerVisible} />
             </Box>
           </Modal>
         </Box>

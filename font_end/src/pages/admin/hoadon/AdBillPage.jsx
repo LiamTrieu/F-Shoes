@@ -44,6 +44,7 @@ import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../../../services/url'
 import { toast } from 'react-toastify'
 import sellApi from '../../../api/admin/sell/SellApi'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
 var stompClient = null
 export default function AdBillPage() {
@@ -228,11 +229,11 @@ export default function AdBillPage() {
   useEffect(() => {
     getAllBillTaoDonHang()
   }, [])
-
+  const listBreadcrumbs = [{ name: 'Quản lý đơn hàng', link: '/admin/bill' }]
   return (
     <div className="hoa-don">
-      <h3>Hoá đơn</h3>
-      <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+      <BreadcrumbsCustom listLink={listBreadcrumbs} />
+      <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
         <Stack
           direction="row"
           justifyContent="space-between"

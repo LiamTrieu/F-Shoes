@@ -30,6 +30,7 @@ import './AdCustomerPage.css'
 import { TbEyeEdit } from 'react-icons/tb'
 import SearchIcon from '@mui/icons-material/Search'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
+import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
 export default function AdCustomerPage() {
   const theme = useTheme()
@@ -73,11 +74,13 @@ export default function AdCustomerPage() {
     })
   }
 
+  const listBreadcrumbs = [{ name: 'Khách hàng', link: '/admin/customer' }]
   return (
     <div className="khachhang">
+      <BreadcrumbsCustom listLink={listBreadcrumbs} />
       <Box>
         <Toast />
-        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2 }}>
+        <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <TextField
               sx={{ width: '40%' }}

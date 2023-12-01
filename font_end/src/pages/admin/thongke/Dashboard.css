@@ -1,7 +1,6 @@
 .paper-css {
-  background-color: rgb(224, 223, 223) !important;
-  padding-left: 5px !important;
-  padding-right: 5px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
   padding-top: 2px !important;
   padding-bottom: 10px !important;
   margin-bottom: 20px !important;
@@ -9,8 +8,8 @@
 
 .paper-css-1 {
   background-color: rgb(49, 48, 48) !important;
-  padding-left: 5px !important;
-  padding-right: 5px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
   padding-top: 2px !important;
   padding-bottom: 10px !important;
   color: white !important;
@@ -79,14 +78,14 @@
 
 .table-css {
   background-color: white !important;
-  border-radius: 4px !important;
-  /* width: 100% !important;
-  height: 600px !important; */
+  border-radius: 10px !important;
+  /* width: 100% !important; */
+  height: 410px !important;
 }
 
-.table-css .MuiTableHead-root .MuiTableRow-root > th {
-  background-color: #ffab91 !important;
-  color: black !important;
+.table-css .MuiTableHead-root .MuiTableRow-root>th {
+  background-color: #F26B16 !important;
+  color: rgb(255, 255, 255) !important;
   font-weight: 600 !important;
 }
 
@@ -136,6 +135,7 @@
 .dateTime-dashboard .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
   height: 0.6em !important;
 }
+
 .dateTime-dashboard .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
   line-height: 0.6em !important;
   padding-top: 2px !important;
