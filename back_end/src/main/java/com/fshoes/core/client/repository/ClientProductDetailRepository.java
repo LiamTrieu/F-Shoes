@@ -321,7 +321,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
                 GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
                 ORDER BY p.created_at DESC
-                LIMIT 10
+                LIMIT 8
             """, nativeQuery = true)
     List<ClientProductResponse> getProductsHome(@Param("request") ClientProductRequest request);
 

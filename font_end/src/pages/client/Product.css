@@ -33,6 +33,7 @@
 .list-product-portfolio .list-item-button .icon-portfolio {
   margin-right: 16px !important;
 }
+
 .list-product-portfolio .slider-portfolio {
   max-width: 90% !important;
   color: #f2741f;
@@ -110,6 +111,10 @@
   overflow: auto;
   max-height: 1000px;
   position: relative;
+}
+
+.cart-product-portfolio::-webkit-scrollbar {
+  width: 0px !important;
 }
 
 .radio-color {

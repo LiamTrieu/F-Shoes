@@ -71,17 +71,10 @@ export default function CartProduct({ products, colmd, collg }) {
               lg={collg}
               width={'100%'}
               onMouseEnter={() => setIsCartHovered(i)}
-              onMouseLeave={() => setIsCartHovered(null)}>
+              onMouseLeave={() => setIsCartHovered(null)}
+              className="cart-product-hover">
               <Button sx={{ width: '100%', p: 0, my: 1 }}>
                 <Card sx={{ width: '100%', height: '100%' }}>
-                  {hasPromotion && (
-                    <div
-                      className="products-discount-badge"
-                      style={{
-                        backgroundColor: `rgb(${interpolatedColor[0]}, ${interpolatedColor[1]}, ${interpolatedColor[2]})`,
-                      }}>{`${discountValue ? discountValue : ''}%`}</div>
-                  )}
-
                   <Box
                     sx={{
                       position: 'relative',
@@ -89,6 +82,13 @@ export default function CartProduct({ products, colmd, collg }) {
                       paddingBottom: '100%',
                       overflow: 'hidden',
                     }}>
+                    {hasPromotion && (
+                      <div
+                        className="products-discount-badge"
+                        style={{
+                          backgroundColor: `rgb(${interpolatedColor[0]}, ${interpolatedColor[1]}, ${interpolatedColor[2]})`,
+                        }}>{`${discountValue ? discountValue : ''}%`}</div>
+                    )}
                     <Box
                       sx={{
                         position: 'absolute',

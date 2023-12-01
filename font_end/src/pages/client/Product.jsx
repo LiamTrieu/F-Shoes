@@ -307,7 +307,22 @@ export default function Product() {
         className="list-product-portfolio"
         component="nav"
         aria-labelledby="nested-list-subheader">
-        <div className="menubar-portfolio">
+        <div className="menubar-portfolio" style={{ padding: '10px 0px' }}>
+          <TextField
+            sx={{ marginLeft: '10px', display: { md: 'none', xs: 'block' } }}
+            className="stack-input-filter"
+            placeholder="Tìm sản phẩm"
+            type="text"
+            size="small"
+            onChange={(e) => setFilter({ ...filter, nameProductDetail: e.target.value })}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
           {/* --------------------------------------------- COLOR --------------------------------------------- */}
           <ListItemButton onClick={() => setOpenColor(!openColor)} className="list-item-button">
             <BiSolidColorFill className="icon-portfolio" />
@@ -477,7 +492,7 @@ export default function Product() {
     <Container maxWidth="xl" className="container-portfolio">
       <Grid container spacing={1}>
         {isMenuBarVisible && (
-          <Grid item xs={2.5} className="grid-drawer-portfolio">
+          <Grid item xs={1} md={2.5} className="grid-drawer-portfolio">
             <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
               <div
                 style={{
@@ -490,19 +505,22 @@ export default function Product() {
                   alignItems="flex-start"
                   sx={{ marginLeft: '16px', marginRight: '16px' }}>
                   <span>
-                    <b>Danh mục sản phẩm</b>
+                    <b>
+                      Danh mục sản phẩm
+                      <Button
+                        color="cam"
+                        sx={{
+                          ml: '20px',
+                          border: '1px solid #F37622',
+                          height: '20px',
+                          width: '30px',
+                        }}
+                        onClick={() => handleResetFilter()}>
+                        <CancelIcon sx={{ width: '15px', height: '15px', marginRight: '5px' }} />
+                        <span style={{ fontSize: '10px' }}>Xóa</span>
+                      </Button>
+                    </b>
                   </span>
-                  <Button
-                    color="cam"
-                    sx={{
-                      border: '1px solid #F37622',
-                      height: '20px',
-                      width: '30px',
-                    }}
-                    onClick={() => handleResetFilter()}>
-                    <CancelIcon sx={{ width: '15px', height: '15px', marginRight: '5px' }} />
-                    <span style={{ fontSize: '10px' }}>Xóa</span>
-                  </Button>
                 </Stack>
               </div>
               <MenuBar />
@@ -526,10 +544,12 @@ export default function Product() {
             </Drawer>
           </Grid>
         )}
-        <Grid item xs={isMenuBarVisible ? 9.5 : 12}>
+        <Grid item xs={11} md={isMenuBarVisible ? 9.5 : 12}>
           <Box sx={{ width: '100%' }}>
-            <Stack className="stack-filter-portfolio" direction="row">
+            <Stack className="stack-filter-portfolio" direction="row" mb={1}>
               <TextField
+                sx={{ marginLeft: '10px', display: { md: 'block', xs: 'none' } }}
+                fullWidth
                 className="stack-input-filter"
                 placeholder="Tìm sản phẩm"
                 type="text"
@@ -552,7 +572,7 @@ export default function Product() {
                 </Typography>
               </Typography>
             </Stack>
-            <div className="cart-product-portfolio">
+            <div className="cart-product-portfolio" style={{ padding: '0px 10px' }}>
               <CartProduct products={products} colmd={6} collg={isMenuBarVisible ? 3 : 3} />
             </div>
           </Box>

@@ -2,6 +2,12 @@
 
 .footer {
   background-image: url('../../assets/image/TinTuc/banner_footer.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.footer .MuiGrid-item {
+  padding-top: 20px !important;
 }
 
 .css-hyum1k-MuiToolbar-root {
@@ -21,10 +27,11 @@
 .footerTitle {
   font-weight: 1000 !important;
   font-size: 20px !important;
-  margin-bottom: 20px !important;
+  margin-bottom: 10px !important;
 
   color: rgb(255, 200, 0);
 }
+
 .active-link {
   color: #f2741f;
   text-align: center;
@@ -43,7 +50,7 @@
 
 .text-footer {
   margin-top: 6px !important;
-  font-size: 14px !important;
+  font-size: 16px !important;
   text-decoration: none;
   color: black;
   color: white;
@@ -51,7 +58,7 @@
 
 .img-contact {
   width: 15% !important;
-  margin-right: 15px !important;
+  margin-right: 16px !important;
 }
 
 .link-with-underline {
@@ -61,7 +68,7 @@
   font-family: 'Noto Sans NKo Unjoined', sans-serif;
   font-family: 'Oswald', sans-serif;
   font-family: 'Roboto', sans-serif;
-  color: white;
+  color: black;
 }
 
 .menu-title {
@@ -77,16 +84,16 @@
 }
 
 .menu-list-item {
-  margin-right: 20px; /* Adjust spacing between menu items */
+  margin-right: 20px;
+  /* Adjust spacing between menu items */
 }
 
 .menu-title .MuiTypography-root.active-link {
-  color: white;
+  color: black;
   text-align: center;
 }
 
 .menu-title .MuiTypography-root:hover {
-  color: white;
   display: flex !important;
   justify-content: center !important;
 }
@@ -95,7 +102,6 @@
   position: relative;
   text-decoration: none;
   font-family: 'IBM Plex Sans', 'Noto Sans NKo Unjoined', 'Oswald', 'Roboto', sans-serif;
-  color: white;
   font-size: 17px;
   font-weight: 600;
   margin-left: 32px;
@@ -109,7 +115,7 @@
   bottom: -3px;
   width: 100%;
   height: 2px;
-  background-color: white;
+  background-color: black;
   transform: scaleX(0);
   transform-origin: 0% 100%;
   transition: transform 0.3s ease-in-out;
@@ -129,6 +135,7 @@
   width: calc(100% + 96px);
   color: white;
 }
+
 .search-product-home .MuiInputBase-root {
   border-radius: 30px !important;
   height: 55px;
