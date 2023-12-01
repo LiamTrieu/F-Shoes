@@ -1,18 +1,22 @@
 .title {
   font-weight: 700 !important;
 }
+
 .price {
   text-transform: lowercase;
   text-decoration: line-through;
 }
+
 .buy {
   text-transform: lowercase;
 }
+
 .price-discount {
   text-decoration: none;
   color: red;
   font-weight: 700;
 }
+
 .products-discount-badge {
   position: absolute;
   z-index: 2;
@@ -22,6 +26,16 @@
   padding: 4px 20px;
   border-radius: 10px 10px 10px 10px;
 }
+
 .promotion-price {
   margin-right: 5px !important;
+}
+
+.cart-product-hover {
+  transition: transform 0.3s ease-in-out;
+  border-radius: "10px";
+}
+
+.cart-product-hover:hover {
+  transform: scale(1.03);
 }

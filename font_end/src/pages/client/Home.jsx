@@ -159,19 +159,6 @@ export default function Home() {
               <Button className="btn-product">Shop Apparel</Button>
               <Button className="btn-product">Shop Apparel</Button>
             </div>
-            <Typography className="text-just-in">Just In</Typography>
-
-            <Box>
-              <Grid container spacing={12}>
-                <Grid item xs={12}>
-                  <img
-                    src={require('../../assets/image/image.jpg')}
-                    alt=""
-                    style={{ width: '100%' }}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
             <Typography className="text-just-in">Trending</Typography>
             <Box>
               <Grid container spacing={12}>
@@ -196,6 +183,7 @@ export default function Home() {
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <img
+                    className="img-hover"
                     src={require('../../assets/image/nike-just-do-it (1).jpg')}
                     alt=""
                     style={{ width: '100%' }}
@@ -203,6 +191,7 @@ export default function Home() {
                 </Grid>
                 <Grid item xs={6}>
                   <img
+                    className="img-hover"
                     src={require('../../assets/image/nike-just-do-it (2).jpg')}
                     alt=""
                     style={{ width: '100%' }}
@@ -218,15 +207,13 @@ export default function Home() {
               <Button className="btn-product">Shop Apparel</Button>
             </div>
           </Container>
-          <div className="product-home">
-            <Container maxWidth="xl">
-              <Box className="new-product">
-                <Button className="product">Hàng mới về</Button>
-                <div className="cart-product-home">
-                  <CartProductHome products={products} colsm={6} colmd={4} collg={3} />
-                </div>
-              </Box>
-            </Container>
+          <div className="product-home" style={{ margin: '0px 20px' }}>
+            <Box className="new-product">
+              <Button className="product">Hàng mới về</Button>
+              <div className="cart-product-home" style={{ marginTop: '10px' }}>
+                <CartProductHome products={products} colsm={6} colmd={4} collg={3} />
+              </div>
+            </Box>
             <Box sx={{ marginTop: '30px', marginBottom: '30px' }}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -240,14 +227,11 @@ export default function Home() {
                 </Grid>
               </Grid>
             </Box>
+            <Box className="new-product">
+              <Button className="product">SẢN PHẨM BÁN CHẠY</Button>
+              <CartSellingProduct products={sellingProducts} colmd={6} collg={3} />
+            </Box>
             <Container maxWidth="xl">
-              <Box className="new-product">
-                <Button className="product">SẢN PHẨM BÁN CHẠY</Button>
-                {/* <div className="cart-product-portfolio"> */}
-                <CartSellingProduct products={sellingProducts} colmd={6} collg={3} />
-                {/* </div> */}
-              </Box>
-
               <Box className="about-us">
                 <Grid container spacing={12}>
                   <Grid item xs={6}>

@@ -16,15 +16,16 @@ export default function FooterClient() {
       }}>
       <div style={{ textAlign: 'center', paddingTop: '30px' }}>
         <img
-          src={require('../../assets/image/TinTuc/logo_Footer.jpg')}
+          src={require('../../assets/image/TinTuc/logo_Footer.png')}
           alt=""
           style={{ width: '400px' }}
         />
       </div>
-      <Typography style={{ textAlign: 'center' }}>
-        Được thành lập vào năm 2019, trải qua những năm hoạt động và phát triển, F-Shoes trở thành
-        đại lý ủy quyền cho rất nhiều thương hiệu trên thế giới, chuyên bán giày thể thao chính
-        hãng.
+      <Typography style={{ textAlign: 'center', padding: '0px 50px' }}>
+        F-Shoes website bán giày thể thao sneaker, bắt đầu với đam mê của nhóm ChinSu trường FPT
+        Polytechnic. Hôm nay, chúng tôi tự hào là đại lý uy tín cung cấp giày thể thao chính hãng.
+        Đa dạng sản phẩm, chất lượng và sự chuyên nghiệp đã tạo nên một cộng đồng hài lòng. Cảm ơn
+        bạn đã đồng hành, và hứa hẹn tiếp tục phục vụ tốt nhất! 👟🌟 #FShoesAnniversary
       </Typography>
       <div
         style={{
@@ -60,50 +61,48 @@ export default function FooterClient() {
         />
         <Divider sx={{ height: '2px', backgroundColor: 'white', width: '40%' }} />
       </div>
-      <Container maxWidth="lg">
-        <Grid container direction="column" className="gird-footer" alignItems="center">
+      <Container maxWidth="lg" sx={{ pb: '25px' }}>
+        <Grid container direction="column" className="gird-footer" alignItems="center" mb={2}>
           <Grid container spacing={12}>
             <Grid item xs={12} sm={6} md={3}>
-              <Typography className="footerTitle">Giới thiệu</Typography>
-              <div>
-                <img
-                  src={require('../../assets/image/logoweb.png')}
-                  alt=""
-                  style={{ width: '100px' }}
-                />
-                F-Shoes
-              </div>
+              <Typography className="footerTitle">&hearts; Giới thiệu</Typography>
               <Typography className="text-footer">
-                <span className="title-footer"> F-Shoes:</span> nơi trao tặng các sản phẩm giày thời
-                trang trẻ trung, phong cách, bắt trend cho giới trẻ.
+                <span className="title-footer">&#10173; F-Shoes:</span> nơi trao tặng các sản phẩm
+                giày thời trang trẻ trung, phong cách, bắt trend cho giới trẻ.
               </Typography>
               <Typography className="text-footer">
-                <span className="title-footer"> Địa chỉ:</span> Số 22 ngõ 132 đường cầu diễn, Phường
-                Minh Khai, Bắc Từ Liêm, hà nội{' '}
+                <span className="title-footer">&#10173; Địa chỉ:</span> Số 22 ngõ 132 đường cầu
+                diễn, Phường Minh Khai, Bắc Từ Liêm, hà nội{' '}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <Typography className="footerTitle">Các chính sách</Typography>
-              <Link to="/return-policy-client">
-                <Typography className="text-footer">Chính sách đổi trả của F-SHoes</Typography>
+              <Typography className="footerTitle">&hearts; Các chính sách</Typography>
+              <Link to="/return-policy-client" style={{ textDecoration: 'none' }}>
+                <Typography className="text-footer">
+                  &#8227; Chính sách đổi trả của F-Shoes
+                </Typography>
               </Link>
-              <Typography className="text-footer">Chính sách bảo hành của F-Shoes</Typography>
-              <Typography className="text-footer">Chính sách hoàn tiền của F-Shoes</Typography>
+              <Typography className="text-footer">
+                &#8227; Chính sách bảo hành của F-Shoes
+              </Typography>
+              <Typography className="text-footer">
+                &#8227; Chính sách hoàn tiền của F-Shoes
+              </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <Typography className="footerTitle">Hỗ trợ khách hàng</Typography>
+              <Typography className="footerTitle">&hearts; Hỗ trợ khách hàng</Typography>
               <Typography className="text-footer" component={Link} to="/about-us">
-                Giới thiệu
+                &#8902; Giới thiệu
               </Typography>
               <br />
               <Typography className="text-footer" component={Link} to="/contact">
-                Liên hệ
+                &#8902; Liên hệ
               </Typography>
-              <Typography className="text-footer">Tác giả</Typography>
+              <Typography className="text-footer">&#8902; Tác giả</Typography>
               <Typography className="text-footer">
-                Mua hàng:<span className="phoneNumber"> 07987654321</span>{' '}
+                &#8902; Mua hàng:<span className="phoneNumber"> 07987654321</span>{' '}
               </Typography>
-              <Typography className="footerTitle">Hình thức thanh toán</Typography>
+              <Typography className="footerTitle">&hearts; Hình thức thanh toán</Typography>
               <img
                 className="img-contact"
                 src={require('../../assets/image/TinTuc/payment_1.webp')}
@@ -121,19 +120,19 @@ export default function FooterClient() {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <Typography className="footerTitle">Liên hệ với chúng tôi</Typography>
+              <Typography className="footerTitle">&hearts; Liên hệ với chúng tôi</Typography>
 
               <Typography>
                 {' '}
-                <span className="title-footer"> Hotline:</span>{' '}
+                <span className="title-footer">&#9743; Hotline:</span>{' '}
                 <span className=".text-footer"> 0123456789</span>
               </Typography>
               <Typography>
                 {' '}
-                <span className="title-footer"> Email:</span>{' '}
+                <span className="title-footer">&#9993; Email:</span>{' '}
                 <span className="phoneNumber"> Fshoes131203@gmail.com</span>
               </Typography>
-              <Typography className="footerTitle">Liên kết sàn</Typography>
+              <Typography className="footerTitle">&hearts; Liên kết sàn</Typography>
               <img
                 className="img-contact"
                 src={require('../../assets/image/TinTuc/shopee.webp')}
@@ -157,6 +156,9 @@ export default function FooterClient() {
             </Grid>
           </Grid>
         </Grid>
+        <Typography className="text-footer" variant="body2" align="center" mt={2}>
+          &copy; {new Date().getFullYear()} DATN ChinSu FPT Polytechnic
+        </Typography>
       </Container>
     </Box>
   )
