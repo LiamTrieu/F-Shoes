@@ -4,7 +4,16 @@ import Drawer from '@mui/material/Drawer'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import AdminMenu from './AdminMenu'
-import { Avatar, Badge, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material'
+import {
+  Avatar,
+  Badge,
+  Grid,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip,
+} from '@mui/material'
 import { AiOutlineMenuFold } from 'react-icons/ai'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
@@ -19,7 +28,9 @@ import { useDispatch } from 'react-redux'
 import { addUserAdmin } from '../services/slices/userAdminSlice'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import {socketUrl} from '../services/url'
+import { socketUrl } from '../services/url'
+import dayjs from 'dayjs'
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled'
 
 const drawerWidth = '17vw'
 var stompClient = null
@@ -72,6 +83,7 @@ export default function AppBarAdmin({ children }) {
         setNotification(preNotification)
       }
     }
+    console.log(notification, '=====')
 
     return (
       <div>
@@ -126,13 +138,75 @@ export default function AppBarAdmin({ children }) {
                 style={{
                   margin: '3px',
                   borderRadius: '5px',
-                  backgroundColor:
-                    notification.status === 'HOAT_DONG'
-                      ? 'rgba(19, 181, 53, 0.6)'
-                      : 'rgba(95, 95, 96, 0.6)',
+                  backgroundColor: notification.status === 'HOAT_DONG' ? 'white' : 'white',
                 }}>
-                <div>
-                  <b>{notification.title}</b>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+
+                    maxWidth: '280px',
+                    width: '270px',
+                    height: '70px',
+                  }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          width: '50px',
+                          height: '50px',
+                          borderRadius: '50%',
+                          backgroundColor: 'black',
+                        }}>
+                        <img
+                          src={require('../assets/image/TinTuc/avata_nofication.jpg')}
+                          alt=""
+                          width="50px"
+                          height="50px"
+                          style={{
+                            borderRadius: '50%',
+                          }}
+                        />
+                      </div>{' '}
+                    </Grid>
+                    <Grid item xs={8}>
+                      {notification.status === 'HOAT_DONG' ? (
+                        <div
+                          style={{
+                            width: '10px',
+                            height: '10px',
+                            borderRadius: '50%',
+                            backgroundColor: 'green',
+                            marginTop: '-15px',
+                            marginLeft: '175px',
+                          }}></div>
+                      ) : (
+                        ''
+                      )}
+
+                      <div
+                        style={{
+                          flexDirection: 'column',
+
+                          wordWrap: 'break-word',
+                        }}>
+                        <b>{notification.title}</b>
+                        <br />
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                          }}>
+                          <AccessTimeFilledIcon style={{ width: '17px' }} />{' '}
+                          {dayjs(notification.createdAt).format('DD/MM/YYYY')}
+                        </div>
+                      </div>
+                    </Grid>
+                  </Grid>
                 </div>
               </MenuItem>
             ))}

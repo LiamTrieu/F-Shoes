@@ -159,7 +159,9 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(newBill.getId()));
         }
         Notification notification = new Notification();
-        notification.setTitle("Có hóa đơn cần xác nhận " + "#" + newBill.getCode());
+//        notification.setTitle("Có hóa đơn cần xác nhận " + "#" + newBill.getCode());
+        notification.setTitle("Có đơn hàng mới ");
+        notification.setCreatedAt(Calendar.getInstance().getTimeInMillis()  );
         notification.setType(TypeNotification.HOA_DON);
         notification.setIdRedirect(newBill.getId());
         messagingTemplate.convertAndSend("/topic/thong-bao", notification);
