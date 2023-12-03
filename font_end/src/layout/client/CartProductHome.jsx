@@ -165,7 +165,7 @@ export default function CartProductHome({ products, colmd, collg }) {
                       className="title"
                       gutterBottom
                       component="div"
-                      sx={{ textTransform: 'none' }}>
+                      sx={{ textTransform: 'none', whiteSpace: 'initial' }}>
                       {product.title}
                     </Typography>
                     <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
