@@ -62,7 +62,6 @@ export default function LineChartDashBoard(props) {
 
   return (
     <Box mt={2} width={'99%'} height={400}>
-      {console.log(data)}
       {dataBieuDo.filter((d) => d.soLuong > 0).length > 0 ? (
         <Pie
           className="legend-container"

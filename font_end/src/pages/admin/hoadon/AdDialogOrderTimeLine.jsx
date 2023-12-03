@@ -87,7 +87,6 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
                 </TableRow>
               </TableHead>
               <TableBody>
-                {console.log(genOrderHistory(listOrderTimeLine))}
                 {genOrderHistory(listOrderTimeLine).map((row, index) => (
                   <TableRow key={'dialog timeline' + row.id}>
                     <TableCell align="center">

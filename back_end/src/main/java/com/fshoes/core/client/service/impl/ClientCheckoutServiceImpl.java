@@ -1,6 +1,7 @@
 package com.fshoes.core.client.service.impl;
 
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
+import com.fshoes.core.admin.notification.model.NotificationRequest;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.authentication.service.AuthenticationService;
 import com.fshoes.core.client.model.request.ClientBillDetaillRequest;
@@ -158,9 +159,10 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             sendMail(request, newBill.getCode(), dateNow, password);
             messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(newBill.getId()));
         }
-        Notification notification = new Notification();
-//        notification.setTitle("Có hóa đơn cần xác nhận " + "#" + newBill.getCode());
+        NotificationRequest notification = new NotificationRequest();
+        notification.setContent(newBill.getCode());
         notification.setTitle("Có đơn hàng mới ");
+        notification.setImage(account.getAvatar());
         notification.setCreatedAt(Calendar.getInstance().getTimeInMillis()  );
         notification.setType(TypeNotification.HOA_DON);
         notification.setIdRedirect(newBill.getId());
@@ -342,11 +344,16 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     billHistoryRepository.save(billHistory);
                     sendMail(newRequest, bill.getCode(), Calendar.getInstance().getTimeInMillis(), password);
                     messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
-                    Notification notification = new Notification();
-                    notification.setTitle("Có hóa đơn cần xác nhận " + "#" + bill.getCode());
+
+                    NotificationRequest notification = new NotificationRequest();
+                    notification.setContent(bill.getCode());
+                    notification.setTitle("Có đơn hàng mới ");
+                    notification.setImage(account.getAvatar());
+                    notification.setCreatedAt(Calendar.getInstance().getTimeInMillis()  );
                     notification.setType(TypeNotification.HOA_DON);
                     notification.setIdRedirect(bill.getId());
                     messagingTemplate.convertAndSend("/topic/thong-bao", notification);
+
                     return listBillDetails.stream().map(BillDetail::getProductDetail).toList();
                 }
             }

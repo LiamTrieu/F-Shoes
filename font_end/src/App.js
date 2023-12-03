@@ -9,6 +9,11 @@ import Loading from './layout/Loading'
 import { useEffect, useState } from 'react'
 import checkStartApi from './api/checkStartApi'
 import { connectStompClient } from './services/socket'
+import dayjs from 'dayjs'
+import 'dayjs/locale/vi'
+var relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime)
+dayjs.locale('vi')
 
 function App() {
   const [isStartSuccessful, setIsStartSuccessful] = useState(false)
