@@ -70,12 +70,12 @@ public interface AdVoucherRepository extends VoucherRepository {
     Page<AdFindCustomerRespone> getFindAllCustomer(String textSearch, Pageable pageable);
 
     @Query(value = """
-            SELECT DISTINCT code FROM Voucher
+            SELECT DISTINCT code FROM voucher
             """, nativeQuery = true)
     List<String> getAllCodeVoucher();
 
     @Query(value = """
-            SELECT DISTINCT name FROM Voucher
+            SELECT DISTINCT name FROM voucher
             """, nativeQuery = true)
     List<String> getAllNameVoucher();
 

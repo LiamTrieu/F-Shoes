@@ -182,6 +182,7 @@ export default function AdVoucherDetail() {
     setErrorValue('')
   }
 
+  const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
   const handleValidation = () => {
     let check = 0
     const errors = {
@@ -210,7 +211,7 @@ export default function AdVoucherDetail() {
       listCode.includes(voucherDetail.code.toLowerCase())
     ) {
       errors.code = 'Mã đã tồn tại'
-    } else if (/[^a-zA-Z0-9_\s]+/.test(voucherDetail.code)) {
+    } else if (specialCharsRegex.test(voucherDetail.code)) {
       errors.code = 'Mã không được chứa ký tự đặc biệt'
     }
 
@@ -227,7 +228,7 @@ export default function AdVoucherDetail() {
       listName.includes(voucherDetail.name.toLowerCase())
     ) {
       errors.name = 'Tên đã tồn tại'
-    } else if (/[^a-zA-Z0-9_\s]+/.test(voucherDetail.name)) {
+    } else if (specialCharsRegex.test(voucherDetail.name)) {
       errors.name = 'Tên không được chứa ký tự đặc biệt'
     }
 
