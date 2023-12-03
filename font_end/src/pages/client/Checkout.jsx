@@ -922,14 +922,13 @@ export default function Checkout() {
                   <Typography color={'red'}>
                     <b className="ck-tong-tien">
                       {formatPrice(
-                        arrData.reduce(
-                          (total, cart) =>
-                            total +
-                            calculateProductTotalPayment(cart, promotionByProductDetail) +
-                            phiShip -
-                            giamGia,
-                          0,
-                        ),
+                        arrData.reduce((total, cart) => {
+                          const productTotal =
+                            calculateProductTotalPayment(cart, promotionByProductDetail) || 0
+                          return total + productTotal
+                        }, 0) -
+                          giamGia +
+                          phiShip,
                       )}
                     </b>
                   </Typography>
