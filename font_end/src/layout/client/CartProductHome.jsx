@@ -147,7 +147,7 @@ export default function CartProductHome({ products, colmd, collg }) {
                             top: '80%',
                             left: '40%',
                           }}>
-                          <Tooltip title="Mua ngay">
+                          <Tooltip title="Thêm vào giỏ hàng">
                             <Button
                               variant="contained"
                               color="error"
