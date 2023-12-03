@@ -59,6 +59,7 @@ export default function AppBarAdmin({ children }) {
       stompClient.subscribe('/topic/thong-bao', (message) => {
         if (message.body) {
           const data = JSON.parse(message.body)
+          setAnchorEl(true)
           getNotification(data)
         }
       })
@@ -83,7 +84,6 @@ export default function AppBarAdmin({ children }) {
         setNotification(preNotification)
       }
     }
-    console.log(notification, '=====')
 
     return (
       <div>
@@ -104,22 +104,12 @@ export default function AppBarAdmin({ children }) {
               paper: {
                 elevation: 0,
                 sx: {
-                  overflow: 'visible',
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                  overflow: 'auto',
+                  filter: 'drop-shadow(0px 1px 3px rgba(0,0,0,0.32))',
                   mt: 0.5,
-                  padding: 1,
-                  backgroundColor: 'rgba(194, 196, 197, 0.54)',
-                  '&:before': {
-                    bgcolor: 'rgba(194, 196, 197, 0.54)',
-                    content: '""',
-                    display: 'block',
-                    position: 'absolute',
-                    top: 0,
-                    right: 14,
-                    width: 10,
-                    height: 10,
-                    transform: 'translateY(-50%) rotate(45deg)',
-                    zIndex: 0,
+                  backgroundColor: 'white',
+                  '&::-webkit-scrollbar': {
+                    width: '0px',
                   },
                 },
               },
@@ -130,85 +120,139 @@ export default function AppBarAdmin({ children }) {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
             {notification.map((notification, index) => (
-              <MenuItem
-                key={index}
-                onClick={() => {
-                  xemThongBao(notification.idRedirect, notification.type, index)
-                }}
-                style={{
-                  margin: '3px',
-                  borderRadius: '5px',
-                  backgroundColor: notification.status === 'HOAT_DONG' ? 'white' : 'white',
-                }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-
-                    maxWidth: '280px',
-                    width: '270px',
-                    height: '70px',
+              <>
+                <MenuItem
+                  key={index}
+                  onClick={() => {
+                    xemThongBao(notification.idRedirect, notification.type, index)
+                  }}
+                  sx={{
+                    margin: '3px',
+                    borderRadius: '5px',
+                    backgroundColor: 'white',
                   }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          width: '50px',
-                          height: '50px',
-                          borderRadius: '50%',
-                          backgroundColor: 'black',
-                        }}>
-                        <img
-                          src={require('../assets/image/TinTuc/avata_nofication.jpg')}
-                          alt=""
-                          width="50px"
-                          height="50px"
-                          style={{
-                            borderRadius: '50%',
-                          }}
-                        />
-                      </div>{' '}
-                    </Grid>
-                    <Grid item xs={8}>
-                      {notification.status === 'HOAT_DONG' ? (
-                        <div
-                          style={{
-                            width: '10px',
-                            height: '10px',
-                            borderRadius: '50%',
-                            backgroundColor: 'green',
-                            marginTop: '-15px',
-                            marginLeft: '175px',
-                          }}></div>
-                      ) : (
-                        ''
-                      )}
-
-                      <div
-                        style={{
-                          flexDirection: 'column',
-
-                          wordWrap: 'break-word',
-                        }}>
-                        <b>{notification.title}</b>
-                        <br />
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      maxWidth: '300px',
+                      width: '300px',
+                      height: '70px',
+                    }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={3}>
                         <div
                           style={{
                             display: 'flex',
+                            justifyContent: 'center',
                             alignItems: 'center',
+                            width: '70px',
+                            height: '70px',
+                            borderRadius: '50%',
                           }}>
-                          <AccessTimeFilledIcon style={{ width: '17px' }} />{' '}
-                          {dayjs(notification.createdAt).format('DD/MM/YYYY')}
+                          <img
+                            src={
+                              notification.image
+                                ? notification.image
+                                : 'https://res.cloudinary.com/dioxktgsm/image/upload/v1701498532/zl87yxsvlm2luo5rjnyl.png'
+                            }
+                            alt=""
+                            width="60px"
+                            height="60px"
+                            style={{
+                              borderRadius: '50%',
+                            }}
+                          />
+                        </div>{' '}
+                      </Grid>
+                      <Grid item xs={8}>
+                        <div
+                          style={{
+                            flexDirection: 'column',
+                            wordWrap: 'break-word',
+                            marginLeft: '5px',
+                          }}>
+                          {notification.status === 'HOAT_DONG' ? (
+                            <span>
+                              <b>{notification.title}</b>
+                              <p style={{ margin: 0 }}>{notification.content} </p>
+                            </span>
+                          ) : (
+                            <span style={{ color: 'gray' }}>
+                              <b>{notification.title}</b>
+                              <p style={{ margin: 0 }}>{notification.content} </p>
+                            </span>
+                          )}
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                            }}>
+                            {notification.status === 'HOAT_DONG' ? (
+                              <AccessTimeFilledIcon
+                                sx={{
+                                  width: '17px',
+                                  color: '#FC7C27',
+                                  marginRight: '5px',
+                                }}
+                              />
+                            ) : (
+                              <AccessTimeFilledIcon
+                                sx={{
+                                  width: '17px',
+                                  color: 'gray',
+                                  marginRight: '5px',
+                                }}
+                              />
+                            )}
+                            {notification.status === 'HOAT_DONG' ? (
+                              <span style={{ color: '#FC7C27' }}>
+                                {dayjs(notification.createdAt).fromNow()}
+                              </span>
+                            ) : (
+                              <span style={{ color: 'gray' }}>
+                                {dayjs(notification.createdAt).fromNow()}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      </Grid>
+                      <Grid item xs={1}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: '15px',
+                            height: '70px',
+                          }}>
+                          {notification.status === 'HOAT_DONG' ? (
+                            <div
+                              style={{
+                                height: '15px',
+                                width: '15px',
+                                backgroundColor: '#FC7C27',
+                                borderRadius: '50%',
+                              }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                height: '15px',
+                                width: '15px',
+                                backgroundColor: 'gray',
+                                borderRadius: '50%',
+                              }}
+                            />
+                          )}
+                        </div>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </div>
-              </MenuItem>
+                  </div>
+                </MenuItem>
+                {index < notification.length && <hr style={{ padding: 0, margin: 0 }} />}
+              </>
             ))}
           </Menu>
         )}
@@ -310,7 +354,6 @@ export default function AppBarAdmin({ children }) {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
                 {user ? (
                   <>
-                    {console.log(user)}
                     <Link
                       to={`/admin/staff/detail/${user.id}`}
                       style={{ textDecoration: 'none', color: 'black' }}>

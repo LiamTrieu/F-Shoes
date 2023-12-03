@@ -30,6 +30,8 @@ public class Notification extends PrimaryEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.HOAT_DONG;
 
+    private String image;
+
     @ManyToOne
     @JoinColumn(name = "id_account", referencedColumnName = "id")
     private Account account;
