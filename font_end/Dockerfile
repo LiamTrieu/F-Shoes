@@ -6,7 +6,6 @@
     ENV NODE_OPTIONS="--max-old-space-size=4096"
     #
     COPY package.json /app/package.json
-    COPY package-lock.json /app/package-lock.json
     # Same as npm install
     RUN npm install
     COPY . /app
