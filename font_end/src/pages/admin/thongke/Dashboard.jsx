@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  Container,
   Grid,
   MenuItem,
   Pagination,
@@ -343,65 +342,112 @@ export default function Dashboard() {
       </Grid2>
       {/* ------------------------------------------------------------------------- */}
       <Paper elevation={3} className="paper-css">
+        <Typography variant="h6" fontWeight={'bold'} my={1} px={1}>
+          Bộ lọc
+        </Typography>
+        <Grid sx={{ px: 1 }}>
+          <Button
+            variant="outlined"
+            color="cam"
+            className="button-css"
+            sx={{
+              backgroundColor: indexButton === 1 ? '#f26b16' : 'white',
+              color: indexButton === 1 ? 'white' : 'black',
+            }}
+            onClick={() => setIndexButton(1)}>
+            Ngày
+          </Button>
+          <Button
+            variant="outlined"
+            color="cam"
+            className="button-css"
+            sx={{
+              backgroundColor: indexButton === 2 ? '#f26b16' : 'white',
+              color: indexButton === 2 ? 'white' : 'black',
+            }}
+            onClick={() => setIndexButton(2)}>
+            Tuần
+          </Button>
+          <Button
+            variant="outlined"
+            color="cam"
+            className="button-css"
+            sx={{
+              backgroundColor: indexButton === 3 ? '#f26b16' : 'white',
+              color: indexButton === 3 ? 'white' : 'black',
+            }}
+            onClick={() => setIndexButton(3)}>
+            Tháng
+          </Button>
+          <Button
+            variant="outlined"
+            color="cam"
+            className="button-css"
+            sx={{
+              backgroundColor: indexButton === 4 ? '#f26b16' : 'white',
+              color: indexButton === 4 ? 'white' : 'black',
+            }}
+            onClick={() => setIndexButton(4)}>
+            Năm
+          </Button>
+          <Button
+            variant="outlined"
+            color="cam"
+            className="button-css"
+            sx={{
+              backgroundColor: indexButton === 5 ? '#f26b16' : 'white',
+              color: indexButton === 5 ? 'white' : 'black',
+            }}
+            onClick={() => setIndexButton(5)}>
+            Tùy chỉnh
+          </Button>
+          {indexButton === 5 && (
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                format={'DD-MM-YYYY'}
+                ampm={false}
+                onChange={(e) =>
+                  setFilterInCustom({
+                    ...filterInCustom,
+                    startDate: dayjs(e).format('DD-MM-YYYY'),
+                  })
+                }
+                slotProps={{
+                  actionBar: {
+                    actions: ['clear'],
+                    onClick: () => setFilterInCustom({ ...filterInCustom, startDate: null }),
+                  },
+                }}
+                label="Từ ngày"
+                className="dateTime-dashboard"
+              />
+            </LocalizationProvider>
+          )}
+          {indexButton === 5 && (
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                format={'DD-MM-YYYY'}
+                ampm={false}
+                onChange={(e) =>
+                  setFilterInCustom({
+                    ...filterInCustom,
+                    endDate: dayjs(e).format('DD-MM-YYYY'),
+                  })
+                }
+                slotProps={{
+                  actionBar: {
+                    actions: ['clear'],
+                    onClick: () => setFilterInCustom({ ...filterInCustom, endDate: null }),
+                  },
+                }}
+                label="Đến ngày"
+                className="dateTime-dashboard"
+              />
+            </LocalizationProvider>
+          )}
+        </Grid>
         <Grid container spacing={2} sx={{ px: 1 }}>
-          <Grid item xs={7} mt={3}>
-            <Grid>
-              <Button
-                variant="outlined"
-                color="cam"
-                className="button-css"
-                sx={{
-                  backgroundColor: indexButton === 1 ? '#f26b16' : 'white',
-                  color: indexButton === 1 ? 'white' : 'black',
-                }}
-                onClick={() => setIndexButton(1)}>
-                Ngày
-              </Button>
-              <Button
-                variant="outlined"
-                color="cam"
-                className="button-css"
-                sx={{
-                  backgroundColor: indexButton === 2 ? '#f26b16' : 'white',
-                  color: indexButton === 2 ? 'white' : 'black',
-                }}
-                onClick={() => setIndexButton(2)}>
-                Tuần
-              </Button>
-              <Button
-                variant="outlined"
-                color="cam"
-                className="button-css"
-                sx={{
-                  backgroundColor: indexButton === 3 ? '#f26b16' : 'white',
-                  color: indexButton === 3 ? 'white' : 'black',
-                }}
-                onClick={() => setIndexButton(3)}>
-                Tháng
-              </Button>
-              <Button
-                variant="outlined"
-                color="cam"
-                className="button-css"
-                sx={{
-                  backgroundColor: indexButton === 4 ? '#f26b16' : 'white',
-                  color: indexButton === 4 ? 'white' : 'black',
-                }}
-                onClick={() => setIndexButton(4)}>
-                Năm
-              </Button>
-              <Button
-                variant="outlined"
-                color="cam"
-                className="button-css"
-                sx={{
-                  backgroundColor: indexButton === 5 ? '#f26b16' : 'white',
-                  color: indexButton === 5 ? 'white' : 'black',
-                }}
-                onClick={() => setIndexButton(5)}>
-                Tùy chỉnh
-              </Button>
-            </Grid>
+          <Grid item xs={7}>
             <Typography variant="h6" fontWeight={'bold'} my={1} className="typography-css">
               Danh sách sản phẩm bán chạy theo tháng
             </Typography>
@@ -503,50 +549,7 @@ export default function Dashboard() {
             )}
           </Grid>
           <Grid item xs={5}>
-            <Grid container spacing={2} mt={1}>
-              <Grid item xs={6} className="dateTime-dashboard">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    format={'DD-MM-YYYY'}
-                    ampm={false}
-                    onChange={(e) =>
-                      setFilterInCustom({
-                        ...filterInCustom,
-                        startDate: dayjs(e).format('DD-MM-YYYY'),
-                      })
-                    }
-                    slotProps={{
-                      actionBar: {
-                        actions: ['clear'],
-                        onClick: () => setFilterInCustom({ ...filterInCustom, startDate: null }),
-                      },
-                    }}
-                    label="Từ ngày"
-                  />
-                </LocalizationProvider>
-              </Grid>
-              <Grid item xs={6} className="dateTime-dashboard">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    format={'DD-MM-YYYY'}
-                    ampm={false}
-                    onChange={(e) =>
-                      setFilterInCustom({
-                        ...filterInCustom,
-                        endDate: dayjs(e).format('DD-MM-YYYY'),
-                      })
-                    }
-                    slotProps={{
-                      actionBar: {
-                        actions: ['clear'],
-                        onClick: () => setFilterInCustom({ ...filterInCustom, endDate: null }),
-                      },
-                    }}
-                    label="Đến ngày"
-                  />
-                </LocalizationProvider>
-              </Grid>
-            </Grid>
+            <Grid container spacing={2} mt={1}></Grid>
             <Typography variant="h6" fontWeight={'bold'} my={1} mt={3} className="typography-css">
               Biểu đồ trạng thái
             </Typography>
@@ -557,7 +560,7 @@ export default function Dashboard() {
         </Grid>
       </Paper>
       {/* ------------------------------------------------------------------------- */}
-      <Grid container spacing={2} sx={{ marginBottom: '20px', px: 1 }}>
+      <Grid container spacing={2} sx={{ marginBottom: '20px' }}>
         <Grid item xs={7}>
           <Paper elevation={3} className="paper-css">
             <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">

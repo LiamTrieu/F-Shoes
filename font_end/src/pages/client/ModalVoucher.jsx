@@ -18,6 +18,7 @@ import ClientVoucherApi from '../../api/client/ClientVoucherApi'
 import { toast } from 'react-toastify'
 import Empty from '../../components/Empty'
 import './ModalVoucher.css'
+import clientCartApi from '../../api/client/clientCartApi'
 
 const styleModalVoucher = {
   position: 'absolute',
@@ -32,6 +33,7 @@ const styleModalVoucher = {
 }
 
 export default function ModalVoucher({
+  product,
   open,
   setOpen,
   setVoucher,
@@ -42,6 +44,7 @@ export default function ModalVoucher({
   const [listVoucher, setListVoucher] = useState([])
   const [dataVoucher, setDataVoucher] = useState(null)
   const [codeVoucher, setCodeVoucher] = useState('')
+  const [promotionByProductDetail, setGromotionByProductDetail] = useState([])
 
   const fetchVoucher = (request) => {
     ClientVoucherApi.fetchVoucher(request)
@@ -63,16 +66,50 @@ export default function ModalVoucher({
       .catch(() => {})
   }
 
-  const totalMoney = arrData.reduce((tong, e) => tong + e.gia * e.soLuong, 0)
-  const totalVoucher = dataVoucher
-    ? dataVoucher.typeValue === 0
-      ? (totalMoney * dataVoucher.value) / 100
-      : dataVoucher.value
-    : 0
+  const productIds = arrData.map((cart) => cart.id)
+
+  const getPromotionProductDetails = (id) => {
+    clientCartApi.getPromotionByProductDetail(id).then((response) => {
+      setGromotionByProductDetail(response.data.data)
+    })
+  }
+
+  const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
+    const discountAmount = (discountPercentage / 100) * originalPrice
+    const discountedPrice = originalPrice - discountAmount
+    return discountedPrice
+  }
+
+  function calculateProductTotalPayment(cart, promotionByProductDetail) {
+    const isDiscounted = promotionByProductDetail.some(
+      (item) => item.idProductDetail === cart.id && item.id,
+    )
+
+    if (isDiscounted) {
+      const discountedPrice = promotionByProductDetail
+        .filter((item) => item.idProductDetail === cart.id && item.id)
+        .map((item) => cart.soLuong * calculateDiscountedPrice(cart.gia, item.value))
+        .reduce((total, price) => total + price, 0)
+      return discountedPrice
+    } else {
+      return cart.soLuong * cart.gia
+    }
+  }
 
   const handleGiamGia = () => {
+    console.log('=====', dataVoucher)
+    const totalMoney = arrData.reduce(
+      (tong, e) => tong + calculateProductTotalPayment(e, promotionByProductDetail),
+      0,
+    )
+    console.log('=====', totalMoney)
+    const totalVoucher = dataVoucher
+      ? dataVoucher.typeValue === 0
+        ? (totalMoney * dataVoucher.value) / 100
+        : dataVoucher.value
+      : 0
     dataVoucher != null ? setVoucher(dataVoucher) : setVoucher(null)
-    setGiamGia(totalVoucher)
+    setGiamGia(totalVoucher > dataVoucher.maximumValue ? dataVoucher.maximumValue : totalVoucher)
     setOpen(false)
   }
 
@@ -82,6 +119,14 @@ export default function ModalVoucher({
       voucherByCode(codeVoucher)
     }
   }, [voucherFilter, codeVoucher])
+
+  useEffect(() => {
+    if (productIds.length === 0) {
+      return
+    }
+    getPromotionProductDetails(productIds)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="client-modal-voucher">

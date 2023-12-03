@@ -358,7 +358,7 @@ public interface adminThongKeRepository extends BillDetailRepository {
                   SELECT 6 UNION ALL
                   SELECT 7
               ) s
-              LEFT JOIN bill b ON s.status = b.status AND DATE(FROM_UNIXTIME(b.complete_date / 1000)) = DATE(CURDATE())
+              LEFT JOIN bill b ON s.status = b.status AND DATE(FROM_UNIXTIME(b.updated_at / 1000)) = DATE(CURDATE())
               GROUP BY s.status
               ORDER BY s.status ASC;
             """, nativeQuery = true)
@@ -376,7 +376,7 @@ public interface adminThongKeRepository extends BillDetailRepository {
                 SELECT 6 UNION ALL
                 SELECT 7
             ) s
-            LEFT JOIN bill b ON s.status = b.status AND WEEK(FROM_UNIXTIME(b.complete_date / 1000), 1) = WEEK(CURDATE(), 1)
+            LEFT JOIN bill b ON s.status = b.status AND WEEK(FROM_UNIXTIME(b.updated_at / 1000), 1) = WEEK(CURDATE(), 1)
             GROUP BY s.status
             ORDER BY s.status ASC;
             """, nativeQuery = true)
@@ -394,7 +394,7 @@ public interface adminThongKeRepository extends BillDetailRepository {
                 SELECT 6 UNION ALL
                 SELECT 7
             ) s
-            LEFT JOIN bill b ON s.status = b.status AND DATE_FORMAT(FROM_UNIXTIME(b.complete_date / 1000), '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+            LEFT JOIN bill b ON s.status = b.status AND DATE_FORMAT(FROM_UNIXTIME(b.updated_at / 1000), '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
             GROUP BY s.status
             ORDER BY s.status ASC;
             """, nativeQuery = true)
@@ -412,7 +412,7 @@ public interface adminThongKeRepository extends BillDetailRepository {
                 SELECT 6 UNION ALL
                 SELECT 7
             ) s
-            LEFT JOIN bill b ON s.status = b.status AND DATE_FORMAT(FROM_UNIXTIME(b.complete_date / 1000), '%Y') = DATE_FORMAT(CURDATE(), '%Y')
+            LEFT JOIN bill b ON s.status = b.status AND DATE_FORMAT(FROM_UNIXTIME(b.updated_at / 1000), '%Y') = DATE_FORMAT(CURDATE(), '%Y')
             GROUP BY s.status
             ORDER BY s.status ASC;
             """, nativeQuery = true)

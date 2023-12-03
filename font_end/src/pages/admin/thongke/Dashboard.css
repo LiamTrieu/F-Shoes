@@ -83,8 +83,8 @@
   height: 410px !important;
 }
 
-.table-css .MuiTableHead-root .MuiTableRow-root>th {
-  background-color: #F26B16 !important;
+.table-css .MuiTableHead-root .MuiTableRow-root > th {
+  background-color: #f26b16 !important;
   color: rgb(255, 255, 255) !important;
   font-weight: 600 !important;
 }
@@ -126,6 +126,7 @@
 
 .dateTime-dashboard fieldset {
   border-radius: 8px !important;
+  margin-right: 10px !important;
 }
 
 .dateTime-dashboard:hover fieldset {
@@ -133,11 +134,11 @@
 }
 
 .dateTime-dashboard .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
-  height: 0.6em !important;
+  height: 0.3em !important;
 }
 
 .dateTime-dashboard .css-gaq2pr-MuiFormLabel-root-MuiInputLabel-root {
-  line-height: 0.6em !important;
-  padding-top: 2px !important;
-  padding-bottom: 14px !important;
+  line-height: 0.5em !important;
+  padding-top: 3px !important;
+  padding-bottom: 10px !important;
 }
