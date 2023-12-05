@@ -32,9 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -223,85 +221,23 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public Bill confirmOrder(String idBill, BillConfirmRequest billConfirmRequest) {
         Bill bill = hdBillRepository.findById(idBill).orElse(null);
-
         if (bill != null && bill.getStatus() == 1) {
-
-            // Xóa tất cả chi tiết hóa đơn đã có:
-            hdBillDetailRepository.deleteByBillId(idBill);
-            // Xử lý danh sách chi tiết hóa đơn mới
-            List<BillDetail> newBillDetails = billConfirmRequest.getListHdctReq().stream()
-                    .map((hdBillDetailRequest) -> {
-                        ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getProductDetailId()).get();
-                        if (productDetail.getAmount() >= hdBillDetailRequest.getQuantity()) {
-                            BigDecimal price = hdBillDetailRequest.getPrice();
-                            int quantity = hdBillDetailRequest.getQuantity();
-                            BillDetail billDetail = new BillDetail();
-                            billDetail.setBill(bill);
-                            billDetail.setProductDetail(productDetailRepository.findById(hdBillDetailRequest.getProductDetailId()).orElse(null));
-                            billDetail.setPrice(price);
-                            billDetail.setQuantity(quantity);
-                            billDetail.setStatus(hdBillDetailRequest.getStatus());
-                            productDetail.setAmount(productDetail.getAmount() - hdBillDetailRequest.getQuantity());
-                            productDetailRepository.save(productDetail);
-                            messagingTemplate.convertAndSend("/topic/realtime-san-pham-client",
-                                    clientProductDetailRepository.updateRealTime(productDetail.getId()));
-                            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-status-bill-2",
-                                    clientProductDetailRepository.updateRealTime(productDetail.getId()));
-                            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-admin-by-bill-comfirm",
-                                    adProductDetailRepository.realTimeProductDetailAdmin(productDetail.getId()));
-                            return billDetail;
-                        } else {
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-
-
-            BigDecimal totalMoney = BigDecimal.ZERO;
-            for (BillDetail detail : newBillDetails) {
-                totalMoney = totalMoney.add(detail.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
-            }
-
-            if (bill.getMoneyReduced() != null) {
-                BigDecimal moneyAfter = totalMoney.subtract(bill.getMoneyReduced()).add(bill.getMoneyShip());
-                bill.setMoneyAfter(moneyAfter);
-            }
-
-            // Lưu danh sách chi tiết hóa đơn mới vào cơ sở dữ liệu
-            hdBillDetailRepository.saveAll(newBillDetails);
-
-            // Cập nhật thông tin hóa đơn và trạng thái
             bill.setStatus(2);
-            bill.setFullName(billConfirmRequest.getFullName());
-            bill.setNote(billConfirmRequest.getNote());
-            bill.setAddress(billConfirmRequest.getAddress());
-            bill.setPhoneNumber(billConfirmRequest.getPhoneNumber());
-            bill.setConfirmationDate(Calendar.getInstance().getTimeInMillis());
-            bill.setTotalMoney(totalMoney);
-            bill.setConfirmationDate(DateUtil.getCurrentTimeNow());
             hdBillRepository.save(bill);
+            // Lưu lịch sử hóa đơn
+            HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder().note(billConfirmRequest.getNoteBillHistory()).idStaff(userLogin.getUserLogin().getId()).bill(bill).build();
+            BillHistory billHistory = hdBillHistoryService.save(hdBillHistoryRequest);
+
             messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-page-admin",
                     hdBillRepository.realTimeBill(bill.getId()));
             messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-my-profile",
                     clientBillRepository.realTimeBillMyProfile(bill.getId()));
             messagingTemplate.convertAndSend("/topic/realtime-bill-detail-client-by-bill-comfirm",
                     clientBillDetailRepository.realTimeBillDetailByStatus(bill.getId()));
-
-            // Lưu lịch sử hóa đơn
-            HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder()
-                    .note(billConfirmRequest.getNoteBillHistory())
-                    .idStaff(userLogin.getUserLogin().getId())
-                    .bill(bill)
-                    .build();
-            BillHistory billHistory = hdBillHistoryService.save(hdBillHistoryRequest);
             messagingTemplate.convertAndSend("/topic/realtime-bill-history-client-by-bill-comfirm",
                     hdBillHistoryRepository.getListBillHistoryByIdBill(billHistory.getBill().getId()));
-
-            return bill;
-        } else {
-            return null;
         }
+        return bill;
     }
 
     @Override

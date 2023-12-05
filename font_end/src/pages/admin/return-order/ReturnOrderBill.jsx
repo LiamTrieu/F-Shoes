@@ -7,7 +7,6 @@ import {
   Button,
   Checkbox,
   Chip,
-  FormControlLabel,
   Grid,
   IconButton,
   InputAdornment,
@@ -31,16 +30,13 @@ import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import { GrSelect } from 'react-icons/gr'
 
-const listBreadcrumbs = [{ name: 'Trả hàng', link: '/admin/return-order/0' }]
+const listBreadcrumbs = [{ name: 'Trả hàng', link: '/admin/return-order' }]
 export default function ReturnOrderBill() {
   const param = useParams()
   const navigate = useNavigate()
   const [bill, setBill] = useState({})
   const [billDetail, setBillDetail] = useState([])
-  const [phi, setPhi] = useState(0)
   const [traKhach, setTraKhach] = useState(0)
-  const [typePay, setTypePay] = useState(0)
-  const [codePay, setCodePay] = useState(null)
 
   useEffect(() => {
     returnApi.getBillId(param.id).then(
@@ -96,8 +92,7 @@ export default function ReturnOrderBill() {
       setTraKhach(
         preBillDetail.reduce((total, e) => {
           return total + e.quantityReturn * e.price
-        }, 0) *
-          (1 - phi / 100),
+        }, 0),
       )
     }
   }
@@ -115,15 +110,10 @@ export default function ReturnOrderBill() {
 
     const returnBill = {
       idBill: bill.id,
-      returnMoney:
-        billDetail.reduce((total, e) => {
-          return total + e.quantityReturn * e.price
-        }, 0) *
-        (1 - phi / 100),
+      returnMoney: billDetail.reduce((total, e) => {
+        return total + e.quantityReturn * e.price
+      }, 0),
       moneyPayment: traKhach,
-      type: typePay,
-      codePayment: codePay,
-      fee: phi,
       listDetail: detail,
     }
     if (returnBill.listDetail && returnBill.listDetail.length <= 0) {
@@ -136,7 +126,7 @@ export default function ReturnOrderBill() {
             (res) => {
               if (res.data.success) {
                 toast.success('Trả hàng thành công!')
-                navigate('/admin/return-order/3')
+                navigate('/admin/return-order')
               } else {
                 navigate(-1)
               }

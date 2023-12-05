@@ -8,7 +8,6 @@ import com.fshoes.core.admin.returns.model.response.GetReturnDetailResponse;
 import com.fshoes.core.admin.returns.model.response.GetReturnResponse;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.entity.Bill;
-import com.fshoes.entity.Returns;
 
 import java.util.List;
 
@@ -21,18 +20,4 @@ public interface ReturnService {
     List<BillDetailReturnResponse> getBillDetail(String id);
 
     Boolean acceptReturn(ReturnRequest request);
-
-    Boolean hoanThanhReturn(ReturnRequest request);
-
-    PageReponse<GetReturnResponse> getReturn(GetReturnRequest request);
-
-    GetReturnDetailResponse getReturnDetail(String id);
-
-    List<BillDetailReturnResponse> getReturnDetail2(String id);
-
-    Returns xacNhanReturn(String id);
-
-    Returns tuChoiReturn(String id);
-
-    Returns huyReturn(String id);
 }

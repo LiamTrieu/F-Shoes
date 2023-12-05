@@ -147,7 +147,7 @@ export default function CartProductHome({ products, colmd, collg }) {
                             top: '80%',
                             left: '40%',
                           }}>
-                          <Tooltip title="Mua ngay">
+                          <Tooltip title="Thêm vào giỏ hàng">
                             <Button
                               variant="contained"
                               color="error"
@@ -165,7 +165,7 @@ export default function CartProductHome({ products, colmd, collg }) {
                       className="title"
                       gutterBottom
                       component="div"
-                      sx={{ textTransform: 'none' }}>
+                      sx={{ textTransform: 'none', whiteSpace: 'initial' }}>
                       {product.title}
                     </Typography>
                     <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>

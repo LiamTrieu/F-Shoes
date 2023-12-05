@@ -302,8 +302,17 @@ export default function DetailProduct() {
             </Box>
             <Box borderBottom={'1px dotted gray'} py={2} mb={2}>
               <Box py={2}>
-                <Typography mr={2} fontWeight={'bold'} variant="button" gutterBottom>
-                  Size
+                <Typography
+                  fontWeight={'bold'}
+                  variant="button"
+                  gutterBottom
+                  style={{
+                    marginLeft: '10px',
+                    marginBottom: '-10px',
+                    backgroundColor: 'white',
+                    padding: '2px 2px 2px 2px',
+                  }}>
+                  Size:
                 </Typography>
                 {sizes.map((e, index) => {
                   return (
@@ -317,6 +326,7 @@ export default function DetailProduct() {
                       variant="outlined"
                       style={{
                         marginLeft: '10px',
+                        marginTop: '10px',
                         color: id === e.id ? 'white' : 'black',
                         backgroundColor: id === e.id ? 'black' : 'white',
                         padding: '2px 0px 2px 0px',
@@ -331,6 +341,7 @@ export default function DetailProduct() {
                   variant="outlined"
                   style={{
                     marginLeft: '10px',
+                    marginBottom: '-10px',
                     color: 'black',
                     backgroundColor: 'white',
                     padding: '2px 2px 2px 2px',

@@ -377,11 +377,18 @@ export default function Checkout() {
       if (result.isConfirmed) {
         const preRequest = {
           ...request,
-          shipMoney: phiShip,
+          shipMoney:
+            arrData.reduce((total, cart) => {
+              const productTotal = calculateProductTotalPayment(cart, promotionByProductDetail) || 0
+              return total + productTotal
+            }, 0) -
+              giamGia <
+            1000000
+              ? phiShip
+              : 0,
           duKien: timeShip,
           totalMoney: arrData.reduce(
             (total, cart) => total + calculateProductTotalPayment(cart, promotionByProductDetail),
-
             0,
           ),
           billDetail: arrData.map((product) => {
@@ -895,7 +902,15 @@ export default function Checkout() {
                   <Typography>Phí vận chuyển</Typography>
                   <Typography color={'red'}>
                     <b className="ck-phi">
-                      {phiShip.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                      {arrData.reduce((total, cart) => {
+                        const productTotal =
+                          calculateProductTotalPayment(cart, promotionByProductDetail) || 0
+                        return total + productTotal
+                      }, 0) -
+                        giamGia <
+                      1000000
+                        ? phiShip.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+                        : 0}
                     </b>
                   </Typography>
                 </Stack>
@@ -922,14 +937,13 @@ export default function Checkout() {
                   <Typography color={'red'}>
                     <b className="ck-tong-tien">
                       {formatPrice(
-                        arrData.reduce(
-                          (total, cart) =>
-                            total +
-                            calculateProductTotalPayment(cart, promotionByProductDetail) +
-                            phiShip -
-                            giamGia,
-                          0,
-                        ),
+                        arrData.reduce((total, cart) => {
+                          const productTotal =
+                            calculateProductTotalPayment(cart, promotionByProductDetail) || 0
+                          return total + productTotal
+                        }, 0) -
+                          giamGia +
+                          phiShip,
                       )}
                     </b>
                   </Typography>

@@ -269,6 +269,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                  AND pd.id_brand = :#{#request.idBrand}
                  AND pd.id_sole = :#{#request.idSole}
                  AND pd.id_material = :#{#request.idMaterial}
+                 ORDER BY si.size
             """, nativeQuery = true)
     List<ClientProductDetailResponse> getAllSize(ClientProductDetailRequest request);
 
