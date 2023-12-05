@@ -1,9 +1,6 @@
 package com.fshoes.core.admin.thongke.Service;
 
-import com.fshoes.core.admin.thongke.Modal.Response.DoanhThuCuRespone;
-import com.fshoes.core.admin.thongke.Modal.Response.DoanhThuResponse;
-import com.fshoes.core.admin.thongke.Modal.Response.GetDataDashBoardResponse;
-import com.fshoes.core.admin.thongke.Modal.Response.ThongKeSanPhamResponse;
+import com.fshoes.core.admin.thongke.Modal.Response.*;
 import com.fshoes.core.admin.thongke.Modal.request.GetDataDashBoardRequest;
 import com.fshoes.core.admin.thongke.Modal.request.GetDataDashBoarhByDateRequest;
 import com.fshoes.core.common.PageReponse;
@@ -24,6 +21,8 @@ public interface ThongKeService {
     List<DoanhThuResponse> getDoanhThu();
 
     List<DoanhThuCuRespone> getDoanhThuCu();
+
+    List<DoanhThuCustomRespone> getDoanhThuCustom(GetDataDashBoarhByDateRequest request) throws ParseException;
 
     List<ThongKeSanPhamResponse> getThongKeDonHang(GetDataDashBoarhByDateRequest request) throws ParseException;
 

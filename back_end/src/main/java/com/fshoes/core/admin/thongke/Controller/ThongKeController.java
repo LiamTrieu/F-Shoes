@@ -6,6 +6,7 @@ import com.fshoes.core.admin.thongke.Service.ThongKeService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +47,11 @@ public class ThongKeController {
     @GetMapping("/doanh-thu-cu")
     public ObjectRespone getDoanhThuCu() {
         return new ObjectRespone(thongKeService.getDoanhThuCu());
+    }
+
+    @GetMapping("/doanh-thu-custom")
+    public ObjectRespone getDoanhThuCustom(@ModelAttribute GetDataDashBoarhByDateRequest request) throws ParseException {
+        return new ObjectRespone(thongKeService.getDoanhThuCustom(request));
     }
 
     @GetMapping("/view/thong-ke-don-hang")

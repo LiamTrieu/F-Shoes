@@ -34,7 +34,7 @@ import colorApi from '../../../api/admin/sanpham/colorApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
-const listBreadcrumbs = [{ name: 'Khuyến mại', link: '/admin/promotion' }]
+const listBreadcrumbs = [{ name: 'Đợt giảm giá', link: '/admin/promotion' }]
 
 export default function AdPromotionDetail() {
   const theme = useTheme()

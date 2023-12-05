@@ -1,9 +1,6 @@
 package com.fshoes.core.admin.thongke.Service.impl;
 
-import com.fshoes.core.admin.thongke.Modal.Response.DoanhThuCuRespone;
-import com.fshoes.core.admin.thongke.Modal.Response.DoanhThuResponse;
-import com.fshoes.core.admin.thongke.Modal.Response.GetDataDashBoardResponse;
-import com.fshoes.core.admin.thongke.Modal.Response.ThongKeSanPhamResponse;
+import com.fshoes.core.admin.thongke.Modal.Response.*;
 import com.fshoes.core.admin.thongke.Modal.request.GetDataDashBoardRequest;
 import com.fshoes.core.admin.thongke.Modal.request.GetDataDashBoarhByDateRequest;
 import com.fshoes.core.admin.thongke.Repository.adminThongKeRepository;
@@ -54,6 +51,13 @@ public class ThongKeServiceImpl implements ThongKeService {
     @Override
     public List<DoanhThuCuRespone> getDoanhThuCu() {
         return thongKeRepository.getDoanhThuCu();
+    }
+
+    @Override
+    public List<DoanhThuCustomRespone> getDoanhThuCustom(GetDataDashBoarhByDateRequest request) throws ParseException {
+        Long startDate = request.getStartDate() != null ? request.converDate(request.getStartDate()) : null;
+        Long endDate = request.getEndDate() != null ? request.converDate(request.getEndDate()) : null;
+        return thongKeRepository.getDoanhThuCustom(startDate, endDate);
     }
 
     @Override

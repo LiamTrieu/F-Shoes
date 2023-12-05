@@ -11,6 +11,10 @@ public interface DoanhThuResponse {
 
     Integer getSoLuongSanPhamNgay();
 
+    Integer getSoDonHuyNgay();
+
+    Integer getSoDonTraHangNgay();
+
     String getTuanNay();
 
     BigDecimal getDoanhSoTuanNay();
@@ -18,6 +22,10 @@ public interface DoanhThuResponse {
     Integer getSoDonHangTuanNay();
 
     Integer getSoLuongSanPhamTuanNay();
+
+    Integer getSoDonHuyTuanNay();
+
+    Integer getSoDonTraHangTuanNay();
 
     String getThangNay();
 
@@ -27,6 +35,10 @@ public interface DoanhThuResponse {
 
     Integer getSoLuongSanPhamThangNay();
 
+    Integer getSoDonHuyThangNay();
+
+    Integer getSoDonTraHangThangNay();
+
     String getNamNay();
 
     BigDecimal getDoanhSoNamNay();
@@ -34,4 +46,8 @@ public interface DoanhThuResponse {
     Integer getSoDonHangNamNay();
 
     Integer getSoLuongSanPhamNamNay();
+
+    Integer getSoDonHuyNamNay();
+
+    Integer getSoDonTraHangNamNay();
 }

@@ -14,6 +14,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from '@mui/material'
 import EventNoteIcon from '@mui/icons-material/EventNote'
@@ -34,7 +35,16 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
-const DashboardCard = function ({ iconCart, title, total, product, order, color }) {
+const DashboardCard = function ({
+  iconCart,
+  title,
+  total,
+  product,
+  order,
+  orderCancel,
+  orderReturn,
+  color,
+}) {
   return (
     <Grid2 lg={3} md={6} xs={12} justifyContent={'center'}>
       <Card variant="elevation" sx={{ p: 2, backgroundColor: color, color: 'white' }}>
@@ -62,13 +72,17 @@ const DashboardCard = function ({ iconCart, title, total, product, order, color 
           <thead>
             <tr>
               <td>Sản phẩm</td>
-              <td>Đơn hàng</td>
+              <td>Đơn thành công</td>
+              <td>Đơn hủy</td>
+              <td>Đơn trả</td>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td style={{ fontWeight: 'bold' }}>{product}</td>
               <td style={{ fontWeight: 'bold' }}>{order}</td>
+              <td style={{ fontWeight: 'bold' }}>{orderCancel}</td>
+              <td style={{ fontWeight: 'bold' }}>{orderReturn}</td>
             </tr>
           </tbody>
         </table>
@@ -83,6 +97,7 @@ export default function Dashboard() {
   const [indexButton, setIndexButton] = useState(1)
   const [doanhThu, setDoanhThu] = useState({})
   const [doanhThuCu, setDoanhThuCu] = useState({})
+  const [doanhThuCustom, setDoanhThuCustom] = useState({})
   const [dataBieuDo, setDataBieuDo] = useState([])
   const [filter, setFilter] = useState({
     page: 1,
@@ -97,6 +112,7 @@ export default function Dashboard() {
   const [filterTakeOut, setFilterTakeOut] = useState({
     page: 1,
     size: 5,
+    soLuongSearch: 10,
   })
   const [tkDoanhThuNgay, setTkDoanhThuNgay] = useState(null)
   const [tkDoanhThuTuan, setTkDoanhThuTuan] = useState(null)
@@ -177,6 +193,12 @@ export default function Dashboard() {
   const fecthDoanhThuCu = () => {
     thongKeApi.getDoanhThuCu().then((response) => {
       setDoanhThuCu(response.data.data[0])
+    })
+  }
+
+  const fecthDoanhThuCustom = (filter) => {
+    thongKeApi.getDoanhThuCustom(filter).then((response) => {
+      setDoanhThuCustom(response.data.data[0])
     })
   }
 
@@ -294,6 +316,7 @@ export default function Dashboard() {
     } else if (indexButton === 5) {
       fecthDataInCustom(filterInCustom)
       fetchThongKeDonHang(filterInCustom)
+      fecthDoanhThuCustom(filterInCustom)
     }
     fecthDataTakeOut(filterTakeOut)
   }, [filter, doanhThu, indexButton, filterTakeOut, filterInCustom])
@@ -306,40 +329,72 @@ export default function Dashboard() {
   return (
     <div>
       <BreadcrumbsCustom listLink={listBreadcrumbs} />
-      <Grid2 container spacing={2} mb={2}>
-        <DashboardCard
-          iconCart={<EventNoteIcon />}
-          title={'Hôm nay'}
-          total={doanhThu.doanhSoNgay}
-          product={doanhThu.soLuongSanPhamNgay}
-          order={doanhThu.soDonHangNgay}
-          color={'#0694a2'}
-        />
-        <DashboardCard
-          iconCart={<AutoAwesomeMotionIcon />}
-          title={'Tuần này'}
-          total={doanhThu.doanhSoTuanNay}
-          product={doanhThu.soLuongSanPhamTuanNay}
-          order={doanhThu.soDonHangTuanNay}
-          color={'#ff8a4c'}
-        />
-        <DashboardCard
-          iconCart={<AssignmentIcon />}
-          title={'Tháng này'}
-          total={doanhThu.doanhSoThangNay}
-          product={doanhThu.soLuongSanPhamThangNay}
-          order={doanhThu.soDonHangThangNay}
-          color={'#3f83f8'}
-        />
-        <DashboardCard
-          iconCart={<AssessmentIcon />}
-          title={'Năm nay'}
-          total={doanhThu.doanhSoNamNay}
-          product={doanhThu.soLuongSanPhamNamNay}
-          order={doanhThu.soDonHangNamNay}
-          color={'#0e9f6e'}
-        />
-      </Grid2>
+      <Grid container spacing={2} mb={2}>
+        <Grid item xs={6}>
+          <DashboardCard
+            iconCart={<EventNoteIcon />}
+            title={'Hôm nay'}
+            total={doanhThu.doanhSoNgay === null ? 0 : doanhThu.doanhSoNgay}
+            product={doanhThu.soLuongSanPhamNgay === null ? 0 : doanhThu.soLuongSanPhamNgay}
+            order={doanhThu.soDonHangNgay}
+            orderCancel={doanhThu.soDonHuyNgay}
+            orderReturn={doanhThu.soDonTraHangNgay}
+            color={'#0694a2'}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <DashboardCard
+            iconCart={<AutoAwesomeMotionIcon />}
+            title={'Tuần này'}
+            total={doanhThu.doanhSoTuanNay === null ? 0 : doanhThu.doanhSoTuanNay}
+            product={doanhThu.soLuongSanPhamTuanNay === null ? 0 : doanhThu.soLuongSanPhamTuanNay}
+            order={doanhThu.soDonHangTuanNay}
+            orderCancel={doanhThu.soDonHuyTuanNay}
+            orderReturn={doanhThu.soDonTraHangTuanNay}
+            color={'#ff8a4c'}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <DashboardCard
+            iconCart={<AssignmentIcon />}
+            title={'Tháng này'}
+            total={doanhThu.doanhSoThangNay === null ? 0 : doanhThu.doanhSoThangNay}
+            product={doanhThu.soLuongSanPhamThangNay === null ? 0 : doanhThu.soLuongSanPhamThangNay}
+            order={doanhThu.soDonHangThangNay}
+            orderCancel={doanhThu.soDonHuyThangNay}
+            orderReturn={doanhThu.soDonTraHangThangNay}
+            color={'#3f83f8'}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <DashboardCard
+            iconCart={<AssessmentIcon />}
+            title={'Năm nay'}
+            total={doanhThu.doanhSoNamNay === null ? 0 : doanhThu.doanhSoNamNay}
+            product={doanhThu.soLuongSanPhamNamNay === null ? 0 : doanhThu.soLuongSanPhamNamNay}
+            order={doanhThu.soDonHangNamNay}
+            orderCancel={doanhThu.soDonHuyNamNay}
+            orderReturn={doanhThu.soDonTraHangNamNay}
+            color={'#0e9f6e'}
+          />
+        </Grid>
+      </Grid>
+      {indexButton === 5 && (
+        <Grid container spacing={2} mb={2}>
+          <Grid item xs={12}>
+            <DashboardCard
+              iconCart={<AssessmentIcon />}
+              title={'Tùy chỉnh'}
+              total={doanhThuCustom.doanhSo === null ? 0 : doanhThuCustom.doanhSo}
+              product={doanhThuCustom.soLuong === null ? 0 : doanhThuCustom.soLuong}
+              order={doanhThuCustom.donHang}
+              orderCancel={doanhThuCustom.donHuy}
+              orderReturn={doanhThuCustom.donTra}
+              color={'#52a6b3'}
+            />
+          </Grid>
+        </Grid>
+      )}
       {/* ------------------------------------------------------------------------- */}
       <Paper elevation={3} className="paper-css">
         <Typography variant="h6" fontWeight={'bold'} my={1} px={1}>
@@ -563,9 +618,20 @@ export default function Dashboard() {
       <Grid container spacing={2} sx={{ marginBottom: '20px' }}>
         <Grid item xs={7}>
           <Paper elevation={3} className="paper-css">
-            <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
-              Danh sách sản phẩm sắp hết hàng
-            </Typography>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={0}>
+              <Typography variant="h6" fontWeight={'bold'} my={2} className="typography-css">
+                Danh sách sản phẩm sắp hết hàng
+              </Typography>
+              <TextField
+                size="small"
+                type="number"
+                sx={{ width: '15%' }}
+                defaultValue={filterTakeOut.soLuongSearch}
+                onChange={(e) =>
+                  setFilterTakeOut({ ...filterTakeOut, soLuongSearch: e.target.value })
+                }
+              />
+            </Stack>
             <Table aria-label="simple table" className="table-css">
               <TableHead>
                 <TableRow>
@@ -689,10 +755,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboarh" />
                 Doanh thu ngày
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {formatCurrency(doanhThu.doanhSoNgay)}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkDoanhThuNgay === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDoanhThuNgay > 0 ? (
@@ -710,10 +776,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboarh" />
                 Doanh thu Tuần
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {formatCurrency(doanhThu.doanhSoTuanNay)}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkDoanhThuTuan === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDoanhThuTuan > 0 ? (
@@ -731,10 +797,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Doanh thu Tháng
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {formatCurrency(doanhThu.doanhSoThangNay)}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkDoanhThuThang === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDoanhThuThang > 0 ? (
@@ -752,10 +818,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Doanh thu năm
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {formatCurrency(doanhThu.doanhSoNamNay)}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkDoanhThuNam === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDoanhThuNam > 0 ? (
@@ -773,10 +839,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Đơn hàng ngày
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {doanhThu.soDonHangNgay}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkDonHangNgay === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDonHangNgay > 0 ? (
@@ -794,10 +860,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Đơn hàng tuần
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {doanhThu.soDonHangTuanNay}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkDonHangTuan === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDonHangTuan > 0 ? (
@@ -815,10 +881,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Đơn hàng tháng
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {doanhThu.soDonHangThangNay}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkDonHangThang === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDonHangThang > 0 ? (
@@ -836,10 +902,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Đơn hàng năm
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {doanhThu.soDonHangNamNay}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkDonHangNam === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDonHangNam > 0 ? (
@@ -857,10 +923,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Sản phẩm ngày
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {doanhThu.soLuongSanPhamNgay}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkSanPhamNgay === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkSanPhamNgay > 0 ? (
@@ -878,10 +944,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Sản phẩm tuần
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {doanhThu.soLuongSanPhamTuanNay}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkSanPhamTuan === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkSanPhamTuan > 0 ? (
@@ -899,10 +965,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Sản phẩm tháng
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {doanhThu.soLuongSanPhamThangNay}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkSanPhamThang === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkSanPhamThang > 0 ? (
@@ -920,10 +986,10 @@ export default function Dashboard() {
                 <EqualizerIcon className="icon-css-dashboard" />
                 Sản phẩm năm
               </Grid>
-              <Grid item xs={4} className="grid-tang-truong-data">
+              <Grid item xs={3} className="grid-tang-truong-data">
                 {doanhThu.soLuongSanPhamNamNay}
               </Grid>
-              <Grid item xs={3} className="grid-tang-truong-data">
+              <Grid item xs={4} className="grid-tang-truong-data">
                 {tkSanPhamNam === null ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkSanPhamNam > 0 ? (
