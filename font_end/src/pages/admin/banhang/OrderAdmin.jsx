@@ -142,12 +142,12 @@ export default function OrderAdmin() {
                     Đơn hàng {index + 1}
                     <Badge
                       badgeContent={soLuong.find((e) => e.idBill === Bill.id)?.quantity}
-                      color="cam"
+                      color="error"
                       sx={{ marginRight: '10px' }}>
                       <img
-                        src={require('../../../assets/image/TinTuc/xe_giao_hang_otto.webp')}
+                        src={require('../../../assets/image/TinTuc/shoppingSell.png')}
                         alt=""
-                        height="30px"
+                        height="20px"
                         style={{ marginLeft: '4px', marginRight: '4px' }}
                       />
                     </Badge>

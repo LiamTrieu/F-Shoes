@@ -33,6 +33,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import { TbEyeEdit } from 'react-icons/tb'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import bradApi from '../../../api/admin/sanpham/bradApi'
+import * as ExcelJS from 'exceljs'
 
 const listBreadcrumb = [{ name: 'Quản lý thương hiệu' }]
 
@@ -243,6 +244,62 @@ export default function AdBrandPage() {
     })
   }
 
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('BrandData')
+
+    const columns = [
+      { header: 'STT', key: 'stt', width: 5 },
+      { header: 'Tên', key: 'name', width: 15 },
+      { header: 'Ngày thêm', key: 'createAt', width: 17.5 },
+      { header: 'Hoạt động', key: 'deleted', width: 20 },
+    ]
+
+    worksheet.columns = columns
+
+    listBrand.forEach((row, index) => {
+      worksheet.addRow({
+        stt: index + 1,
+        name: row.name,
+        createAt: dayjs(row.createdAt).format('DD/MM/YYYY'),
+        deleted: row.deleted === 0 ? 'Hoạt động' : 'Không hoạt động',
+      })
+    })
+
+    const titleStyle = {
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF008080' },
+      },
+    }
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = titleStyle
+    })
+
+    worksheet.columns.forEach((column) => {
+      const { width } = column
+      column.width = width
+    })
+
+    const blob = workbook.xlsx.writeBuffer().then(
+      (buffer) =>
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+    )
+
+    blob.then((blobData) => {
+      const url = window.URL.createObjectURL(blobData)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'brand_data.xlsx'
+      link.click()
+    })
+  }
+
   return (
     <div>
       <Box>
@@ -274,6 +331,15 @@ export default function AdBrandPage() {
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm thương hiệu"
             />
+            <Button
+              onClick={exportToExcel}
+              disableElevation
+              sx={{ ...spButton }}
+              color="cam"
+              variant="outlined"
+              style={{ marginLeft: '10px' }}>
+              Export Excel
+            </Button>
             <Button
               onClick={() => {
                 setOpenAdd(true)

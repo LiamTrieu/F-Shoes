@@ -211,10 +211,10 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
       return
     }
     const totalQuantityInCart = listProductBill.reduce(
-      (total, product) => total + product.quantity,
+      (total, product) => total + Number(product.quantity),
       0,
     )
-
+    console.log(Number(totalQuantityInCart) + '+' + Number(addAmount))
     if (Number(totalQuantityInCart) + Number(addAmount) > 5) {
       setIsShowProductDetail(false)
       toast.warning('Tổng số lượng sản phẩm trong giỏ hàng không được quá 5', {
