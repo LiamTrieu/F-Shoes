@@ -30,6 +30,7 @@ import { useTheme } from '@emotion/react'
 import SearchIcon from '@mui/icons-material/Search'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import ExcelJS from 'exceljs'
 
 export default function AdCustomerPage() {
   const theme = useTheme()
@@ -71,6 +72,72 @@ export default function AdCustomerPage() {
           fetchData(searchStaff)
         })
       }
+    })
+  }
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('NhanVienData')
+
+    const columns = [
+      { header: 'STT', key: 'stt', width: 5 },
+      { header: 'Ảnh', key: 'avatar', width: 25 },
+      { header: 'Code', key: 'code', width: 15 },
+      { header: 'Họ và tên', key: 'fullName', width: 15 },
+      { header: 'Email', key: 'email', width: 25 },
+      { header: 'SDT', key: 'phoneNumber', width: 15 },
+      { header: 'Ngày sinh', key: 'dateBirth', width: 10 },
+      { header: 'Giới tính', key: 'gender', width: 15 },
+      { header: 'Chức vụ', key: 'role', width: 15 },
+      { header: 'Trạng thái', key: 'status', width: 13 },
+    ]
+
+    worksheet.columns = columns
+
+    listStaff.forEach((row, index) => {
+      worksheet.addRow({
+        stt: row.stt,
+        avatar: row.avatar, // Assuming the avatar is a URL
+        code: row.code,
+        fullName: row.fullName,
+        email: row.email,
+        phoneNumber: row.phoneNumber,
+        dateBirth: dayjs(row.dateBirth).format('DD-MM-YYYY'),
+        gender: row.gender ? 'Nam' : 'Nữ',
+        role: row.role === 0 ? 'Nhân viên' : 'Quản lí',
+        status: row.status === 0 ? 'Hoạt động' : 'Không hoạt động',
+      })
+    })
+
+    const titleStyle = {
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF008080' },
+      },
+    }
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = titleStyle
+    })
+
+    worksheet.columns.forEach((column) => {
+      const { width } = column
+      column.width = width
+    })
+
+    const blob = workbook.xlsx.writeBuffer().then(
+      (buffer) =>
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+    )
+    blob.then((blobData) => {
+      const url = window.URL.createObjectURL(blobData)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'nhanvien_data.xlsx'
+      link.click()
     })
   }
 
@@ -145,6 +212,9 @@ export default function AdCustomerPage() {
               <MenuItem></MenuItem>
             </Select>
           </div>
+          <Button variant="outlined" color="cam" onClick={exportToExcel}>
+            Xuất Excel
+          </Button>
         </Stack>
 
         <Table aria-label="simple table" className="tableCss mt-5">

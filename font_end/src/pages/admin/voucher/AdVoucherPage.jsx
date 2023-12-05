@@ -35,6 +35,7 @@ import { Stomp } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { socketUrl } from '../../../services/url'
+import ExcelJS from 'exceljs'
 
 var stompClient = null
 
@@ -146,6 +147,70 @@ export default function AdVoucherPage() {
   useEffect(() => {
     fetchData(searchVoucher)
   }, [searchVoucher])
+
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('VoucherData')
+
+    const columns = [
+      { header: 'STT', key: 'stt', width: 5 },
+      { header: 'Mã', key: 'code', width: 8 },
+      { header: 'Tên', key: 'name', width: 15 },
+      { header: 'Kiểu', key: 'type', width: 15 },
+      { header: 'Loại', key: 'typeValue', width: 15 },
+      { header: 'Ngày bắt đầu', key: 'startDate', width: 17.5 },
+      { header: 'Ngày kết thúc', key: 'endDate', width: 17.5 },
+      { header: 'Trạng thái', key: 'status', width: 20 },
+    ]
+
+    worksheet.columns = columns
+
+    listVoucher.forEach((row, index) => {
+      worksheet.addRow({
+        stt: row.stt,
+        code: row.code,
+        name: row.name,
+        type: row.type === 0 ? 'Công khai' : 'Cá nhân',
+        typeValue: row.typeValue === 0 ? 'Phần trăm' : 'Giá tiền',
+        startDate: dayjs(row.startDate).format('DD/MM/YYYY HH:mm'),
+        endDate: dayjs(row.endDate).format('DD/MM/YYYY HH:mm'),
+        status:
+          row.status === 2 ? 'Đã kết thúc' : row.status === 1 ? 'Đang diễn ra' : 'Sắp diễn ra',
+      })
+    })
+
+    const titleStyle = {
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF008080' },
+      },
+    }
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = titleStyle
+    })
+
+    worksheet.columns.forEach((column) => {
+      const { width } = column
+      column.width = width
+    })
+
+    const blob = workbook.xlsx.writeBuffer().then(
+      (buffer) =>
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+    )
+    blob.then((blobData) => {
+      const url = window.URL.createObjectURL(blobData)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'voucher_data.xlsx'
+      link.click()
+    })
+  }
 
   const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
   return (
@@ -272,6 +337,9 @@ export default function AdVoucherPage() {
                   <MenuItem value={2}>Đã kết thúc</MenuItem>
                 </Select>
               </div>
+              <Button variant="outlined" color="cam" onClick={exportToExcel}>
+                Xuất Excel
+              </Button>
             </Stack>
           </Grid>
         </Grid>

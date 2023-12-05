@@ -33,6 +33,7 @@ import { TbEyeEdit } from 'react-icons/tb'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
+import * as ExcelJS from 'exceljs'
 
 const listBreadcrumb = [{ name: 'Quản lý đế giày' }]
 export default function AdSolePage() {
@@ -201,6 +202,61 @@ export default function AdSolePage() {
       }
     })
   }
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('SoleData')
+
+    const columns = [
+      { header: 'STT', key: 'stt', width: 5 },
+      { header: 'Tên', key: 'name', width: 15 },
+      { header: 'Ngày thêm', key: 'createAt', width: 17.5 },
+      { header: 'Hoạt động', key: 'deleted', width: 20 },
+    ]
+
+    worksheet.columns = columns
+
+    listSole.forEach((row, index) => {
+      worksheet.addRow({
+        stt: index + 1,
+        name: row.name,
+        createAt: dayjs(row.createAt).format('DD/MM/YYYY'),
+        deleted: row.deleted === 0 ? 'Hoạt động' : 'Không hoạt động',
+      })
+    })
+
+    const titleStyle = {
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF008080' },
+      },
+    }
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = titleStyle
+    })
+
+    worksheet.columns.forEach((column) => {
+      const { width } = column
+      column.width = width
+    })
+
+    const blob = workbook.xlsx.writeBuffer().then(
+      (buffer) =>
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+    )
+
+    blob.then((blobData) => {
+      const url = window.URL.createObjectURL(blobData)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'sole_data.xlsx'
+      link.click()
+    })
+  }
 
   return (
     <div>
@@ -233,6 +289,15 @@ export default function AdSolePage() {
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm đế giày"
             />
+            <Button
+              onClick={exportToExcel}
+              disableElevation
+              sx={{ ...spButton }}
+              color="cam"
+              variant="outlined"
+              style={{ marginLeft: '10px' }}>
+              Export Excel
+            </Button>
             <Button
               onClick={() => {
                 setOpenAdd(true)

@@ -37,6 +37,7 @@ import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { socketUrl } from '../../../services/url'
+import * as ExcelJS from 'exceljs'
 
 var stompClient = null
 export default function AdPromotionPage() {
@@ -137,6 +138,67 @@ export default function AdPromotionPage() {
       ...prevFilter,
       name: inputValue.replace(/^\s+/g, ''), // Remove leading whitespaces
     }))
+  }
+
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('PromotionData')
+
+    const columns = [
+      { header: 'STT', key: 'stt', width: 5 },
+      { header: 'Tên', key: 'name', width: 15 },
+      { header: 'Giá trị', key: 'value', width: 15 },
+      { header: 'Trạng thái', key: 'status', width: 20 },
+      { header: 'Thời gian bắt đầu', key: 'timeStart', width: 17.5 },
+      { header: 'Thời gian kết thúc', key: 'timeEnd', width: 17.5 },
+    ]
+
+    worksheet.columns = columns
+
+    listKhuyenMai.forEach((row, index) => {
+      worksheet.addRow({
+        stt: index + 1,
+        name: row.name,
+        value: `${row.value}%`, // Assuming value is a percentage, modify accordingly
+        status:
+          row.status === 2 ? 'Đã kết thúc' : row.status === 1 ? 'Đang diễn ra' : 'Sắp diễn ra',
+        timeStart: dayjs(row.timeStart).format('DD/MM/YYYY HH:mm'),
+        timeEnd: dayjs(row.timeEnd).format('DD/MM/YYYY HH:mm'),
+      })
+    })
+
+    const titleStyle = {
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF008080' },
+      },
+    }
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = titleStyle
+    })
+
+    worksheet.columns.forEach((column) => {
+      const { width } = column
+      column.width = width
+    })
+
+    const blob = workbook.xlsx.writeBuffer().then(
+      (buffer) =>
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+    )
+
+    blob.then((blobData) => {
+      const url = window.URL.createObjectURL(blobData)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'promotion_data.xlsx'
+      link.click()
+    })
   }
 
   const listBreadcrumbs = [{ name: 'Đợt giảm giá', link: '/admin/promotion' }]
@@ -266,6 +328,14 @@ export default function AdPromotionPage() {
                   <MenuItem></MenuItem>
                 </Select>
               </div>
+              <Button
+                onClick={exportToExcel}
+                disableElevation
+                color="cam"
+                variant="outlined"
+                style={{ marginLeft: '10px' }}>
+                Export Excel
+              </Button>
             </Stack>
           </Box>
         </Paper>

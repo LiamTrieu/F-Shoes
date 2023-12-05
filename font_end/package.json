@@ -26,6 +26,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "exceljs": "^4.4.0",
     "google-map-react": "^2.2.1",
     "html5-qrcode": "^2.3.8",
     "jwt-decode": "^4.0.0",
@@ -47,7 +48,8 @@
     "react-zxing": "^2.0.0",
     "sockjs-client": "^1.6.1",
     "sweetalert2": "^11.7.27",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start --no-overlay",

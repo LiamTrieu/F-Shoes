@@ -26,6 +26,7 @@ import {
 import Tab from '@mui/material/Tab'
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
 import dayjs from 'dayjs'
+import ExcelJS from 'exceljs'
 import { getStatus } from '../../../services/constants/statusHoaDon'
 import Tooltip from '@mui/material/Tooltip'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
@@ -229,6 +230,71 @@ export default function AdBillPage() {
   useEffect(() => {
     getAllBillTaoDonHang()
   }, [])
+
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('BillData')
+
+    const columns = [
+      { header: 'STT', key: 'stt', width: 5 },
+      { header: 'Mã', key: 'code', width: 8 },
+      { header: 'Tổng SP', key: 'totalProduct', width: 8 },
+      { header: 'Tổng số tiền', key: 'moneyAfter', width: 15 },
+      { header: 'Tên khách hàng', key: 'fullName', width: 15 },
+      { header: 'Ngày tạo', key: 'createdAt', width: 17.5 },
+      { header: 'Loại hoá đơn', key: 'type', width: 15 },
+      { header: 'Trạng thái', key: 'status', width: 20 },
+    ]
+
+    worksheet.columns = columns
+
+    listHoaDon.forEach((row, index) => {
+      worksheet.addRow({
+        stt: row.stt,
+        code: row.code,
+        totalProduct: row.totalProduct !== null ? row.totalProduct : 0,
+        moneyAfter: row.moneyAfter !== null ? row.moneyAfter : 0,
+        fullName: row.fullName !== null ? row.fullName : 'Khách lẻ',
+        createdAt: dayjs(row.createdAt).format('DD/MM/YYYY HH:mm'),
+        type: row.type === 1 ? 'Trực tuyến' : 'Tại quầy',
+        status: getStatus(row.status),
+      })
+    })
+
+    const titleStyle = {
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF008080' },
+      },
+    }
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = titleStyle
+    })
+
+    worksheet.columns.forEach((column) => {
+      const { width } = column
+      column.width = width
+    })
+
+    const blob = workbook.xlsx.writeBuffer().then(
+      (buffer) =>
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+    )
+
+    blob.then((blobData) => {
+      const url = window.URL.createObjectURL(blobData)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'bill_data.xlsx'
+      link.click()
+    })
+  }
+
   const listBreadcrumbs = [{ name: 'Quản lý đơn hàng', link: '/admin/bill' }]
   return (
     <div className="hoa-don">
@@ -342,6 +408,14 @@ export default function AdBillPage() {
               />
             </RadioGroup>
           </div>
+          <Button
+            onClick={exportToExcel}
+            disableElevation
+            color="cam"
+            variant="outlined"
+            style={{ marginLeft: '10px' }}>
+            Export Excel
+          </Button>
         </Stack>
       </Paper>
 

@@ -18,6 +18,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import ExcelJS from 'exceljs'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
@@ -71,6 +72,69 @@ export default function AdCustomerPage() {
           fetchData(searchKhachHang)
         })
       }
+    })
+  }
+
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('KhachHangData')
+
+    const columns = [
+      { header: 'STT', key: 'stt', width: 5 },
+      { header: 'Code', key: 'code', width: 10 },
+      { header: 'Email', key: 'email', width: 20 },
+      { header: 'Full Name', key: 'fullName', width: 20 },
+      { header: 'Date of Birth', key: 'dateOfBirth', width: 15 },
+      { header: 'Phone Number', key: 'phoneNumber', width: 15 },
+      { header: 'Gender', key: 'gender', width: 10 },
+      { header: 'Status', key: 'status', width: 15 },
+    ]
+
+    worksheet.columns = columns
+
+    listKhachHang.forEach((row, index) => {
+      worksheet.addRow({
+        stt: row.stt,
+        code: row.code,
+        email: row.email,
+        fullName: row.fullName,
+        dateOfBirth: dayjs(row.dateBirth).format('MM/DD/YYYY'),
+        phoneNumber: row.phoneNumber,
+        gender: row.gender ? 'Nam' : 'Nữ',
+        status: row.status === 0 ? 'Hoạt động' : 'Không hoạt động',
+      })
+    })
+
+    const titleStyle = {
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF008080' },
+      },
+    }
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = titleStyle
+    })
+
+    worksheet.columns.forEach((column) => {
+      const { width } = column
+      column.width = width
+    })
+
+    const blob = workbook.xlsx.writeBuffer().then(
+      (buffer) =>
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+    )
+    blob.then((blobData) => {
+      const url = window.URL.createObjectURL(blobData)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'khachhang_data.xlsx'
+      link.click()
     })
   }
 
@@ -142,6 +206,13 @@ export default function AdCustomerPage() {
                 <MenuItem></MenuItem>
               </Select>
             </div>
+            <Button
+              variant="outlined"
+              color="cam"
+              startIcon={<AiOutlinePlusSquare />}
+              onClick={exportToExcel}>
+              Xuất Excel
+            </Button>
           </Stack>
 
           <Table className="tableCss mt-5">
