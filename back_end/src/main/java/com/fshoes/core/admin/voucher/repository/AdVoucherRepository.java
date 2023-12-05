@@ -80,20 +80,22 @@ public interface AdVoucherRepository extends VoucherRepository {
     List<String> getAllNameVoucher();
 
     @Query(value = """
-            SELECT DISTINCT row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            SELECT row_number()  OVER(ORDER BY v.created_at DESC) as stt,
             v.id, v.code, v.name, v.value, v.maximum_value AS maximumValue,
             v.type, v.type_value as typeValue, v.minimum_amount AS minimumAmount, v.quantity,
             v.start_date AS startDate, v.end_date AS endDate, v.status
             FROM voucher v
             LEFT JOIN customer_voucher cv ON v.id = cv.id_voucher
-            LEFT JOIN bill b ON b.id_voucher = v.id AND b.status != 0
             WHERE
             v.status = 1
             AND v.quantity > 0
-            AND b.id_voucher IS NULL
             AND (
-                (v.type = 0 AND cv.id_account IS NULL)
-                OR (v.type = 1 AND cv.id_account = :#{#adCallVoucherOfSell.idCustomer} AND :#{#adCallVoucherOfSell.idCustomer} IS NOT NULL)
+                (v.type = 0 AND (cv.id_account IS NULL OR :#{#adCallVoucherOfSell.idCustomer} IS NULL))
+                OR (
+                v.type = 1
+                AND cv.id_account = :#{#adCallVoucherOfSell.idCustomer}
+                AND :#{#adCallVoucherOfSell.idCustomer} IS NOT NULL
+                )
             )
             AND (
                 :#{#adCallVoucherOfSell.condition} IS NULL OR v.minimum_amount <= :#{#adCallVoucherOfSell.condition}
@@ -109,6 +111,16 @@ public interface AdVoucherRepository extends VoucherRepository {
             )
             AND (
                 :#{#adCallVoucherOfSell.typeValueSearch} IS NULL OR v.type_value = :#{#adCallVoucherOfSell.typeValueSearch}
+            )
+            AND (
+                :#{#adCallVoucherOfSell.idCustomer} IS NULL
+                OR NOT EXISTS (
+                    SELECT 1
+                    FROM bill b
+                    WHERE b.id_voucher = v.id
+                      AND b.status <> 0
+                      AND b.id_customer = :#{#adCallVoucherOfSell.idCustomer}
+                )
             )
             GROUP BY v.id
             """, nativeQuery = true)
