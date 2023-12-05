@@ -86,9 +86,11 @@ public interface AdVoucherRepository extends VoucherRepository {
             v.start_date AS startDate, v.end_date AS endDate, v.status
             FROM voucher v
             LEFT JOIN customer_voucher cv ON v.id = cv.id_voucher
+            LEFT JOIN bill b ON b.id_voucher = v.id AND b.status != 0
             WHERE
             v.status = 1
             AND v.quantity > 0
+            AND b.id_voucher IS NULL
             AND (
                 (v.type = 0 AND cv.id_account IS NULL)
                 OR (v.type = 1 AND cv.id_account = :#{#adCallVoucherOfSell.idCustomer} AND :#{#adCallVoucherOfSell.idCustomer} IS NOT NULL)

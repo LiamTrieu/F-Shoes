@@ -124,6 +124,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const [list, setList] = useState([])
   const [nameCustomer, setNameCustomer] = useState('')
   const [customerAmount, setCustomerAmount] = useState(0)
+  const [percentMoney, setPercentMoney] = useState(null)
 
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
@@ -137,6 +138,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const [transactionCode, setTransactionCode] = useState('')
   const [isTextFieldDisabled, setIsTextFieldDisabled] = useState(false)
   const [noteTransaction, setNoteTransaction] = useState('')
+
+  const [errorPercentMoney, setErrorPercentMoney] = useState('')
 
   const handlePaymentMethodChange = (event) => {
     const selectedPaymentMethod = event.target.value
@@ -1103,6 +1106,19 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       }
     }
 
+    if (percentMoney === null) {
+      setPercentMoney(0)
+    } else if (!Number.isInteger(parseInt(percentMoney))) {
+      toast.error('Phần trăm giảm chưa phù hợp', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    } else if (percentMoney < 0 || percentMoney > 100) {
+      toast.error('Phần trăm giảm chưa phù hợp', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      return
+    }
+
     const data = {
       fullName: detailDiaChi.name ? detailDiaChi.name : '',
       phoneNumber: detailDiaChi.phoneNumber ? detailDiaChi.phoneNumber : '',
@@ -1118,6 +1134,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       moneyAfter: totalPrice ? totalPrice : '',
       type: giaoHang === true ? 1 : 0,
       receivingMethod: giaoHang === true ? 1 : 0,
+      percentMoney: percentMoney === 0 ? 0 : percentMoney,
     }
 
     const title = 'Xác nhận đặt hàng ?'
@@ -1150,8 +1167,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const moneyVoucher =
     voucher.typeValue === 0 ? (voucher.value * totalPriceCart) / 100 : voucher.value
   const totalMoneyReduce = moneyVoucher > voucher.maximumValue ? voucher.maximumValue : moneyVoucher
-
-  const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce
+  const moneyPercent =
+    percentMoney < 0 || percentMoney > 100
+      ? 0
+      : ((totalPriceCart + ShipingFree - totalMoneyReduce) * percentMoney) / 100
+  const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce - moneyPercent
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
   const handleOpenQRScanner = () => {
     setQrScannerVisible(true)
@@ -1301,6 +1321,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       noteTransaction: noteTransaction ? noteTransaction : null,
       desiredReceiptDate: timeShip ? timeShip : '',
       totalMoney: customerAmount.replace(/\D/g, '') ? customerAmount.replace(/\D/g, '') : '',
+      percentMoney: percentMoney === 0 ? 0 : percentMoney,
     }
     console.log(dataPay)
 
@@ -2562,31 +2583,53 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
           </Grid2>
           <Grid2 md={5} xs={12} p={0}>
             <Box sx={{ ml: 3 }}>
-              <TextField
-                sx={{ width: '70%' }}
-                label="Phiếu giảm giá"
-                value={voucher?.code}
-                size="small"
-                className="input-voucher-sell"
-                disabled
-                InputProps={{
-                  endAdornment: (
-                    <Button
-                      variant="contained"
-                      color="cam"
-                      onClick={() => {
-                        setIsShowVoucher(true)
-                        setAdCallVoucherOfSell({
-                          ...adCallVoucherOfSell,
-                          condition: totalSum,
-                        })
-                      }}>
-                      <b>Chọn </b>
-                    </Button>
-                  ),
-                }}
-              />
-
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <TextField
+                    label="Phiếu giảm giá"
+                    value={voucher?.code}
+                    size="small"
+                    className="input-voucher-sell"
+                    disabled
+                    InputProps={{
+                      endAdornment: (
+                        <Button
+                          variant="contained"
+                          color="cam"
+                          onClick={() => {
+                            setIsShowVoucher(true)
+                            setAdCallVoucherOfSell({
+                              ...adCallVoucherOfSell,
+                              condition: totalSum,
+                            })
+                          }}>
+                          <b>Chọn </b>
+                        </Button>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    label="Phần trăm giảm"
+                    defaultValue={percentMoney}
+                    size="small"
+                    className="input-voucher-sell"
+                    onChange={(e) => setPercentMoney(e.target.value)}
+                  />
+                  <span style={{ color: 'red', fontSize: '12px' }}>
+                    {percentMoney === null || percentMoney === ''
+                      ? ''
+                      : !Number.isInteger(parseInt(percentMoney))
+                        ? 'Giá trị nhập phải là số nguyên'
+                        : percentMoney < 0
+                          ? '* Phần trăm giẳm nhỏ nhất 0%'
+                          : percentMoney > 100
+                            ? '* Phần trăm giảm lớn nhất 100%'
+                            : ''}
+                  </span>
+                </Grid>
+              </Grid>
               <Modal
                 className="modal-voucher"
                 open={isShowVoucher}

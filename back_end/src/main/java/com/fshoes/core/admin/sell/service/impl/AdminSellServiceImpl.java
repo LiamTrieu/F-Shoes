@@ -186,6 +186,7 @@ public class AdminSellServiceImpl implements AdminSellService {
         } else {
             bill.setCompleteDate(null);
         }
+        bill.setPercentMoney(request.getPercentMoney());
         billRepository.save(bill);
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill);
@@ -231,6 +232,7 @@ public class AdminSellServiceImpl implements AdminSellService {
         bill.setCustomerAmount(request.getCustomerAmount());
         bill.setReceivingMethod(request.getReceivingMethod());
         bill.setDesiredReceiptDate(request.getDesiredReceiptDate());
+        bill.setPercentMoney(request.getPercentMoney());
         billRepository.save(bill);
 
         Transaction transaction = new Transaction();
