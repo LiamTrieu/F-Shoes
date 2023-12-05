@@ -6,6 +6,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeScreen from "./component/HomeScreen";
 import ProductScreen from "./component/ProductScreen";
 import clientProductApi from "./api/clientProductApi";
+import BillScreen from "./component/BillScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,11 +45,12 @@ export default function App() {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-
             if (route.name === "Trang chủ") {
               iconName = "home";
             } else if (route.name === "Sản phẩm") {
               iconName = "shoe-sneaker";
+            } else if (route.name === "Đơn hàng") {
+              iconName = "cart";
             }
 
             return <Icon name={iconName} size={size} color={color} />;
@@ -82,6 +84,23 @@ export default function App() {
         <Tab.Screen
           name="Sản phẩm"
           component={ProductScreen}
+          options={{
+            headerTitle: (props) => (
+              <View style={styles.headerContainer}>
+                <Image
+                  source={require("./assets/image/logowebnobg.png")}
+                  style={styles.headerImage}
+                />
+              </View>
+            ),
+            headerStyle: { backgroundColor: "white" },
+            headerTitleStyle: { color: "white" },
+            headerTitleAlign: "center",
+          }}
+        />
+        <Tab.Screen
+          name="Đơn hàng"
+          component={BillScreen}
           options={{
             headerTitle: (props) => (
               <View style={styles.headerContainer}>

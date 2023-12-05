@@ -144,7 +144,7 @@ export default function AdminMenu() {
           </Collapse>
         </>
 
-        <ListItemButton className="mt-3" component={Link} to="/admin/return-order/0">
+        <ListItemButton className="mt-3" component={Link} to="/admin/return-order">
           <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
             <Box component={MdOutlineAssignmentReturn} sx={{ fontSize: '25px' }} />
           </ListItemIcon>

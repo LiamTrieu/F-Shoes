@@ -9,11 +9,7 @@ import java.util.List;
 @Setter
 public class ReturnRequest {
     List<ReturnDetailRequest> listDetail;
-    private String idReturn;
     private String idBill;
     private String returnMoney;
     private String moneyPayment;
-    private Integer type;
-    private String codePayment;
-    private String fee;
 }
