@@ -36,5 +36,9 @@ public interface AdVoucherService {
 
     Page<AdVoucherRespone> getAllVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell);
 
+    List<AdVoucherRespone> getListVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell);
+
+    List<AdVoucherRespone> getListVoucherByIdCustomerUnqualified(AdCallVoucherOfSell adCallVoucherOfSell);
+
     Page<AdVoucherRespone> getSearchVoucher(AdVoucherSearch adVoucherSearch);
 }

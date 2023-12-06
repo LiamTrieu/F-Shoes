@@ -123,5 +123,13 @@ const sellApi = {
     const url = `/sell/view/voucher-by-customer`
     return axiosAdmin.get(url, { params: adCallVoucherOfSell })
   },
+  getListVoucherByIdCustomer: (adCallVoucherOfSell) => {
+    const url = `/sell/view/list/voucher-by-customer`
+    return axiosAdmin.get(url, { params: adCallVoucherOfSell })
+  },
+  getListVoucherByIdCustomerUnqualified: (adCallVoucherOfSell) => {
+    const url = `/sell/view/list/voucher-by-customer-unqualified`
+    return axiosAdmin.get(url, { params: adCallVoucherOfSell })
+  },
 }
 export default sellApi

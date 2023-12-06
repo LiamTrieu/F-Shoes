@@ -355,6 +355,16 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     }
 
     @Override
+    public List<AdVoucherRespone> getListVoucherByIdCustomer(AdCallVoucherOfSell adCallVoucherOfSell) {
+        return adVoucherRepository.getListVoucherByIdCustomer(adCallVoucherOfSell);
+    }
+
+    @Override
+    public List<AdVoucherRespone> getListVoucherByIdCustomerUnqualified(AdCallVoucherOfSell adCallVoucherOfSell) {
+        return adVoucherRepository.getListVoucherByIdCustomerUnqualified(adCallVoucherOfSell);
+    }
+
+    @Override
     public Page<AdVoucherRespone> getSearchVoucher(AdVoucherSearch voucherSearch) {
         Sort sort = Sort.by("code");
         Pageable pageable = PageRequest.of(voucherSearch.getPage() - 1, voucherSearch.getSize(), sort);

@@ -262,7 +262,7 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
       <Modal
         open={open}
         onClose={() => {
-          setOPen(false)
+          setOPen()
         }}>
         <Box sx={styleModalProduct}>
           <Toolbar>
@@ -277,7 +277,7 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
             </Box>
             <IconButton
               onClick={() => {
-                setOPen(false)
+                setOPen()
               }}
               aria-label="close"
               color="error"
