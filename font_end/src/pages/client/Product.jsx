@@ -23,7 +23,7 @@ import {
 import { Grid } from '@mui/material'
 import './Product.css'
 import { BiCategoryAlt, BiSolidColorFill } from 'react-icons/bi'
-import { GiBrandyBottle, GiMaterialsScience, GiBootPrints } from 'react-icons/gi'
+import { GiBrandyBottle, GiMaterialsScience, GiBootPrints, GiMeepleCircle } from 'react-icons/gi'
 import { FaCheck } from 'react-icons/fa'
 import { GrMoney } from 'react-icons/gr'
 import SearchIcon from '@mui/icons-material/Search'
@@ -80,11 +80,12 @@ export default function Product() {
   const [products, setProducts] = useState([])
 
   const [priceMax, setPriceMax] = useState(999999999)
-  const [openCategory, setOpenCategory] = useState(true)
-  const [openBrand, setOpenBrand] = useState(true)
-  const [openMaterial, setOpenMaterial] = useState(true)
-  const [openSole, setOpenSole] = useState(true)
-  const [openColor, setOpenColor] = useState(true)
+  const [openCategory, setOpenCategory] = useState(false)
+  const [openBrand, setOpenBrand] = useState(false)
+  const [openMaterial, setOpenMaterial] = useState(false)
+  const [openSole, setOpenSole] = useState(false)
+  const [openSize, setOpenSize] = useState(false)
+  const [openColor, setOpenColor] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false)
   const [showMenuBar, setShowMenuBar] = useState(true)
   const [isMenuBarVisible, setIsMenuBarVisible] = useState(true)
@@ -94,6 +95,7 @@ export default function Product() {
     color: [],
     sole: [],
     category: [],
+    lstSize: [],
     minPrice: null,
     maxPrice: null,
     nameProductDetail: null,
@@ -105,6 +107,7 @@ export default function Product() {
   const [listColor, setListColor] = useState([])
   const [listSole, setListSole] = useState([])
   const [listCategory, setListCategory] = useState([])
+  const [listSize, setListSize] = useState([])
 
   useEffect(() => {
     clientProductApi.getBrand().then((response) => {
@@ -121,6 +124,9 @@ export default function Product() {
     })
     clientProductApi.getCategory().then((response) => {
       setListCategory(response.data.data)
+    })
+    clientProductApi.getSize().then((response) => {
+      setListSize(response.data.data)
     })
   }, [])
 
@@ -207,6 +213,7 @@ export default function Product() {
   const [selectBrand, setSelectBrand] = useState([])
   const [selectMaterial, setSelectMaterial] = useState([])
   const [selectSole, setSelectSole] = useState([])
+  const [selectSize, setSelectSize] = useState([])
   const [selectColor, setSelectColor] = useState([])
 
   const handleCheckBoxCategory = (event, id) => {
@@ -271,6 +278,22 @@ export default function Product() {
     }
     setSelectSole(newSelectedIds)
     setFilter({ ...filter, sole: newSelectedIds })
+  }
+
+  const handleCheckBoxSize = (event, id) => {
+    const selectedIndex = selectSize.indexOf(id)
+    let newSelectedIds = []
+
+    if (selectedIndex === -1) {
+      newSelectedIds = [...selectSize, id]
+    } else {
+      newSelectedIds = [
+        ...selectSize.slice(0, selectedIndex),
+        ...selectSize.slice(selectedIndex + 1),
+      ]
+    }
+    setSelectSize(newSelectedIds)
+    setFilter({ ...filter, lstSize: newSelectedIds })
   }
 
   const handleCheckBoxColor = (event, id) => {
@@ -430,7 +453,27 @@ export default function Product() {
               ))}
             </List>
           </Collapse>
-
+          {/* --------------------------------------------- SIZE --------------------------------------------- */}
+          <ListItemButton onClick={() => setOpenSize(!openSize)} className="list-item-button">
+            <GiMeepleCircle className="icon-portfolio" />
+            <ListItemText primary="Kích cỡ" />
+            {openSize ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openSize} timeout="auto" unmountOnExit className="collapse-portfolio">
+            <List component="div" disablePadding>
+              {listSize.map((lf) => (
+                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxSize(e, lf.id)}>
+                  <Checkbox
+                    key={lf.id}
+                    checked={selectSize.includes(lf.id)}
+                    size="small"
+                    style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
+                  />
+                  <ListItemText primary={lf.size} key={lf.id} value={lf.id} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Collapse>
           {/* --------------------------------------------- PRICE --------------------------------------------- */}
           <ListItemButton className="list-item-button">
             <GrMoney className="icon-portfolio" />
