@@ -1250,7 +1250,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   }
 
   const totalSum = listProductDetailBill.reduce((sum, cart) => {
-    if (cart.statusPromotion === 1) {
+    if (cart.value) {
       return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
     } else {
       return sum + cart.price * cart.quantity
@@ -1416,6 +1416,14 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       })
       return
     }
+    const calculateDesiredValue = (customerAmount, totalPrice, totalMoneyPayOrderByIdBill) => {
+      const sanitizedCustomerAmount = parseInt(customerAmount.replace(/\D/g, ''), 10)
+
+      const remainingAmount = totalPrice - totalMoneyPayOrderByIdBill
+
+      return sanitizedCustomerAmount > remainingAmount ? remainingAmount : sanitizedCustomerAmount
+    }
+
     const dataPay = {
       note: noteTransaction ? noteTransaction : '',
       moneyAfter: totalPrice ? totalPrice : '',
@@ -1424,7 +1432,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       paymentMethod: paymentMethod === '1' ? 1 : 0,
       noteTransaction: noteTransaction ? noteTransaction : null,
       desiredReceiptDate: timeShip ? timeShip : '',
-      totalMoney: customerAmount.replace(/\D/g, '') ? customerAmount.replace(/\D/g, '') : '',
+      totalMoney: calculateDesiredValue(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
       percentMoney: percentMoney === 0 ? 0 : percentMoney,
     }
     console.log(dataPay)
@@ -1530,7 +1538,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                             borderRadius: '10px',
                           }}
                         />
-                        {cart.value && cart.statusPromotion === 1 && (
+                        {cart.value && (
                           <div
                             style={{
                               position: 'absolute',
@@ -1563,7 +1571,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                           <b>{cart.nameProduct}</b>
                         </p>
                         <p style={{ color: 'red', margin: '5px 0' }}>
-                          {cart.promotion && cart.statusPromotion === 1 ? (
+                          {cart.value ? (
                             <div>
                               <div className="promotion-price">{`${formatCurrency(
                                 cart.price,
@@ -1640,7 +1648,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                       }}
                       width={'20%'}
                       align="center">
-                      {cart.statusPromotion === 1 ? (
+                      {cart.value ? (
                         formatCurrency(
                           calculateDiscountedPrice(cart.price, cart.value) * cart.quantity,
                         )
@@ -2941,22 +2949,22 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
               )}
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Tiền hàng</Typography>
-                <Typography>{formatPrice(totalSum)}</Typography>
+                <Typography>{formatCurrency(totalSum)}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Phí vận chuyển</Typography>
-                <Typography>{giaoHang ? `${formatPrice(shipTotal)}` : '0 ₫'}</Typography>
+                <Typography>{giaoHang ? `${formatCurrency(shipTotal)}` : '0 VNĐ'}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Giảm giá</Typography>
-                <Typography>{formatPrice(totalMoneyReduce)}</Typography>
+                <Typography>{formatCurrency(totalMoneyReduce)}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>
                   <b>Tổng số tiền</b>
                 </Typography>
                 <Typography color={'red'}>
-                  <b>{formatPrice(totalPrice)}</b>
+                  <b>{formatCurrency(totalPrice)}</b>
                 </Typography>
               </Stack>
 
@@ -2981,7 +2989,24 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                         style: 'currency',
                         currency: 'VND',
                       })
-                    : '0 đ'}
+                    : '0 VNĐ'}
+                </Typography>
+              </Stack>
+              <Stack
+                sx={{ marginTop: '20px' }}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={2}>
+                <Typography style={{ fontSize: '16px', fontWeight: 700 }}>
+                  {totalPrice < totalMoneyPayOrderByIdBill ? 'Tiền thừa:' : 'Tiền thiếu'}
+                </Typography>
+                <Typography style={{ color: 'red', fontWeight: 700 }}>
+                  {formatCurrency(
+                    totalPrice - totalMoneyPayOrderByIdBill < 0
+                      ? Math.abs(totalPrice - totalMoneyPayOrderByIdBill)
+                      : totalPrice - totalMoneyPayOrderByIdBill,
+                  )}{' '}
                 </Typography>
               </Stack>
             </Box>
@@ -3011,7 +3036,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                   Tổng tiền hàng{' '}
                 </Typography>
                 <Typography style={{ color: 'red', fontWeight: 700 }}>
-                  {formatPrice(totalPrice)}{' '}
+                  {formatCurrency(totalPrice)}{' '}
                 </Typography>
               </Stack>
               <div style={{ textAlign: 'center', marginTop: '30px' }}>
@@ -3124,7 +3149,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                             {item.paymentMethod === 1 ? 'Tiền mặt' : 'Chuyển khoản'}{' '}
                           </TableCell>
                           <TableCell align="center">
-                            {item.totalMoney ? formatPrice(item.totalMoney) : 0}
+                            {item.totalMoney ? formatCurrency(item.totalMoney) : 0}
                           </TableCell>
                           <TableCell align="center">
                             <Tooltip title="Hủy thanh toán">
@@ -3153,7 +3178,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                   {totalPrice < totalMoneyPayOrderByIdBill ? 'Tiền thừa:' : 'Tiền thiếu'}
                 </Typography>
                 <Typography style={{ color: 'red', fontWeight: 700 }}>
-                  {formatPrice(
+                  {formatCurrency(
                     totalPrice - totalMoneyPayOrderByIdBill < 0
                       ? Math.abs(totalPrice - totalMoneyPayOrderByIdBill)
                       : totalPrice - totalMoneyPayOrderByIdBill,

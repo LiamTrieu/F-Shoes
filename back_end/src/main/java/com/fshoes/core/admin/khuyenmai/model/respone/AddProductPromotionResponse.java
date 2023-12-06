@@ -6,6 +6,10 @@ public interface AddProductPromotionResponse extends IsIdentified {
 
     String getProductDetail();
 
+    String getProductPromotion();
+
+    Integer getStatusPromotion();
+
     String getName();
 
     String getCategory();

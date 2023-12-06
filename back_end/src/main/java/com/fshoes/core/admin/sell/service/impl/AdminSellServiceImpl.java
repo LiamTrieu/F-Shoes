@@ -42,6 +42,9 @@ public class AdminSellServiceImpl implements AdminSellService {
     private ProductDetailRepository productDetailRepository;
 
     @Autowired
+    private AdminProductDetailRepository adminproductDetailRepository;
+
+    @Autowired
     private AdminSellGetCustomerRepository getCustomerRepository;
     @Autowired
     private TransactionRepository transactionRepository;
@@ -178,7 +181,7 @@ public class AdminSellServiceImpl implements AdminSellService {
         if (request.getType() == 0) {
             bill.setStatus(7);
         } else {
-            bill.setStatus(2);
+            bill.setStatus(1);
         }
         bill.setReceivingMethod(request.getReceivingMethod());
         if (request.getType() == 0) {
@@ -193,7 +196,7 @@ public class AdminSellServiceImpl implements AdminSellService {
         if (request.getType() == 0) {
             billHistory.setStatusBill(7);
         } else {
-            billHistory.setStatusBill(2);
+            billHistory.setStatusBill(1);
         }
         billHistoryRepository.save(billHistory);
         messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
@@ -455,7 +458,7 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Override
     public List<GetAllProductResponse> getAllProduct(FilterProductDetailRequest request) {
-        return getProductRepository.getAllProduct(request);
+        return adminproductDetailRepository.getAllProduct(request);
     }
 
     @Override

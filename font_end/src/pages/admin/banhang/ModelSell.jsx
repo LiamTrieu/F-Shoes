@@ -198,7 +198,7 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
 
   const onSubmitAddBillDetail = (id, idBill) => {
     let priceToAdd = selectedProduct.price
-    if (selectedProduct.value && selectedProduct.statusPromotion === 1) {
+    if (selectedProduct.value) {
       priceToAdd = (selectedProduct.price * (100 - selectedProduct.value)) / 100
     } else {
       priceToAdd = selectedProduct.price
@@ -255,6 +255,14 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
       style: 'currency',
       currency: 'VND',
     })
+  }
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      currencyDisplay: 'code',
+    })
+    return formatter.format(value)
   }
 
   return (
@@ -518,7 +526,7 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
                       <TableCell width={'15%'} align="center">
                         <div style={{ position: 'relative' }}>
                           <img width={'100%'} alt="error" src={cart.url} />
-                          {cart.value && cart.statusPromotion === 1 && (
+                          {cart.value && (
                             <div
                               style={{
                                 position: 'absolute',
@@ -555,13 +563,15 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
                           fontWeight: 'bold',
                         }}>
                         <p style={{ color: 'red', margin: '5px 0' }}>
-                          {cart.promotion && cart.statusPromotion === 1 ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
+                          {cart.value ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
                             <div>
-                              <div className="promotion-price">{`${formatPrice(cart.price)}`}</div>{' '}
+                              <div className="promotion-price">{`${formatCurrency(
+                                cart.price,
+                              )}`}</div>{' '}
                               {/* Hiển thị giá gốc */}
                               <div>
                                 <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                  {`${formatPrice(
+                                  {`${formatCurrency(
                                     calculateDiscountedPrice(cart.price, cart.value),
                                   )}`}
                                 </span>{' '}
@@ -570,7 +580,7 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
                             </div>
                           ) : (
                             // Nếu không có khuyến mãi, chỉ hiển thị giá gốc
-                            <span>{`${formatPrice(cart.price)}`}</span>
+                            <span>{`${formatCurrency(cart.price)}`}</span>
                           )}
                         </p>
                       </TableCell>
@@ -627,14 +637,14 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
                       {getAmountProduct.brand}
                     </div>
                     <p style={{ color: 'red', margin: '5px 0' }}>
-                      {getAmountProduct.promotion && getAmountProduct.statusPromotion === 1 ? (
+                      {getAmountProduct.value ? (
                         <div style={{ display: 'flex' }}>
-                          <div className="promotion-price">{`${formatPrice(
+                          <div className="promotion-price">{`${formatCurrency(
                             getAmountProduct.price,
                           )}`}</div>{' '}
                           <div>
                             <span style={{ color: 'red', fontWeight: 'bold' }}>
-                              {`${formatPrice(
+                              {`${formatCurrency(
                                 calculateDiscountedPrice(
                                   getAmountProduct.price,
                                   getAmountProduct.value,
@@ -645,7 +655,7 @@ export default function ModelSell({ open, setOPen, idBill, load, listProductBill
                         </div>
                       ) : (
                         <span>{`${
-                          getAmountProduct.price ? formatPrice(getAmountProduct.price) : '0đ'
+                          getAmountProduct.price ? formatCurrency(getAmountProduct.price) : '0đ'
                         }`}</span>
                       )}
                     </p>
