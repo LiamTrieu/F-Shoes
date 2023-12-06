@@ -15,6 +15,7 @@ public class ClientFindProductRequest {
     private List<String> color;
     private List<String> sole;
     private List<String> category;
+    private List<String> lstSize;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private String nameProductDetail;
