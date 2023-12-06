@@ -320,7 +320,14 @@ export default function AdCustomerAdd() {
             const obj = {
               name: diaChi.name,
               phoneNumber: khachHang.phoneNumber,
-              specificAddress: diaChi.specificAddress,
+              specificAddress:
+                diaChi.specificAddress +
+                ', ' +
+                selectedXa.label +
+                ', ' +
+                selectedHuyen.label +
+                ', ' +
+                selectedTinh.label,
               type: true,
               idCustomer: khachHangId,
               provinceId: diaChi.provinceId,
@@ -563,14 +570,7 @@ export default function AdCustomerAdd() {
                     onChange={(e) => {
                       setDiaChi({
                         ...diaChi,
-                        specificAddress:
-                          e.target.value +
-                          ', ' +
-                          selectedXa.label +
-                          ', ' +
-                          selectedHuyen.label +
-                          ', ' +
-                          selectedTinh.label,
+                        specificAddress: e.target.value,
                       })
                       setErrors({ ...errors, specificAddress: '' })
                     }}

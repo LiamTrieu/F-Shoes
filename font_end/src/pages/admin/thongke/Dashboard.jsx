@@ -34,6 +34,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import ExcelJS from 'exceljs'
 
 const DashboardCard = function ({
   iconCart,
@@ -325,6 +326,95 @@ export default function Dashboard() {
     fecthDoanhThu()
     fecthDoanhThuCu()
   }, [])
+  const handleExportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+
+    const exportSheet = (worksheet, title, total, product, order, orderCancel, orderReturn) => {
+      worksheet.addRow([title])
+      worksheet.addRow([''])
+      worksheet.addRow(['Doanh số', total || 0])
+      worksheet.addRow(['Số lượng sản phẩm', product || 0])
+      worksheet.addRow(['Số đơn hàng', order || 0])
+      worksheet.addRow(['Số đơn hủy', orderCancel || 0])
+      worksheet.addRow(['Số đơn trả hàng', orderReturn || 0])
+
+      const titleStyle = {
+        font: { bold: true, color: { argb: 'FFFFFF' } },
+        fill: {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF008080' },
+        },
+      }
+
+      worksheet.getRow(1).eachCell((cell) => {
+        cell.style = titleStyle
+      })
+      worksheet.getColumn('A').width = 20
+      worksheet.columns.forEach((column) => {
+        const { width } = column
+        column.width = width
+      })
+    }
+
+    const todayWorksheet = workbook.addWorksheet('Hôm nay')
+    const safeGetValue = (obj, prop) =>
+      obj && obj[prop] !== undefined && obj[prop] !== null ? obj[prop] : 0
+    exportSheet(
+      todayWorksheet,
+      'Hôm nay',
+      safeGetValue(doanhThu, 'doanhSoNgay'),
+      safeGetValue(doanhThu, 'soLuongSanPhamNgay'),
+      safeGetValue(doanhThu, 'soDonHangNgay'),
+      safeGetValue(doanhThu, 'soDonHuyNgay'),
+      safeGetValue(doanhThu, 'soDonTraHangNgay'),
+    )
+
+    const thisWeekWorksheet = workbook.addWorksheet('Tuần này')
+    exportSheet(
+      thisWeekWorksheet,
+      'Tuần này',
+      safeGetValue(doanhThu, 'doanhSoTuanNay'),
+      safeGetValue(doanhThu, 'soLuongSanPhamTuanNay'),
+      safeGetValue(doanhThu, 'soDonHangTuanNay'),
+      safeGetValue(doanhThu, 'soDonHuyTuanNay'),
+      safeGetValue(doanhThu, 'soDonTraHangTuanNay'),
+    )
+
+    const thisMonthWorksheet = workbook.addWorksheet('Tháng này')
+    exportSheet(
+      thisMonthWorksheet,
+      'Tháng này',
+      safeGetValue(doanhThu, 'doanhSoThangNay'),
+      safeGetValue(doanhThu, 'soLuongSanPhamThangNay'),
+      safeGetValue(doanhThu, 'soDonHangThangNay'),
+      safeGetValue(doanhThu, 'soDonHuyThangNay'),
+      safeGetValue(doanhThu, 'soDonTraHangThangNay'),
+    )
+
+    const thisYearWorksheet = workbook.addWorksheet('Năm nay')
+    exportSheet(
+      thisYearWorksheet,
+      'Năm nay',
+      safeGetValue(doanhThu, 'doanhSoNamNay'),
+      safeGetValue(doanhThu, 'soLuongSanPhamNamNay'),
+      safeGetValue(doanhThu, 'soDonHangNamNay'),
+      safeGetValue(doanhThu, 'soDonHuyNamNay'),
+      safeGetValue(doanhThu, 'soDonTraHangNamNay'),
+    )
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      })
+
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'thong_ke_doanh_so.xlsx'
+      link.click()
+    })
+  }
   const listBreadcrumbs = [{ name: 'Thống kê', link: '  /admin/dashboard' }]
   return (
     <div>
@@ -455,6 +545,13 @@ export default function Dashboard() {
             }}
             onClick={() => setIndexButton(5)}>
             Tùy chỉnh
+          </Button>
+          <Button
+            variant="outlined"
+            color="success"
+            sx={{ float: 'right' }}
+            onClick={handleExportToExcel}>
+            Export to Excel
           </Button>
           {indexButton === 5 && (
             <LocalizationProvider dateAdapter={AdapterDayjs}>

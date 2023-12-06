@@ -36,6 +36,7 @@ import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 export default function AdCustomerPage() {
   const theme = useTheme()
   const [listKhachHang, setListKhachHang] = useState([])
+  const [listKhachHangEx, setListKhachHangEx] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [searchKhachHang, setSearchKhachHang] = useState({
     nameSearch: '',
@@ -47,6 +48,7 @@ export default function AdCustomerPage() {
 
   useEffect(() => {
     fetchData(searchKhachHang)
+    getAllKhachHang()
   }, [searchKhachHang])
 
   const fetchData = (searchKhachHang) => {
@@ -57,6 +59,12 @@ export default function AdCustomerPage() {
         if (response.data.data.totalPages > 0) {
           setSearchKhachHang({ ...searchKhachHang, page: response.data.data.totalPages })
         }
+    })
+  }
+
+  const getAllKhachHang = () => {
+    khachHangApi.getAll().then((response) => {
+      setListKhachHangEx(response.data)
     })
   }
 
@@ -92,7 +100,7 @@ export default function AdCustomerPage() {
 
     worksheet.columns = columns
 
-    listKhachHang.forEach((row, index) => {
+    listKhachHangEx.forEach((row, index) => {
       worksheet.addRow({
         stt: row.stt,
         code: row.code,

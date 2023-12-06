@@ -43,6 +43,7 @@ var stompClient = null
 export default function AdPromotionPage() {
   const theme = useTheme()
   const [listKhuyenMai, setListKhuyenMai] = useState([])
+  const [listKhuyenMaiEx, setListKhuyenMaiEx] = useState([])
   const [listKhuyenMaiUpdate, setListKhuyenMaiUpdate] = useState([])
   const [totalPages, setTotalPages] = useState(0)
 
@@ -116,6 +117,7 @@ export default function AdPromotionPage() {
 
   useEffect(() => {
     fecthData(filter)
+    getAllKhuyenMai()
   }, [filter])
 
   const fecthData = (filter) => {
@@ -132,6 +134,13 @@ export default function AdPromotionPage() {
       setTotalPages(response.data.totalPages)
     })
   }
+
+  const getAllKhuyenMai = () => {
+    khuyenMaiApi.getAll().then((response) => {
+      setListKhuyenMaiEx(response.data.data)
+    })
+  }
+
   const handleInputChange = (e) => {
     const inputValue = e.target.value
     setFilter((prevFilter) => ({
@@ -155,11 +164,11 @@ export default function AdPromotionPage() {
 
     worksheet.columns = columns
 
-    listKhuyenMai.forEach((row, index) => {
+    listKhuyenMaiEx.forEach((row, index) => {
       worksheet.addRow({
         stt: index + 1,
         name: row.name,
-        value: `${row.value}%`, // Assuming value is a percentage, modify accordingly
+        value: `${row.value}%`,
         status:
           row.status === 2 ? 'Đã kết thúc' : row.status === 1 ? 'Đang diễn ra' : 'Sắp diễn ra',
         timeStart: dayjs(row.timeStart).format('DD/MM/YYYY HH:mm'),

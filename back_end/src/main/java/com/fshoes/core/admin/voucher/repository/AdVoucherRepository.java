@@ -212,6 +212,14 @@ public interface AdVoucherRepository extends VoucherRepository {
             """)
     List<Voucher> getAllVoucherWrong(Long dateNow);
 
+    @Query(value = """ 
+            SELECT row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value AS maximumValue,
+            v.type, v.type_value as typeValue, v.minimum_amount AS minimumAmount, v.quantity,
+            v.start_date AS startDate, v.end_date AS endDate, v.status FROM voucher v
+            """, nativeQuery = true)
+    List<AdVoucherRespone> getAllVoucher();
+
     @Query(value = """
              select  ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id, avatar, email,
              full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber,

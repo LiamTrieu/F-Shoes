@@ -2,6 +2,7 @@ package com.fshoes.core.admin.nhanvien.controller;
 
 import com.fshoes.core.admin.nhanvien.model.request.SearchStaff;
 import com.fshoes.core.admin.nhanvien.model.request.StaffRequest;
+import com.fshoes.core.admin.nhanvien.model.respone.StaffRespone;
 import com.fshoes.core.admin.nhanvien.service.StaffService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/staff")
@@ -18,8 +20,8 @@ public class StaffController {
     private StaffService service;
 
     @GetMapping("/find-all")
-    public ResponseEntity hienThi() {
-        return new ResponseEntity(service.getAll(), HttpStatus.OK);
+    public List<StaffRespone> hienThi() {
+        return service.getAll();
     }
 
     @GetMapping("/search-getPage")

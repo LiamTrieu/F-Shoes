@@ -33,9 +33,11 @@ import dayjs from 'dayjs'
 import confirmSatus from '../../../components/comfirmSwal'
 import { toast } from 'react-toastify'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import ExcelJS from 'exceljs'
 
 export default function AdProductPage() {
   const [listProduct, setListProduct] = useState([])
+  const [listProductEx, setListProductEx] = useState([])
   const [total, setTotal] = useState(0)
   const [filter, setFilter] = useState({
     status: '',
@@ -46,6 +48,7 @@ export default function AdProductPage() {
 
   useEffect(() => {
     fetchData(filter)
+    getAllSanPham()
   }, [filter])
 
   function fetchData(filter) {
@@ -56,6 +59,13 @@ export default function AdProductPage() {
         if (response.data.data.totalPages > 0) {
           setFilter({ ...filter, page: response.data.data.totalPages })
         }
+    })
+  }
+
+  const getAllSanPham = () => {
+    sanPhamApi.getList().then((response) => {
+      setListProductEx(response.data.data)
+      console.log(response.data.data)
     })
   }
 
@@ -71,6 +81,64 @@ export default function AdProductPage() {
           })
         })
       }
+    })
+  }
+
+  const exportToExcel = () => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('ProductData')
+
+    const columns = [
+      { header: 'STT', key: 'stt', width: 5 },
+      { header: 'Tên sản phẩm', key: 'name', width: 30 },
+      { header: 'Ngày thêm', key: 'createdAt', width: 15 },
+      { header: 'Số lượng', key: 'amount', width: 15 },
+      { header: 'Trạng thái', key: 'status', width: 10 },
+    ]
+
+    worksheet.columns = columns
+
+    listProductEx.forEach((product, index) => {
+      worksheet.addRow({
+        stt: product.stt,
+        name: product.name,
+        createdAt: dayjs(product.createdAt).format('DD/MM/YYYY'),
+        amount: product.amount,
+        status: product.status === 0 ? 'Đang bán' : 'Ngừng bán',
+      })
+    })
+
+    const titleStyle = {
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF008080' },
+      },
+    }
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = titleStyle
+    })
+
+    worksheet.columns.forEach((column) => {
+      const { width } = column
+      column.width = width
+    })
+
+    const blob = workbook.xlsx.writeBuffer().then(
+      (buffer) =>
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+    )
+
+    blob.then((blobData) => {
+      const url = window.URL.createObjectURL(blobData)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'product_data.xlsx'
+      link.click()
     })
   }
 
@@ -136,6 +204,14 @@ export default function AdProductPage() {
               label="Ngừng bán"
             />
           </RadioGroup>
+          <Button
+            onClick={exportToExcel}
+            disableElevation
+            color="cam"
+            variant="outlined"
+            style={{ marginLeft: '10px' }}>
+            Export Excel
+          </Button>
         </Stack>
         {listProduct.length > 0 ? (
           <Fragment>

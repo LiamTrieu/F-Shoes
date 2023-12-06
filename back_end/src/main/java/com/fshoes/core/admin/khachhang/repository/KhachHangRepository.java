@@ -27,7 +27,7 @@ public interface KhachHangRepository extends JpaRepository<Account, String> {
     @Query(value = """
                 select  ROW_NUMBER() over (ORDER BY created_at desc ) as stt, id,code, avatar, email,
                  full_name as fullName,date_birth as dateBirth,phone_number as phoneNumber,
-                 gender, created_at as createdAt, status from account 
+                 gender, created_at as createdAt, status from account where role=2
             """, nativeQuery = true)
     List<KhachHangRespone> getAllAccount();
 }
