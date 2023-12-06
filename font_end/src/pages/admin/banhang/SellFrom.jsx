@@ -264,6 +264,10 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const openAddProductModal = () => {
     setShowModal(true)
   }
+  const closeAddProductModal = () => {
+    setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: totalSum })
+    setShowModal(false)
+  }
   useEffect(() => {
     fectchProductBillSell(idBill)
   }, [idBill])
@@ -271,6 +275,17 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const fectchProductBillSell = (id) => {
     sellApi.getProductDetailBill(id).then((response) => {
       setListProductDetailBill(response.data.data)
+      const conditionMoney = response.data.data.reduce((sum, cart) => {
+        if (cart.statusPromotion === 1) {
+          return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
+        } else {
+          return sum + cart.price * cart.quantity
+        }
+      }, 0)
+      setAdCallVoucherOfSell({
+        ...adCallVoucherOfSell,
+        condition: parseFloat(conditionMoney),
+      })
     })
   }
 
@@ -335,6 +350,64 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       })
   }
 
+  const fecthListVoucherByIdCustomer = (adCallVoucherOfSell) => {
+    sellApi
+      .getListVoucherByIdCustomer(adCallVoucherOfSell)
+      .then((response) => {
+        findMaxValueElement(response.data.data)
+      })
+      .catch((error) => {
+        toast.error('Vui Lòng f5 tải lại trang', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const fecthListVoucherByIdCustomerUnqualified = (adCallVoucherOfSell) => {
+    sellApi
+      .getListVoucherByIdCustomerUnqualified(adCallVoucherOfSell)
+      .then((response) => {
+        findMinValueElement(response.data.data)
+      })
+      .catch((error) => {
+        toast.error('Vui Lòng f5 tải lại trang', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const findMaxValueElement = (lstVoucher) => {
+    if (lstVoucher.length < 1) {
+      return null
+    }
+
+    let maxElement = lstVoucher[0]
+
+    lstVoucher.forEach((element) => {
+      if (element.maximumValue > maxElement.maximumValue) {
+        maxElement = element
+      }
+    })
+
+    return handleVoucher(maxElement.id)
+  }
+
+  const findMinValueElement = (lstVoucher) => {
+    if (lstVoucher.length < 1) {
+      return null
+    }
+
+    let minElement = lstVoucher[0]
+
+    lstVoucher.forEach((element) => {
+      if (element.minimumAmount < minElement.minimumAmount) {
+        minElement = element
+      }
+    })
+
+    return handleVoucherUnqualified(minElement.id)
+  }
+
   const handelOnchangePage = (page) => {
     setAdCallVoucherOfSell({ ...adCallVoucherOfSell, page: page })
     fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
@@ -343,6 +416,8 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   useEffect(() => {
     fecthDataCustomer(searchKhachHang)
     fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
+    fecthListVoucherByIdCustomer(adCallVoucherOfSell)
+    fecthListVoucherByIdCustomerUnqualified(adCallVoucherOfSell)
     loadTinh()
     loadList()
   }, [adCallVoucherOfSell, searchKhachHang])
@@ -596,7 +671,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
 
     if (!khachHang.dateBirth) {
       newErrors.dateBirth = 'Vui lòng chọn Ngày sinh.'
-      console.log('đúng rồi')
       check++
     } else {
       if (dateBirth.isBefore(`${minBirthYear}-01-01`) || !dateBirth.isValid()) {
@@ -995,13 +1069,37 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     endDate: '',
   })
 
+  const [voucherUnqualified, setVoucherUnqualified] = useState({
+    id: '',
+    code: '',
+    name: '',
+    value: '',
+    maximumValue: '',
+    minimumAmount: '',
+    type: '',
+    typeValue: '',
+    startDate: '',
+    endDate: '',
+  })
+
   const handleVoucher = (idVoucher) => {
-    setIsShowVoucher(false)
     voucherApi
       .getOneVoucherById(idVoucher)
       .then((response) => {
         setVoucher(response.data.data)
-        // setCodeVoucher(response.data.data.code)
+      })
+      .catch(() => {
+        toast.error(`Không tồn tại phiếu giảm giá với id : ${idVoucher}`, {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      })
+  }
+
+  const handleVoucherUnqualified = (idVoucher) => {
+    voucherApi
+      .getOneVoucherById(idVoucher)
+      .then((response) => {
+        setVoucherUnqualified(response.data.data)
       })
       .catch(() => {
         toast.error(`Không tồn tại phiếu giảm giá với id : ${idVoucher}`, {
@@ -1098,7 +1196,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     }
     if (!giaoHang) {
       if (totalMoneyPayOrderByIdBill < totalPrice) {
-        console.log('Condition met')
         toast.error('Khách thanh toán chưa đủ tiền', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1172,6 +1269,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       ? 0
       : ((totalPriceCart + ShipingFree - totalMoneyReduce) * percentMoney) / 100
   const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce - moneyPercent
+
+  const moneyUnqualified =
+    voucherUnqualified.minimumAmount > voucher.minimumAmount ||
+    voucherUnqualified.maximumValue > voucher.maximumValue
+      ? Number(voucherUnqualified.minimumAmount) - Number(totalSum)
+      : 0
+
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
   const handleOpenQRScanner = () => {
     setQrScannerVisible(true)
@@ -1391,7 +1495,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
           load={fectchProductBillSell}
           idBill={idBill}
           open={showModal}
-          setOPen={setShowModal}
+          setOPen={closeAddProductModal}
           listProductBill={listProductDetailBill}
         />
 
@@ -1492,9 +1596,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                         <IconButton
                           size="small"
                           sx={{ p: 0 }}
-                          onClick={() =>
+                          onClick={() => {
                             decreaseQuantityBillDetail(cart.idBillDetail, cart.id, cart.quantity)
-                          }
+                          }}
                           disabled={cart.quantity <= 1}>
                           <RemoveIcon fontSize="1px" />
                         </IconButton>
@@ -1522,9 +1626,9 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                           // disabled={listProductDetailBill.reduce((total, cart) => total + cart.quantity, 0) >= 5}
                           size="small"
                           sx={{ p: 0 }}
-                          onClick={() =>
+                          onClick={() => {
                             increaseQuantityBillDetail(cart.idBillDetail, cart.id, cart.quantity)
-                          }>
+                          }}>
                           <AddIcon fontSize="1px" />
                         </IconButton>
                       </Box>
@@ -2600,7 +2704,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                             setIsShowVoucher(true)
                             setAdCallVoucherOfSell({
                               ...adCallVoucherOfSell,
-                              condition: totalSum,
+                              condition: parseFloat(totalSum),
                             })
                           }}>
                           <b>Chọn </b>
@@ -2635,11 +2739,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                 open={isShowVoucher}
                 onClose={() => {
                   setIsShowVoucher(false)
-                  setAdCallVoucherOfSell({
-                    ...adCallVoucherOfSell,
-                    textSearch: '',
-                    condition: parseFloat(totalSum),
-                  })
                 }}>
                 <Box sx={styleModalProduct}>
                   <Toolbar sx={{ mb: 1 }}>
@@ -2834,6 +2933,12 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
               </Modal>
             </Box>
             <Box sx={{ m: 1, ml: 3, mr: 3 }}>
+              {moneyUnqualified > 0 && (
+                <Typography className="notification-add-voucher">
+                  Mua thêm {formatPrice(moneyUnqualified)} để được giảm tối đa{' '}
+                  {formatPrice(voucherUnqualified.maximumValue)}
+                </Typography>
+              )}
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Tiền hàng</Typography>
                 <Typography>{formatPrice(totalSum)}</Typography>

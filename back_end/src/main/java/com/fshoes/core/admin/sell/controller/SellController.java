@@ -178,6 +178,16 @@ public class SellController {
         return new ObjectRespone(voucherService.getAllVoucherByIdCustomer(adCallVoucherOfSell));
     }
 
+    @GetMapping("/view/list/voucher-by-customer")
+    public ObjectRespone getListVoucherByIdCustomer(@ModelAttribute AdCallVoucherOfSell adCallVoucherOfSell) {
+        return new ObjectRespone(voucherService.getListVoucherByIdCustomer(adCallVoucherOfSell));
+    }
+
+    @GetMapping("/view/list/voucher-by-customer-unqualified")
+    public ObjectRespone getListVoucherByIdCustomerUnqualified(@ModelAttribute AdCallVoucherOfSell adCallVoucherOfSell) {
+        return new ObjectRespone(voucherService.getListVoucherByIdCustomerUnqualified(adCallVoucherOfSell));
+    }
+
     @GetMapping
     public ObjectRespone getUserLogin() {
         Account account = userLogin.getUserLogin();
