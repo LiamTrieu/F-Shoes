@@ -1,12 +1,15 @@
 package com.fshoes.core.admin.sell.repository;
 
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
+import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
+import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
 import com.fshoes.core.admin.sell.model.response.GetAmountProductResponse;
 import com.fshoes.core.admin.sell.model.response.GetColorResponse;
 import com.fshoes.core.admin.sell.model.response.GetProductDetailBillSellResponse;
 import com.fshoes.core.admin.sell.model.response.GetSizeResponse;
 import com.fshoes.repository.ProductDetailRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,8 +17,18 @@ import java.util.List;
 @Repository
 public interface AdminProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
-                   SELECT bd.id as idBillDetail ,pd.id, pr.id as promotion,pr.status as statusPromotion,pd.weight ,pr.value, bd.quantity,
-                   p.name as nameProduct, pd.price, s.size, MAX(i.url) as image   
+                      SELECT 
+                MAX(pr.value) as value,
+                      (p.name) as nameProduct,
+                      bd.id as idBillDetail,
+                         s.size,
+                         pd.id as id,
+                         MAX(i.url) as image ,
+                       MAX(pd.price) as price,
+                       MAX(pd.weight) as weight,
+                       MAX(bd.quantity) as quantity,
+                       pd.id_product,
+                       pd.id_size  
                    FROM product_detail pd 
                    left join bill_detail bd on bd.id_product_detail = pd.id 
                    left join bill b on b.id = bd.id_bill 
@@ -23,8 +36,10 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
                    left join size s on s.id = pd.id_size
                    left join image i on i.id_product_detail = pd.id 
                    left join product_promotion pp on pp.id_product_detail = pd.id
-                  left join promotion pr on pr.id = pp.id_promotion where b.id = ? 
-                  group by pd.id, pr.id ,bd.id;
+                  left join promotion pr on pr.id = pp.id_promotion and pr.status = 1
+                  where b.id = :id 
+                   GROUP BY pd.id,  pd.id_product, pd.id_size,bd.id
+                   
             """, nativeQuery = true)
     List<GetProductDetailBillSellResponse> getlistProductBilllSell(String id);
 
@@ -40,22 +55,47 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
 
 
     @Query(value = """   
-               SELECT  pd.id, pr.id as promotion,pr.status as statusPromotion ,pr.value, p.name as nameProduct,
-                                                pd.price,pd.weight, s.size, 
-                                                pd.amount,pd.id as productDetailId,
-                                                m.name as material, sl.name as sole,b.name as brand,c.name as color ,
-                                                cate.name as category
-             									FROM product_detail pd left join product p
-                                                  on  pd.id_product = p.id left join size s
-                                                  on s.id = pd.id_size
-                                                  left join material m on m.id = pd.id_material
-                                                  left join category cate on cate.id = pd.id_category
-                                                  left join sole sl on sl.id = pd.id_sole
-                                                  left join brand b on b.id  = pd.id_brand
-                                                  left join color c on c.id = pd.id_color
-                                                  left join product_promotion pp on pd.id = pp.id_product_detail
-                                                  left join promotion pr on pr.id = pp.id_promotion
-                                                  where pd.id = ?
+                 SELECT MAX(pd.id) as productDetailId,
+                MAX(pr.value) as value,
+                      (p.name) as nameProduct,
+                       cate.name as category,
+                       b.name as brand,
+                        m.name as material,
+                         s.name as sole,        
+                         c.name as color ,
+                         si.size,
+                         pd.id as productDetailId,
+                       MAX(pd.price) as price,
+                       MAX(pd.weight) as weight,
+                       MAX(pd.amount) as amount,
+                       pd.id_product,
+                       pd.id_color,
+                       pd.id_material,
+                       pd.id_sole,
+                       pd.id_category,
+                       pd.id_brand,
+                       pd.id_size
+                FROM product_detail pd
+                         JOIN
+                     product p ON p.id = pd.id_product
+                         JOIN
+                     color c ON c.id = pd.id_color
+                         JOIN
+                     category cate ON cate.id = pd.id_category
+                         JOIN
+                     brand b ON b.id = pd.id_brand
+                         JOIN
+                     sole s ON s.id = pd.id_sole
+                         JOIN
+                     material m ON m.id = pd.id_material
+                      JOIN
+                     size si ON si.id = pd.id_size
+                         LEFT JOIN
+                     image i ON pd.id = i.id_product_detail
+                     LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
+                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion and pr.status =1
+                                                  where pd.id = :id
+                                                     GROUP BY pd.id, pd.code, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand, pd.id_size
             """, nativeQuery = true)
     GetAmountProductResponse getAmount(String id);
 
@@ -67,4 +107,61 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
             ORDER BY price DESC;
             """, nativeQuery = true)
     List<ProductMaxPriceResponse> getProductMaxPrice();
+
+    @Query(value = """
+                SELECT MAX(pd.id) as id,
+                MAX(pr.value) as value,
+                       p.name,
+                       pd.code,
+                       cate.name as category,
+                       b.name as brand,
+                        m.name as material,
+                         s.name as sole,        
+                         c.name as color ,
+                         si.size,
+                         pd.id as productDetailId,
+                       MAX(pd.price) as price,
+                       MAX(pd.weight) as weight,
+                       MAX(pd.amount) as amount,
+                       max( i.url) as url,
+                       pd.id_product,
+                       pd.id_color,
+                       pd.id_material,
+                       pd.id_sole,
+                       pd.id_category,
+                       pd.id_brand,
+                       pd.id_size
+                FROM product_detail pd
+                         JOIN
+                     product p ON p.id = pd.id_product
+                         JOIN
+                     color c ON c.id = pd.id_color
+                         JOIN
+                     category cate ON cate.id = pd.id_category
+                         JOIN
+                     brand b ON b.id = pd.id_brand
+                         JOIN
+                     sole s ON s.id = pd.id_sole
+                         JOIN
+                     material m ON m.id = pd.id_material
+                      JOIN
+                     size si ON si.id = pd.id_size
+                         LEFT JOIN
+                     image i ON pd.id = i.id_product_detail
+                     LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
+                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion and pr.status =1
+                       where (:#{#req.category} IS NULL OR cate.id = :#{#req.category}) 
+                       AND (:#{#req.color} IS NULL OR c.id = :#{#req.color}) 
+                        AND (:#{#req.material} IS NULL OR m.id = :#{#req.material}) 
+                        AND (:#{#req.size} IS NULL OR si.id = :#{#req.size}) 
+                        AND (:#{#req.brand} IS NULL OR b.id = :#{#req.brand}) 
+                         AND (:#{#req.sole} IS NULL OR s.id = :#{#req.sole}) 
+                         AND (:#{#req.minPrice} IS NULL OR pd.price >= :#{#req.minPrice}) 
+                         AND (:#{#req.maxPrice} IS NULL OR pd.price <= :#{#req.maxPrice}) 
+                         AND (:#{#req.codeProductDetail} IS NULL OR pd.code = :#{#req.codeProductDetail}) 
+                         AND (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) 
+                         AND p.deleted = 0 AND pd.deleted = 0
+                              GROUP BY pd.id, pd.code, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand, pd.id_size
+            """, nativeQuery = true)
+    List<GetAllProductResponse> getAllProduct(@Param("req") FilterProductDetailRequest req);
 }

@@ -293,9 +293,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
 
 
     @Query(value = """
-                SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,
-                MAX( pr.status) as statusPromotion ,MAX(pr.value) as value,
+                SELECT MAX(pd.id) as id
+              ,MAX(pr.value) as value,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
@@ -326,7 +325,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
-                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion
+                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion and pr.status = 1
                 WHERE (:#{#request.id} is null or pd.id = :#{#request.id}) 
                 AND (:#{#request.category} IS NULL OR ca.id = :#{#request.category}) 
                 AND (:#{#request.color} IS NULL OR c.id = :#{#request.color}) 
@@ -345,9 +344,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
     List<ClientProductResponse> getProductsHome(@Param("request") ClientProductRequest request);
 
     @Query(value = """
-                SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,
-                MAX( pr.status) as statusPromotion ,MAX(pr.value) as value,
+                SELECT MAX(pd.id) as id
+              ,MAX(pr.value) as value,
                        CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
@@ -378,7 +376,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
-                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion
+                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion and pr.status = 1
                          join bill_detail bd on bd.id_product_detail = pd.id
                 WHERE (:#{#request.id} is null or pd.id = :#{#request.id}) 
                 AND (:#{#request.category} IS NULL OR ca.id = :#{#request.category}) 

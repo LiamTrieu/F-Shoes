@@ -18,7 +18,6 @@ public interface GetAllProductResponse extends IsIdentified {
 
     Integer getAmount();
 
-    String getPromotion();
 
     Integer getValue();
 
@@ -34,5 +33,4 @@ public interface GetAllProductResponse extends IsIdentified {
 
     String getCode();
 
-    Integer getStatusPromotion();
 }

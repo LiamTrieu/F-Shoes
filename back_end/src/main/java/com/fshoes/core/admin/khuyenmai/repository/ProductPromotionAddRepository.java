@@ -35,9 +35,9 @@ public interface ProductPromotionAddRepository extends ProductRepository {
     Page<AddProductPromotionResponse> getAllProduct(@Param("req") ProductPromotionSearch req, Pageable pageable);
 
     @Query(value = """
-            SELECT MAX(cate.name) AS category, MAX(b.name) AS brand, (p.name) , 
+            SELECT MAX(cate.name) AS category, MAX(b.name) AS brand, (p.name) ,  MAX(pp.id) as productPromotion,
             GROUP_CONCAT(DISTINCT pd.id ORDER BY pd.id ) AS productDetail  , MAX(p.id) ,GROUP_CONCAT(DISTINCT i.url) as url,
-            MAX(sl.name) as sole , MAX(c.name) as color, MAX(m.name) as material  ,
+            MAX(sl.name) as sole , MAX(c.name) as color, MAX(m.name) as material, MAX(pr.status) as statusPromotion,
              GROUP_CONCAT(DISTINCT si.size ORDER BY si.size) AS size 
             FROM product_detail pd 
              JOIN product p ON pd.id_product = p.id 
@@ -47,6 +47,8 @@ public interface ProductPromotionAddRepository extends ProductRepository {
              join sole sl on sl.id = pd.id_sole
              join brand b on b.id  = pd.id_brand
              join color c on c.id = pd.id_color
+            left join product_promotion pp on pp.id_product_detail = pd.id
+            left join promotion pr on pr.id = pp.id_promotion
             left join image i on i.id_product_detail = pd.id
             WHERE p.id In :id
             AND  (:#{#req.category} IS NULL OR cate.id = :#{#req.category}) 
