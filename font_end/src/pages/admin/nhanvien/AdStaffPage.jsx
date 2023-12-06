@@ -35,6 +35,7 @@ import ExcelJS from 'exceljs'
 export default function AdCustomerPage() {
   const theme = useTheme()
   const [listStaff, setListStaff] = useState([])
+  const [listStaffEx, setListStaffEx] = useState([])
   const [totalPages, setToTalPages] = useState(0)
   const [searchStaff, setSearchStaff] = useState({
     searchTen: '',
@@ -47,6 +48,7 @@ export default function AdCustomerPage() {
 
   useEffect(() => {
     fetchData(searchStaff)
+    getAllNhanVien()
   }, [searchStaff])
 
   const fetchData = (searchStaff) => {
@@ -57,6 +59,12 @@ export default function AdCustomerPage() {
         if (response.data.data.totalPages > 0) {
           setSearchStaff({ ...searchStaff, page: response.data.data.totalPages })
         }
+    })
+  }
+
+  const getAllNhanVien = () => {
+    staffApi.getAll().then((response) => {
+      setListStaffEx(response.data)
     })
   }
 
@@ -93,10 +101,10 @@ export default function AdCustomerPage() {
 
     worksheet.columns = columns
 
-    listStaff.forEach((row, index) => {
+    listStaffEx.forEach((row, index) => {
       worksheet.addRow({
         stt: row.stt,
-        avatar: row.avatar, // Assuming the avatar is a URL
+        avatar: row.avatar,
         code: row.code,
         fullName: row.fullName,
         email: row.email,

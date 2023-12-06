@@ -14,7 +14,7 @@ public interface PromotionService {
 
     Promotion getOne(String id);
 
-    List<Promotion> getAllPromotion();
+    List<PromotionRespone> getAllPromotion();
 
     Promotion deleteKhuyenMai(String id) throws ParseException;
 

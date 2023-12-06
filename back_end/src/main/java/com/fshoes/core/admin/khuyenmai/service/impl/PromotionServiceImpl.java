@@ -78,8 +78,8 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public List<Promotion> getAllPromotion() {
-        return khuyenMaiRepository.findAll();
+    public List<PromotionRespone> getAllPromotion() {
+        return khuyenMaiRepository.getAllKhuyenMai();
     }
 
     //    @Override

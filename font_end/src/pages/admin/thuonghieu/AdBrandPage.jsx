@@ -47,12 +47,14 @@ export default function AdBrandPage() {
   const [brandUpdate, setBrandUpdate] = useState({ id: 0, name: '' })
   const [allNameBrand, setAllNameBrand] = useState([])
   const [listBrand, setListBrand] = useState([])
+  const [listBrandEx, setListBrandEx] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
   const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
 
   useEffect(() => {
     fetchData(filter)
+    getAllBrand()
     haldleAllNameBrand()
   }, [filter])
 
@@ -69,6 +71,13 @@ export default function AdBrandPage() {
         console.log(error)
       })
     setIsBackdrop(false)
+  }
+
+  const getAllBrand = () => {
+    bradApi.getList().then((res) => {
+      setListBrandEx(res.data.data)
+      console.log(res.data.data)
+    })
   }
 
   const haldleAllNameBrand = () => {
@@ -257,7 +266,7 @@ export default function AdBrandPage() {
 
     worksheet.columns = columns
 
-    listBrand.forEach((row, index) => {
+    listBrandEx.forEach((row, index) => {
       worksheet.addRow({
         stt: index + 1,
         name: row.name,
@@ -509,7 +518,6 @@ export default function AdBrandPage() {
                     sx={{ height: '25px', mx: 0.5 }}
                     size="small"
                     value={filter.size}>
-                    <MenuItem value={1}>1</MenuItem>
                     <MenuItem value={5}>5</MenuItem>
                     <MenuItem value={10}>10</MenuItem>
                     <MenuItem value={15}>15</MenuItem>

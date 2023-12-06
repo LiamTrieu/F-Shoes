@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface KMPromotionRepository extends PromotionRepository {
-    @Query(value = "select Id, Name, time_start as TimeStart, time_end as TimeEnd, Value, Status from promotion", nativeQuery = true)
+    @Query(value = "select ROW_NUMBER() over (ORDER BY created_at desc ) as stt , Id, Name, time_start as TimeStart, time_end as TimeEnd, Value, Status from promotion", nativeQuery = true)
     List<PromotionRespone> getAllKhuyenMai();
 
     @Query(value = "select Id, Name, time_start as TimeStart, time_end as TimeEnd, Value, Status " +

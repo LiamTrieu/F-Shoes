@@ -46,12 +46,14 @@ export default function AdCategoryPage() {
   const [categoryUpdate, setCategoryUpdate] = useState({ id: 0, name: '' })
   const [allNameCategory, setAllNameCategory] = useState([])
   const [listCategory, setListCategory] = useState([])
+  const [listCategoryEx, setListCategoryEx] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
   const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
 
   useEffect(() => {
     fetchData(filter)
+    getAllCategory()
     haldleAllNameCategory()
   }, [filter])
 
@@ -68,6 +70,12 @@ export default function AdCategoryPage() {
         console.log(error)
       })
     setIsBackdrop(false)
+  }
+
+  const getAllCategory = () => {
+    categoryApi.getList().then((res) => {
+      setListCategoryEx(res.data.data)
+    })
   }
 
   const haldleAllNameCategory = () => {
@@ -250,7 +258,7 @@ export default function AdCategoryPage() {
 
     worksheet.columns = columns
 
-    listCategory.forEach((row, index) => {
+    listCategoryEx.forEach((row, index) => {
       worksheet.addRow({
         stt: index + 1,
         name: row.name,
@@ -502,7 +510,6 @@ export default function AdCategoryPage() {
                     sx={{ height: '25px', mx: 0.5 }}
                     size="small"
                     value={filter.size}>
-                    <MenuItem value={1}>1</MenuItem>
                     <MenuItem value={5}>5</MenuItem>
                     <MenuItem value={10}>10</MenuItem>
                     <MenuItem value={15}>15</MenuItem>

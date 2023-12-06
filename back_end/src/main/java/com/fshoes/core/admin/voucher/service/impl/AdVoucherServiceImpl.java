@@ -53,8 +53,8 @@ public class AdVoucherServiceImpl implements AdVoucherService {
     private UserLogin userLogin;
 
     @Override
-    public List<Voucher> getAllVoucher() {
-        return adVoucherRepository.findAll();
+    public List<AdVoucherRespone> getAllVoucher() {
+        return adVoucherRepository.getAllVoucher();
     }
 
     @Override

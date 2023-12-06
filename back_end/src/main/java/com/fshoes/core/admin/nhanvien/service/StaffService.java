@@ -11,7 +11,7 @@ import java.text.ParseException;
 import java.util.List;
 
 public interface StaffService {
-    List<Account> getAll();
+    List<StaffRespone> getAll();
 
     Page<StaffRespone> searchStaff(SearchStaff searchStaff);
 

@@ -45,12 +45,14 @@ export default function AdSolePage() {
   const [soleUpdate, setSoleUpdate] = useState({ id: 0, name: '' })
   const [allNameSole, setAllNameSole] = useState([])
   const [listSole, setListSole] = useState([])
+  const [listSoleEx, setListSoleEx] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
   const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
 
   useEffect(() => {
     fetchData(filter)
+    getAllSole()
     haldleAllNameSole()
   }, [filter])
 
@@ -67,6 +69,12 @@ export default function AdSolePage() {
         console.log(error)
       })
     setIsBackdrop(false)
+  }
+
+  const getAllSole = () => {
+    soleApi.getList().then((res) => {
+      setListSoleEx(res.data.data)
+    })
   }
 
   const haldleAllNameSole = () => {
@@ -215,7 +223,7 @@ export default function AdSolePage() {
 
     worksheet.columns = columns
 
-    listSole.forEach((row, index) => {
+    listSoleEx.forEach((row, index) => {
       worksheet.addRow({
         stt: index + 1,
         name: row.name,
@@ -462,7 +470,6 @@ export default function AdSolePage() {
                     sx={{ height: '25px', mx: 0.5 }}
                     size="small"
                     value={filter.size}>
-                    <MenuItem value={1}>1</MenuItem>
                     <MenuItem value={5}>5</MenuItem>
                     <MenuItem value={10}>10</MenuItem>
                     <MenuItem value={15}>15</MenuItem>
