@@ -70,26 +70,33 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
     List<ClientProductResponse> getProducts(@Param("request") ClientProductRequest request);
 
     @Query(value = """
-                SELECT MAX(pd.id) as id,
-                MAX( pr.id) as promotion ,
-                MAX( pr.status) as statusPromotion ,MAX(pr.value) as value,
-                       CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
-                       ca.name as nameCate,
-                       b.name as nameBrand,
-                       MAX(pd.price) as price,
-                       MAX(pd.weight) as weight,
-                       MAX(pd.amount) as amount,
-                       MAX(pd.description) as description,
-                       GROUP_CONCAT(DISTINCT i.url) as image,
-                       pd.id_product,
-                       pd.id_color,
-                       pd.id_material,
-                       pd.id_sole,
-                       pd.id_category,
-                       pd.id_brand
+                SELECT
+                    pd.id as id,
+                    MAX(pr.value) as value,
+                    CONCAT(p.name, ' ', m.name, ' ', s.name) AS name,
+                    ca.name as nameCate,
+                    b.name as nameBrand,
+                    c.code as codeColor,
+                    c.name as nameColor,
+                    si.size as size,
+                    pd.price as price,
+                    pd.weight as weight,
+                    pd.amount as amount,
+                    pd.description as description,
+                    GROUP_CONCAT(DISTINCT i.url) as image,
+                    pd.id_product,
+                    pd.id_color,
+                    pd.id_material,
+                    pd.id_sole,
+                    pd.id_category,
+                    pd.id_brand
                 FROM product_detail pd
+                        LEFT JOIN product_promotion pp on pp.id_product_detail = pd.id
+                        LEFT JOIN promotion pr on pr.id = pp.id_promotion and pr.status = 1
                          JOIN
                      product p ON p.id = pd.id_product
+                         JOIN
+                     size si ON si.id = pd.id_size
                          JOIN
                      color c ON c.id = pd.id_color
                          JOIN
@@ -102,11 +109,10 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      material m ON m.id = pd.id_material
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
-                     LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
-                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion
-                WHERE (:#{#request.id} is null or pd.id = :#{#request.id})
+                WHERE p.deleted = 0 AND pd.deleted = 0
+                AND (:#{#request.id} is null or pd.id = :#{#request.id})
                 AND (:#{#request.minPrice} IS NULl OR pd.price >= :#{#request.minPrice})
-                AND (:#{#request.maxPrice} IS NULl OR pd.price <= :#{#request.maxPrice}) 
+                AND (:#{#request.maxPrice} IS NULl OR pd.price <= :#{#request.maxPrice})
                 AND (:#{#request.category.size()} < 1 OR ca.id IN (:#{#request.category})) 
                 AND (:#{#request.color.size()} < 1  OR c.id IN (:#{#request.color})) 
                 AND (:#{#request.material.size()} < 1  OR m.id IN (:#{#request.material})) 
@@ -117,7 +123,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR s.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
-                GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
+                GROUP BY pd.id
             """, nativeQuery = true)
     List<ClientProductResponse> getAllProductClient(@Param("request") ClientFindProductRequest request);
 
@@ -208,46 +214,58 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
 
     @Query(value = """
             SELECT
-                MAX(pd.id) as id,
-                MAX(pr.id) as promotion,
-                MAX(pr.value) as value,
-                CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name, '"') AS name,
-                ca.name as nameCate,
-                b.name as nameBrand,
-                MAX(pd.price) as price,
-                MAX(pd.weight) as weight,
-                MAX(pd.amount) as amount,
-                MAX(pd.description) as description,
-                GROUP_CONCAT(DISTINCT i.url) as image,
-                pd.id_product,
-                pd.id_color,
-                pd.id_material,
-                pd.id_sole,
-                pd.id_category,
-                pd.id_brand
-            FROM
-                product_detail pd
-                JOIN product p ON p.id = pd.id_product
-                JOIN color c ON c.id = pd.id_color
-                JOIN category ca ON ca.id = pd.id_category
-                JOIN brand b ON b.id = pd.id_brand
-                JOIN sole s ON s.id = pd.id_sole
-                JOIN material m ON m.id = pd.id_material
-                LEFT JOIN image i ON pd.id = i.id_product_detail
-                LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
-                LEFT JOIN promotion pr ON pr.id = pp.id_promotion
+                pd.id as id,
+                    MAX(pr.value) as value,
+                    CONCAT(p.name, ' ', m.name, ' ', s.name) AS name,
+                    ca.name as nameCate,
+                    b.name as nameBrand,
+                    c.code as codeColor,
+                    c.name as nameColor,
+                    si.size as size,
+                    pd.price as price,
+                    pd.weight as weight,
+                    pd.amount as amount,
+                    pd.description as description,
+                    GROUP_CONCAT(DISTINCT i.url) as image,
+                    pd.id_product,
+                    pd.id_color,
+                    pd.id_material,
+                    pd.id_sole,
+                    pd.id_category,
+                    pd.id_brand
+                FROM product_detail pd
+                        LEFT JOIN product_promotion pp on pp.id_product_detail = pd.id
+                        LEFT JOIN promotion pr on pr.id = pp.id_promotion and pr.status = 1
+                         JOIN
+                     product p ON p.id = pd.id_product
+                         JOIN
+                     size si ON si.id = pd.id_size
+                         JOIN
+                     color c ON c.id = pd.id_color
+                         JOIN
+                     category ca ON ca.id = pd.id_category
+                         JOIN
+                     brand b ON b.id = pd.id_brand
+                         JOIN
+                     sole s ON s.id = pd.id_sole
+                         JOIN
+                     material m ON m.id = pd.id_material
+                         LEFT JOIN
+                     image i ON pd.id = i.id_product_detail
             WHERE
                 p.id <> :#{#request.product}
                 AND ca.id = :#{#request.category}
                 AND b.id = :#{#request.brand}
             GROUP BY
-                pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
+                pd.id
             """, nativeQuery = true)
     Page<ClientProductResponse> getProductCungLoai(@Param("request") ClientProductCungLoaiRequest request, Pageable pageable);
 
     @Query(value = """
                 SELECT pd.id as id,
-                       si.size as size
+                       si.size as size,
+                       pd.price as gia,
+                       pd.weight as weight
                 FROM product_detail pd
                          JOIN
                      product p ON p.id = pd.id_product

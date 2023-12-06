@@ -11,8 +11,13 @@ import java.util.List;
 public interface CLientPromotionRepository extends PromotionRepository {
 
     @Query(value = """
-                    select p.id , p.status, p.value , pd.id as idProductDetail , pd.price as  price from promotion p join product_promotion pp 
-                    on p.id = pp.id_promotion join product_detail pd on pd.id = pp.id_product_detail where pd.id in :idProductDetail
+                    select
+                    MAX(p.value) as value,
+                    pp.id_product_detail as idProductDetail
+                    from promotion p join product_promotion pp
+                    on p.id = pp.id_promotion
+                    where pp.id_product_detail in :idProductDetail and p.status = 1
+                    group by pp.id_product_detail
             """, nativeQuery = true)
     List<ClientPromotionResponse> getPromotionByProductDetail(List<String> idProductDetail);
 }

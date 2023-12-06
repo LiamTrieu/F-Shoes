@@ -7,10 +7,6 @@ import java.math.BigDecimal;
 
 public interface ClientProductResponse extends IsIdentified {
 
-    String getPromotion();
-
-    Integer getStatusPromotion();
-
     Integer getValue();
 
     String getName();
@@ -18,6 +14,9 @@ public interface ClientProductResponse extends IsIdentified {
     String getNameCate();
 
     String getNameBrand();
+
+    String getCodeColor();
+    String getNameColor();
 
     Float getSize();
 

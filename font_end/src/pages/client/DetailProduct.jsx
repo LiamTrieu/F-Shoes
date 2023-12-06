@@ -161,20 +161,8 @@ export default function DetailProduct() {
         setProducts(
           data.map((e) => {
             return {
-              id: e.id,
-              title: e.name,
-              priceBefort: e.price,
-              priceAfter: e.price,
-              promotion: e.promotion,
-              statusPromotion: e.statusPromotion,
-              value: e.value,
+              ...e,
               image: e.image.split(','),
-              idProduct: e.idProduct,
-              idColor: e.idColor,
-              idMaterial: e.idMaterial,
-              idSole: e.idSole,
-              idCategory: e.idCategory,
-              idBrand: e.idBrand,
             }
           }),
         )
@@ -429,15 +417,15 @@ export default function DetailProduct() {
                 Mua ngay
               </Button>
             </ThemeProvider>
-            <Accordion sx={{ boxShadow: 'none', mt: 3 }}>
+            <Accordion TransitionProps={{ unmountOnExit: true }} sx={{ boxShadow: 'none', mt: 3 }}>
               <AccordionSummary
-                sx={{ padding: 0 }}
+                sx={{ padding: '0px 5px' }}
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
                 <Typography color={'gray'}>Mô tả sản phẩm</Typography>
               </AccordionSummary>
-              <AccordionDetails sx={{ padding: 0 }}>
+              <AccordionDetails sx={{ padding: '0px 5px 5px 5px' }}>
                 <Typography>{product.description}</Typography>
               </AccordionDetails>
             </Accordion>
