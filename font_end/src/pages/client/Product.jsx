@@ -38,6 +38,7 @@ import { formatCurrency } from '../../services/common/formatCurrency '
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../../services/url'
+import { isColorDark } from '../../services/common/isColorDark'
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -129,20 +130,8 @@ export default function Product() {
       setProducts(
         data.map((e) => {
           return {
-            id: e.id,
-            title: e.name,
-            priceBefort: e.price,
-            priceAfter: e.price,
-            value: e.value,
-            promotion: e.promotion,
-            statusPromotion: e.statusPromotion,
+            ...e,
             image: e.image.split(','),
-            idProduct: e.idProduct,
-            idColor: e.idColor,
-            idMaterial: e.idMaterial,
-            idSole: e.idSole,
-            idCategory: e.idCategory,
-            idBrand: e.idBrand,
           }
         }),
       )
@@ -177,8 +166,7 @@ export default function Product() {
       preProduct[index] = {
         id: data.id,
         title: data.name,
-        priceBefort: data.price,
-        priceAfter: data.price,
+        price: data.price,
         value: data.value,
         promotion: data.promotion,
         statusPromotion: data.statusPromotion,
@@ -336,7 +324,10 @@ export default function Product() {
                   <Grid items xs={4} key={lf.id}>
                     <ListItem>
                       <div
-                        style={{ backgroundColor: `${lf.code}` }}
+                        style={{
+                          backgroundColor: `${lf.code}`,
+                          border: isColorDark(lf.code) ? `1px solid ${lf.code}` : '1px solid black',
+                        }}
                         className="radio-color"
                         onClick={(e) => handleCheckBoxColor(e, lf.id)}>
                         {/* {filter.color === lf.id && <FaCheck color="white" />} */}

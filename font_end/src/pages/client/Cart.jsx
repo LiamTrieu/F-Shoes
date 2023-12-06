@@ -114,14 +114,11 @@ export default function Cart() {
 
   const dispatch = useDispatch()
   const [sizes, setSizes] = useState([])
-  function getListSize(id) {
+  function getListSize(cart) {
     let data
-    clientProductApi
-      .get({ id: id })
-      .then((result) => {
+    clientProductApi.get({ id: cart.id }).then(
+      (result) => {
         data = result.data.data[0]
-      })
-      .finally(() => {
         clientProductApi
           .getSizes({
             idProduct: data.idProduct,
@@ -131,16 +128,21 @@ export default function Cart() {
             idSole: data.idSole,
             idMaterial: data.idMaterial,
           })
-          .then((result) => {
-            setSizes(result.data.data)
-          })
-      })
+          .then(
+            (result) => {
+              setSizes(result.data.data)
+            },
+            () => {},
+          )
+      },
+      () => {},
+    )
   }
   function chageSize(id, cart) {
     const size = sizes.find((s) => s.id === id)
     const carts = [...product]
     const index = product.findIndex((c) => c.id === cart)
-    carts[index] = { ...carts[index], id: size.id, size: size.size }
+    carts[index] = { ...carts[index], ...size }
     dispatch(setCart(carts))
     const preProductSelect = [...productSelect]
     const indexSelect = preProductSelect.findIndex((e) => e.id === cart)
@@ -148,216 +150,15 @@ export default function Cart() {
       preProductSelect.splice(indexSelect, 1)
       setProductSelect(preProductSelect)
     }
+    const preIds = productIds.map((cid) => {
+      if (cid === cart) {
+        return id
+      } else {
+        return cid
+      }
+    })
+    getPromotionProductDetails(preIds)
   }
-
-  // const RowDataCustom = ({ cartDatas }) => {
-  //   const dispatch = useDispatch()
-  //   const [sizes, setSizes] = useState([])
-  //   function getListSize(id) {
-  //     let data
-  //     clientProductApi
-  //       .get({ id: id })
-  //       .then((result) => {
-  //         data = result.data.data[0]
-  //       })
-  //       .finally(() => {
-  //         clientProductApi
-  //           .getSizes({
-  //             idProduct: data.idProduct,
-  //             idColor: data.idColor,
-  //             idCategory: data.idCategory,
-  //             idBrand: data.idBrand,
-  //             idSole: data.idSole,
-  //             idMaterial: data.idMaterial,
-  //           })
-  //           .then((result) => {
-  //             setSizes(result.data.data)
-  //           })
-  //       })
-  //   }
-  //   function chageSize(id, cart) {
-  //     const size = sizes.find((s) => s.id === id)
-  //     const carts = [...cartDatas]
-  //     const index = cartDatas.findIndex((c) => c.id === cart)
-  //     carts[index] = { ...carts[index], id: size.id, size: size.size }
-  //     dispatch(setCart(carts))
-  //     const preProductSelect = [...productSelect]
-  //     const indexSelect = preProductSelect.findIndex((e) => e.id === cart)
-  //     if (indexSelect !== -1) {
-  //       preProductSelect.splice(indexSelect, 1)
-  //       setProductSelect(preProductSelect)
-  //     }
-  //   }
-  //   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
-  //     const discountAmount = (discountPercentage / 100) * originalPrice
-  //     const discountedPrice = originalPrice - discountAmount
-  //     return discountedPrice
-  //   }
-  //   return cartDatas.map((cart) => {
-  //     return (
-  //       <TableRow sx={{ border: 0 }} key={cart.id}>
-  //         <TableCell sx={{ px: 0 }}>
-  //           <Checkbox
-  //             checked={productSelect.findIndex((e) => e.id === cart.id) >= 0}
-  //             size="small"
-  //             onClick={(e) => onChangeCheck(cart, e.target.checked)}
-  //           />
-  //         </TableCell>
-  //         <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }}>
-  //           <Box component={Link} to={`/product/${cart.id}`} display={{ lg: 'inline', xs: 'none' }}>
-  //             <img
-  //               style={{
-  //                 maxWidth: '20%',
-  //                 maxHeight: '20%',
-  //                 verticalAlign: 'middle',
-  //               }}
-  //               key={'anh'}
-  //               src={cart.image[0]}
-  //               alt="anh"
-  //             />
-  //           </Box>
-  //           <span
-  //             style={{
-  //               display: 'inline-block',
-  //               verticalAlign: 'middle',
-  //               marginLeft: '10px',
-  //               maxWidth: '80%',
-  //             }}>
-  //             {/* <p style={{ margin: 0 }}>{cart.name}</p> */}
-  //             <b style={{ margin: 0 }}>
-  //               size:&nbsp;
-  //               <select
-  //                 onChange={(e) => {
-  //                   chageSize(e.target.value, cart.id)
-  //                 }}
-  //                 onClick={() => {
-  //                   getListSize(cart.id)
-  //                 }}
-  //                 value={
-  //                   parseFloat(cart.size) % 1 === 0
-  //                     ? parseFloat(cart.size).toFixed(0)
-  //                     : parseFloat(cart.size).toFixed(1)
-  //                 }>
-  //                 <option value={cart.id}>
-  //                   {parseFloat(cart.size) % 1 === 0
-  //                     ? parseFloat(cart.size).toFixed(0)
-  //                     : parseFloat(cart.size).toFixed(1)}
-  //                 </option>
-  //                 {sizes &&
-  //                   sizes.map((size) => {
-  //                     if (size.size !== cart.size) {
-  //                       return (
-  //                         <option value={size.id} key={`size${size.id}`}>
-  //                           {parseFloat(size.size) % 1 === 0
-  //                             ? parseFloat(size.size).toFixed(0)
-  //                             : parseFloat(size.size).toFixed(1)}
-  //                         </option>
-  //                       )
-  //                     }
-  //                   })}
-  //               </select>
-  //             </b>
-  //           </span>
-  //         </TableCell>
-  //         {/* <TableCell
-  //           className="table-gia"
-  //           sx={{
-  //             maxWidth: '10px',
-  //             display: { md: 'table-cell', xs: 'none' },
-  //             color: 'red',
-  //             fontWeight: 'bold',
-  //             textAlign: 'left',
-  //           }}>
-  //           <span>
-  //             {' '}
-  //             {cart.promotion ? (
-  //               <div style={{ display: 'flex' }}>
-  //                 <div className="promotion-price">{`${cart.gia.toLocaleString('it-IT', {
-  //                   style: 'currency',
-  //                   currency: 'VND',
-  //                 })} `}</div>{' '}
-  //                 <div>
-  //                   <span style={{ color: 'red', fontWeight: 'bold' }}>
-  //                     {`${calculateDiscountedPrice(cart.gia, cart.value).toLocaleString('it-IT', {
-  //                       style: 'currency',
-  //                       currency: 'VND',
-  //                     })} `}
-  //                   </span>{' '}
-  //                 </div>
-  //               </div>
-  //             ) : (
-  //               <span>{`${cart.gia.toLocaleString('it-IT', {
-  //                 style: 'currency',
-  //                 currency: 'VND',
-  //               })} `}</span>
-  //             )}
-  //           </span>
-  //         </TableCell>
-  //         <TableCell sx={{ px: 0 }}>
-  //           <Box
-  //             width={'65px'}
-  //             display="flex"
-  //             alignItems="center"
-  //             sx={{
-  //               border: '1px solid gray',
-  //               borderRadius: '20px',
-  //             }}
-  //             p={'3px'}>
-  //             <IconButton onClick={() => onChangeSL(cart, -1)} sx={{ p: 0 }} size="small">
-  //               <RemoveIcon fontSize="1px" />
-  //             </IconButton>
-  //             <TextField
-  //               onChange={(e) => {
-  //                 dispatch(updateCart({ ...cart, soLuong: e.target.value }))
-  //               }}
-  //               value={cart.soLuong}
-  //               inputProps={{ min: 1 }}
-  //               size="small"
-  //               sx={{
-  //                 width: '30px ',
-  //                 '& input': { p: 0, textAlign: 'center' },
-  //                 '& fieldset': {
-  //                   border: 'none',
-  //                 },
-  //               }}
-  //             />
-  //             <IconButton onClick={() => onChangeSL(cart, 1)} size="small" sx={{ p: 0 }}>
-  //               <AddIcon fontSize="1px" />
-  //             </IconButton>
-  //           </Box>
-  //         </TableCell>
-  //         <TableCell
-  //           className="table-gia"
-  //           sx={{
-  //             maxWidth: '10px',
-  //             display: { md: 'table-cell', xs: 'none' },
-  //             color: 'red',
-  //             fontWeight: 'bold',
-  //           }}>
-  //           {(cart.gia * cart.soLuong).toLocaleString('it-IT', {
-  //             style: 'currency',
-  //             currency: 'VND',
-  //           })}
-  //         </TableCell>
-  //         <TableCell>
-  //           <Button
-  //             onClick={() => {
-  //               const updatedProduct = product.filter((item) => item.id !== cart.id)
-  //               dispatch(setCart(updatedProduct))
-  //             }}
-  //             sx={{
-  //               minHeight: 0,
-  //               minWidth: 0,
-  //               padding: 0,
-  //               float: 'right',
-  //             }}>
-  //             <DeleteForeverIcon color="disabled" />
-  //           </Button>
-  //         </TableCell> */}
-  //       </TableRow>
-  //     )
-  //   })
-  // }
 
   const checkAll = (checked) => {
     const newProductSelect = checked ? [...product] : []
@@ -493,18 +294,18 @@ export default function Cart() {
                             </div>
                           </div>
                         </TableCell>
-
                         <TableCell sx={{ fontWeight: 1000, width: '30%' }} align="center">
                           {cart.name}
                         </TableCell>
                         <TableCell sx={{ fontWeight: 1000, width: '10%' }} align="center">
                           <b style={{ margin: 0 }}>
                             <select
+                              onClick={() => {
+                                setSizes([])
+                                getListSize(cart)
+                              }}
                               onChange={(e) => {
                                 chageSize(e.target.value, cart.id)
-                              }}
-                              onClick={() => {
-                                getListSize(cart.id)
                               }}
                               value={
                                 parseFloat(cart.size) % 1 === 0
@@ -517,8 +318,13 @@ export default function Cart() {
                                   : parseFloat(cart.size).toFixed(1)}
                               </option>
                               {sizes &&
-                                sizes.map((size) => {
-                                  if (size.size !== cart.size) {
+                                sizes
+                                  .filter(
+                                    (e) =>
+                                      e.id !== cart.id &&
+                                      product.filter((f) => f.id === e.id).length <= 0,
+                                  )
+                                  .map((size) => {
                                     return (
                                       <option value={size.id} key={`size${size.id}`}>
                                         {parseFloat(size.size) % 1 === 0
@@ -526,10 +332,7 @@ export default function Cart() {
                                           : parseFloat(size.size).toFixed(1)}
                                       </option>
                                     )
-                                  } else {
-                                    return <></>
-                                  }
-                                })}
+                                  })}
                             </select>
                           </b>
                         </TableCell>
@@ -537,7 +340,7 @@ export default function Cart() {
                           {' '}
                           <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
                             {promotionByProductDetail.map((item, index) => {
-                              const isDiscounted = item.idProductDetail === cart.id && item.id
+                              const isDiscounted = item.idProductDetail === cart.id && item.value
 
                               return (
                                 <div key={index}>
@@ -560,7 +363,7 @@ export default function Cart() {
                             })}
 
                             {!promotionByProductDetail.some(
-                              (item) => item.idProductDetail === cart.id && item.id,
+                              (item) => item.idProductDetail === cart.id && item.value,
                             ) && <div>{`${formatPrice(cart.gia)} `}</div>}
                           </Typography>
                         </TableCell>
@@ -570,7 +373,8 @@ export default function Cart() {
                             <input
                               onChange={(e) => {
                                 let newValue = e.target.value.replace(/\D/, '')
-                                newValue = newValue !== '' ? Math.max(1, Number(newValue)) : 1
+                                newValue =
+                                  newValue !== '' ? Math.max(1, Math.min(99, Number(newValue))) : 1
                                 dispatch(updateCart({ ...cart, soLuong: newValue }))
                               }}
                               value={cart.soLuong}
@@ -581,7 +385,7 @@ export default function Cart() {
                         </TableCell>
                         <TableCell align="center">
                           {promotionByProductDetail.map((item, index) => {
-                            const isDiscounted = item.idProductDetail === cart.id && item.id
+                            const isDiscounted = item.idProductDetail === cart.id && item.value
 
                             return (
                               <div key={index}>
@@ -602,7 +406,7 @@ export default function Cart() {
                           })}
 
                           {!promotionByProductDetail.some(
-                            (item) => item.idProductDetail === cart.id && item.id,
+                            (item) => item.idProductDetail === cart.id && item.value,
                           ) && (
                             <div style={{ color: 'red' }}>{`${formatPrice(
                               cart.soLuong * cart.gia,
