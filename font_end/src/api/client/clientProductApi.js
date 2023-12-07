@@ -29,6 +29,10 @@ const clientProductApi = {
     const url = `/client/product/size`
     return axiosApi.get(url, { params: request })
   },
+  getColors: (request) => {
+    const url = `/client/product/color`
+    return axiosApi.get(url, { params: request })
+  },
   getBrand: () => {
     const url = `/client/brand`
     return axiosApi.get(url)
