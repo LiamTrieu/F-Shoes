@@ -494,6 +494,7 @@ export default function Product() {
       color: [],
       sole: [],
       category: [],
+      lstSize: [],
       minPrice: minMaxPrice.minPrice,
       maxPrice: minMaxPrice.maxPrice,
       nameProductDetail: null,
@@ -503,12 +504,14 @@ export default function Product() {
     setOpenColor(false)
     setOpenMaterial(false)
     setOpenSole(false)
+    setOpenSize(false)
     setPriceMax(minMaxPrice.maxPrice)
     setSelectBrand([])
     setSelectCategory([])
     setSelectColor([])
     setSelectMaterial([])
     setSelectSole([])
+    setSelectSize([])
   }
 
   return (

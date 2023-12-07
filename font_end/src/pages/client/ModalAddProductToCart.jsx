@@ -100,12 +100,12 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
   }
   function calculateProductTotalPayment(cart, promotionByProductDetail) {
     const isDiscounted = promotionByProductDetail.some(
-      (item) => item.idProductDetail === cart.id && item.id,
+      (item) => item.idProductDetail === cart.id && item.value,
     )
 
     if (isDiscounted) {
       const discountedPrice = promotionByProductDetail
-        .filter((item) => item.idProductDetail === cart.id && item.id)
+        .filter((item) => item.idProductDetail === cart.id && item.value)
         .map((item) => cart.soLuong * calculateDiscountedPrice(cart.gia, item.value))
         .reduce((total, price) => total + price, 0)
 
@@ -201,7 +201,7 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                     <TableCell align="center">
                       <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
                         {promotionByProductDetail.map((item, index) => {
-                          const isDiscounted = item.idProductDetail === cart.id && item.id
+                          const isDiscounted = item.idProductDetail === cart.id && item.value
 
                           return (
                             <div key={index}>
@@ -224,8 +224,12 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                         })}
 
                         {!promotionByProductDetail.some(
-                          (item) => item.idProductDetail === cart.id && item.id,
-                        ) && <div>{`${formatPrice(cart.gia)} `}</div>}
+                          (item) => item.idProductDetail === cart.id && item.value,
+                        ) && (
+                          <div style={{ color: 'red' }}>{`${formatPrice(
+                            cart.soLuong * cart.gia,
+                          )} `}</div>
+                        )}
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
@@ -245,7 +249,7 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                     </TableCell>
                     <TableCell align="center">
                       {promotionByProductDetail.map((item, index) => {
-                        const isDiscounted = item.idProductDetail === cart.id && item.id
+                        const isDiscounted = item.idProductDetail === cart.id && item.value
 
                         return (
                           <div key={index}>
@@ -265,7 +269,7 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                       })}
 
                       {!promotionByProductDetail.some(
-                        (item) => item.idProductDetail === cart.id && item.id,
+                        (item) => item.idProductDetail === cart.id && item.value,
                       ) && (
                         <div style={{ color: 'red' }}>{`${formatPrice(
                           cart.soLuong * cart.gia,

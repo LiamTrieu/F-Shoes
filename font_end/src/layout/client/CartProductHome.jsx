@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Grid,
   Card,
@@ -6,9 +6,10 @@ import {
   CardContent,
   Typography,
   Box,
-  Button,
   Tooltip,
   Paper,
+  IconButton,
+  Stack,
 } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import './productHome.css'
@@ -17,8 +18,10 @@ import { useDispatch } from 'react-redux'
 import clientProductApi from '../../api/client/clientProductApi'
 import { addCart } from '../../services/slices/cartSlice'
 import { toast } from 'react-toastify'
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 import ModalAddProductToCart from '../../pages/client/ModalAddProductToCart'
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
+import { isColorDark } from '../../services/common/isColorDark'
+import { FaCheck } from 'react-icons/fa'
 
 export default function CartProductHome({ products, colmd, collg }) {
   const [openModalCart, setOpenModalCart] = useState(false)
@@ -31,6 +34,7 @@ export default function CartProductHome({ products, colmd, collg }) {
   }
 
   const [isCartHovered, setIsCartHovered] = useState(false)
+  const [isCartChange, setIsCartChange] = useState(false)
   const [product, setProduct] = useState({ image: [], price: '' })
 
   let navigate = useNavigate()
@@ -58,10 +62,58 @@ export default function CartProductHome({ products, colmd, collg }) {
     })
   }
 
+  const processArray = (inputArray, fields) => {
+    const groupedItems = {}
+
+    inputArray.forEach((item) => {
+      const key = fields.map((field) => item[field]).join('-')
+      if (!groupedItems[key]) {
+        groupedItems[key] = { ...item, duplicates: [item] }
+      } else {
+        groupedItems[key].duplicates.push(item)
+      }
+    })
+
+    Object.values(groupedItems).forEach((group) => {
+      const colorGroups = {}
+      group.duplicates.forEach((duplicate) => {
+        const colorKey = duplicate.idColor
+        const nameColor = duplicate.nameColor
+        const codeColor = duplicate.codeColor
+        if (!colorGroups[colorKey]) {
+          colorGroups[colorKey] = {
+            idColor: colorKey,
+            codeColor: codeColor,
+            nameColor: nameColor,
+            sizes: [],
+          }
+        }
+        colorGroups[colorKey].sizes.push(duplicate)
+      })
+      group.duplicates = Object.values(colorGroups)
+    })
+
+    return Object.values(groupedItems)
+  }
+
+  const [arrMap, setArrMap] = useState([])
+  useEffect(() => {
+    const uniqueFields = ['idProduct', 'idSole', 'idCategory', 'idBrand', 'idMaterial']
+    const processedArray = processArray(products, uniqueFields).map((product) => {
+      return {
+        ...product,
+        duplicate: product.duplicates[0],
+        ...product.duplicates[0].sizes[0],
+      }
+    })
+    console.log(processedArray)
+    setArrMap(processedArray)
+  }, [products])
+
   return (
     <>
       <Grid container rowSpacing={1} columnSpacing={3}>
-        {products.map((product, i) => {
+        {arrMap.map((product, i) => {
           const discountValue = product.value || 0
 
           const red = [255, 0, 0]
@@ -81,134 +133,233 @@ export default function CartProductHome({ products, colmd, collg }) {
               lg={collg}
               width={'100%'}
               mt={2}
+              onMouseEnter={() => setIsCartHovered(i)}
+              onMouseLeave={() => setIsCartHovered(null)}
+              onClick={() => {
+                if (!isCartChange) {
+                  navigate(`/product/${product.id}`)
+                }
+              }}
               className="cart-product-hover">
-              <Paper>
-                <Card
+              <Card
+                sx={{
+                  width: '25%',
+                  height: '550px',
+                  textDecoration: 'none',
+                  borderRadius: '10px',
+                }}
+                // component={Link}
+                // to={`/product/${product.id}`}
+              >
+                <Box
+                  key={i}
                   sx={{
-                    width: '25%',
-                    height: '500px',
-                    textDecoration: 'none',
-                    borderRadius: '10px',
-                  }}
-                  component={Link}
-                  to={`/product/${product.id}`}>
+                    pb: 1,
+                    position: 'relative',
+                    width: '100%',
+                    paddingBottom: '100%',
+                    overflow: 'hidden',
+                  }}>
+                  {product.value && (
+                    <div
+                      className="discount-badge"
+                      style={{
+                        backgroundColor: `rgb(${interpolatedColor[0]}, ${interpolatedColor[1]}, ${interpolatedColor[2]})`,
+                      }}>{`${discountValue ? discountValue : ''}%`}</div>
+                  )}
                   <Box
-                    key={i}
                     sx={{
-                      pb: 1,
-                      position: 'relative',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
                       width: '100%',
-                      paddingBottom: '100%',
-                      overflow: 'hidden',
-                    }}
-                    onMouseEnter={() => setIsCartHovered(i)}
-                    onMouseLeave={() => setIsCartHovered(null)}>
-                    {product.value && (
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <Carousel
+                      indicators={false}
+                      sx={{ width: '100%', height: '100%' }}
+                      navButtonsAlwaysInvisible>
+                      {product.image.map((item, i) => (
+                        <CardMedia
+                          to={`/product/${product.id}`}
+                          component="img"
+                          alt="Product"
+                          image={item}
+                          sx={{
+                            minWidth: '100%',
+                            minHeight: '100%',
+                            objectFit: 'contain',
+                          }}
+                        />
+                      ))}
+                    </Carousel>
+                    {isCartHovered === i && (
                       <div
-                        className="discount-badge"
+                        onMouseEnter={() => setIsCartChange(true)}
+                        onMouseLeave={() => setIsCartChange(false)}
                         style={{
-                          backgroundColor: `rgb(${interpolatedColor[0]}, ${interpolatedColor[1]}, ${interpolatedColor[2]})`,
-                        }}>{`${discountValue ? discountValue : ''}%`}</div>
+                          position: 'absolute',
+                          zIndex: 2,
+                          top: '5px',
+                          right: '5px',
+                        }}>
+                        <Tooltip title="Thêm vào giỏ hàng">
+                          <IconButton color="cam" onClick={() => addProductToCart(product.id)}>
+                            <ShoppingBagIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
                     )}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      <Carousel
-                        indicators={false}
-                        sx={{ width: '100%', height: '100%' }}
-                        navButtonsAlwaysInvisible>
-                        {product.image.map((item, i) => (
-                          <CardMedia
-                            component="img"
-                            alt="Product"
-                            image={item}
-                            sx={{
-                              minWidth: '100%',
-                              minHeight: '100%',
-                              objectFit: 'contain',
-                            }}
-                          />
-                        ))}
-                      </Carousel>
-                      {isCartHovered === i && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            zIndex: 2,
-                            top: '80%',
-                            left: '40%',
-                          }}>
-                          <Tooltip title="Thêm vào giỏ hàng">
-                            <Button
-                              variant="contained"
-                              color="error"
-                              onClick={() => addProductToCart(product.id)}>
-                              <AddShoppingCartIcon />
-                            </Button>
-                          </Tooltip>
-                        </div>
-                      )}
-                    </Box>
                   </Box>
+                </Box>
 
-                  <CardContent>
-                    <Typography
-                      className="title"
-                      gutterBottom
-                      component="div"
-                      sx={{ textTransform: 'none', whiteSpace: 'initial' }}>
-                      {product.title}
-                    </Typography>
-                    <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
-                      {' '}
-                      {product.nameCate}
-                    </Typography>
-                    {/* <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
+                <CardContent>
+                  {isCartHovered !== i && (
+                    <span style={{ color: '#F48A42' }}>{product.nameBrand}</span>
+                  )}
+                  {isCartHovered === i && (
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      useFlexGap
+                      flexWrap="wrap"
+                      onMouseEnter={() => setIsCartChange(true)}
+                      onMouseLeave={() => setIsCartChange(false)}>
+                      {product.duplicates.map((color) => {
+                        return (
+                          <Tooltip title={color.nameColor}>
+                            <div
+                              onClick={() => {
+                                let preArrMap = [...arrMap]
+                                preArrMap[i] = { ...preArrMap[i], ...color.sizes[0] }
+                                preArrMap[i].duplicate = color
+                                setArrMap(preArrMap)
+                              }}
+                              style={{
+                                float: 'right',
+                                height: '25px',
+                                width: '25px',
+                                borderRadius: '50%',
+                                border: isColorDark(color.codeColor)
+                                  ? `1px solid ${color.codeColor}`
+                                  : '1px solid black',
+                                backgroundColor: color.codeColor,
+                                textAlign: 'center',
+                                margin: '10px 0px',
+                              }}>
+                              {product.idColor === color.idColor && (
+                                <FaCheck
+                                  style={{
+                                    height: '25px',
+                                    color: isColorDark(color.codeColor) ? 'white' : 'black',
+                                  }}
+                                  fontSize={'15px'}
+                                />
+                              )}
+                            </div>
+                          </Tooltip>
+                        )
+                      })}
+                    </Stack>
+                  )}
+                  <Typography
+                    className="title"
+                    gutterBottom
+                    component="div"
+                    sx={{ textTransform: 'none', whiteSpace: 'initial' }}>
+                    {product.title}
+                  </Typography>
+                  <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
+                    {' '}
+                    {product.nameCate}
+                  </Typography>
+                  {/* <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
                   {product.nameBrand}
                 </Typography> */}
-                    <Typography gutterBottom component="div">
-                      <span>
-                        {' '}
-                        {product.value ? (
-                          <div style={{ display: 'flex' }}>
-                            <div className="promotion-price">{`${product.priceBefort.toLocaleString(
-                              'it-IT',
-                              { style: 'currency', currency: 'VND' },
-                            )} `}</div>{' '}
-                            <div>
-                              <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                {`${calculateDiscountedPrice(
-                                  product.priceBefort,
-                                  product.value,
-                                ).toLocaleString('it-IT', {
-                                  style: 'currency',
-                                  currency: 'VND',
-                                })} `}
-                              </span>{' '}
-                            </div>
+                  <Typography gutterBottom component="div">
+                    <span>
+                      {' '}
+                      {product.value ? (
+                        <div style={{ display: 'flex' }}>
+                          <div className="promotion-price">{`${product.priceBefort.toLocaleString(
+                            'it-IT',
+                            { style: 'currency', currency: 'VND' },
+                          )} `}</div>{' '}
+                          <div>
+                            <span style={{ color: 'red', fontWeight: 'bold' }}>
+                              {`${calculateDiscountedPrice(
+                                product.priceBefort,
+                                product.value,
+                              ).toLocaleString('it-IT', {
+                                style: 'currency',
+                                currency: 'VND',
+                              })} `}
+                            </span>{' '}
                           </div>
-                        ) : (
-                          <span>{`${product.priceBefort.toLocaleString('it-IT', {
-                            style: 'currency',
-                            currency: 'VND',
-                          })} `}</span>
-                        )}
-                      </span>
-                    </Typography>
+                        </div>
+                      ) : (
+                        <span>{`${product.priceBefort.toLocaleString('it-IT', {
+                          style: 'currency',
+                          currency: 'VND',
+                        })} `}</span>
+                      )}
+                    </span>
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    spacing={2}>
                     <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
                       New
                     </Typography>
-                  </CardContent>
-                </Card>
-              </Paper>
+                    <div>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        useFlexGap
+                        flexWrap="wrap"
+                        onMouseEnter={() => setIsCartChange(true)}
+                        onMouseLeave={() => setIsCartChange(false)}>
+                        {product.duplicate.sizes
+                          .sort((a, b) => a.size - b.size)
+                          .map((size) => {
+                            return (
+                              <div
+                                onClick={() => {
+                                  let preArrMap = [...arrMap]
+                                  preArrMap[i] = { ...preArrMap[i], ...size }
+                                  setArrMap(preArrMap)
+                                }}
+                                style={{
+                                  transform: 'scale(1.03)',
+                                  padding: '2px',
+                                  border: '1px solid black',
+                                }}>
+                                <div
+                                  style={{
+                                    height: '20px',
+                                    width: '30px',
+                                    lineHeight: '22px',
+                                    fontSize: '10px',
+                                    fontWeight: 'bold',
+                                    textAlign: 'center',
+                                    color: product.size === size.size ? 'white' : 'black',
+                                    backgroundColor: product.size === size.size ? 'black' : 'white',
+                                  }}>
+                                  {size.size}
+                                </div>
+                              </div>
+                            )
+                          })}
+                      </Stack>
+                    </div>
+                  </Stack>
+                </CardContent>
+              </Card>
             </Grid>
           )
         })}

@@ -42,52 +42,68 @@ export default function ReturnOrder() {
   return (
     <div className="tra-hang">
       <BreadcrumbsCustom listLink={listBreadcrumbs} />
-      <Paper sx={{ p: 2 }}>
-        <h4 style={{ marginTop: '0px', marginBottom: '20px' }}>
-          <IoIosCreate fontSize={20} style={{ marginBottom: '-4px' }} /> Tạo hóa đơn trả hàng
+      <Paper sx={{ p: 2, height: '550px' }}>
+        <h4 style={{ display: 'flex', alignItems: 'center' }}>
+          <img
+            src={require('../../../assets/image/TinTuc/iconReturns.jpg')}
+            alt=""
+            height={40}
+            width={40}
+          />
+          Trả hàng
         </h4>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Box width={'600px'}>
-            <TextField
-              onChange={(e) => {
-                setCode(e.target.value)
-              }}
-              style={{ width: '400px' }}
-              className="search-field"
-              size="small"
-              color="cam"
-              placeholder="Nhập mã hóa đơn cần trả hàng..."
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="cam" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button
-              onClick={() => {
-                createReturn(code)
-              }}
-              color="cam"
-              variant="contained"
-              className="them-moi"
-              sx={{ ml: 1 }}>
-              <FaCalendarPlus style={{ marginRight: '5px', fontSize: '17px' }} />
-              Tạo
-            </Button>
-          </Box>
+        <Stack direction="row" justifyContent="center" alignItems="center" sx={{ mt: 4 }}>
+          <h4 style={{ marginRight: '20px' }}>
+            <IoIosCreate fontSize={20} style={{ marginBottom: '-4px' }} /> Mã hóa đơn:
+          </h4>
+
+          <TextField
+            onChange={(e) => {
+              setCode(e.target.value)
+            }}
+            style={{ width: '400px' }}
+            className="search-field"
+            size="small"
+            color="cam"
+            placeholder="Nhập mã hóa đơn cần trả hàng..."
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="cam" />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Button
+            onClick={() => {
+              createReturn(code)
+            }}
+            color="cam"
+            variant="contained"
+            className="them-moi"
+            sx={{ ml: 2, mr: 2 }}>
+            <FaCalendarPlus style={{ marginRight: '5px', fontSize: '17px' }} />
+            Tạo
+          </Button>
+
           <Button
             onClick={() => {
               setQrScannerVisible(true)
             }}
             color="cam"
-            variant="outlined"
-            className="them-moi">
+            variant="outlined">
             <MdOutlineDocumentScanner style={{ marginRight: '5px', fontSize: '17px' }} />
             Quét mã
           </Button>
         </Stack>
+        <div style={{ textAlign: 'center' }}>
+          <img
+            src={require('../../../assets/image/TinTuc/giaohang6.jpg')}
+            alt=""
+            height={300}
+            width={750}
+          />
+        </div>
         <Modal
           open={qrScannerVisible}
           onClose={() => {
