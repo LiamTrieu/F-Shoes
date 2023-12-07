@@ -117,7 +117,11 @@ export default function DetailProduct() {
     const preProduct = product
     const index = preProduct.id === data.id ? 0 : -1
     if (index !== -1) {
-      setProduct({ ...data, image: data.image.split(',') })
+      setProduct({
+        ...data,
+        name: data.name + ` "${data.nameColor}"`,
+        image: data.image.split(','),
+      })
     }
   }
 

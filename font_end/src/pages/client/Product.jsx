@@ -170,19 +170,8 @@ export default function Product() {
     const index = preProduct.findIndex((product) => product.id === data.id)
     if (index !== -1) {
       preProduct[index] = {
-        id: data.id,
-        title: data.name,
-        price: data.price,
-        value: data.value,
-        promotion: data.promotion,
-        statusPromotion: data.statusPromotion,
+        ...data,
         image: data.image.split(','),
-        idProduct: data.idProduct,
-        idColor: data.idColor,
-        idMaterial: data.idMaterial,
-        idSole: data.idSole,
-        idCategory: data.idCategory,
-        idBrand: data.idBrand,
       }
       setProducts(preProduct)
     }

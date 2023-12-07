@@ -129,27 +129,33 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
     List<ClientProductResponse> getAllProductClient(@Param("request") ClientFindProductRequest request);
 
     @Query(value = """
-                SELECT 
-                       pd.id as id,
-                       pr.id as promotion ,
-                       pr.status as statusPromotion ,pr.value as value,
-                       CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
-                       ca.name as nameCate,
-                       b.name as nameBrand,
-                       pd.price as price,
-                       pd.weight as weight,
-                       pd.amount as amount,
-                       pd.description as description,
-                       GROUP_CONCAT(DISTINCT i.url) as image,
-                       pd.id_product,
-                       pd.id_color,
-                       pd.id_material,
-                       pd.id_sole,
-                       pd.id_category,
-                       pd.id_brand
+                SELECT
+                    pd.id as id,
+                    MAX(pr.value) as value,
+                    CONCAT(p.name, ' ', m.name, ' ', s.name) AS name,
+                    ca.name as nameCate,
+                    b.name as nameBrand,
+                    c.code as codeColor,
+                    c.name as nameColor,
+                    si.size as size,
+                    pd.price as price,
+                    pd.weight as weight,
+                    pd.amount as amount,
+                    pd.description as description,
+                    GROUP_CONCAT(DISTINCT i.url) as image,
+                    pd.id_product,
+                    pd.id_color,
+                    pd.id_material,
+                    pd.id_sole,
+                    pd.id_category,
+                    pd.id_brand
                 FROM product_detail pd
+                        LEFT JOIN product_promotion pp on pp.id_product_detail = pd.id
+                        LEFT JOIN promotion pr on pr.id = pp.id_promotion and pr.status = 1
                          JOIN
                      product p ON p.id = pd.id_product
+                         JOIN
+                     size si ON si.id = pd.id_size
                          JOIN
                      color c ON c.id = pd.id_color
                          JOIN
@@ -162,8 +168,6 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      material m ON m.id = pd.id_material
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
-                     LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
-                         LEFT JOIN promotion pr ON pr.id = pp.id_promotion
                 WHERE pd.id = :id
                 GROUP BY pd.id, pr.id, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
