@@ -54,17 +54,17 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      image i ON pd.id = i.id_product_detail
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
-                WHERE (:#{#request.id} is null or pd.id = :#{#request.id})
-                AND (:#{#request.category} IS NULL OR ca.id IN (:#{#request.category})) 
-                AND (:#{#request.color} IS NULL  OR c.id IN (:#{#request.color})) 
-                AND (:#{#request.material} IS NULL  OR m.id IN (:#{#request.material})) 
-                AND (:#{#request.brand} IS NULL OR b.id IN (:#{#request.brand})) 
-                AND (:#{#request.sole} IS NULL OR s.id IN (:#{#request.sole})) 
-                AND( (:#{#request.nameProductDetail} IS NULL OR p.name like %:#{#request.nameProductDetail}%) 
-                OR (:#{#request.nameProductDetail} IS NULL OR ca.name like %:#{#request.nameProductDetail}%) 
-                OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%) 
-                OR (:#{#request.nameProductDetail} IS NULL OR s.name like %:#{#request.nameProductDetail}%) 
-                OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
+                WHERE p.deleted = 0 AND pd.deleted = 0 AND (:#{#request.id} is null or pd.id = :#{#request.id})
+                AND (:#{#request.category} IS NULL OR ca.id IN (:#{#request.category}))
+                AND (:#{#request.color} IS NULL  OR c.id IN (:#{#request.color}))
+                AND (:#{#request.material} IS NULL  OR m.id IN (:#{#request.material}))
+                AND (:#{#request.brand} IS NULL OR b.id IN (:#{#request.brand}))
+                AND (:#{#request.sole} IS NULL OR s.id IN (:#{#request.sole}))
+                AND( (:#{#request.nameProductDetail} IS NULL OR p.name like %:#{#request.nameProductDetail}%)
+                OR (:#{#request.nameProductDetail} IS NULL OR ca.name like %:#{#request.nameProductDetail}%)
+                OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%)
+                OR (:#{#request.nameProductDetail} IS NULL OR s.name like %:#{#request.nameProductDetail}%)
+                OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%))
                 GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
     List<ClientProductResponse> getProducts(@Param("request") ClientProductRequest request);
@@ -164,7 +164,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      image i ON pd.id = i.id_product_detail
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
-                WHERE pd.id = :id
+                WHERE pd.id = :id 
+                AND p.deleted = 0 AND pd.deleted = 0
                 GROUP BY pd.id, pr.id, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
             """, nativeQuery = true)
     ClientProductResponse updateRealTime(String id);
@@ -175,7 +176,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 MAX( pr.status) as statusPromotion ,
                 MAX(pr.value) as value,
                 MAX(si.size) as size,
-                       CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
+                       CONCAT(p.name, ' ', m.name, ' ', s.name) AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
                        MAX(pd.price) as price,
@@ -183,6 +184,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                        MAX(pd.amount) as amount,
                        MAX(pd.description) as description,
                        GROUP_CONCAT(DISTINCT i.url) as image,
+                       pd.id_size as idSize,
                        pd.id_product,
                        pd.id_color,
                        pd.id_material,
@@ -197,7 +199,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                          JOIN
                      category ca ON ca.id = pd.id_category
                          JOIN
-                        size si ON si.id = pd.id_size
+                     size si ON si.id = pd.id_size
                          JOIN
                      brand b ON b.id = pd.id_brand
                          JOIN
@@ -209,7 +211,14 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
                 WHERE (:#{#id} is null or pd.id = :#{#id})
-                GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
+                AND p.deleted = 0 AND pd.deleted = 0
+                GROUP BY pd.id_product,
+                pd.id_color,
+                pd.id_material,
+                pd.id_sole,
+                pd.id_category,
+                pd.id_brand,
+                pd.id_size
             """, nativeQuery = true)
     ClientProductResponse getProductById(String id);
 
@@ -260,7 +269,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
             GROUP BY
                 pd.id
             """, nativeQuery = true)
-    Page<ClientProductResponse> getProductCungLoai(@Param("request") ClientProductCungLoaiRequest request, Pageable pageable);
+    List<ClientProductResponse> getProductCungLoai(@Param("request") ClientProductCungLoaiRequest request);
 
     @Query(value = """
                 SELECT pd.id as id,
@@ -288,9 +297,58 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                  AND pd.id_brand = :#{#request.idBrand}
                  AND pd.id_sole = :#{#request.idSole}
                  AND pd.id_material = :#{#request.idMaterial}
+                 AND p.deleted = 0 AND pd.deleted = 0
                  ORDER BY si.size
             """, nativeQuery = true)
     List<ClientProductDetailResponse> getAllSize(ClientProductDetailRequest request);
+
+    @Query(value = """
+            SELECT
+                MAX(CASE WHEN pd.id_size = :#{#request.idSize} THEN pd.id ELSE(
+               SELECT pd_inner.id
+                        FROM product_detail pd_inner
+                        WHERE pd_inner.id_product = :#{#request.idProduct}
+                            AND pd_inner.id_category = :#{#request.idCategory}
+                            AND pd_inner.id_brand = :#{#request.idBrand}
+                            AND pd_inner.id_sole = :#{#request.idSole}
+                            AND pd_inner.id_material = :#{#request.idMaterial}
+                            AND pd_inner.id_color = c.id
+                            AND pd_inner.deleted = 0
+                        LIMIT 1
+                ) END) AS id,
+                c.id as idColor,
+                c.name as nameColor,
+                c.code as codeColor,
+                GROUP_CONCAT(DISTINCT pd.id_size) as id_sizes,
+                MIN(si.size) as size
+            FROM
+                product_detail pd
+            JOIN
+                product p ON p.id = pd.id_product
+            JOIN
+                color c ON c.id = pd.id_color
+            JOIN
+                category ca ON ca.id = pd.id_category
+            JOIN
+                brand b ON b.id = pd.id_brand
+            JOIN
+                sole s ON s.id = pd.id_sole
+            JOIN
+                material m ON m.id = pd.id_material
+            LEFT JOIN
+                size si ON si.id = :#{#request.idSize} AND pd.id_size = si.id
+            WHERE
+                pd.id_product = :#{#request.idProduct}
+                AND pd.id_category = :#{#request.idCategory}
+                AND pd.id_brand = :#{#request.idBrand}
+                AND pd.id_sole = :#{#request.idSole}
+                AND pd.id_material = :#{#request.idMaterial}
+                AND p.deleted = 0
+                AND pd.deleted = 0
+            GROUP BY
+                c.id;
+            """, nativeQuery = true)
+    List<ClientProductDetailResponse> getAllColor(ClientProductDetailRequest request);
 
 
     @Query(value = """
@@ -328,6 +386,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion and pr.status = 1
                 WHERE (:#{#request.id} is null or pd.id = :#{#request.id}) 
+                AND p.deleted = 0 AND pd.deleted = 0
                 AND (:#{#request.category} IS NULL OR ca.id = :#{#request.category}) 
                 AND (:#{#request.color} IS NULL OR c.id = :#{#request.color}) 
                 AND (:#{#request.material} IS NULL OR m.id = :#{#request.material}) 
@@ -338,7 +397,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR s.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
-                GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
+                GROUP BY p.created_at, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
                 ORDER BY p.created_at DESC
                 LIMIT 8
             """, nativeQuery = true)
@@ -380,6 +439,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion and pr.status = 1
                          join bill_detail bd on bd.id_product_detail = pd.id
                 WHERE (:#{#request.id} is null or pd.id = :#{#request.id}) 
+                AND p.deleted = 0 AND pd.deleted = 0
                 AND (:#{#request.category} IS NULL OR ca.id = :#{#request.category}) 
                 AND (:#{#request.color} IS NULL OR c.id = :#{#request.color}) 
                 AND (:#{#request.material} IS NULL OR m.id = :#{#request.material}) 
@@ -390,7 +450,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR s.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
-                GROUP BY pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand, bd.id
+                GROUP BY bd.quantity, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand, bd.id
                 ORDER BY bd.quantity DESC
                 LIMIT 12
             """, nativeQuery = true)
@@ -399,6 +459,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
             SELECT min(pd.price) as minPrice, max(pd.price) as maxPrice
             FROM product_detail pd
+                 WHERE pd.deleted = 0
             """, nativeQuery = true)
     ClientMinMaxPrice getMinMaxPriceProductClient();
 }
