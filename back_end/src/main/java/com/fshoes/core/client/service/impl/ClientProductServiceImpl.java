@@ -82,11 +82,6 @@ public class ClientProductServiceImpl implements ClientProductService {
     }
 
     @Override
-    public List<ClientProductDetailResponse> getProductByColor(ClientProductDetailRequest request) {
-        return clientProductDetailRepository.getAllColor(request);
-    }
-
-    @Override
     public List<Brand> getAllBrand() {
         return clientBrandRepository.findAll();
     }

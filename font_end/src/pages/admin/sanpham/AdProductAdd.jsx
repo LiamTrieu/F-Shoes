@@ -34,7 +34,7 @@ import { spButton } from '../sanpham/sanPhamStyle'
 
 import { RiDeleteBin2Line } from 'react-icons/ri'
 import { MdImageSearch } from 'react-icons/md'
-import { RiImageAddFill } from 'react-icons/ri'
+import { RiImageAddFill, RiSettings4Fill } from 'react-icons/ri'
 import AddIcon from '@mui/icons-material/Add'
 import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import { toast } from 'react-toastify'
@@ -69,8 +69,10 @@ export default function AdProductAdd() {
   const [loadImage, setLoadImage] = useState(false)
   const [openModalColor, setOpenModalColor] = useState(false)
   const [openModalAddColor, setOpenModalAddColor] = useState(false)
+  const [openModalUpdateColor, setOpenModalUpdateColor] = useState(false)
   const [openModalSize, setOpenModalSize] = useState(false)
   const [openModalAddSize, setOpenModalAddSize] = useState(false)
+  const [openModalUpdateSize, setOpenModalUpdateSize] = useState(false)
 
   const [newCategory, setNewCategory] = useState({ name: '' })
   const [newBrand, setNewBrand] = useState({ name: '' })
@@ -78,6 +80,16 @@ export default function AdProductAdd() {
   const [newMaterial, setNewMaterial] = useState({ name: '' })
   const [newColor, setNewColor] = useState({ code: '#000000', name: '' })
   const [newSize, setNewSize] = useState({ size: '' })
+
+  const [colorDetail, setColorDetail] = useState({ idDetail: '', codeDetail: '', nameDetail: '' })
+  const [previewColor, setPreviewColor] = useState({
+    idPreview: '',
+    codePreview: '',
+    namePreview: '',
+  })
+
+  const [sizeDetail, setSizeDetail] = useState({ idSize: '', size: '' })
+  const [previewSize, setPreviewSize] = useState('')
 
   const fetchListCategory = () => {
     categoryApi.getList().then(
@@ -358,7 +370,6 @@ export default function AdProductAdd() {
     let errors = []
 
     newProductDetails.forEach((product) => {
-      console.log(product.price)
       if (isNaN(product.price) || product.price <= 0 || product.price >= 100000000) {
         errors.push({
           key: product.key,
@@ -617,17 +628,19 @@ export default function AdProductAdd() {
         responseName.data &&
         Array.isArray(responseName.data.data)
       ) {
-        const listCodeColor = responseCode.data.data
-        const listNameColor = responseName.data.data
+        const listCodeColor = []
+        responseCode.data.data.map((m) => listCodeColor.push(m.toLowerCase()))
+        const listNameColor = []
+        responseName.data.data.map((m) => listNameColor.push(m.toLowerCase()))
 
-        if (listCodeColor.includes(newColor.code)) {
+        if (listCodeColor.includes(newColor.code.toLowerCase())) {
           toast.warning('Mã màu đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
         }
 
-        if (listNameColor.includes(newColor.name)) {
+        if (listNameColor.includes(newColor.name.toLowerCase())) {
           toast.warning('Tên màu đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
@@ -644,6 +657,72 @@ export default function AdProductAdd() {
       setOpenModalColor(true)
     } catch (error) {
       toast.error('Thêm màu sắc thất bại', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      setOpenModalColor(false)
+    }
+  }
+
+  const handleUpdateColor = async (id, colorDetail, previewColor) => {
+    try {
+      if (colorDetail.codeDetail === '') {
+        toast.warning('Mã màu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      if (colorDetail.nameDetail === '') {
+        toast.warning('Tên màu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      const responseCode = await colorApi.getAllCodeColor()
+      const responseName = await colorApi.getAllNameColor()
+      if (
+        responseCode.data &&
+        Array.isArray(responseCode.data.data) &&
+        responseName.data &&
+        Array.isArray(responseName.data.data)
+      ) {
+        const listCodeColor = []
+        responseCode.data.data.map((m) => listCodeColor.push(m.toLowerCase()))
+        const listNameColor = []
+        responseName.data.data.map((m) => listNameColor.push(m.toLowerCase()))
+        if (
+          previewColor.codePreview !== colorDetail.codeDetail &&
+          listCodeColor.includes(colorDetail.codeDetail.toLowerCase())
+        ) {
+          toast.warning('Mã màu đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        if (
+          previewColor.namePreview !== colorDetail.nameDetail &&
+          listNameColor.includes(colorDetail.nameDetail.toLowerCase())
+        ) {
+          toast.warning('Tên màu đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        const dataUpdate = { code: colorDetail.codeDetail, name: colorDetail.nameDetail }
+
+        await colorApi.updateColor(id, dataUpdate)
+        toast.success('Cập nhật màu sắc thành công', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        fetchListColor()
+      }
+      setOpenModalUpdateColor(false)
+      setOpenModalColor(true)
+    } catch (error) {
+      toast.error('Cập nhật màu sắc thất bại', {
         position: toast.POSITION.TOP_RIGHT,
       })
       setOpenModalColor(false)
@@ -669,7 +748,7 @@ export default function AdProductAdd() {
       if (response.data && Array.isArray(response.data.data)) {
         const listNameSize = response.data.data
 
-        if (listNameSize.includes(newSize.size)) {
+        if (listNameSize.includes(Number(newSize.size))) {
           toast.warning('Kích cỡ đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
@@ -686,6 +765,46 @@ export default function AdProductAdd() {
       setOpenModalSize(true)
     } catch (error) {
       toast.error('Thêm kích cỡ thất bại', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    }
+  }
+
+  const handleUpdateSize = async (sizeDetail, previewSize) => {
+    try {
+      if (sizeDetail.size === '') {
+        toast.warning('Kích cỡ không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      if (isNaN(sizeDetail.size) === true) {
+        toast.warning('Tên kích cỡ phải là số', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
+
+      const response = await sizeApi.getAllNameSize()
+      if (response.data && Array.isArray(response.data.data)) {
+        const listNameSize = response.data.data
+        if (previewSize !== sizeDetail.size && listNameSize.includes(Number(sizeDetail.size))) {
+          toast.warning('Kích cỡ đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+        const dataUpdate = { size: sizeDetail.size }
+        await sizeApi.updateSize(sizeDetail.idSize, dataUpdate)
+        toast.success('Cập nhật kích cỡ thành công', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        fetchListSize()
+      }
+      setOpenModalUpdateSize(false)
+      setOpenModalSize(true)
+    } catch (error) {
+      toast.error('Cập nhật kích cỡ thất bại', {
         position: toast.POSITION.TOP_RIGHT,
       })
     }
@@ -722,6 +841,20 @@ export default function AdProductAdd() {
     }
     setSelectSize(newSelectedIds)
     genNewProductDetail({ ...newProducts, size: newSelectedIds })
+  }
+
+  const handleOpenUpdateColor = (id, code, name) => {
+    setOpenModalColor(false)
+    setOpenModalUpdateColor(true)
+    setColorDetail({ idDetail: id, codeDetail: code, nameDetail: name })
+    setPreviewColor({ idPreview: id, codePreview: code, namePreview: name })
+  }
+
+  const handleOpenUpdateSize = (id, size) => {
+    setOpenModalSize(false)
+    setOpenModalUpdateSize(true)
+    setSizeDetail({ idSize: id, size: size })
+    setPreviewSize(size)
   }
 
   return (
@@ -1018,30 +1151,48 @@ export default function AdProductAdd() {
                   <Grid container spacing={2}>
                     {colors.map((c) => (
                       <Grid item xs={3}>
-                        <Button
-                          fullWidth
-                          sx={{
-                            backgroundColor:
-                              selectColor.findIndex(
-                                (selectedColor) => selectedColor.value === c.id,
-                              ) !== -1
-                                ? 'white'
-                                : c.code,
-                            border:
-                              c.code === '#ffffff' ? `1px solid #000000` : `1px solid ${c.code}`,
-                            height: '30px',
-                          }}
-                          onClick={() =>
-                            handleSelectColor({ label: c.name, value: c.id, code: c.code })
-                          }>
+                        <div style={{ position: 'relative' }}>
+                          <Button
+                            fullWidth
+                            sx={{
+                              backgroundColor:
+                                selectColor.findIndex(
+                                  (selectedColor) => selectedColor.value === c.id,
+                                ) !== -1
+                                  ? 'white'
+                                  : c.code,
+                              border:
+                                c.code === '#ffffff' ? `1px solid #000000` : `1px solid ${c.code}`,
+                              height: '30px',
+                            }}
+                            onClick={() =>
+                              handleSelectColor({ label: c.name, value: c.id, code: c.code })
+                            }>
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                color: c.code === '#000000' ? 'white' : 'black',
+                              }}>
+                              {c.code}
+                            </span>
+                          </Button>
                           <span
+                            onClick={() => handleOpenUpdateColor(c.id, c.code, c.name)}
                             style={{
-                              fontSize: '10px',
-                              color: c.code === '#000000' ? 'white' : 'black',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              right: '-5px',
+                              top: '-10px',
+                              backgroundColor: 'red',
+                              color: 'white',
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '50%',
+                              textAlign: 'center',
                             }}>
-                            {c.code}
+                            <RiSettings4Fill />
                           </span>
-                        </Button>
+                        </div>
                       </Grid>
                     ))}
                   </Grid>
@@ -1085,6 +1236,52 @@ export default function AdProductAdd() {
                       setNewColor({ ...newColor, code: e.target.value })
                     }}
                     defaultValue={newColor.code}
+                    fullWidth
+                    inputProps={{
+                      required: true,
+                    }}
+                    size="small"
+                  />
+                </DialogAddUpdate>
+              )}
+              {openModalUpdateColor && (
+                <DialogAddUpdate
+                  open={openModalUpdateColor}
+                  setOpen={setOpenModalUpdateColor}
+                  title={'Cập nhật màu sắc'}
+                  buttonSubmit={
+                    <Button
+                      onClick={() => {
+                        handleUpdateColor(colorDetail.idDetail, colorDetail, previewColor)
+                      }}
+                      color="primary"
+                      disableElevation
+                      sx={{ ...spButton }}
+                      variant="contained">
+                      Cập nhật
+                    </Button>
+                  }>
+                  <TextField
+                    sx={{ mb: 2 }}
+                    id={'nameInputAdd'}
+                    onChange={(e) => {
+                      setColorDetail({ ...colorDetail, nameDetail: e.target.value })
+                    }}
+                    defaultValue={colorDetail.nameDetail}
+                    fullWidth
+                    inputProps={{
+                      required: true,
+                    }}
+                    size="small"
+                    placeholder="Nhập tên màu"
+                  />
+                  <TextField
+                    type="color"
+                    id={'nameInputAdd'}
+                    onBlur={(e) => {
+                      setColorDetail({ ...colorDetail, codeDetail: e.target.value })
+                    }}
+                    defaultValue={colorDetail.codeDetail}
                     fullWidth
                     inputProps={{
                       required: true,
@@ -1169,25 +1366,43 @@ export default function AdProductAdd() {
                   <Grid container spacing={2}>
                     {sizes.map((s) => (
                       <Grid item xs={3}>
-                        <Button
-                          fullWidth
-                          sx={{
-                            backgroundColor:
-                              selectSize.findIndex((select) => select.value === s.id) !== -1
-                                ? 'gray'
-                                : `white`,
-                            border: `1px solid #000000`,
-                            height: '30px',
-                          }}
-                          onClick={() => handleSelectSize({ label: s.size, value: s.id })}>
+                        <div style={{ position: 'relative' }}>
+                          <Button
+                            fullWidth
+                            sx={{
+                              backgroundColor:
+                                selectSize.findIndex((select) => select.value === s.id) !== -1
+                                  ? 'gray'
+                                  : `white`,
+                              border: `1px solid #000000`,
+                              height: '30px',
+                            }}
+                            onClick={() => handleSelectSize({ label: s.size, value: s.id })}>
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                color: 'black',
+                              }}>
+                              {s.size}
+                            </span>
+                          </Button>
                           <span
+                            onClick={() => handleOpenUpdateSize(s.id, s.size)}
                             style={{
-                              fontSize: '10px',
-                              color: 'black',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              right: '-5px',
+                              top: '-10px',
+                              backgroundColor: 'red',
+                              color: 'white',
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '50%',
+                              textAlign: 'center',
                             }}>
-                            {s.size}
+                            <RiSettings4Fill />
                           </span>
-                        </Button>
+                        </div>
                       </Grid>
                     ))}
                   </Grid>
@@ -1216,6 +1431,38 @@ export default function AdProductAdd() {
                       setNewSize({ size: e.target.value })
                     }}
                     defaultValue={''}
+                    fullWidth
+                    inputProps={{
+                      required: true,
+                    }}
+                    size="small"
+                    placeholder="Nhập kích cỡ"
+                  />
+                </DialogAddUpdate>
+              )}
+              {openModalUpdateSize && (
+                <DialogAddUpdate
+                  open={openModalUpdateSize}
+                  setOpen={setOpenModalUpdateSize}
+                  title={'Cập nhật kích cỡ'}
+                  buttonSubmit={
+                    <Button
+                      onClick={() => {
+                        handleUpdateSize(sizeDetail, previewSize)
+                      }}
+                      color="primary"
+                      disableElevation
+                      sx={{ ...spButton }}
+                      variant="contained">
+                      Cập nhật
+                    </Button>
+                  }>
+                  <TextField
+                    id={'nameInputAdd'}
+                    onChange={(e) => {
+                      setSizeDetail({ ...sizeDetail, size: e.target.value })
+                    }}
+                    defaultValue={sizeDetail.size}
                     fullWidth
                     inputProps={{
                       required: true,

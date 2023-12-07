@@ -30,8 +30,6 @@ public interface ClientProductResponse extends IsIdentified {
 
     String getWeight();
 
-    String getIdSize();
-
     @Value("#{target.id_product}")
     String getIdProduct();
 
@@ -49,5 +47,6 @@ public interface ClientProductResponse extends IsIdentified {
 
     @Value("#{target.id_brand}")
     String getIdBrand();
+
 
 }

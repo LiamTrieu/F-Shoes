@@ -8,14 +8,9 @@ import java.math.BigDecimal;
 public interface ClientProductDetailResponse extends IsIdentified {
 
     @Value("#{target.size}")
-    Float getSize();
-
-    String getIdColor();
+    String getSize();
 
     BigDecimal getGia();
 
     String getWeight();
-
-    String getCodeColor();
-    String getNameColor();
 }

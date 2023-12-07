@@ -25,9 +25,9 @@ import { FaCheck } from 'react-icons/fa'
 import { useEffect } from 'react'
 
 export default function CartProduct({ products, colmd, collg }) {
-  const processArray = (inputArray) => {
-    const fields = ['idProduct', 'idSole', 'idCategory', 'idBrand', 'idMaterial']
+  const processArray = (inputArray, fields) => {
     const groupedItems = {}
+
     inputArray.forEach((item) => {
       const key = fields.map((field) => item[field]).join('-')
       if (!groupedItems[key]) {
@@ -55,18 +55,21 @@ export default function CartProduct({ products, colmd, collg }) {
       })
       group.duplicates = Object.values(colorGroups)
     })
+
     return Object.values(groupedItems)
   }
 
   const [arrMap, setArrMap] = useState([])
   useEffect(() => {
-    const processedArray = processArray(products).map((product) => {
+    const uniqueFields = ['idProduct', 'idSole', 'idCategory', 'idBrand', 'idMaterial']
+    const processedArray = processArray(products, uniqueFields).map((product) => {
       return {
         ...product,
         duplicate: product.duplicates[0],
         ...product.duplicates[0].sizes[0],
       }
     })
+    console.log(processedArray)
     setArrMap(processedArray)
   }, [products])
 

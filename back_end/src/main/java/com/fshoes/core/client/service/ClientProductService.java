@@ -23,7 +23,6 @@ public interface ClientProductService {
     List<ClientProductResponse> getSellingProduct(ClientProductRequest request);
 
     List<ClientProductDetailResponse> getProductBySize(ClientProductDetailRequest request);
-    List<ClientProductDetailResponse> getProductByColor(ClientProductDetailRequest request);
 
     List<Brand> getAllBrand();
 

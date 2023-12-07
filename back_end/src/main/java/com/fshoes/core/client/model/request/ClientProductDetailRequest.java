@@ -14,5 +14,4 @@ public class ClientProductDetailRequest {
     private String idBrand;
     private String idSole;
     private String idMaterial;
-    private String idSize;
 }

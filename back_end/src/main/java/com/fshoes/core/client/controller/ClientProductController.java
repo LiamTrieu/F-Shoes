@@ -51,11 +51,6 @@ public class ClientProductController {
         return new ObjectRespone(clientProductService.getProductBySize(request));
     }
 
-    @GetMapping("/product/color")
-    public ObjectRespone getProductByColor(ClientProductDetailRequest request) {
-        return new ObjectRespone(clientProductService.getProductByColor(request));
-    }
-
     @GetMapping("/brand")
     public ObjectRespone getBrand() {
         return new ObjectRespone(clientProductService.getAllBrand());

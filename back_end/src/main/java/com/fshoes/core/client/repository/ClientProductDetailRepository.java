@@ -123,6 +123,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 OR (:#{#request.nameProductDetail} IS NULL OR ca.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR s.name like %:#{#request.nameProductDetail}%) 
+                OR (:#{#request.nameProductDetail} IS NULL OR b.name like %:#{#request.nameProductDetail}%)
+                OR (:#{#request.nameProductDetail} IS NULL OR si.size like %:#{#request.nameProductDetail}%)
                 OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
                 GROUP BY pd.id
             """, nativeQuery = true)
@@ -441,9 +443,6 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 c.id;
             """, nativeQuery = true)
     List<ClientProductDetailResponse> getAllColor(ClientProductDetailRequest request);
-
-
-
 
     @Query(value = """
             SELECT min(pd.price) as minPrice, max(pd.price) as maxPrice
