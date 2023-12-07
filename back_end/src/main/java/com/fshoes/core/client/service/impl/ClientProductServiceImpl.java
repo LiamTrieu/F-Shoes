@@ -58,8 +58,7 @@ public class ClientProductServiceImpl implements ClientProductService {
 
     @Override
     public List<ClientProductResponse> getProductCungLoai(ClientProductCungLoaiRequest request) {
-        Pageable pageable = PageRequest.of(0, 8);
-        return clientProductDetailRepository.getProductCungLoai(request, pageable).getContent();
+        return clientProductDetailRepository.getProductCungLoai(request);
     }
 
     @Override
