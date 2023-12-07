@@ -14,7 +14,7 @@ import java.text.ParseException;
 import java.util.List;
 
 public interface AdVoucherService {
-    List<Voucher> getAllVoucher();
+    List<AdVoucherRespone> getAllVoucher();
 
     List<KhachHangRespone> getAllCustomer();
 

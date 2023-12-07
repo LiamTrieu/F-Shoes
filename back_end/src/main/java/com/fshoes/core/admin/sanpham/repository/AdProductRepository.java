@@ -27,7 +27,12 @@ public interface AdProductRepository extends ProductRepository {
     Page<ProductResponse> getAllProduct(ProductFilterRequest filter, Pageable pageable);
 
     @Query(value = """
-            select p.id, p.name from product p where p.deleted = 0 order by p.created_at desc
+            select ROW_NUMBER() over (ORDER BY p.updated_at desc ) as stt,p.id, p.name,
+                count(pd.id) as amount, p.deleted as status, p.created_at as createdAt
+                from product p
+                join product_detail pd
+                on p.id = pd.id_product
+                group by p.name, p.deleted,p.id
             """, nativeQuery = true)
     List<ProductResponse> getListProduct();
 }

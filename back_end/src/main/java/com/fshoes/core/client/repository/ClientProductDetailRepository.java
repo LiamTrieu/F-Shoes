@@ -118,7 +118,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 AND (:#{#request.material.size()} < 1  OR m.id IN (:#{#request.material})) 
                 AND (:#{#request.brand.size()} < 1 OR b.id IN (:#{#request.brand})) 
                 AND (:#{#request.sole.size()} < 1 OR s.id IN (:#{#request.sole})) 
-                 AND (:#{#request.lstSize.size()} < 1 OR si.id IN (:#{#request.lstSize}))
+                AND (:#{#request.lstSize.size()} < 1 OR si.id IN (:#{#request.lstSize}))
                 AND( (:#{#request.nameProductDetail} IS NULL OR p.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR ca.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%) 

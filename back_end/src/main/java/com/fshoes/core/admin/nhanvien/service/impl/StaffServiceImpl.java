@@ -39,8 +39,8 @@ public class StaffServiceImpl implements StaffService {
     private EmailSender emailSender;
 
     @Override
-    public List<Account> getAll() {
-        return repo.findAll();
+    public List<StaffRespone> getAll() {
+        return repo.getAllStaff();
     }
 
 

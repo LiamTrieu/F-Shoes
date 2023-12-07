@@ -47,12 +47,14 @@ export default function AdMaterialPage() {
   const [materialUpdate, setMaterialUpdate] = useState({ id: 0, name: '' })
   const [allNameMaterial, setAllNameMaterial] = useState([])
   const [listMaterial, setListMaterial] = useState([])
+  const [listMaterialEx, setListMaterialEx] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
   const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
 
   useEffect(() => {
     fetchData(filter)
+    getAllmaterial()
     haldleAllNameMaterial()
   }, [filter])
 
@@ -69,6 +71,12 @@ export default function AdMaterialPage() {
         console.log(error)
       })
     setIsBackdrop(false)
+  }
+
+  const getAllmaterial = () => {
+    materialApi.getList().then((res) => {
+      setListMaterialEx(res.data.data)
+    })
   }
 
   const haldleAllNameMaterial = () => {
@@ -259,7 +267,7 @@ export default function AdMaterialPage() {
 
     worksheet.columns = columns
 
-    listMaterial.forEach((row, index) => {
+    listMaterialEx.forEach((row, index) => {
       worksheet.addRow({
         stt: index + 1,
         name: row.name,
@@ -511,7 +519,6 @@ export default function AdMaterialPage() {
                     sx={{ height: '25px', mx: 0.5 }}
                     size="small"
                     value={filter.size}>
-                    <MenuItem value={1}>1</MenuItem>
                     <MenuItem value={5}>5</MenuItem>
                     <MenuItem value={10}>10</MenuItem>
                     <MenuItem value={15}>15</MenuItem>

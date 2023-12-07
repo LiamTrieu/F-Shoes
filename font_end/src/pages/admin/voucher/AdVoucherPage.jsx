@@ -41,6 +41,7 @@ var stompClient = null
 
 export default function AdVoucherPage() {
   const [listVoucher, setListVoucher] = useState([])
+  const [listVoucherEx, setListVoucherEx] = useState([])
   const [listVoucherUpdate, setListVoucherUpdate] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [dataFetched, setDataFetched] = useState(false)
@@ -146,8 +147,14 @@ export default function AdVoucherPage() {
 
   useEffect(() => {
     fetchData(searchVoucher)
+    getAllVoucherKH()
   }, [searchVoucher])
 
+  const getAllVoucherKH = () => {
+    voucherApi.getAllVoucher().then((response) => {
+      setListVoucherEx(response.data.data)
+    })
+  }
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
     const worksheet = workbook.addWorksheet('VoucherData')
@@ -165,7 +172,7 @@ export default function AdVoucherPage() {
 
     worksheet.columns = columns
 
-    listVoucher.forEach((row, index) => {
+    listVoucherEx.forEach((row, index) => {
       worksheet.addRow({
         stt: row.stt,
         code: row.code,

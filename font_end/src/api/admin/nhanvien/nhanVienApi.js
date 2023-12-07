@@ -5,6 +5,11 @@ const staffApi = {
     const url = `/staff/search-getPage`
     return axiosAdmin.get(url, { params: searchStaff })
   },
+
+  getAll: () => {
+    const url = `/staff/find-all`
+    return axiosAdmin.get(url)
+  },
   getOne: (id) => {
     const url = `/staff/detail/${id}`
     return axiosAdmin.get(url)
