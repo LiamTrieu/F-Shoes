@@ -821,14 +821,27 @@ export default function Checkout() {
                           display: 'inline-block',
                           verticalAlign: 'middle',
                           marginLeft: '10px',
+                          fontWeight: 700,
                         }}>
                         <p style={{ margin: 0 }}>{cart.name}</p>
-                        <b style={{ margin: 0 }}>
-                          size:{' '}
-                          {parseFloat(cart.size) % 1 === 0
-                            ? parseFloat(cart.size).toFixed(0)
-                            : parseFloat(cart.size).toFixed(1)}
-                        </b>
+                        <div
+                          style={{
+                            width: '75px',
+                            height: '22px',
+                            backgroundColor: 'orange',
+                            borderRadius: '10px',
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}>
+                          <b style={{ margin: 0 }}>
+                            size:{' '}
+                            {parseFloat(cart.size) % 1 === 0
+                              ? parseFloat(cart.size).toFixed(0)
+                              : parseFloat(cart.size).toFixed(1)}
+                          </b>
+                        </div>
                       </span>
                     </TableCell>
                     <TableCell
