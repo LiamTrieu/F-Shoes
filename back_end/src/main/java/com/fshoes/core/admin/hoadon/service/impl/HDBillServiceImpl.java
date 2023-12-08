@@ -234,6 +234,8 @@ public class HDBillServiceImpl implements HDBillService {
                 ProductDetail productDetail = billDetail.getProductDetail();
                 productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
                 productDetailRepository.save(productDetail);
+                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-admin-corfim-bill",
+                        clientProductDetailRepository.updateRealTime(productDetail.getId()));
             });
 
             messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-page-admin",
@@ -411,6 +413,8 @@ public class HDBillServiceImpl implements HDBillService {
                     ProductDetail productDetail = billDetail.getProductDetail();
                     productDetail.setAmount(productDetail.getAmount() + billDetail.getQuantity());
                     productDetailRepository.save(productDetail);
+                    messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-roll-back-bill-status-comfirm",
+                            clientProductDetailRepository.updateRealTime(productDetail.getId()));
                 });
             }
             //nếu return từ trạng thái huỷ đơn về trạng thái trước: (!= chờ xác nhận): trừ số lượng sp
@@ -419,6 +423,8 @@ public class HDBillServiceImpl implements HDBillService {
                     ProductDetail productDetail = billDetail.getProductDetail();
                     productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
                     productDetailRepository.save(productDetail);
+                    messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-roll-back-bill-status-cancel",
+                            clientProductDetailRepository.updateRealTime(productDetail.getId()));
                 });
             }
             return true;

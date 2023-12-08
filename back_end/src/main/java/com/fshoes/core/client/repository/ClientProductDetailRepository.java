@@ -123,6 +123,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 OR (:#{#request.nameProductDetail} IS NULL OR ca.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR c.name like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR s.name like %:#{#request.nameProductDetail}%) 
+                OR (:#{#request.nameProductDetail} IS NULL OR b.name like %:#{#request.nameProductDetail}%) 
+                OR (:#{#request.nameProductDetail} IS NULL OR si.size like %:#{#request.nameProductDetail}%) 
                 OR (:#{#request.nameProductDetail} IS NULL OR m.name like %:#{#request.nameProductDetail}%)) 
                 GROUP BY pd.id
             """, nativeQuery = true)
@@ -223,11 +225,13 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
                 SELECT 
                        pd.id as id,
-                       pr.id as promotion ,
-                       pr.status as statusPromotion ,pr.value as value,
-                       CONCAT(p.name, ' ', m.name, ' ', s.name, ' "', c.name,'"') AS name,
+                       MAX(pr.value) as value,
+                       CONCAT(p.name, ' ', m.name, ' ', s.name) AS name,
                        ca.name as nameCate,
                        b.name as nameBrand,
+                       c.code as codeColor,
+                       c.name as nameColor,
+                       si.size as size,
                        pd.price as price,
                        pd.weight as weight,
                        pd.amount as amount,
@@ -242,6 +246,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 FROM product_detail pd
                          JOIN
                      product p ON p.id = pd.id_product
+                         JOIN
+                     size si ON si.id = pd.id_size
                          JOIN
                      color c ON c.id = pd.id_color
                          JOIN
