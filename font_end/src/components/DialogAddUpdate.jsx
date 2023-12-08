@@ -2,11 +2,11 @@ import { Button, Dialog, DialogContent, Stack, Typography } from '@mui/material'
 import React from 'react'
 import { spButton } from '../pages/admin/sanpham/sanPhamStyle'
 
-export default function DialogAddUpdate({ children, open, setOpen, title, buttonSubmit }) {
+export default function DialogAddUpdate({ children, open, setOpen, title, buttonSubmit, width }) {
   return (
     <Dialog
       fullWidth
-      maxWidth="xs"
+      maxWidth={width ? width : 'xs'}
       open={open}
       onClose={() => {
         setOpen(false)

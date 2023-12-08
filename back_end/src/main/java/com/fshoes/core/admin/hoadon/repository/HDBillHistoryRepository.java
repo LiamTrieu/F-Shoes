@@ -1,13 +1,16 @@
 package com.fshoes.core.admin.hoadon.repository;
 
 import com.fshoes.core.admin.hoadon.model.respone.HDBillHistoryResponse;
+import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillHistory;
+import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.repository.BillHistoryRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HDBillHistoryRepository extends BillHistoryRepository {
@@ -37,5 +40,7 @@ public interface HDBillHistoryRepository extends BillHistoryRepository {
             LIMIT 2 
             """, nativeQuery = false)
     List<BillHistory> getBillHistoryNew(@Param("idBill") String idBill);
+
+    Optional<BillHistory> findDistinctFirstByBillOrderByCreatedAtDesc(Bill bill);
 
 }

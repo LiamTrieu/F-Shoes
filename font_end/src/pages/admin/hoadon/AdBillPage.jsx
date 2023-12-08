@@ -22,6 +22,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Modal,
 } from '@mui/material'
 import Tab from '@mui/material/Tab'
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
@@ -46,6 +47,9 @@ import { socketUrl } from '../../../services/url'
 import { toast } from 'react-toastify'
 import sellApi from '../../../api/admin/sell/SellApi'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import { MdOutlineDocumentScanner } from 'react-icons/md'
+import returnApi from '../../../api/admin/return/returnApi'
+import Scanner from '../../../layout/Scanner'
 
 var stompClient = null
 export default function AdBillPage() {
@@ -295,10 +299,43 @@ export default function AdBillPage() {
     })
   }
 
+  const [qrScannerVisible, setQrScannerVisible] = useState(false)
+
+  function scanQr(code) {
+    returnApi.getBill({ codeBill: code }).then((result) => {
+      if (result.data.success) {
+        navigate('/admin/bill-detail/' + result.data.data)
+        setQrScannerVisible(false)
+      } else {
+        toast.warning('Hóa đơn không tồn tại, vui lòng thử lại')
+      }
+    })
+  }
+
   const listBreadcrumbs = [{ name: 'Quản lý đơn hàng', link: '/admin/bill' }]
   return (
     <div className="hoa-don">
       <BreadcrumbsCustom listLink={listBreadcrumbs} />
+      <Modal
+        open={qrScannerVisible}
+        onClose={() => {
+          setQrScannerVisible(false)
+        }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+          }}>
+          <Scanner handleScan={scanQr} setOpen={setQrScannerVisible} />
+        </Box>
+      </Modal>
       <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
         <Stack
           direction="row"
@@ -323,10 +360,26 @@ export default function AdBillPage() {
               ),
             }}
           />
-          <Button onClick={handleAddSellClick} color="cam" variant="outlined" className="them-moi">
-            <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
-            Tạo hoá đơn
-          </Button>
+          <div>
+            <Button
+              onClick={() => {
+                setQrScannerVisible(true)
+              }}
+              color="cam"
+              variant="outlined">
+              <MdOutlineDocumentScanner style={{ marginRight: '5px', fontSize: '17px' }} />
+              Quét mã
+            </Button>
+            &nbsp; &nbsp;
+            <Button
+              onClick={handleAddSellClick}
+              color="cam"
+              variant="outlined"
+              className="them-moi">
+              <AiOutlinePlusSquare style={{ marginRight: '5px', fontSize: '17px' }} />
+              Tạo hoá đơn
+            </Button>
+          </div>
         </Stack>
         <Stack
           direction="row"
