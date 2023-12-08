@@ -112,7 +112,7 @@ public class HDBillServiceImpl implements HDBillService {
         if (userLogin.getUserLogin().getRole() == 1) {
             return hdBillRepository.filterBill(pageable, status, startDate, endDate, type, billFilterRequest.getInputSearch());
         } else {
-            return hdBillRepository.filterBillByStaff(pageable, status, startDate, endDate, type, billFilterRequest.getInputSearch(), userLogin.getUserLogin().getEmail());
+            return hdBillRepository.filterBillByStaff(pageable, status, startDate, endDate, type, billFilterRequest.getInputSearch(), userLogin.getUserLogin().getId(), userLogin.getUserLogin().getEmail());
         }
     }
 
@@ -227,6 +227,14 @@ public class HDBillServiceImpl implements HDBillService {
             // Lưu lịch sử hóa đơn
             HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder().note(billConfirmRequest.getNoteBillHistory()).idStaff(userLogin.getUserLogin().getId()).bill(bill).build();
             BillHistory billHistory = hdBillHistoryService.save(hdBillHistoryRequest);
+
+            //trừ số lượng sp
+            List<BillDetail> billDetails = hdBillDetailRepository.getBillDetailByBillId(idBill);
+            billDetails.forEach(billDetail -> {
+                ProductDetail productDetail = billDetail.getProductDetail();
+                productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
+                productDetailRepository.save(productDetail);
+            });
 
             messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-page-admin",
                     hdBillRepository.realTimeBill(bill.getId()));
@@ -371,6 +379,58 @@ public class HDBillServiceImpl implements HDBillService {
         Bill bill = hdBillRepository.findById(idBill).get();
         List<BillDetail> lstBillDetail = hdBillDetailRepository.getBillDetailByBillId(idBill);
         return genHoaDon.genHoaDon(bill, lstBillDetail);
+    }
+
+    @Override
+    public Boolean returnSttBill(String idBill, HDBillRequest hdBillRequest) {
+        List<BillHistory> billHistorys = hdBillHistoryRepository.getBillHistoryNew(idBill);
+        if (billHistorys.size() > 1) {
+            BillHistory billHistory1 = billHistorys.get(0); // history hiện tại
+            BillHistory billHistory2 = billHistorys.get(1); // history chứa sttBill sẽ quay lại
+            String note = userLogin.getUserLogin().getCode() + " đã chuyển trạng thái hoá đơn từ " + billHistory1.getStatusBill() + " -> " + billHistory2.getStatusBill() + "\n Lý do: ";
+            //set stt bill = trạng thái bill trước (billHistory2.getStatusBill())
+            Bill bill = billHistory1.getBill();
+            Integer sttBill = bill.getStatus();
+            bill.setStatus(billHistory2.getStatusBill());
+            hdBillRepository.save(bill);
+            //set billHistory gần nhất là null để ẩn khoit timeline
+            billHistory1.setStatusBill(10);
+            hdBillHistoryRepository.save(billHistory1);
+            //thêm mới billHistory return stt bill
+            BillHistory billHistoryNew = new BillHistory();
+
+            billHistoryNew.setNote(note + "'" + hdBillRequest.getNoteBillHistory() + "'");
+            billHistoryNew.setBill(bill);
+            billHistoryNew.setAccount(userLogin.getUserLogin());
+            hdBillHistoryRepository.save(billHistoryNew);
+            // lấy list billDetail
+            List<BillDetail> billDetails = hdBillDetailRepository.getBillDetailByBillId(idBill);
+            //nếu quay lại trạng thái chờ xác nhận: rollback số lượng sp
+            if (bill.getStatus() == 1 && sttBill != 0) {
+                billDetails.forEach(billDetail -> {
+                    ProductDetail productDetail = billDetail.getProductDetail();
+                    productDetail.setAmount(productDetail.getAmount() + billDetail.getQuantity());
+                    productDetailRepository.save(productDetail);
+                });
+            }
+            //nếu return từ trạng thái huỷ đơn về trạng thái trước: (!= chờ xác nhận): trừ số lượng sp
+            if (sttBill == 0 && billHistory2.getStatusBill() != 1) {
+                billDetails.forEach(billDetail -> {
+                    ProductDetail productDetail = billDetail.getProductDetail();
+                    productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
+                    productDetailRepository.save(productDetail);
+                });
+            }
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    @Override
+    public HDBillResponse isCheckBillExist(String idBill) {
+        return hdBillRepository.getBillExist(idBill, userLogin.getUserLogin().getId(), userLogin.getUserLogin().getEmail());
     }
 
 

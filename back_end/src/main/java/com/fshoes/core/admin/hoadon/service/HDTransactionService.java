@@ -6,7 +6,5 @@ import java.util.List;
 
 public interface HDTransactionService {
     List<HDTransactionResponse> getTransactionByBillId(String idBill);
-
-    Integer countTransactionByBill(String idBill);
-
+    
 }

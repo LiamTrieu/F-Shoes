@@ -11,7 +11,9 @@ const { Timeline } = require('@mailtop/horizontal-timeline')
 const TimeLine = (props) => {
   const { orderTimeLine } = props
 
-  const filteredTimeLine = orderTimeLine.filter((item) => item.statusBill !== null)
+  const filteredTimeLine = orderTimeLine.filter(
+    (item) => item.statusBill !== null && item.statusBill !== 10,
+  )
 
   return (
     <Timeline>

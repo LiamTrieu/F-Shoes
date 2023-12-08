@@ -66,8 +66,12 @@ public interface HDBillRepository extends BillRepository {
             AND :endDate IS NULL OR b.created_at <= :endDate)
             AND (:type IS NULL OR b.type = :type)
             AND (
-                    (b.type = 1) OR
-                    (b.type = 0 AND b.created_by = :email)
+                    (b.type = 1 AND b.status = 1) OR
+                    (EXISTS (SELECT 1 FROM bill_history bh WHERE bh.id_bill = b.id AND bh.id_reception_staff = :idUserLogin))
+                    OR
+                    (EXISTS (SELECT 1 FROM bill_history bh WHERE bh.id_bill = b.id AND bh.id_account = :idUserLogin))
+                    OR
+                    (b.status <> 1 AND b.created_by = :email)
             )
             AND (
                 b.code like concat('%', :inputSearch, '%')
@@ -90,8 +94,10 @@ public interface HDBillRepository extends BillRepository {
             @Param("endDate") Long endDate,
             @Param("type") Boolean type,
             @Param("inputSearch") String inputSearch,
+            @Param("idUserLogin") String idUserLogin,
             @Param("email") String email
     );
+
 
     @Query(value = """
             SELECT ROW_NUMBER() over (ORDER BY b.created_at desc ) as stt,
@@ -149,5 +155,34 @@ public interface HDBillRepository extends BillRepository {
                    
             """, nativeQuery = true)
     HDBillResponse getBillResponse(@Param("id") String id);
+
+    @Query(value = """
+            SELECT b.id, b.code, c.full_name as fullName,
+                  c.phone_number as phoneNumber,
+                  c.id as idCustomer, b.address,
+                  b.total_money as totalMoney, b.money_reduced as moneyReduced,
+                  b.money_after as moneyAfter, b.money_ship as moneyShip,
+                  b.type, b.note, b.created_at as createdAt,
+                  b.created_by as creatdeBy, sum(bt.quantity) as totalProduct, b.status,
+                  b.full_name as recipientName, b.phone_number as recipientPhoneNumber,
+                  c.email as emailCustomer,
+                  b.desired_receipt_date as desiredReceiptDate, b.customer_amount as customerAmount, b.receiving_method as receivingMethod            
+                  FROM bill b
+                  LEFT JOIN bill_detail bt ON b.id = bt.id_bill
+                  LEFT JOIN account c ON b.id_customer= c.id
+            WHERE b.id = :id AND b.status <> 8
+                AND (
+                    (b.type = 1 AND b.status = 1) OR
+                    (EXISTS (SELECT 1 FROM bill_history bh WHERE bh.id_bill = b.id AND bh.id_reception_staff = :idUserLogin))
+                    OR
+                    (EXISTS (SELECT 1 FROM bill_history bh WHERE bh.id_bill = b.id AND bh.id_account = :idUserLogin))
+                    OR
+                    (b.type = 0 AND b.created_by = :email)
+            ) 
+                   
+            """, nativeQuery = true)
+    HDBillResponse getBillExist(@Param("id") String id,
+                              @Param("idUserLogin") String idUserLogin,
+                              @Param("email") String email);
 
 }

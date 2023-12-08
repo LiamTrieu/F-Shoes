@@ -52,6 +52,11 @@ public class HDBillController {
         return new ObjectRespone(hdBillService.getOne(id));
     }
 
+    @GetMapping("/check-bill-exist/{id}")
+    public ObjectRespone isCheckBillExist(@PathVariable("id") String id) {
+        return new ObjectRespone(hdBillService.isCheckBillExist(id));
+    }
+
     @PutMapping("/update-status/{id}")
     public ObjectRespone updateStatus(@PathVariable("id") String id, @RequestBody HDBillRequest hdBillRequest) {
         return new ObjectRespone(hdBillService.updateStatusBill(id, hdBillRequest));
@@ -70,6 +75,11 @@ public class HDBillController {
     @PostMapping("/print-bill/{id}")
     public ObjectRespone inHoaDon(@PathVariable("id") String id) {
         return new ObjectRespone(hdBillService.xuatHoaDon(id));
+    }
+
+    @PutMapping("/return-stt/{id}")
+    public ObjectRespone returnSttBill(@PathVariable("id") String id, @RequestBody HDBillRequest hdBillRequest) {
+        return new ObjectRespone(hdBillService.returnSttBill(id, hdBillRequest));
     }
 
 }

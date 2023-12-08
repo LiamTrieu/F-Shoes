@@ -80,7 +80,7 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                     .quantity(hdBillDetailRequest.getQuantity())
                     .status(StatusBillDetail.values()[hdBillDetailRequest.getStatus()])
                     .build();
-
+            hdBillDetailRepository.save(newBillDetail);
             if (bill.getStatus() == 2 || bill.getStatus() == 6) {
                 productDetail.setAmount(productDetail.getAmount() - hdBillDetailRequest.getQuantity());
                 productDetailRepository.save(productDetail);
@@ -109,10 +109,10 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
 
             billHistory.setNote("Đã thêm " + hdBillDetailRequest.getQuantity() + " sản phẩm" + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
             hdBillHistoryRepository.save(billHistory);
-            BillDetail billDetailSave = hdBillDetailRepository.save(newBillDetail);
+
             messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail",
                     clientBillDetailRepository.getBillDetailsByBillId(bill.getId()));
-            return billDetailSave;
+            return newBillDetail;
 
         } else {
 
