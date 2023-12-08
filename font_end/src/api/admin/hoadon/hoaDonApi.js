@@ -4,6 +4,10 @@ const hoaDonApi = {
     const urlGetOne = `/bill/get/${id}`
     return axiosAdmin.get(urlGetOne)
   },
+  checkBillExist: (id) => {
+    const urlGetOne = `/bill/check-bill-exist/${id}`
+    return axiosAdmin.get(urlGetOne)
+  },
   getBillFilter: (filterBill) => {
     const url = `/bill/filter`
     return axiosAdmin.get(url, { params: filterBill })
@@ -35,6 +39,10 @@ const hoaDonApi = {
   printBill: (idBill) => {
     const url = `/bill/print-bill/${idBill}`
     return axiosAdmin.post(url)
+  },
+  returnStt: (idBill, hdBillReq) => {
+    const url = `/bill/return-stt/${idBill}`
+    return axiosAdmin.put(url, hdBillReq)
   },
 }
 

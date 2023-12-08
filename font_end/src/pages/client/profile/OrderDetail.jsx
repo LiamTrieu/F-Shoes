@@ -110,6 +110,7 @@ export default function OrderDetail() {
         toast.success('Đã thay đổi số lượng sản phẩm', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        setIsUpdate(true)
       })
       .catch((error) => {
         toast.error('Đã xảy ra lỗi', {
@@ -609,7 +610,7 @@ export default function OrderDetail() {
               {billClient && billDetail.filter((row) => row.status === 2).length > 0 && (
                 <Table sx={{ minWidth: 650, marginTop: 2 }} aria-label="simple table">
                   <TableHead style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '20px' }}>
-                    Đang chờ hoàn trả
+                    Danh sách trả hàng
                   </TableHead>
 
                   <TableBody>
@@ -649,7 +650,7 @@ export default function OrderDetail() {
               {billClient && billDetail.filter((row) => row.status === 1).length > 0 && (
                 <Table sx={{ minWidth: 650, marginTop: 2 }} aria-label="simple table">
                   <TableHead style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '20px' }}>
-                    Danh sách hoàn trả
+                    Danh sách hoàn hàng
                   </TableHead>
 
                   <TableBody>

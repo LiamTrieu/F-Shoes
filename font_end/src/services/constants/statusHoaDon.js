@@ -5,7 +5,7 @@ export const getStatus = (status) => {
     case 1:
       return 'Chờ xác nhận'
     case 2:
-      return 'Đã xác nhận'
+      return 'Chờ giao hàng'
     case 3:
       return 'Đang vận chuyển'
     case 4:
@@ -21,7 +21,7 @@ export const getStatus = (status) => {
     case 9:
       return 'Trả hàng'
     case 10:
-      return 'Yêu cầu trả hàng'
+      return 'Không tồn tại'
     case 11:
       return 'Huỷ yêu cầu trả hàng'
     case 12:

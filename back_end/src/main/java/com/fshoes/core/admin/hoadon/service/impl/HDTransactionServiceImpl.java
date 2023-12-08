@@ -19,9 +19,4 @@ public class HDTransactionServiceImpl implements HDTransactionService {
         return hdTransactionRepository.getTransactionByBillId(idBill);
     }
 
-    @Override
-    public Integer countTransactionByBill(String idBill) {
-        return hdTransactionRepository.countTransactionByBill(idBill);
-    }
-
 }

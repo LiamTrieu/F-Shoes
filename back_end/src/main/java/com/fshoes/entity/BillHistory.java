@@ -27,6 +27,10 @@ public class BillHistory extends PrimaryEntity {
     @JoinColumn(name = "id_account", referencedColumnName = "id")
     private Account account;
 
+    @ManyToOne
+    @JoinColumn(name = "id_reception_staff", referencedColumnName = "id")
+    private Account receptionStaff;
+
     public Integer getStatusBill() {
         return statusBill.ordinal();
     }

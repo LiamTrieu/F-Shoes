@@ -38,10 +38,17 @@ export default function BillHistoryDialog({ openDialog, setOpenDialog, listOrder
     if (listOrderTimeLine[0]) {
       let tempStatus = listOrderTimeLine[0].statusBill
       return listOrderTimeLine.map((his, index) => {
-        if (his.statusBill == null && listOrderTimeLine[index - 1].statusBill !== null) {
+        if (
+          (his.statusBill === null || his.statusBill === 10) &&
+          listOrderTimeLine[index - 1].statusBill !== null &&
+          (his.statusBill === null || his.statusBill === 10) &&
+          listOrderTimeLine[index - 1].statusBill !== 10
+        ) {
           tempStatus = listOrderTimeLine[index - 1].statusBill
         }
-        if (his.statusBill == null) {
+
+        // Add a condition to treat statusBill === 10 as null
+        if (his.statusBill === null || his.statusBill === 10) {
           return { ...his, statusBill: tempStatus }
         } else {
           return his

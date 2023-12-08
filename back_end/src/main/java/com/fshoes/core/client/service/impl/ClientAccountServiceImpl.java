@@ -141,7 +141,7 @@ public class ClientAccountServiceImpl implements ClientAccountService {
     }
 
     @Override
-    public Bill updateBill(String idBill, ClientBillRequest hdBillRequest) {
+    public Bill  updateBill(String idBill, ClientBillRequest hdBillRequest) {
         try {
             Bill bill = billRepository.findById(idBill).orElseThrow(() -> new RuntimeException("khong tim thay bill co id: " + idBill));
             bill.setFullName(hdBillRequest.getFullName());

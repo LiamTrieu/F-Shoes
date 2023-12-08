@@ -29,4 +29,8 @@ public interface HDBillService {
 
     File xuatHoaDon(String idBill);
 
+    Boolean returnSttBill(String idBill, HDBillRequest hdBillRequest);
+
+    HDBillResponse isCheckBillExist(String idBill);
+
 }
