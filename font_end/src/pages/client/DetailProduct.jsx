@@ -35,6 +35,9 @@ import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { formatCurrency } from '../../services/common/formatCurrency '
 import { socketUrl } from '../../services/url'
+import { isColorDark } from '../../services/common/isColorDark'
+import { FaCheck } from 'react-icons/fa'
+import CartProductCungLoai from '../../layout/client/CartProductCungLoai'
 
 var stompClient = null
 export default function DetailProduct() {
@@ -46,7 +49,7 @@ export default function DetailProduct() {
   const [product, setProduct] = useState({ image: [], price: '' })
   const [products, setProducts] = useState([])
   const [sizes, setSizes] = useState([])
-  const [sizeSelect, setSizeSelect] = useState()
+  const [colors, setColors] = useState([])
   const { id } = useParams()
 
   const [openModalCart, setOpenModalCart] = React.useState(false)
@@ -117,40 +120,31 @@ export default function DetailProduct() {
     const preProduct = product
     const index = preProduct.id === data.id ? 0 : -1
     if (index !== -1) {
-      setProduct({
-        ...data,
-        name: data.name + ` "${data.nameColor}"`,
-        image: data.image.split(','),
-      })
+      setProduct({ ...data, image: data.image.split(',') })
     }
   }
 
   useEffect(() => {
-    let data
-    clientProductApi
-      .getById(id)
-      .then((result) => {
-        data = result.data.data
-        setProduct({
-          ...data,
-          image: data.image.split(','),
+    if (product) {
+      clientProductApi
+        .getSizes({
+          idProduct: product.idProduct,
+          idColor: product.idColor,
+          idCategory: product.idCategory,
+          idBrand: product.idBrand,
+          idSole: product.idSole,
+          idMaterial: product.idMaterial,
         })
-      })
-      .finally(() => {
-        clientProductApi
-          .getSizes({
-            idProduct: data.idProduct,
-            idColor: data.idColor,
-            idCategory: data.idCategory,
-            idBrand: data.idBrand,
-            idSole: data.idSole,
-            idMaterial: data.idMaterial,
-          })
-          .then((result) => {
+        .then(
+          (result) => {
             setSizes(result.data.data)
-            setSizeSelect(result.data.data.find((data) => data.id === id).size)
-          })
-      })
+          },
+          (e) => {
+            console.error(e)
+          },
+        )
+    }
+
     clientProductApi
       .getCungLoai({
         category: product.idCategory,
@@ -171,8 +165,45 @@ export default function DetailProduct() {
           }),
         )
       })
+  }, [product])
+
+  useEffect(() => {
+    let data
+    clientProductApi.getById(id).then(
+      (result) => {
+        if (result.data.success) {
+          data = result.data.data
+          clientProductApi
+            .getColors({
+              idProduct: data.idProduct,
+              idCategory: data.idCategory,
+              idBrand: data.idBrand,
+              idSole: data.idSole,
+              idMaterial: data.idMaterial,
+              idSize: data.idSize,
+            })
+            .then(
+              (result) => {
+                if (result.data.success) {
+                  setColors(result.data.data)
+                }
+              },
+              (e) => {
+                console.error(e)
+              },
+            )
+          setProduct({
+            ...data,
+            image: data.image.split(','),
+          })
+        }
+      },
+      (e) => {
+        console.error(e)
+      },
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sizeSelect, id])
+  }, [id])
 
   const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
     const discountAmount = (discountPercentage / 100) * originalPrice
@@ -196,7 +227,7 @@ export default function DetailProduct() {
         weight: product.weight,
         image: product.image,
         soLuong: parseInt(soLuong.toString().trim()),
-        size: sizeSelect,
+        size: product.size,
       }
       dispatch(addCart(newItem))
       handleOpenModalCart()
@@ -226,7 +257,7 @@ export default function DetailProduct() {
         weight: product.weight,
         image: product.image,
         soLuong: parseInt(soLuong.toString().trim()),
-        size: sizeSelect,
+        size: product.size,
       }
       dispatch(setCheckout([newItem]))
       navigate('/checkout')
@@ -296,22 +327,18 @@ export default function DetailProduct() {
               <Box py={2}>
                 <Typography
                   fontWeight={'bold'}
-                  variant="button"
                   gutterBottom
                   style={{
+                    float: 'left',
                     marginLeft: '10px',
-                    marginBottom: '-10px',
-                    backgroundColor: 'white',
-                    padding: '2px 2px 2px 2px',
+                    marginTop: '10px',
+                    lineHeight: '30px',
                   }}>
-                  Size:
+                  Màu sắc:
                 </Typography>
-                {sizes.map((e, index) => {
+                {colors.map((e, index) => {
                   return (
                     <Button
-                      onClick={() => {
-                        setSizeSelect(e.size)
-                      }}
                       component={Link}
                       to={`/product/${e.id}`}
                       key={'size' + index}
@@ -319,6 +346,61 @@ export default function DetailProduct() {
                       style={{
                         marginLeft: '10px',
                         marginTop: '10px',
+                        height: '30px',
+                        minWidth: '30px',
+                        maxWidth: '30px',
+                        padding: '2px',
+                        ...(e.idColor === product?.idColor
+                          ? { border: '2px solid black' }
+                          : { backgroundColor: e.codeColor }),
+                        borderRadius: '50%',
+                      }}>
+                      <div
+                        style={{
+                          backgroundColor: e.codeColor,
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: '50%',
+                          textAlign: 'center',
+                        }}>
+                        {e.idColor === product?.idColor && (
+                          <FaCheck
+                            style={{
+                              height: '100%',
+                              color: isColorDark(e.codeColor) ? 'white' : 'black',
+                            }}
+                            fontSize={'15px'}
+                          />
+                        )}
+                      </div>
+                    </Button>
+                  )
+                })}
+              </Box>
+              <Box py={2}>
+                <Typography
+                  fontWeight={'bold'}
+                  gutterBottom
+                  style={{
+                    float: 'left',
+                    marginLeft: '10px',
+                    marginTop: '10px',
+                    lineHeight: '30px',
+                  }}>
+                  Kích cỡ:
+                </Typography>
+                {sizes.map((e, index) => {
+                  return (
+                    <Button
+                      component={Link}
+                      to={`/product/${e.id}`}
+                      key={'size' + index}
+                      variant="outlined"
+                      style={{
+                        marginLeft: '10px',
+                        marginTop: '10px',
+                        height: '30px',
+                        width: '35px',
                         color: id === e.id ? 'white' : 'black',
                         backgroundColor: id === e.id ? 'black' : 'white',
                         padding: '2px 0px 2px 0px',
@@ -437,7 +519,7 @@ export default function DetailProduct() {
         </Grid2>
         <Box sx={{ width: '100%' }} mt={5}>
           <LabelTitle text="Sản phẩm cùng loại" />
-          <CartProduct products={products} colsm={6} colmd={4} collg={3} />
+          <CartProductCungLoai products={products} colsm={6} colmd={4} collg={3} />
         </Box>
         <div>
           {openModalCart && (

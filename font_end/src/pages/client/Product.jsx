@@ -170,8 +170,19 @@ export default function Product() {
     const index = preProduct.findIndex((product) => product.id === data.id)
     if (index !== -1) {
       preProduct[index] = {
-        ...data,
+        id: data.id,
+        title: data.name,
+        price: data.price,
+        value: data.value,
+        promotion: data.promotion,
+        statusPromotion: data.statusPromotion,
         image: data.image.split(','),
+        idProduct: data.idProduct,
+        idColor: data.idColor,
+        idMaterial: data.idMaterial,
+        idSole: data.idSole,
+        idCategory: data.idCategory,
+        idBrand: data.idBrand,
       }
       setProducts(preProduct)
     }
@@ -494,7 +505,6 @@ export default function Product() {
       color: [],
       sole: [],
       category: [],
-      lstSize: [],
       minPrice: minMaxPrice.minPrice,
       maxPrice: minMaxPrice.maxPrice,
       nameProductDetail: null,
@@ -504,14 +514,12 @@ export default function Product() {
     setOpenColor(false)
     setOpenMaterial(false)
     setOpenSole(false)
-    setOpenSize(false)
     setPriceMax(minMaxPrice.maxPrice)
     setSelectBrand([])
     setSelectCategory([])
     setSelectColor([])
     setSelectMaterial([])
     setSelectSole([])
-    setSelectSize([])
   }
 
   return (
