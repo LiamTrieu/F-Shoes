@@ -172,8 +172,6 @@ public class ProductServiceImpl implements ProductService {
                 clientProductDetailRepository.updateRealTime(productDetail.getId()));
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-modal-add-admin",
                 adminSellGetProductRepository.realTimeProductModalAddAdmin(productDetail.getId()));
-//        messagingTemplate.convertAndSend("/topic/realtime-san-pham-in-bill-detail-my-profile",
-//                clientBillDetailRepository.realTimeProductInBillDetailMyProfile(productDetail.getId()));
     }
 
     @Override

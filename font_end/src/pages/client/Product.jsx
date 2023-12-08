@@ -505,6 +505,7 @@ export default function Product() {
       color: [],
       sole: [],
       category: [],
+      lstSize: [],
       minPrice: minMaxPrice.minPrice,
       maxPrice: minMaxPrice.maxPrice,
       nameProductDetail: null,
@@ -520,6 +521,7 @@ export default function Product() {
     setSelectColor([])
     setSelectMaterial([])
     setSelectSole([])
+    setSelectSize([])
   }
 
   return (

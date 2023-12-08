@@ -114,6 +114,30 @@ export default function DetailProduct() {
         }
       },
     )
+    stompClient.subscribe('/topic/realtime-san-pham-detail-by-admin-corfim-bill', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        updateRealTimeProductDetail(data)
+      }
+    })
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-by-roll-back-bill-status-comfirm',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          updateRealTimeProductDetail(data)
+        }
+      },
+    )
+    stompClient.subscribe(
+      '/topic/realtime-san-pham-detail-by-roll-back-bill-status-cancel',
+      (message) => {
+        if (message.body) {
+          const data = JSON.parse(message.body)
+          updateRealTimeProductDetail(data)
+        }
+      },
+    )
   }
 
   function updateRealTimeProductDetail(data) {

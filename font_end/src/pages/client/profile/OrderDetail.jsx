@@ -247,12 +247,6 @@ export default function OrderDetail() {
   }, [billDetail])
 
   const onConnect = () => {
-    // stompClient.subscribe('/topic/realtime-san-pham-in-bill-detail-my-profile', (message) => {
-    //   if (message.body) {
-    //     const data = JSON.parse(message.body)
-    //     updateRealTimeProductDetailInBillDetailMyProfile(data)
-    //   }
-    // })
     stompClient.subscribe('/topic/realtime-bill-detail-client-by-bill-comfirm', (message) => {
       if (message.body) {
         const data = JSON.parse(message.body)
