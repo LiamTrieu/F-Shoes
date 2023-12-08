@@ -462,6 +462,11 @@ public class AdminSellServiceImpl implements AdminSellService {
     }
 
     @Override
+    public Bill getOneBillByIdBill(String idBill) {
+        return billRepository.findById(idBill).orElse(null);
+    }
+
+    @Override
     public List<GetAllProductResponse> getAllProduct(FilterProductDetailRequest request) {
         return adminproductDetailRepository.getAllProduct(request);
     }

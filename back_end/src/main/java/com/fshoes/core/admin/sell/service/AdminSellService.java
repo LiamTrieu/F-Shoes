@@ -17,6 +17,8 @@ public interface AdminSellService {
 
     List<Bill> getAllBillTaoDonHang();
 
+    Bill getOneBillByIdBill(String idBill);
+
     List<GetAllProductResponse> getAllProduct(FilterProductDetailRequest request);
 
     List<GetAllProductResponse> getAllProductCart();

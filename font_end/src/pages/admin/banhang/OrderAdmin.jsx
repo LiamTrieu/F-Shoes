@@ -24,6 +24,17 @@ export default function OrderAdmin() {
   const [listBill, setlistBill] = useState([])
   const [selectBill, setSelectBill] = useState('')
   const [soLuong, setSoLuong] = useState([])
+  const [nameCustomer, setNameCustomer] = useState('')
+  const [detailDiaChi, setDetailDiaChi] = useState({
+    name: '',
+    phoneNumber: '',
+    email: '',
+    specificAddress: '',
+    provinceId: '',
+    districtId: '',
+    wardId: '',
+    type: 0,
+  })
 
   function setSL(data) {
     setSoLuong((prevSoLuong) => {
@@ -55,6 +66,17 @@ export default function OrderAdmin() {
   }
 
   const handleAddSellClick = async () => {
+    setNameCustomer('')
+    setDetailDiaChi({
+      name: '',
+      phoneNumber: '',
+      email: '',
+      specificAddress: '',
+      provinceId: '',
+      districtId: '',
+      wardId: '',
+      type: 0,
+    })
     if (listBill.length === 5) {
       toast.warning('Tối đa 5 hóa đơn', { position: toast.POSITION.TOP_CENTER })
       return
@@ -170,6 +192,10 @@ export default function OrderAdmin() {
           idBill={selectBill}
           getAllBillTaoDonHang={getAllBillTaoDonHang}
           setSelectBill={setSelectBill}
+          setNameCustomer={setNameCustomer}
+          nameCustomer={nameCustomer}
+          setDetailDiaChi={setDetailDiaChi}
+          detailDiaChi={detailDiaChi}
         />
       )}
     </Container>

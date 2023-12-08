@@ -15,7 +15,12 @@ const sellApi = {
   },
 
   getAllProductCart: () => {
-    const urlGetAll = `/sell/get-product-cart`
+    const urlGetAll = `/sell/get-one-bill`
+    return axiosAdmin.get(urlGetAll)
+  },
+
+  getBillById: (idBill) => {
+    const urlGetAll = `/sell/get-product-cart?idBill=${idBill}`
     return axiosAdmin.get(urlGetAll)
   },
 

@@ -111,6 +111,10 @@ public class SellController {
         return new ObjectRespone(getSell.getAllProductCart());
     }
 
+    @GetMapping("/get-one-bill")
+    public ObjectRespone getOneBillById(@RequestParam String idBill){
+        return new ObjectRespone(getSell.getOneBillByIdBill(idBill));
+    }
     @GetMapping("/getCustomer")
     public ObjectRespone getAllCustomer(AdCustomerRequest request) {
 
