@@ -63,15 +63,13 @@ export default function Home() {
     if (index !== -1) {
       preProduct[index] = {
         id: data.id,
-        title: data.name + ` "${data.nameColor}"`,
+        title: data.name,
         priceBefort: data.price,
         priceAfter: data.price,
         value: data.value,
         promotion: data.promotion,
         statusPromotion: data.statusPromotion,
         image: data.image.split(','),
-        nameCate: data.nameCate,
-        nameBrand: data.nameBrand,
         idProduct: data.idProduct,
         idColor: data.idColor,
         idMaterial: data.idMaterial,
@@ -85,15 +83,13 @@ export default function Home() {
     if (indexs !== -1) {
       preSellingProduct[indexs] = {
         id: data.id,
-        title: data.name + ` "${data.nameColor}"`,
+        title: data.name,
         priceBefort: data.price,
         priceAfter: data.price,
         value: data.value,
         promotion: data.promotion,
         statusPromotion: data.statusPromotion,
         image: data.image.split(','),
-        nameCate: data.nameCate,
-        nameBrand: data.nameBrand,
         idProduct: data.idProduct,
         idColor: data.idColor,
         idMaterial: data.idMaterial,
