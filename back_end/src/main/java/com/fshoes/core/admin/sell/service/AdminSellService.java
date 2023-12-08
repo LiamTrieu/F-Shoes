@@ -30,7 +30,7 @@ public interface AdminSellService {
 
     Boolean deleteBill(String id);
 
-    Bill addBill(AddBillRequest request, String id);
+    Boolean addBill(AddBillRequest request, String id);
 
     Bill PayOrder(AddBillRequest request, String id);
 

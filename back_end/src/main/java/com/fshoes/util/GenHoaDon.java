@@ -1,7 +1,9 @@
 package com.fshoes.util;
 
+import com.fshoes.entity.Account;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.BillHistory;
 import com.fshoes.infrastructure.constant.MailConstant;
 import com.fshoes.repository.ProductDetailRepository;
 import com.itextpdf.text.*;
@@ -22,7 +24,7 @@ public class GenHoaDon {
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
-    public File genHoaDon(Bill bill, List<BillDetail> billDetails) {
+    public File genHoaDon(Bill bill, List<BillDetail> billDetails, BillHistory billHistory, Account account) {
         Document document = new Document();
         File pdfFile = null;
 
@@ -92,7 +94,14 @@ public class GenHoaDon {
             PdfPTable invoiceTable = new PdfPTable(2);
             invoiceTable.setWidthPercentage(100);
 
-            PdfPCell cell3 = new PdfPCell(new Paragraph("Tên khách hàng: " + bill.getFullName(), normalFont));
+            String fullName;
+            if (bill.getFullName() != null && !bill.getFullName().isEmpty()) {
+                fullName = bill.getFullName();
+            } else {
+                fullName = "Khách lẻ";
+            }
+
+            PdfPCell cell3 = new PdfPCell(new Paragraph("Tên khách hàng: " + fullName, normalFont));
             cell3.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell3.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell3);
@@ -100,7 +109,8 @@ public class GenHoaDon {
             cell1.setHorizontalAlignment(Element.ALIGN_RIGHT);
             cell1.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell1);
-            PdfPCell cell4 = new PdfPCell(new Paragraph("Địa chỉ: " + bill.getAddress(), normalFont));
+            PdfPCell cell4 = new PdfPCell(new Paragraph("Địa chỉ nhận hàng: " +
+                                                        (bill.getReceivingMethod() == 0 ? "Tại cửa hàng" : bill.getAddress()), normalFont));
             cell4.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell4.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell4);
@@ -110,11 +120,14 @@ public class GenHoaDon {
             cell2.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell2);
 
-            PdfPCell cell5 = new PdfPCell(new Paragraph("Nhân viên: Nhân viên ABC", normalFont));
+            PdfPCell cell5 = new PdfPCell(new Paragraph("Nhân viên: " +
+                                                        account.getCode() + " - " +
+                                                        account.getFullName(), normalFont));
             cell5.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell5.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell5);
-            PdfPCell cell6 = new PdfPCell(new Paragraph("", normalFont));
+
+            PdfPCell cell6 = new PdfPCell(new Paragraph("Trạng thái: Hoàn thành", normalFont));
             cell6.setHorizontalAlignment(Element.ALIGN_RIGHT);
             cell6.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell6);

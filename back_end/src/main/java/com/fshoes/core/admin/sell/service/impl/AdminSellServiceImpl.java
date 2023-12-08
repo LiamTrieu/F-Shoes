@@ -145,62 +145,67 @@ public class AdminSellServiceImpl implements AdminSellService {
     }
 
     @Override
-    public Bill addBill(AddBillRequest request, String id) {
-        Bill bill = billRepository.findById(id).orElseThrow(() -> {
+    public Boolean addBill(AddBillRequest request, String id) {
+        try {
+            Bill bill = billRepository.findById(id).orElseThrow(() -> {
             throw new RestApiException(Message.API_ERROR);
         });
-        if (request.getIdVourcher() == null) {
-            bill.setVoucher(null);
-        } else {
-            Voucher voucher = voucherRepository.findById(request.getIdVourcher()).orElse(null);
-            assert voucher != null;
-            voucher.setQuantity(voucher.getQuantity() - 1);
-            voucherRepository.save(voucher);
-            bill.setVoucher(voucher);
-            AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), request.getIdCustomer());
-            if (adCustomerVoucherRespone != null) {
-                customerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+            if (request.getIdVourcher() == null) {
+                bill.setVoucher(null);
+            } else {
+                Voucher voucher = voucherRepository.findById(request.getIdVourcher()).orElse(null);
+                assert voucher != null;
+                voucher.setQuantity(voucher.getQuantity() - 1);
+                voucherRepository.save(voucher);
+                bill.setVoucher(voucher);
+                AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), request.getIdCustomer());
+                if (adCustomerVoucherRespone != null) {
+                    customerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+                }
             }
-        }
 
-        if (request.getIdCustomer() == null) {
-            bill.setCustomer(null);
-        } else {
-            Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
-            assert account != null;
-            bill.setCustomer(account);
+            if (request.getIdCustomer() == null) {
+                bill.setCustomer(null);
+            } else {
+                Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
+                assert account != null;
+                bill.setCustomer(account);
+            }
+            bill.setNote(request.getNote());
+            bill.setAddress(request.getAddress());
+            bill.setPhoneNumber(request.getPhoneNumber());
+            bill.setFullName(request.getFullName());
+            bill.setTotalMoney(request.getTotalMoney());
+            bill.setMoneyShip(request.getMoneyShip());
+            bill.setMoneyReduced(request.getMoneyReduce());
+            bill.setMoneyAfter(request.getMoneyAfter());
+            if (request.getType() == 0) {
+                bill.setStatus(7);
+            } else {
+                bill.setStatus(1);
+            }
+            bill.setReceivingMethod(request.getReceivingMethod());
+            if (request.getType() == 0) {
+                bill.setCompleteDate(Calendar.getInstance().getTimeInMillis());
+            } else {
+                bill.setCompleteDate(null);
+            }
+            bill.setPercentMoney(request.getPercentMoney());
+            billRepository.save(bill);
+            BillHistory billHistory = new BillHistory();
+            billHistory.setBill(bill);
+            if (request.getType() == 0) {
+                billHistory.setStatusBill(7);
+            } else {
+                billHistory.setStatusBill(1);
+            }
+            billHistoryRepository.save(billHistory);
+            messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        bill.setNote(request.getNote());
-        bill.setAddress(request.getAddress());
-        bill.setPhoneNumber(request.getPhoneNumber());
-        bill.setFullName(request.getFullName());
-        bill.setTotalMoney(request.getTotalMoney());
-        bill.setMoneyShip(request.getMoneyShip());
-        bill.setMoneyReduced(request.getMoneyReduce());
-        bill.setMoneyAfter(request.getMoneyAfter());
-        if (request.getType() == 0) {
-            bill.setStatus(7);
-        } else {
-            bill.setStatus(1);
-        }
-        bill.setReceivingMethod(request.getReceivingMethod());
-        if (request.getType() == 0) {
-            bill.setCompleteDate(Calendar.getInstance().getTimeInMillis());
-        } else {
-            bill.setCompleteDate(null);
-        }
-        bill.setPercentMoney(request.getPercentMoney());
-        billRepository.save(bill);
-        BillHistory billHistory = new BillHistory();
-        billHistory.setBill(bill);
-        if (request.getType() == 0) {
-            billHistory.setStatusBill(7);
-        } else {
-            billHistory.setStatusBill(1);
-        }
-        billHistoryRepository.save(billHistory);
-        messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
-        return bill;
     }
 
     @Override

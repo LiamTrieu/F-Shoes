@@ -53,6 +53,7 @@ import { IoReturnUpBack } from 'react-icons/io5'
 import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
 import { GetUserAdmin } from '../../../services/slices/userAdminSlice'
+import printJS from 'print-js'
 
 const listHis = [{ link: '/admin/bill', name: 'Quản lý đơn hàng' }]
 
@@ -1307,14 +1308,26 @@ export default function AdBillDetail() {
   // }
 
   const confirmPrintBill = async (idBill) => {
-    try {
-      await confirmSatus('Xác nhận in hoá đơn', 'Bạn có chắc chắn muốn in hoá đơn này?')
+    const comfirm = await confirmSatus(
+      'Xác nhận in hoá đơn',
+      'Bạn có chắc chắn muốn in hoá đơn này?',
+    )
+    if (comfirm.isConfirmed) {
+      try {
+        const response = await axios.get(url + '/in-hoa-don/' + idBill, { responseType: 'blob' })
+        const pdfContent = await new Response(response.data).blob()
 
-      const response = await axios.get(url + '/in-hoa-don/' + idBill, { responseType: 'blob' })
-      const pdfContent = await new Response(response.data).blob()
-      handleOpenModal(pdfContent)
-    } catch (error) {
-      console.error('Error fetching PDF:', error)
+        // Tạo URL từ Blob
+        const pdfUrl = URL.createObjectURL(pdfContent)
+
+        // In PDF khi lấy được nội dung
+        printJS({ printable: pdfUrl, type: 'pdf', header: 'Header for the PDF' })
+
+        // Đảm bảo giải phóng tài nguyên khi không cần thiết
+        URL.revokeObjectURL(pdfUrl)
+      } catch (error) {
+        console.error('Error fetching or printing PDF:', error)
+      }
     }
   }
 

@@ -15,8 +15,11 @@ import com.fshoes.core.client.repository.ClientBillRepository;
 import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
+import com.fshoes.infrastructure.constant.Message;
 import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.infrastructure.constant.TypeBill;
+import com.fshoes.infrastructure.exception.RestApiException;
+import com.fshoes.repository.AccountRepository;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.TransactionRepository;
 import com.fshoes.util.DateUtil;
@@ -61,6 +64,9 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Autowired
     private GenHoaDon genHoaDon;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
 
     @Autowired
@@ -379,8 +385,12 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public File xuatHoaDon(String idBill) {
         Bill bill = hdBillRepository.findById(idBill).get();
+        BillHistory billHistory = hdBillHistoryRepository.findDistinctFirstByBillOrderByCreatedAtDesc(bill).orElseThrow(
+                () -> new RestApiException(Message.API_ERROR));
+        Account account = accountRepository.findByEmail(billHistory.getCreatedBy()).orElseThrow(
+                () -> new RestApiException(Message.API_ERROR));
         List<BillDetail> lstBillDetail = hdBillDetailRepository.getBillDetailByBillId(idBill);
-        return genHoaDon.genHoaDon(bill, lstBillDetail);
+        return genHoaDon.genHoaDon(bill, lstBillDetail, billHistory, account);
     }
 
     @Override

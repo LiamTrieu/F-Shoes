@@ -19,7 +19,8 @@ import {
 import React, { useEffect, useState } from 'react'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
-
+import { RiEditFill } from 'react-icons/ri'
+import { MdOutlineRestoreFromTrash } from 'react-icons/md'
 import './index.css'
 import sanPhamApi from '../../../api/admin/sanpham/sanPhamApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
@@ -40,11 +41,14 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import { FaRegStar, FaStar } from 'react-icons/fa'
+import { MdOutlineRestore } from 'react-icons/md'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 
 export default function AdProductAdd() {
   const [products, setProducts] = useState([])
+  const [productsCheck, setProductsCheck] = useState([])
   const [categorys, setCategorys] = useState([])
   const [brands, setBrands] = useState([])
   const [soles, setSoles] = useState([])
@@ -52,6 +56,7 @@ export default function AdProductAdd() {
   const [colors, setColors] = useState([])
   const [sizes, setSizes] = useState([])
   const [modalOpen, setModalOpen] = useState(null)
+  const [modalOpenKhoiPhuc, setModalOpenKhoiPhuc] = useState(null)
 
   const [newProducts, setNewProducts] = useState({
     product: { label: '', value: '' },
@@ -222,26 +227,36 @@ export default function AdProductAdd() {
     }
   }
 
+  const [productDelete, setProductDelete] = useState([])
   function deleteNewProduct(productDetail) {
     const preNewProductDetails = [...newProductDetails]
     preNewProductDetails.splice(preNewProductDetails.indexOf(productDetail), 1)
     setNewProductDetails(preNewProductDetails)
+
+    const preProductChecks = [...productsCheck]
+    preProductChecks.splice(preProductChecks.indexOf(productDetail), 1)
+    setProductsCheck(preProductChecks)
+
+    setProductDelete([...productDelete, productDetail])
   }
 
   const closeModal = () => {
     setModalOpen(null)
   }
+  const closeModalKhoiPhuc = () => {
+    setModalOpenKhoiPhuc(null)
+  }
 
   const ContentModal = ({ images, color }) => {
     const [imageSelect, setImageSelect] = useState(
-      newProductDetails.find((productDetail) => productDetail.color.value === color).images,
+      newProductDetails.find((productDetail) => productDetail.color.value === color.value).images,
     )
 
     const handleCheckboxChange = (event, index) => {
       const selectedImage = images[index]
       const preImageSelect = [...imageSelect]
 
-      if (event.target.checked) {
+      if (event) {
         if (preImageSelect.length === 3) {
           toast.warning('Chỉ chọn tối đa 3 ảnh')
         } else {
@@ -255,10 +270,27 @@ export default function AdProductAdd() {
         }
         setImageSelect([...preImageSelect])
       }
-
       setNewProductDetails((prevDetails) =>
         prevDetails.map((productDetail) => {
-          if (productDetail.color.value === color) {
+          if (productDetail.color.value === color.value) {
+            return { ...productDetail, images: preImageSelect }
+          } else {
+            return productDetail
+          }
+        }),
+      )
+    }
+    const deleteCheckboxChange = (image) => {
+      const preImageSelect = [...imageSelect]
+      const index = preImageSelect.findIndex((img) => img === image)
+      console.log(image)
+      if (index !== -1) {
+        preImageSelect.splice(index, 1)
+      }
+      setImageSelect([...preImageSelect])
+      setNewProductDetails((prevDetails) =>
+        prevDetails.map((productDetail) => {
+          if (productDetail.color.value === color.value) {
             return { ...productDetail, images: preImageSelect }
           } else {
             return productDetail
@@ -268,57 +300,244 @@ export default function AdProductAdd() {
     }
 
     return (
-      <div style={{ marginTop: '10px', textAlign: 'center' }}>
-        {loadImage ? (
-          <Grid container spacing={1}>
-            <Grid item xs={3}>
-              <Skeleton variant="rounded" width={'100%'} height={130} />
+      <>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <b>Danh sách ảnh đã chọn</b>
+        </Stack>
+        <div style={{ marginTop: '10px', textAlign: 'center' }}>
+          {images?.filter((i) => imageSelect?.includes(i))?.length > 0 ? (
+            <Grid
+              className="hidden-scroll-bar mt-1"
+              container
+              spacing={1}
+              style={{ maxHeight: '400px', overflow: 'auto' }}>
+              {images
+                .filter((i) => imageSelect?.includes(i))
+                .map((image, index) => (
+                  <Grid item xs={2} key={`selectImage22${index}`} style={{ position: 'relative' }}>
+                    <RiDeleteBin2Line
+                      onClick={() => deleteCheckboxChange(image)}
+                      fontSize={'20px'}
+                      style={{
+                        position: 'absolute',
+                        top: 15,
+                        right: 5,
+                        color: 'red',
+                        cursor: 'pointer',
+                      }}
+                    />
+                    <FaRegStar
+                      onClick={() => deleteCheckboxChange(image)}
+                      fontSize={'20px'}
+                      style={{
+                        position: 'absolute',
+                        top: 15,
+                        left: 13,
+                        color: 'yellow',
+                        cursor: 'pointer',
+                      }}
+                    />
+                    <img
+                      style={{ borderRadius: '5px' }}
+                      height={'130px'}
+                      width={'100%'}
+                      src={image}
+                      alt={`anh-${index}`}
+                    />
+                  </Grid>
+                ))}
             </Grid>
-            <Grid item xs={3}>
-              <Skeleton variant="rounded" width={'100%'} height={130} />
-            </Grid>
-            <Grid item xs={3}>
-              <Skeleton variant="rounded" width={'100%'} height={130} />
-            </Grid>
-            <Grid item xs={3}>
-              <Skeleton variant="rounded" width={'100%'} height={130} />
-            </Grid>
-          </Grid>
-        ) : images?.length > 0 ? (
-          <Grid
-            className="hidden-scroll-bar mt-1"
-            container
-            spacing={1}
-            style={{ maxHeight: '290px', overflow: 'auto' }}>
-            {images.map((image, index) => (
-              <Grid item xs={3} key={`selectImage${index}`} style={{ position: 'relative' }}>
-                <Checkbox
-                  checked={imageSelect?.includes(image)}
-                  onChange={(event) => handleCheckboxChange(event, index)}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    color: '#FC7C27',
-                    '&.MuiChecked': {
-                      color: '#FC7C27',
-                    },
-                  }}
-                />
-                <img
-                  style={{ border: '1px dashed #FC7C27', borderRadius: '5px' }}
-                  height={'90px'}
-                  width={'100%'}
-                  src={image}
-                  alt={`anh-${index}`}
-                />
+          ) : (
+            <img
+              height={'130px'}
+              src={require('../../../assets/image/no-data.png')}
+              alt="no-data"
+            />
+          )}
+        </div>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <b>Danh sách ảnh màu {color.label}</b>
+          <Button
+            onClick={() => {
+              document.getElementById('them-anh').click()
+            }}
+            color="cam"
+            variant="outlined"
+            size="small">
+            <RiImageAddFill fontSize={'16px'} />
+            Thêm ảnh
+          </Button>
+          <input
+            onChange={(event) => uploadImage(event, color.value)}
+            accept="image/*"
+            hidden
+            multiple
+            type="file"
+            id="them-anh"
+          />
+        </Stack>
+        <div style={{ marginTop: '10px', textAlign: 'center' }}>
+          {loadImage ? (
+            <Grid container spacing={1}>
+              <Grid item xs={2}>
+                <Skeleton variant="rounded" width={'100%'} height={130} />
               </Grid>
-            ))}
-          </Grid>
+              <Grid item xs={2}>
+                <Skeleton variant="rounded" width={'100%'} height={130} />
+              </Grid>
+              <Grid item xs={2}>
+                <Skeleton variant="rounded" width={'100%'} height={130} />
+              </Grid>
+              <Grid item xs={2}>
+                <Skeleton variant="rounded" width={'100%'} height={130} />
+              </Grid>
+              <Grid item xs={2}>
+                <Skeleton variant="rounded" width={'100%'} height={130} />
+              </Grid>
+              <Grid item xs={2}>
+                <Skeleton variant="rounded" width={'100%'} height={130} />
+              </Grid>
+            </Grid>
+          ) : images?.length > 0 ? (
+            <Grid
+              className="hidden-scroll-bar mt-1"
+              container
+              spacing={1}
+              style={{ maxHeight: '400px', overflow: 'auto' }}>
+              {images.map((image, index) => (
+                <Grid
+                  onClick={() => handleCheckboxChange(!imageSelect?.includes(image), index)}
+                  item
+                  xs={2}
+                  key={`selectImage${index}`}
+                  style={{ position: 'relative', cursor: 'pointer' }}>
+                  <Checkbox
+                    checked={imageSelect?.includes(image)}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      color: '#FC7C27',
+                      '&.MuiChecked': {
+                        color: '#FC7C27',
+                      },
+                    }}
+                  />
+                  <img
+                    style={{ border: '1px dashed #FC7C27', borderRadius: '5px' }}
+                    height={'130px'}
+                    width={'100%'}
+                    src={image}
+                    alt={`anh-${index}`}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <img
+              height={'200px'}
+              src={require('../../../assets/image/no-data.png')}
+              alt="no-data"
+            />
+          )}
+        </div>
+      </>
+    )
+  }
+
+  const ContentModalKhoiPhuc = ({ color }) => {
+    return (
+      <>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <b>Danh sách sản phẩm màu {color.label} đã xóa</b>
+        </Stack>
+        {productDelete.filter((productDetail) => productDetail.color.value === color.value).length >
+        0 ? (
+          <Table sx={{ mt: 1, mb: 1 }} className="tableCss">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center" width={'20%'}>
+                  Sản phẩm
+                </TableCell>
+                <TableCell align="center" width={'10%'}>
+                  Kích cỡ
+                </TableCell>
+                <TableCell align="center" width={'10%'}>
+                  Cân nặng
+                </TableCell>
+                <TableCell align="center" width={'10%'}>
+                  Số lượng
+                </TableCell>
+                <TableCell align="center" width={'10%'}>
+                  Giá
+                </TableCell>
+                <TableCell align="center" width={'4%'}>
+                  <MdOutlineRestore
+                    onClick={() => {
+                      const preNewProductDetails = [...newProductDetails]
+                      const arrDelete = productDelete.filter(
+                        (productDetail) => productDetail.color.value === color.value,
+                      )
+                      arrDelete.forEach((productDetail) => {
+                        preNewProductDetails.push(productDetail)
+                      })
+                      setNewProductDetails(preNewProductDetails)
+                      setProductDelete([
+                        ...productDelete.filter((pd) => !preNewProductDetails.includes(pd)),
+                      ])
+                    }}
+                    style={{ cursor: 'pointer' }}
+                    fontSize={'20px'}
+                    color="green"
+                  />
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {productDelete
+                .filter((productDetail) => productDetail.color.value === color.value)
+                .map((productDetail) => {
+                  return (
+                    <>
+                      <TableRow key={productDetail.key} style={{ backgroundColor: 'white' }}>
+                        <TableCell align="center" sx={{ maxWidth: '0px' }}>
+                          {newProducts.product.label}
+                        </TableCell>
+                        <TableCell align="center">{productDetail.size.label}</TableCell>
+                        <TableCell align="center">{productDetail.weight}g</TableCell>
+                        <TableCell align="center">{productDetail.amount}</TableCell>
+                        <TableCell align="center">{formatCurrency(productDetail.price)}</TableCell>
+                        <TableCell align="center">
+                          <MdOutlineRestore
+                            onClick={() => {
+                              const preNewProductDetails = [...newProductDetails]
+                              preNewProductDetails.push(productDetail)
+                              setNewProductDetails(preNewProductDetails)
+                              setProductDelete([
+                                ...productDelete.filter((pd) => pd !== productDetail),
+                              ])
+                            }}
+                            style={{ cursor: 'pointer' }}
+                            fontSize={'20px'}
+                            color="green"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  )
+                })}
+            </TableBody>
+          </Table>
         ) : (
-          <img height={'90px'} src={require('../../../assets/image/no-data.png')} alt="no-data" />
+          <div style={{ width: '100%', textAlign: 'center' }}>
+            <img
+              height={'200px'}
+              src={require('../../../assets/image/no-data.png')}
+              alt="no-data"
+            />
+          </div>
         )}
-      </div>
+      </>
     )
   }
 
@@ -705,6 +924,8 @@ export default function AdProductAdd() {
     }
     setSelectColor(newSelectedIds)
     genNewProductDetail({ ...newProducts, color: newSelectedIds })
+    setProductDelete([...productDelete.filter((product) => product.color.value !== value)])
+    setProductsCheck([...productsCheck.filter((product) => product.color.value !== value)])
   }
 
   const [selectSize, setSelectSize] = useState([])
@@ -722,6 +943,8 @@ export default function AdProductAdd() {
     }
     setSelectSize(newSelectedIds)
     genNewProductDetail({ ...newProducts, size: newSelectedIds })
+    setProductDelete([...productDelete.filter((product) => product.size.value !== value)])
+    setProductsCheck([...productsCheck.filter((product) => product.size.value !== value)])
   }
 
   return (
@@ -1227,121 +1450,7 @@ export default function AdProductAdd() {
               )}
             </Grid>
           </div>
-          {/* <Autocomplete
-              noOptionsText={
-                <Button size="small" fullWidth color="cam" onClick={() => setOpenModalColor(true)}>
-                  <PlaylistAddIcon />
-                  Thêm mới
-                </Button>
-              }
-              multiple
-              size="small"
-              value={newProducts.color}
-              isOptionEqualToValue={(option, value) => option.value === value.value}
-              fullWidth
-              onChange={(_, e) => {
-                genNewProductDetail({ ...newProducts, color: e })
-              }}
-              className="search-field"
-              id="combo-box-color"
-              options={colors.map((color) => {
-                return { label: color.name, value: color.id, code: color.code }
-              })}
-              renderOption={(props, option) => (
-                <li key={`color${option.value}`} {...props}>
-                  <div
-                    style={{
-                      borderRadius: '50%',
-                      width: '15px',
-                      height: '15px',
-                      backgroundColor: option.code,
-                      marginRight: '5px',
-                    }}
-                  />
-                  {option.label}
-                </li>
-              )}
-              renderInput={(params) => (
-                <TextField
-                  color="cam"
-                  onChange={(e) => setNewColor({ ...newColor, name: e.target.value })}
-                  {...params}
-                  placeholder={newProducts.color.length > 0 ? '' : 'Chọn màu sắc'}
-                />
-              )}
-            />
-            {openModalColor && (
-              <DialogAddUpdate
-                open={openModalColor}
-                setOpen={setOpenModalColor}
-                title={'Chọn màu sắc'}
-                buttonSubmit={
-                  <Button
-                    onClick={() => {
-                      handleAddColor(newColor)
-                    }}
-                    color="primary"
-                    disableElevation
-                    sx={{ ...spButton }}
-                    variant="contained">
-                    Thêm
-                  </Button>
-                }>
-                <TextField
-                  type="color"
-                  id={'nameInputAdd'}
-                  onBlur={(e) => {
-                    setNewColor({ ...newColor, code: e.target.value })
-                  }}
-                  defaultValue={newColor.code}
-                  fullWidth
-                  inputProps={{
-                    required: true,
-                  }}
-                  size="small"
-                />
-              </DialogAddUpdate>
-            )} */}
-
-          <Stack className="mt-3 mb-3" spacing={1}>
-            {/* <div style={{ width: '100%' }}>
-              <b>
-                <span style={{ color: 'red' }}>*</span>Kích cỡ
-              </b>
-              <Autocomplete
-                noOptionsText={
-                  <Button size="small" fullWidth color="cam" onClick={() => handleAddSize(newSize)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
-                multiple
-                size="small"
-                fullWidth
-                value={newProducts.size}
-                isOptionEqualToValue={(option, value) => option.value === value.value}
-                onChange={(_, e) => {
-                  genNewProductDetail({ ...newProducts, size: e })
-                }}
-                className="search-field"
-                id="combo-box-size"
-                options={sizes.map((size) => {
-                  return { label: size.size.toString(), value: size.id }
-                })}
-                renderInput={(params) => (
-                  <TextField
-                    id="newSize"
-                    onChange={(e) => {
-                      setNewSize({ size: e.target.value })
-                    }}
-                    color="cam"
-                    {...params}
-                    placeholder={newProducts.size.length > 0 ? '' : 'Chọn kích cỡ'}
-                  />
-                )}
-              />
-            </div> */}
-          </Stack>
+          <Stack className="mt-3 mb-3" spacing={1}></Stack>
         </Container>
       </Paper>
       {newProductIsUndefined(newProducts) &&
@@ -1357,223 +1466,326 @@ export default function AdProductAdd() {
                     color={'GrayText'}>
                     Danh sách sản phẩm màu {color.label}
                   </Typography>
+                  <div>
+                    <Button size="small" color="cam" variant="contained">
+                      <RiEditFill />
+                      Chỉnh sửa
+                    </Button>
+                    &nbsp; &nbsp;
+                    <Button
+                      onClick={() => {
+                        setModalOpenKhoiPhuc(`papaerNewProduct${colorIndex}`)
+                      }}
+                      size="small"
+                      color="cam"
+                      variant="outlined">
+                      <MdOutlineRestoreFromTrash />
+                      Khôi phục
+                    </Button>
+                  </div>
                 </Stack>
-                <Table sx={{ mt: 1, mb: 1 }} className="tableCss">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center" width={'4%'}>
-                        #
-                      </TableCell>
-                      <TableCell align="center" width={'20%'}>
-                        Sản phẩm
-                      </TableCell>
-                      <TableCell align="center" width={'10%'}>
-                        Kích cỡ
-                      </TableCell>
-                      <TableCell align="center" width={'10%'}>
-                        Cân nặng
-                      </TableCell>
-                      <TableCell align="center" width={'10%'}>
-                        Số lượng
-                      </TableCell>
-                      <TableCell align="center" width={'10%'}>
-                        Giá
-                      </TableCell>
-                      <TableCell align="center" width={'40%'}>
-                        Ảnh
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {newProductDetails
-                      .filter((productDetail) => productDetail.color.value === color.value)
-                      .map((productDetail, index) => {
-                        return (
-                          <>
-                            <TableRow key={productDetail.key} style={{ backgroundColor: 'white' }}>
-                              <TableCell align="center">
-                                <RiDeleteBin2Line
-                                  onClick={() => {
-                                    removeErrorByKey(productDetail.key)
-                                    deleteNewProduct(productDetail)
-                                  }}
-                                  style={{ cursor: 'pointer' }}
-                                  fontSize={'20px'}
-                                  color="#da0722"
-                                />
-                              </TableCell>
-                              <TableCell align="center" sx={{ maxWidth: '0px' }}>
-                                {newProducts.product.label}
-                              </TableCell>
-                              <TableCell align="center">{productDetail.size.label}</TableCell>
-                              <TableCell align="center">
-                                <TextField
-                                  value={productDetail.weight}
-                                  onChange={(e) => {
-                                    updateNewProductDetail({
-                                      ...productDetail,
-                                      weight: e.target.value,
-                                    })
-                                  }}
-                                  InputProps={{
-                                    style: { paddingRight: '4px' },
-                                    endAdornment: 'g',
-                                  }}
-                                  inputProps={{ min: 1 }}
-                                  size="small"
-                                  sx={{
-                                    '& input': {
-                                      p: 0,
-                                      textAlign: 'center',
-                                      fontSize: '14px',
-                                    },
-                                    '& fieldset': {
-                                      fontSize: '14px',
-                                    },
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell align="center">
-                                <TextField
-                                  value={productDetail.amount}
-                                  onChange={(e) => {
-                                    updateNewProductDetail({
-                                      ...productDetail,
-                                      amount: e.target.value.replace(/\D/g, ''),
-                                    })
-                                  }}
-                                  inputProps={{ min: 1 }}
-                                  size="small"
-                                  sx={{
-                                    '& input': {
-                                      p: 0,
-                                      textAlign: 'center',
-                                      fontSize: '14px',
-                                    },
-                                    '& fieldset': {
-                                      fontSize: '14px',
-                                    },
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell align="center">
-                                <TextField
-                                  value={formatCurrency(productDetail.price)}
-                                  inputProps={{ min: 1 }}
-                                  size="small"
-                                  onChange={(e) => {
-                                    updateNewProductDetail({
-                                      ...productDetail,
-                                      price: e.target.value.replace(/\D/g, ''),
-                                    })
-                                  }}
-                                  sx={{
-                                    '& input': {
-                                      p: 0,
-                                      textAlign: 'center',
-                                      fontSize: '14px',
-                                    },
-                                    '& fieldset': {
-                                      fontSize: '14px',
-                                    },
-                                  }}
-                                />
-                              </TableCell>
-                              {index === 0 && (
-                                <TableCell align="center" rowSpan={newProductDetails.length * 2}>
-                                  <Stack
-                                    direction="row"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                    spacing={1}>
-                                    {newProductDetails
-                                      .find(
-                                        (productDetail) =>
-                                          productDetail.color.value === color.value,
-                                      )
-                                      .images.map((image, index) => {
-                                        return (
-                                          <img
-                                            key={`showImage${colorIndex}`}
-                                            width={'100px'}
-                                            height={'100px'}
-                                            style={{
-                                              border: '1px dashed #ccc',
-                                            }}
-                                            src={image}
-                                            alt="anh-san-pham"
-                                          />
+                {newProductDetails.filter(
+                  (productDetail) => productDetail.color.value === color.value,
+                ).length > 0 ? (
+                  <Table sx={{ mt: 1, mb: 1 }} className="tableCss">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center" width={'1%'}>
+                          <Checkbox
+                            color="cam"
+                            checked={
+                              newProductDetails.filter(
+                                (productDetail) => productDetail.color.value === color.value,
+                              ).length ===
+                              productsCheck.filter(
+                                (productDetail) => productDetail.color.value === color.value,
+                              ).length
+                            }
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setProductsCheck([
+                                  ...productsCheck.filter(
+                                    (pd) =>
+                                      !newProductDetails
+                                        .filter(
+                                          (productDetail) =>
+                                            productDetail.color.value === color.value,
                                         )
-                                      })}
-                                    <Tooltip title="Chỉnh sửa ảnh">
-                                      <div
-                                        onClick={() => {
-                                          openSelectImage(color.value)
-                                          setModalOpen(`papaerNewProduct${colorIndex}`)
-                                        }}
-                                        style={{
-                                          cursor: 'pointer',
-                                          border: '1px dashed #ccc',
-                                          width: '100px',
-                                          height: '100px',
-                                          textAlign: 'center',
-                                          lineHeight: '100px',
-                                        }}>
-                                        <MdImageSearch
-                                          fontSize={'20px'}
-                                          style={{ marginBottom: '-3px', marginRight: '5px' }}
-                                        />
-                                        Ảnh
-                                      </div>
-                                    </Tooltip>
-                                  </Stack>
+                                        .includes(pd),
+                                  ),
+                                  ...newProductDetails.filter(
+                                    (productDetail) => productDetail.color.value === color.value,
+                                  ),
+                                ])
+                              } else {
+                                setProductsCheck([
+                                  ...productsCheck.filter(
+                                    (pd) =>
+                                      !newProductDetails
+                                        .filter(
+                                          (productDetail) =>
+                                            productDetail.color.value === color.value,
+                                        )
+                                        .includes(pd),
+                                  ),
+                                ])
+                              }
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell align="center" width={'20%'}>
+                          Sản phẩm
+                        </TableCell>
+                        <TableCell align="center" width={'10%'}>
+                          Kích cỡ
+                        </TableCell>
+                        <TableCell align="center" width={'10%'}>
+                          Cân nặng
+                        </TableCell>
+                        <TableCell align="center" width={'10%'}>
+                          Số lượng
+                        </TableCell>
+                        <TableCell align="center" width={'10%'}>
+                          Giá
+                        </TableCell>
+                        <TableCell align="center" width={'4%'}>
+                          <RiDeleteBin2Line
+                            onClick={() => {
+                              const preDelete = newProductDetails.filter(
+                                (productDetail) => productDetail.color.value === color.value,
+                              )
+                              setListErr((prevErrors) =>
+                                prevErrors.filter(
+                                  (error) => !preDelete.map((del) => del.key).includes(error.key),
+                                ),
+                              )
+                              setNewProductDetails([
+                                ...newProductDetails.filter(
+                                  (pd) => !preDelete.map((del) => del.key).includes(pd.key),
+                                ),
+                              ])
+                              setProductsCheck([
+                                ...productsCheck.filter(
+                                  (pd) => !preDelete.map((del) => del.key).includes(pd.key),
+                                ),
+                              ])
+
+                              setProductDelete([...productDelete, ...preDelete])
+                            }}
+                            style={{ cursor: 'pointer' }}
+                            fontSize={'20px'}
+                            color="#da0722"
+                          />
+                        </TableCell>
+                        <TableCell align="center" width={'40%'}>
+                          Ảnh
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {newProductDetails
+                        .filter((productDetail) => productDetail.color.value === color.value)
+                        .map((productDetail, index) => {
+                          return (
+                            <>
+                              <TableRow
+                                key={productDetail.key}
+                                style={{ backgroundColor: 'white' }}>
+                                <TableCell align="center">
+                                  <Checkbox
+                                    color="cam"
+                                    checked={productsCheck.includes(productDetail)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setProductsCheck([...productsCheck, productDetail])
+                                      } else {
+                                        setProductsCheck([
+                                          ...productsCheck.filter(
+                                            (pd) => pd.key !== productDetail.key,
+                                          ),
+                                        ])
+                                      }
+                                    }}
+                                  />
                                 </TableCell>
-                              )}
-                            </TableRow>
-                            {listErr.find((err) => err.key === productDetail.key) && (
-                              <TableRow style={{ backgroundColor: 'white' }}>
-                                <TableCell colSpan={7}>
-                                  <span style={{ color: 'red' }}>
-                                    {listErr.find((err) => err.key === productDetail.key).message}
-                                  </span>
+                                <TableCell align="center" sx={{ maxWidth: '0px' }}>
+                                  {newProducts.product.label}
                                 </TableCell>
+                                <TableCell align="center">{productDetail.size.label}</TableCell>
+                                <TableCell align="center">
+                                  <TextField
+                                    value={productDetail.weight}
+                                    onChange={(e) => {
+                                      updateNewProductDetail({
+                                        ...productDetail,
+                                        weight: e.target.value,
+                                      })
+                                    }}
+                                    InputProps={{
+                                      style: { paddingRight: '4px' },
+                                      endAdornment: 'g',
+                                    }}
+                                    inputProps={{ min: 1 }}
+                                    size="small"
+                                    sx={{
+                                      '& input': {
+                                        p: 0,
+                                        textAlign: 'center',
+                                        fontSize: '14px',
+                                      },
+                                      '& fieldset': {
+                                        fontSize: '14px',
+                                      },
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell align="center">
+                                  <TextField
+                                    value={productDetail.amount}
+                                    onChange={(e) => {
+                                      updateNewProductDetail({
+                                        ...productDetail,
+                                        amount: e.target.value.replace(/\D/g, ''),
+                                      })
+                                    }}
+                                    inputProps={{ min: 1 }}
+                                    size="small"
+                                    sx={{
+                                      '& input': {
+                                        p: 0,
+                                        textAlign: 'center',
+                                        fontSize: '14px',
+                                      },
+                                      '& fieldset': {
+                                        fontSize: '14px',
+                                      },
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell align="center">
+                                  <TextField
+                                    value={formatCurrency(productDetail.price)}
+                                    inputProps={{ min: 1 }}
+                                    size="small"
+                                    onChange={(e) => {
+                                      updateNewProductDetail({
+                                        ...productDetail,
+                                        price: e.target.value.replace(/\D/g, ''),
+                                      })
+                                    }}
+                                    sx={{
+                                      '& input': {
+                                        p: 0,
+                                        textAlign: 'center',
+                                        fontSize: '14px',
+                                      },
+                                      '& fieldset': {
+                                        fontSize: '14px',
+                                      },
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell align="center">
+                                  <RiDeleteBin2Line
+                                    onClick={() => {
+                                      removeErrorByKey(productDetail.key)
+                                      deleteNewProduct(productDetail)
+                                    }}
+                                    style={{ cursor: 'pointer' }}
+                                    fontSize={'20px'}
+                                    color="#da0722"
+                                  />
+                                </TableCell>
+                                {index === 0 && (
+                                  <TableCell align="center" rowSpan={newProductDetails.length * 2}>
+                                    <Stack
+                                      direction="row"
+                                      justifyContent="center"
+                                      alignItems="center"
+                                      spacing={1}>
+                                      {newProductDetails
+                                        .find(
+                                          (productDetail) =>
+                                            productDetail.color.value === color.value,
+                                        )
+                                        .images.map((image, index) => {
+                                          return (
+                                            <img
+                                              key={`showImage${colorIndex}`}
+                                              width={'100px'}
+                                              height={'100px'}
+                                              style={{
+                                                border: '1px dashed #ccc',
+                                              }}
+                                              src={image}
+                                              alt="anh-san-pham"
+                                            />
+                                          )
+                                        })}
+                                      <Tooltip title="Chỉnh sửa ảnh">
+                                        <div
+                                          onClick={() => {
+                                            openSelectImage(color.value)
+                                            setModalOpen(`papaerNewProduct${colorIndex}`)
+                                          }}
+                                          style={{
+                                            cursor: 'pointer',
+                                            border: '1px dashed #ccc',
+                                            width: '100px',
+                                            height: '100px',
+                                            textAlign: 'center',
+                                            lineHeight: '100px',
+                                          }}>
+                                          <MdImageSearch
+                                            fontSize={'20px'}
+                                            style={{ marginBottom: '-3px', marginRight: '5px' }}
+                                          />
+                                          Ảnh
+                                        </div>
+                                      </Tooltip>
+                                    </Stack>
+                                  </TableCell>
+                                )}
                               </TableRow>
-                            )}
-                          </>
-                        )
-                      })}
-                  </TableBody>
-                </Table>
+                              {listErr.find((err) => err.key === productDetail.key) && (
+                                <TableRow style={{ backgroundColor: 'white' }}>
+                                  <TableCell colSpan={7}>
+                                    <span style={{ color: 'red' }}>
+                                      {listErr.find((err) => err.key === productDetail.key).message}
+                                    </span>
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </>
+                          )
+                        })}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div style={{ width: '100%', textAlign: 'center' }}>
+                    <img
+                      height={'200px'}
+                      src={require('../../../assets/image/no-data.png')}
+                      alt="no-data"
+                    />
+                  </div>
+                )}
               </Container>
 
               <DialogAddUpdate
+                width={'md'}
                 open={modalOpen === `papaerNewProduct${colorIndex}`}
                 setOpen={closeModal}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <b>Danh sách ảnh màu {color.label}</b>
-                  <Button
-                    onClick={() => {
-                      document.getElementById('them-anh').click()
-                    }}
-                    color="cam"
-                    variant="outlined"
-                    size="small">
-                    <RiImageAddFill fontSize={'16px'} />
-                    Thêm ảnh
-                  </Button>
-                  <input
-                    onChange={(event) => uploadImage(event, color.value)}
-                    accept="image/*"
-                    hidden
-                    multiple
-                    type="file"
-                    id="them-anh"
-                  />
-                </Stack>
                 <ContentModal
-                  color={color.value}
+                  color={color}
                   images={images.find((image) => image.idColor === color.value)?.data}
                 />
+              </DialogAddUpdate>
+              <DialogAddUpdate
+                width={'md'}
+                open={modalOpenKhoiPhuc === `papaerNewProduct${colorIndex}`}
+                setOpen={closeModalKhoiPhuc}>
+                <ContentModalKhoiPhuc color={color} />
               </DialogAddUpdate>
             </Paper>
           )

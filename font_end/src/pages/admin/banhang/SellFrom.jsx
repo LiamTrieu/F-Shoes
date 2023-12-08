@@ -61,6 +61,9 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import QrCodeIcon from '@mui/icons-material/QrCode'
 import Scanner from '../../../layout/Scanner'
+import axios from 'axios'
+import { url } from '../../../services/url'
+import printJS from 'print-js'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -1239,16 +1242,36 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
         sellApi.addBill(data, id).then((response) => {
-          toast.success(' xác nhận thành công', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          getAllBillTaoDonHang()
-          setSelectBill('')
+          if (response.data.success) {
+            toast.success(' xác nhận thành công', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            printBill(id)
+            getAllBillTaoDonHang()
+            setSelectBill('')
+          }
         })
       }
     })
   }
 
+  const printBill = async (idBill) => {
+    try {
+      const response = await axios.get(url + '/in-hoa-don/' + idBill, { responseType: 'blob' })
+      const pdfContent = await new Response(response.data).blob()
+
+      // Tạo URL từ Blob
+      const pdfUrl = URL.createObjectURL(pdfContent)
+
+      // In PDF khi lấy được nội dung
+      printJS({ printable: pdfUrl, type: 'pdf', header: 'Header for the PDF' })
+
+      // Đảm bảo giải phóng tài nguyên khi không cần thiết
+      URL.revokeObjectURL(pdfUrl)
+    } catch (error) {
+      console.error('Error fetching or printing PDF:', error)
+    }
+  }
   const totalSum = listProductDetailBill.reduce((sum, cart) => {
     if (cart.value) {
       return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
