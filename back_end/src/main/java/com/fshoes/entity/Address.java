@@ -15,7 +15,7 @@ import lombok.*;
 public class Address extends PrimaryEntity {
 
 
-    @Column(unique = true, columnDefinition = EntityProperties.DEFINITION_NAME)
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME)
     private String name;
 
     @Column(length = EntityProperties.LENGTH_PHONE)

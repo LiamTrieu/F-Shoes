@@ -748,7 +748,7 @@ export default function SellFrom({
           let khachHangId = response.data.data.id
           const obj = {
             name: diaChi.name,
-            phoneNumber: diaChi.phoneNumber,
+            phoneNumber: khachHang.phoneNumber,
             specificAddress: diaChi.specificAddress,
             type: true,
             idCustomer: khachHangId,
@@ -1364,9 +1364,9 @@ export default function SellFrom({
     } else {
       newErrors.customerAmount = ''
     }
-
-    if (paymentMethod === '1' && Number(customerAmount) > 50000000) {
-      newErrors.customerAmount = 'Tiền khách đưa không lớn hơn 50000000'
+    const sanitizedCustomerAmount = parseInt(customerAmount.replace(/\D/g, ''), 10)
+    if (paymentMethod === '1' && Number(sanitizedCustomerAmount) > 50000000) {
+      newErrors.customerAmount = 'Tiền khách đưa không lớn hơn 50tr VNĐ'
       checkAA++
     } else {
       newErrors.customerAmount = ''
