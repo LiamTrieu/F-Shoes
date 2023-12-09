@@ -3,16 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@cielblog/react-horizontal-timeline": "^1.0.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@fontsource/roboto": "^5.0.8",
     "@mailtop/horizontal-timeline": "^2.1.4",
     "@mui/icons-material": "^5.14.7",
     "@mui/material": "^5.14.7",
     "@mui/x-data-grid": "^6.12.1",
     "@mui/x-date-pickers": "^6.12.1",
-    "@mui/x-date-pickers-pro": "^6.12.1",
     "@react-oauth/google": "^0.11.1",
     "@reduxjs/toolkit": "^1.9.7",
     "@stomp/stompjs": "^7.0.0",
@@ -21,7 +18,6 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.5.0",
-    "color-convert": "^2.0.1",
     "dayjs": "^1.11.9",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
@@ -46,7 +42,6 @@
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.1.3",
-    "react-zxing": "^2.0.0",
     "sockjs-client": "^1.6.1",
     "sweetalert2": "^11.7.27",
     "web-vitals": "^2.1.4",
@@ -77,10 +72,6 @@
     ]
   },
   "overrides": {
-    "@cielblog/react-horizontal-timeline": {
-      "react": "$react",
-      "react-dom": "$react-dom"
-    },
     "@mailtop/horizontal-timeline": {
       "react": "$react",
       "react-dom": "$react-dom"

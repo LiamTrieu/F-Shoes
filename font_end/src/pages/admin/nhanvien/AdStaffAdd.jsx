@@ -19,7 +19,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
-import { useZxing } from 'react-zxing'
 import './AdStaffAdd.css'
 import CircularProgress from '@mui/material/CircularProgress'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
@@ -164,16 +163,6 @@ const AddStaff = () => {
       phoneNumber: staffAdd.phoneNumber,
       type: true,
     })
-  }
-
-  const RenderVideo = () => {
-    const { ref } = useZxing({
-      onDecodeResult(result) {
-        handleScan(result)
-        setQrScannerVisible(false)
-      },
-    })
-    return <video ref={ref} width="100%" />
   }
 
   const handleScan = (qrData) => {
