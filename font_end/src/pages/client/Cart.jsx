@@ -36,6 +36,22 @@ export default function Cart() {
   const onChangeSL = (cart, num) => {
     const soluong = cart.soLuong + num
 
+    const updatedProduct = {
+      ...cart,
+      soLuong: soluong,
+    }
+
+    const updatedAmount = productSelect.reduce(
+      (total, item) =>
+        total + (item.id === cart.id ? updatedProduct.soLuong : item.soLuong) * item.gia,
+      0,
+    )
+
+    if (updatedAmount > 50000000) {
+      toast.error('Tổng số tiền sản phẩm không được vượt quá 50tr VND')
+      return
+    }
+
     if (soluong <= 0) {
       const title = 'Bạn có muốn xóa sản phẩm ra khỏi giỏ hàng không?'
       const text = ''
@@ -76,15 +92,15 @@ export default function Cart() {
 
     if (checked) {
       if (preProductSelect.length < 5) {
-        const totalSelectedQuantity = preProductSelect.reduce(
-          (total, item) => total + item.soLuong,
+        const totalSelectedAmount = preProductSelect.reduce(
+          (total, item) => total + item.soLuong * item.gia,
           0,
         )
 
-        if (totalSelectedQuantity + cart.soLuong <= 5) {
+        if (totalSelectedAmount + cart.soLuong * cart.gia <= 50000000) {
           preProductSelect.push(cart)
         } else {
-          toast.error('Tổng số lượng sản phẩm được chọn cao nhất là 5')
+          toast.error('Tổng số tiền sản phẩm được chọn cao nhất là 50tr VND')
           return
         }
       } else {
@@ -162,13 +178,13 @@ export default function Cart() {
 
   const checkAll = (checked) => {
     const newProductSelect = checked ? [...product] : []
-    const newTotalSelectedQuantity = newProductSelect.reduce(
-      (total, item) => total + item.soLuong,
+    const newTotalSelectedAmount = newProductSelect.reduce(
+      (total, item) => total + item.soLuong * item.gia,
       0,
     )
 
-    if (checked && newTotalSelectedQuantity > 5) {
-      toast.error('Tổng số lượng sản phẩm được chọn cao nhất là 5')
+    if (checked && newTotalSelectedAmount > 50000000) {
+      toast.error('Tổng số tiền sản phẩm được chọn không được vượt quá 50tr VND')
       return
     }
 
