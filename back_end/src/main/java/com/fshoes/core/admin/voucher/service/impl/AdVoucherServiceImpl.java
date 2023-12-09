@@ -162,19 +162,18 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                             "  </head>\n" +
                             "  <body>\n" +
                             "    <div class=\"container\">\n" +
-                            "      <h1>Thông Báo Tặng Voucher</h1>\n" +
+                            "      <h1>Thông Báo Phiếu Giảm Giá</h1>\n" +
                             "      <p>Xin chào quý khách hàng thân yêu,</p>\n" +
                             "      <p>\n" +
-                            "        Chúng tôi vô cùng vui mừng thông báo rằng bạn đã nhận được một voucher\n" +
-                            "        giảm giá đặc biệt từ chúng tôi.\n" +
+                            "        Chúng tôi vô cùng vui mừng thông báo rằng bạn có một phiếu giảm giá đặc biệt.\n" +
                             "      </p>\n" +
                             "      <div class=\"voucher\">\n" +
-                            "        <p>Giảm giá " + valueText + "</p>\n" +
+                            "        <p>Giảm " + valueText + "</p>\n" +
                             "        <p>Có hiệu lực từ: " + DateUtil.converDateString(voucher.getStartDate()) + "</p>\n" +
                             "      </div>\n" +
                             "\n" +
                             "      <p>\n" +
-                            "        Hãy sử dụng mã voucher này khi bạn mua sắm trên trang web của chúng tôi\n" +
+                            "        Hãy sử dụng phiếu giảm giá này khi bạn mua sắm trên trang web của chúng tôi\n" +
                             "        để nhận được ưu đãi đặc biệt.\n" +
                             "      </p>\n" +
                             "       <a href='http://localhost:3000/home'><button>Xem Chi Tiết</button></a>" +
@@ -184,7 +183,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                             "</html>\n");
                     email.setToEmail(toMail);
                     email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
-                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn đã nhận được voucher: </b><span>" + voucher.getName() + "</span>");
+                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn có một phiếu giảm giá: </b><span>" + voucher.getName() + "</span>");
                     emailSender.sendEmail(email);
                 }
             }
@@ -284,19 +283,18 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                             "  </head>\n" +
                             "  <body>\n" +
                             "    <div class=\"container\">\n" +
-                            "      <h1>Thông Báo Tặng Voucher</h1>\n" +
+                            "      <h1>Thông Báo Phiếu Giảm Giá</h1>\n" +
                             "      <p>Xin chào quý khách hàng thân yêu,</p>\n" +
                             "      <p>\n" +
-                            "        Chúng tôi vô cùng vui mừng thông báo rằng bạn đã nhận được một voucher\n" +
-                            "        giảm giá đặc biệt từ chúng tôi.\n" +
+                            "        Chúng tôi vô cùng vui mừng thông báo rằng bạn có một phiếu giảm giá đặc biệt.\n" +
                             "      </p>\n" +
                             "      <div class=\"voucher\">\n" +
-                            "        <p>Giảm giá " + valueText + "</p>\n" +
+                            "        <p>Giảm " + valueText + "</p>\n" +
                             "        <p>Có hiệu lực từ: " + DateUtil.converDateString(voucher.getStartDate()) + "</p>\n" +
                             "      </div>\n" +
                             "\n" +
                             "      <p>\n" +
-                            "        Hãy sử dụng mã voucher này khi bạn mua sắm trên trang web của chúng tôi\n" +
+                            "        Hãy sử dụng phiếu giảm giá này khi bạn mua sắm trên trang web của chúng tôi\n" +
                             "        để nhận được ưu đãi đặc biệt.\n" +
                             "      </p>\n" +
                             "       <a href='http://localhost:3000/home'><button>Xem Chi Tiết</button></a>" +
@@ -306,7 +304,7 @@ public class AdVoucherServiceImpl implements AdVoucherService {
                             "</html>\n");
                     email.setToEmail(toMail);
                     email.setSubject("FSHOES WEBSITE BÁN GIÀY THỂ THAO SNEAKER");
-                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn đã nhận được voucher: </b><span>" + voucher.getName() + "</span>");
+                    email.setTitleEmail("<b style=\"text-align: left;\">Bạn có một phiếu giảm giá: </b><span>" + voucher.getName() + "</span>");
                     emailSender.sendEmail(email);
                 }
             }

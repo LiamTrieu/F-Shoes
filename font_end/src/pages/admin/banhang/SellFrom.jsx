@@ -99,7 +99,16 @@ const styleCustomerPays = {
   p: 4,
 }
 
-export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, setSoluong }) {
+export default function SellFrom({
+  idBill,
+  getAllBillTaoDonHang,
+  setSelectBill,
+  setSoluong,
+  setNameCustomer,
+  nameCustomer,
+  setDetailDiaChi,
+  detailDiaChi,
+}) {
   const theme = useTheme()
   const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
@@ -124,7 +133,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const [shipTotal, setShipTotal] = useState('')
   const [timeShip, setTimeShip] = useState('')
   const [list, setList] = useState([])
-  const [nameCustomer, setNameCustomer] = useState('')
+
   const [customerAmount, setCustomerAmount] = useState(0)
   const [percentMoney, setPercentMoney] = useState(null)
 
@@ -444,6 +453,11 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     })
   }
 
+  const handleChangeShip = (e) => {
+    const input = e.target.value.replace(/[^0-9]/g, '')
+    setShipTotal(input)
+  }
+
   const [tinh, setTinh] = useState([])
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
@@ -598,16 +612,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
   const isEmailDuplicate = (email) => {
     return list.some((customer) => customer.email === email)
   }
-  const [detailDiaChi, setDetailDiaChi] = useState({
-    name: '',
-    phoneNumber: '',
-    email: '',
-    specificAddress: '',
-    provinceId: '',
-    districtId: '',
-    wardId: '',
-    type: 0,
-  })
+
   const [xaName, setXaName] = useState('')
   const [huyenName, setHuyenName] = useState('')
   const [tinhName, setTinhName] = useState('')
@@ -1290,7 +1295,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
     percentMoney < 0 || percentMoney > 100
       ? 0
       : ((totalPriceCart + ShipingFree - totalMoneyReduce) * percentMoney) / 100
-  const totalPrice = totalPriceCart + ShipingFree - totalMoneyReduce - moneyPercent
+  const totalPrice = totalPriceCart + Number(ShipingFree) - totalMoneyReduce - moneyPercent
 
   const moneyUnqualified =
     voucherUnqualified.minimumAmount > voucher.minimumAmount ||
@@ -1355,6 +1360,13 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       checkAA++
     } else if (customerAmount < 0) {
       newErrors.customerAmount = 'Tiền khách đưa phải lớn hơn 0'
+      checkAA++
+    } else {
+      newErrors.customerAmount = ''
+    }
+
+    if (paymentMethod === '1' && Number(customerAmount) > 50000000) {
+      newErrors.customerAmount = 'Tiền khách đưa không lớn hơn 50000000'
       checkAA++
     } else {
       newErrors.customerAmount = ''
@@ -1457,7 +1469,6 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
       totalMoney: calculateDesiredValue(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
       percentMoney: percentMoney === 0 ? 0 : percentMoney,
     }
-    console.log(dataPay)
 
     sellApi.payOrder(dataPay, id).then((response) => {
       // getAllBillTaoDonHang()
@@ -1526,7 +1537,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
           idBill={idBill}
           open={showModal}
           setOPen={closeAddProductModal}
-          listProductBill={listProductDetailBill}
+          totalSum={totalSum}
         />
 
         <Box>
@@ -1653,7 +1664,7 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
                           // }}
                         />
                         <IconButton
-                          // disabled={listProductDetailBill.reduce((total, cart) => total + cart.quantity, 0) >= 5}
+                          disabled={Number(totalSum) >= 500000000}
                           size="small"
                           sx={{ p: 0 }}
                           onClick={() => {
@@ -2975,7 +2986,16 @@ export default function SellFrom({ idBill, getAllBillTaoDonHang, setSelectBill, 
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Phí vận chuyển</Typography>
-                <Typography>{giaoHang ? `${formatCurrency(shipTotal)}` : '0 VNĐ'}</Typography>
+                <TextField
+                  value={giaoHang ? formatPrice(shipTotal) : '0 ₫'}
+                  onChange={handleChangeShip}
+                  variant="outlined"
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                  }}
+                  size="small"
+                />
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Giảm giá</Typography>
