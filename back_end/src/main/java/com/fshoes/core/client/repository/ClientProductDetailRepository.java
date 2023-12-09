@@ -140,7 +140,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                     si.size as size,
                     pd.price as price,
                     pd.weight as weight,
-                    pd.amount as amount,
+                    sum(bd.quantity) as amount,
                     pd.description as description,
                     GROUP_CONCAT(DISTINCT i.url) as image,
                     pd.id_product,
@@ -168,7 +168,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      material m ON m.id = pd.id_material
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
-                        join bill_detail bd on bd.id_product_detail = pd.id
+                       left join bill_detail bd on bd.id_product_detail = pd.id
                 WHERE p.deleted = 0 AND pd.deleted = 0
                 GROUP BY pd.id ,bd.quantity               
                 ORDER BY bd.quantity DESC
