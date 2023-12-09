@@ -852,7 +852,7 @@ export default function Checkout() {
                         textAlign: 'left',
                       }}>
                       {promotionByProductDetail.map((item, index) => {
-                        const isDiscounted = item.idProductDetail === cart.id && item.id
+                        const isDiscounted = item.idProductDetail === cart.id && item.value
 
                         return (
                           <div key={index}>
@@ -872,7 +872,7 @@ export default function Checkout() {
                       })}
 
                       {!promotionByProductDetail.some(
-                        (item) => item.idProductDetail === cart.id && item.id,
+                        (item) => item.idProductDetail === cart.id && item.value,
                       ) && (
                         <div style={{ color: 'red' }}>{`${formatPrice(
                           cart.soLuong * cart.gia,

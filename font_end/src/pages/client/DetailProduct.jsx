@@ -332,7 +332,7 @@ export default function DetailProduct() {
               <Typography variant="h5" fontFamily={'monospace'} fontWeight={'900'} color={'red'}>
                 <span>
                   {' '}
-                  {product.promotion && product.statusPromotion === 1 ? (
+                  {product.value ? (
                     <div style={{ display: 'flex' }}>
                       <div className="promotion-price">{formatCurrency(product.price)}</div>{' '}
                       <div>
