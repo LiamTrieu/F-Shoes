@@ -57,6 +57,7 @@ export default function AdProductAdd() {
   const [sizes, setSizes] = useState([])
   const [modalOpen, setModalOpen] = useState(null)
   const [modalOpenKhoiPhuc, setModalOpenKhoiPhuc] = useState(null)
+  const [modalOpenEdit, setModalOpenEdit] = useState(null)
 
   const [newProducts, setNewProducts] = useState({
     product: { label: '', value: '' },
@@ -245,6 +246,9 @@ export default function AdProductAdd() {
   }
   const closeModalKhoiPhuc = () => {
     setModalOpenKhoiPhuc(null)
+  }
+  const closeModalEdit = () => {
+    setModalOpenEdit(null)
   }
 
   const ContentModal = ({ images, color }) => {
@@ -537,6 +541,168 @@ export default function AdProductAdd() {
             />
           </div>
         )}
+      </>
+    )
+  }
+  const ContentModalEdit = ({ color }) => {
+    const spButton = {
+      fontWeight: '600',
+      letterSpacing: '1px',
+      borderRadius: '10px',
+      textTransform: 'none',
+    }
+    const [data, setData] = useState({ weight: null, amount: null, price: null })
+
+    const [err, setErr] = useState({
+      weight: null,
+      amount: null,
+      price: null,
+    })
+
+    function validate(data) {
+      let preErr = { ...err }
+      let check = true
+      if (data.hasOwnProperty('price')) {
+        preErr = { ...preErr, price: null }
+        if (isNaN(data.price) || data.price <= 0 || data.price >= 100000000) {
+          preErr = { ...preErr, price: 'Giá sản phẩm phải là một số dương và nhỏ hơn 100 triệu' }
+          check = false
+        }
+      }
+
+      if (data.hasOwnProperty('amount')) {
+        preErr = { ...preErr, amount: null }
+        if (
+          (data.hasOwnProperty('amount') && isNaN(data.amount)) ||
+          data.amount <= 0 ||
+          data.amount >= 1000
+        ) {
+          preErr = { ...preErr, amount: 'Số lượng sản phẩm phải là một số dương và nhỏ hơn 1000' }
+          check = false
+        }
+      }
+
+      if (data.hasOwnProperty('weight')) {
+        preErr = { ...preErr, weight: null }
+        if (isNaN(data.weight) || data.weight <= 0 || data.weight >= 10000) {
+          preErr = {
+            ...preErr,
+            weight: 'Trọng lượng sản phẩm phải là một số dương và nhỏ hơn 10000',
+          }
+          check = false
+        }
+      }
+
+      setErr(preErr)
+      return check
+    }
+
+    function submit() {
+      if (validate(data)) {
+        const preNewProducts = [
+          ...newProductDetails.map((productDetail) => {
+            if (
+              productDetail.color.value === color.value &&
+              productsCheck.includes(productDetail)
+            ) {
+              return { ...productDetail, ...data }
+            }
+            return productDetail
+          }),
+        ]
+        setNewProductDetails(preNewProducts)
+        setModalOpenEdit(false)
+      }
+    }
+
+    return (
+      <>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <b>Chỉnh sửa nhanh sản phẩm màu {color.label} </b>
+        </Stack>
+        <Stack className="mt-3 mb-2" direction="column" spacing={1}>
+          <div style={{ width: '100%' }}>
+            <b>
+              <span style={{ color: 'red' }}>*</span>Cân nặng
+            </b>
+            <TextField
+              InputProps={{
+                style: { paddingRight: '4px' },
+                endAdornment: 'g',
+              }}
+              size="small"
+              color="cam"
+              onChange={(e) => {
+                validate({ weight: e.target.value })
+                setData({ ...data, weight: e.target.value })
+              }}
+              className="search-field"
+              placeholder="Nhập cân nặng"
+              variant="outlined"
+              fullWidth
+              error={Boolean(err.weight)}
+              helperText={err.weight}
+            />
+          </div>
+          <div style={{ width: '100%' }}>
+            <b>
+              <span style={{ color: 'red' }}>*</span>Số lượng
+            </b>
+            <TextField
+              onChange={(e) => {
+                validate({ amount: e.target.value })
+                setData({ ...data, amount: e.target.value })
+              }}
+              size="small"
+              color="cam"
+              className="search-field"
+              placeholder="Nhập số lượng"
+              variant="outlined"
+              fullWidth
+              error={Boolean(err.amount)}
+              helperText={err.amount}
+            />
+          </div>
+          <div style={{ width: '100%' }}>
+            <b>
+              <span style={{ color: 'red' }}>*</span>Đơn giá
+            </b>
+            <TextField
+              onChange={(e) => {
+                validate({ price: e.target.value })
+                setData({ ...data, price: e.target.value })
+              }}
+              size="small"
+              color="cam"
+              className="search-field"
+              placeholder="Nhập đơn giá"
+              variant="outlined"
+              fullWidth
+              error={Boolean(err.price)}
+              helperText={err.price}
+            />
+          </div>
+        </Stack>
+        <Stack mt={2} direction="row" justifyContent="center" alignItems="flex-start" spacing={2}>
+          <Button
+            onClick={() => {
+              setModalOpenEdit(false)
+            }}
+            color="error"
+            disableElevation
+            variant="contained"
+            sx={{ ...spButton }}>
+            Đóng
+          </Button>
+          <Button
+            onClick={submit}
+            color="cam"
+            disableElevation
+            variant="contained"
+            sx={{ ...spButton }}>
+            Áp dụng
+          </Button>
+        </Stack>
       </>
     )
   }
@@ -1467,10 +1633,20 @@ export default function AdProductAdd() {
                     Danh sách sản phẩm màu {color.label}
                   </Typography>
                   <div>
-                    <Button size="small" color="cam" variant="contained">
-                      <RiEditFill />
-                      Chỉnh sửa
-                    </Button>
+                    {productsCheck.filter(
+                      (productDetail) => productDetail.color.value === color.value,
+                    ).length > 0 && (
+                      <Button
+                        onClick={() => {
+                          setModalOpenEdit(`papaerNewProduct${colorIndex}`)
+                        }}
+                        size="small"
+                        color="cam"
+                        variant="contained">
+                        <RiEditFill />
+                        Chỉnh sửa
+                      </Button>
+                    )}
                     &nbsp; &nbsp;
                     <Button
                       onClick={() => {
@@ -1511,7 +1687,9 @@ export default function AdProductAdd() {
                                           (productDetail) =>
                                             productDetail.color.value === color.value,
                                         )
-                                        .includes(pd),
+                                        .some((product) => {
+                                          return product.key === pd.key
+                                        }),
                                   ),
                                   ...newProductDetails.filter(
                                     (productDetail) => productDetail.color.value === color.value,
@@ -1526,7 +1704,9 @@ export default function AdProductAdd() {
                                           (productDetail) =>
                                             productDetail.color.value === color.value,
                                         )
-                                        .includes(pd),
+                                        .some((product) => {
+                                          return product.key === pd.key
+                                        }),
                                   ),
                                 ])
                               }
@@ -1594,7 +1774,9 @@ export default function AdProductAdd() {
                                 <TableCell align="center">
                                   <Checkbox
                                     color="cam"
-                                    checked={productsCheck.includes(productDetail)}
+                                    checked={productsCheck.some((product) => {
+                                      return product.key === productDetail.key
+                                    })}
                                     onChange={(e) => {
                                       if (e.target.checked) {
                                         setProductsCheck([...productsCheck, productDetail])
@@ -1782,10 +1964,18 @@ export default function AdProductAdd() {
                 />
               </DialogAddUpdate>
               <DialogAddUpdate
+                closeButton={true}
                 width={'md'}
                 open={modalOpenKhoiPhuc === `papaerNewProduct${colorIndex}`}
                 setOpen={closeModalKhoiPhuc}>
                 <ContentModalKhoiPhuc color={color} />
+              </DialogAddUpdate>
+              <DialogAddUpdate
+                closeButton={true}
+                width={'xs'}
+                open={modalOpenEdit === `papaerNewProduct${colorIndex}`}
+                setOpen={closeModalEdit}>
+                <ContentModalEdit color={color} />
               </DialogAddUpdate>
             </Paper>
           )
