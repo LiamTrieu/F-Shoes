@@ -610,7 +610,9 @@ export default function AdProductAdd() {
           ...newProductDetails.map((productDetail) => {
             if (
               productDetail.color.value === color.value &&
-              productsCheck.includes(productDetail)
+              productsCheck.some((product) => {
+                return product.key === productDetail.key
+              })
             ) {
               return { ...productDetail, ...data }
             }
