@@ -317,18 +317,26 @@ export default function CartSellingProduct({ products, colmd, collg }) {
                         flexWrap="wrap"
                         onMouseEnter={() => setIsCartChange(true)}
                         onMouseLeave={() => setIsCartChange(false)}>
-                        {product.duplicate.sizes
-                          .sort((a, b) => a.size - b.size)
-                          .map((size) => {
+                        {Array.from(new Set(product.duplicate.sizes.map((size) => size.size)))
+                          .sort((a, b) => a - b)
+                          .map((uniqueSize) => {
+                            const size = product.duplicate.sizes.find((s) => s.size === uniqueSize)
+                            const isSizeSelected = product.size === uniqueSize
+                            const isSelectedStyle = {
+                              color: isSizeSelected ? 'white' : 'black',
+                              backgroundColor: isSizeSelected ? 'black' : 'white',
+                            }
+
                             return (
                               <div
+                                key={uniqueSize}
                                 onClick={() => {
                                   let preArrMap = [...arrMap]
                                   preArrMap[i] = { ...preArrMap[i], ...size }
                                   setArrMap(preArrMap)
                                 }}
                                 style={{
-                                  transform: 'scale(1.03)',
+                                  transform: isSizeSelected ? 'scale(1.03)' : 'scale(1)',
                                   padding: '2px',
                                   border: '1px solid black',
                                 }}>
@@ -340,10 +348,9 @@ export default function CartSellingProduct({ products, colmd, collg }) {
                                     fontSize: '10px',
                                     fontWeight: 'bold',
                                     textAlign: 'center',
-                                    color: product.size === size.size ? 'white' : 'black',
-                                    backgroundColor: product.size === size.size ? 'black' : 'white',
+                                    ...isSelectedStyle,
                                   }}>
-                                  {size.size}
+                                  {uniqueSize}
                                 </div>
                               </div>
                             )

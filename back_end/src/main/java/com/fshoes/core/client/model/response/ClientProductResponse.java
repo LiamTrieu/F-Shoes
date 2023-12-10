@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 public interface ClientProductResponse extends IsIdentified {
 
+    Integer getCountSize();
     Integer getValue();
 
     String getName();

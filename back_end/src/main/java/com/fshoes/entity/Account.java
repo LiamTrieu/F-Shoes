@@ -28,7 +28,7 @@ public class Account extends PrimaryEntity implements Serializable, UserDetails 
 
     private String code;
 
-    @Column(unique = true, columnDefinition = EntityProperties.DEFINITION_NAME)
+    @Column( columnDefinition = EntityProperties.DEFINITION_NAME)
     private String fullName;
 
     private Long dateBirth;
@@ -36,10 +36,10 @@ public class Account extends PrimaryEntity implements Serializable, UserDetails 
     @Column(unique = true)
     private String CitizenId;
 
-    @Column(length = EntityProperties.LENGTH_PHONE, unique = true)
+    @Column(length = EntityProperties.LENGTH_PHONE)
     private String phoneNumber;
 
-    @Column(length = EntityProperties.LENGTH_EMAIL, unique = true)
+    @Column(length = EntityProperties.LENGTH_EMAIL)
     private String email;
 
     private Boolean gender;
