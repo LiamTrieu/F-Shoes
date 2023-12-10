@@ -28,6 +28,9 @@ import confirmSatus from '../../../components/comfirmSwal'
 import QRCode from 'react-qr-code'
 
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import { SketchPicker } from 'react-color'
+
+import { spButton } from '../sanpham/sanPhamStyle'
 
 export default function AdModalDetailProductDetail({
   productDetail,
@@ -82,6 +85,8 @@ export default function AdModalDetailProductDetail({
   const [newSole, setNewSole] = useState({ name: '' })
   const [newMaterial, setNewMaterial] = useState({ name: '' })
   const [newSize, setNewSize] = useState({ size: '' })
+  const [newColor, setNewColor] = useState({ color: '#000000', name: '' })
+  const [openAddNewColor, setOpenAddNewColor] = useState(false)
 
   const fetchListCategory = () => {
     categoryApi.getList().then(
@@ -404,7 +409,12 @@ export default function AdModalDetailProductDetail({
           return
         }
 
-        await categoryApi.addCategory(newCategory)
+        await categoryApi.addCategory(newCategory).then((respone) =>
+          setPreProductDetail({
+            ...preProductDetail,
+            category: { label: respone.data.data.name, value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm thể loại thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -437,7 +447,12 @@ export default function AdModalDetailProductDetail({
           return
         }
 
-        await bradApi.addBrand(newBrand)
+        await bradApi.addBrand(newBrand).then((respone) =>
+          setPreProductDetail({
+            ...preProductDetail,
+            brand: { label: respone.data.data.name, value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm thương hiệu thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -470,7 +485,12 @@ export default function AdModalDetailProductDetail({
           return
         }
 
-        await soleApi.addSole(newSole)
+        await soleApi.addSole(newSole).then((respone) =>
+          setPreProductDetail({
+            ...preProductDetail,
+            sole: { label: respone.data.data.name, value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm đế giày thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -503,7 +523,12 @@ export default function AdModalDetailProductDetail({
           return
         }
 
-        await materialApi.addMaterial(newMaterial)
+        await materialApi.addMaterial(newMaterial).then((respone) =>
+          setPreProductDetail({
+            ...preProductDetail,
+            material: { label: respone.data.data.name, value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm chất liệu thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -542,7 +567,12 @@ export default function AdModalDetailProductDetail({
           return
         }
 
-        await sizeApi.addSize(newSize)
+        await sizeApi.addSize(newSize).then((respone) =>
+          setPreProductDetail({
+            ...preProductDetail,
+            size: { label: respone.data.data.size.toString(), value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm kích cỡ thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -552,6 +582,73 @@ export default function AdModalDetailProductDetail({
       toast.error('Thêm kích cỡ thất bại', {
         position: toast.POSITION.TOP_RIGHT,
       })
+    }
+  }
+
+  const handleAddNewColor = async (newColor) => {
+    try {
+      if (newColor.code === '') {
+        toast.warning('Mã màu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      if (newColor.name === '') {
+        toast.warning('Tên màu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      const responseCode = await colorApi.getAllCodeColor()
+      const responseName = await colorApi.getAllNameColor()
+      if (
+        responseCode.data &&
+        Array.isArray(responseCode.data.data) &&
+        responseName.data &&
+        Array.isArray(responseName.data.data)
+      ) {
+        const listCodeColor = []
+        responseCode.data.data.map((m) => listCodeColor.push(m.toLowerCase()))
+        const listNameColor = []
+        responseName.data.data.map((m) => listNameColor.push(m.toLowerCase()))
+
+        if (listCodeColor.includes(newColor.code.toLowerCase())) {
+          toast.warning('Mã màu đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        if (listNameColor.includes(newColor.name.toLowerCase())) {
+          toast.warning('Tên màu đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        await colorApi.addColor(newColor).then((respone) =>
+          setPreProductDetail({
+            ...preProductDetail,
+            color: {
+              label: respone.data.data.name,
+              value: respone.data.data.id,
+              code: respone.data.data.code,
+            },
+          }),
+        )
+        toast.success('Thêm màu sắc thành công', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        fetchListColor()
+      }
+      setOpenAddNewColor(false)
+    } catch (error) {
+      toast.error('Thêm màu sắc thất bại', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+      setOpenAddNewColor(false)
     }
   }
 
@@ -731,7 +828,11 @@ export default function AdModalDetailProductDetail({
               </b>
               <Autocomplete
                 noOptionsText={
-                  <Button size="small" fullWidth color="cam" onClick={() => console.log()}>
+                  <Button
+                    size="small"
+                    fullWidth
+                    color="cam"
+                    onClick={() => setOpenAddNewColor(true)}>
                     <PlaylistAddIcon />
                     Thêm mới
                   </Button>
@@ -764,11 +865,94 @@ export default function AdModalDetailProductDetail({
                   </li>
                 )}
                 renderInput={(params) => (
-                  <TextField color="cam" {...params} placeholder={'Chọn màu sắc'} />
+                  <TextField
+                    color="cam"
+                    {...params}
+                    placeholder={'Chọn màu sắc'}
+                    onChange={(e) => setNewColor({ ...newColor, name: e.target.value })}
+                  />
                 )}
               />
               {err.color && <span style={{ color: 'red' }}>{err.color}</span>}
             </div>
+            {openAddNewColor && (
+              <DialogAddUpdate
+                closeButton={true}
+                open={openAddNewColor}
+                setOpen={setOpenAddNewColor}
+                title={'Thêm mới màu sắc'}>
+                <Stack
+                  mt={2}
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  spacing={2}>
+                  <SketchPicker
+                    presetColors={[]}
+                    disableAlpha
+                    color={newColor.code}
+                    onChange={(e) => {
+                      setNewColor({ ...newColor, code: e.hex })
+                    }}
+                  />
+                  <div>
+                    <Grid container spacing={2} mb={2}>
+                      <Grid item xs={4.5}>
+                        <div
+                          style={{
+                            width: '50px',
+                            height: '50px',
+                            backgroundColor: newColor.code,
+                            borderRadius: '50%',
+                          }}></div>
+                      </Grid>
+                      <Grid item xs={7.5} sx={{ display: 'flex', alignItems: 'center' }}>
+                        {newColor.code}
+                      </Grid>
+                    </Grid>
+                    <div>
+                      <TextField
+                        sx={{ mb: 2 }}
+                        id={'nameInputAdd'}
+                        onChange={(e) => {
+                          setNewColor({ ...newColor, name: e.target.value })
+                        }}
+                        defaultValue={newColor.name}
+                        fullWidth
+                        inputProps={{
+                          required: true,
+                        }}
+                        size="small"
+                        placeholder="Nhập tên màu"
+                      />
+                    </div>
+                    <Stack direction="row" justifyContent="space-between" spacing={2}>
+                      <Button
+                        onClick={() => {
+                          setOpenAddNewColor(false)
+                        }}
+                        color="error"
+                        disableElevation
+                        variant="contained"
+                        sx={{ ...spButton }}>
+                        Đóng
+                      </Button>
+                      &nbsp; &nbsp;
+                      <Button
+                        onClick={() => {
+                          handleAddNewColor(newColor)
+                        }}
+                        color="primary"
+                        disableElevation
+                        sx={{ ...spButton }}
+                        variant="contained">
+                        Thêm
+                      </Button>
+                    </Stack>
+                  </div>
+                </Stack>
+              </DialogAddUpdate>
+            )}
             <div style={{ width: '100%' }}>
               <b>
                 <span style={{ color: 'red' }}>*</span>Kích cỡ

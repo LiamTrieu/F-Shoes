@@ -65,9 +65,7 @@ export default function AdSolePage() {
         setListSole(res.data.content)
         setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
       })
-      .catch((error) => {
-        console.log(error)
-      })
+      .catch((error) => {})
     setIsBackdrop(false)
   }
 
@@ -128,9 +126,7 @@ export default function AdSolePage() {
               })
             }
           })
-          .catch((error) => {
-            console.log(error)
-          })
+          .catch((error) => {})
       } else {
         setOpenAdd(true)
       }

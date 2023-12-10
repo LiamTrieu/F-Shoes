@@ -65,7 +65,6 @@ export default function AdProductPage() {
   const getAllSanPham = () => {
     sanPhamApi.getList().then((response) => {
       setListProductEx(response.data.data)
-      console.log(response.data.data)
     })
   }
 
@@ -150,7 +149,6 @@ export default function AdProductPage() {
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <TextField
             onChange={(e) => {
-              console.log(e.target.value)
               setFilter({ ...filter, name: e.target.value })
             }}
             sx={{ width: '50%' }}
