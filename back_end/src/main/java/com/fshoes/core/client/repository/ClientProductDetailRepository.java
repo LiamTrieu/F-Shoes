@@ -140,7 +140,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                     si.size as size,
                     pd.price as price,
                     pd.weight as weight,
-                    pd.amount as amount,
+                    sum(bd.quantity) as amount,
                     pd.description as description,
                     GROUP_CONCAT(DISTINCT i.url) as image,
                     pd.id_product,
@@ -168,11 +168,11 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      material m ON m.id = pd.id_material
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
-                        join bill_detail bd on bd.id_product_detail = pd.id
+                        join bill_detail bd on bd.id_product_detail = pd.id and bd.status = 0
+                        join bill bi on bd.id_bill = bi.id and bi.status = 7
                 WHERE p.deleted = 0 AND pd.deleted = 0
-                GROUP BY pd.id ,bd.quantity               
-                ORDER BY bd.quantity DESC
-                LIMIT 12
+                GROUP BY pd.id
+                ORDER BY amount DESC
             """, nativeQuery = true)
     List<ClientProductResponse> getSellingProduct(@Param("request") ClientProductRequest request);
 
@@ -216,9 +216,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
                 WHERE p.deleted = 0 AND pd.deleted = 0
-                GROUP BY pd.id  
-                ORDER BY p.created_at DESC
-                LIMIT 8
+                GROUP BY pd.id
+                ORDER BY pd.created_at DESC
             """, nativeQuery = true)
     List<ClientProductResponse> getProductsHome(@Param("request") ClientProductRequest request);
 

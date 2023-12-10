@@ -62,38 +62,36 @@ export default function CartProductHome({ products, colmd, collg }) {
     })
   }
 
-  const processArray = (inputArray, fields) => {
+  const processArray = (inputArray) => {
+    const fields = ['idProduct', 'idSole', 'idCategory', 'idBrand', 'idMaterial']
     const groupedItems = {}
 
     inputArray.forEach((item) => {
       const key = fields.map((field) => item[field]).join('-')
+      const colorKey = item.idColor
+
       if (!groupedItems[key]) {
-        groupedItems[key] = { ...item, duplicates: [item] }
+        groupedItems[key] = { ...item, duplicates: { [colorKey]: [item] } }
       } else {
-        groupedItems[key].duplicates.push(item)
+        if (!groupedItems[key].duplicates[colorKey]) {
+          groupedItems[key].duplicates[colorKey] = [item]
+        } else {
+          groupedItems[key].duplicates[colorKey].push(item)
+        }
       }
     })
-
-    Object.values(groupedItems).forEach((group) => {
-      const colorGroups = {}
-      group.duplicates.forEach((duplicate) => {
-        const colorKey = duplicate.idColor
-        const nameColor = duplicate.nameColor
-        const codeColor = duplicate.codeColor
-        if (!colorGroups[colorKey]) {
-          colorGroups[colorKey] = {
-            idColor: colorKey,
-            codeColor: codeColor,
-            nameColor: nameColor,
-            sizes: [],
-          }
+    const newArrMap = Object.values(groupedItems).map((group) => {
+      group.duplicates = Object.values(group.duplicates).map((colorGroup) => {
+        return {
+          idColor: colorGroup[0].idColor,
+          codeColor: colorGroup[0].codeColor,
+          nameColor: colorGroup[0].nameColor,
+          sizes: colorGroup,
         }
-        colorGroups[colorKey].sizes.push(duplicate)
       })
-      group.duplicates = Object.values(colorGroups)
+      return group
     })
-
-    return Object.values(groupedItems)
+    return newArrMap.slice(0, 8)
   }
 
   const [arrMap, setArrMap] = useState([])
