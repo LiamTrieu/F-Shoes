@@ -27,7 +27,7 @@ public interface HDBillDetailRepository extends BillDetailRepository {
             SELECT bd.id, b.id as idBill, MIN(i.url) as productImg,
                     CONCAT(p.name, ' ', c.name) as productName,
                     bd.price, pd.price as productPrice, s.size as size, bd.quantity, pd.id as productDetailId,
-                    bd.status as status, bd.note as note
+                    bd.status as status, bd.note as note, pd.weight as weight
              FROM bill_detail bd
                  LEFT JOIN product_detail pd ON bd.id_product_detail = pd.id
                  LEFT JOIN image i ON pd.id = i.id_product_detail
@@ -40,4 +40,15 @@ public interface HDBillDetailRepository extends BillDetailRepository {
     List<HDBillDetailResponse> getBillDetailsByBillId(@Param("idBill") String idBill);
 
     List<BillDetail> getBillDetailByBillId(String idBill);
+
+//    @Query(value = "Select ROW_NUMBER() over (ORDER BY created_at desc ) as stt, a.id, a.code, a.avatar, a.email, a.full_name as fullName," +
+//            "a.date_birth as dateBirth, a.phone_number as phoneNumber," +
+//            "a.gender, a.created_at as createdAt, a.status from account a " +
+//            "LEFT JOIN bill_history bh on a.id = bh.id_account" +
+//            "where a.role = 0 and (:#{#hdNhanVienSearchRequest.txtSearch} is null or a.full_name like %:#{#hdNhanVienSearchRequest.txtSearch}% " +
+//            "or a.email like %:#{#hdNhanVienSearchRequest.txtSearch}% or a.phone_number like %:#{#hdNhanVienSearchRequest.txtSearch}%) " +
+//            "order by a.created_at desc", nativeQuery = true)
+//    Page<HDNhanVienResponse> getListNhanVien(Pageable pageable, HDNhanVienSearchRequest hdNhanVienSearchRequest);
+
+
 }

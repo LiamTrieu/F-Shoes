@@ -82,4 +82,14 @@ public class HDBillController {
         return new ObjectRespone(hdBillService.returnSttBill(id, hdBillRequest));
     }
 
+    @GetMapping("/get-list-staff/{id}")
+    public ObjectRespone getListNhanVien(@PathVariable("id") String id, @ModelAttribute HDNhanVienSearchRequest hdNhanVienSearchRequest) {
+        return new ObjectRespone(hdBillService.getListNhanVien(id, hdNhanVienSearchRequest));
+    }
+
+    @PutMapping("/add-staff-reception-bill/{idBill}/{idAcc}")
+    public ObjectRespone returnSttBill(@PathVariable("idBill") String idBill, @PathVariable("idAcc") String idAcc) {
+        return new ObjectRespone(hdBillService.themNhanVienTiepNhan(idBill, idAcc));
+    }
+
 }

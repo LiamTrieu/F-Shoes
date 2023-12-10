@@ -105,7 +105,7 @@ export default function ModalAdBillUpdateAddress({
         }
       }
     }
-    billDetail ? setGiaoHang(billDetail.type === 1) : setGiaoHang(false)
+    billDetail ? setGiaoHang(billDetail.receivingMethod === 1) : setGiaoHang(false)
     billDetail ? setPhiShip(billDetail.moneyShip) : setPhiShip(0)
     billDetail ? setTimeShip(billDetail.desiredReceiptDate) : setTimeShip(null)
     setHdBillReq({
@@ -332,6 +332,26 @@ export default function ModalAdBillUpdateAddress({
               <CloseIcon />
             </IconButton>
           </Toolbar>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}>
+            <div style={{ flexShrink: 0 }}>
+              <Button
+                variant="outlined"
+                className="them-moi"
+                color="cam"
+                style={{
+                  marginLeft: 'auto',
+                  marginRight: '25px',
+                  alignSelf: 'flex-end',
+                  marginBottom: '10px',
+                }}>
+                Chọn địa chỉ
+              </Button>
+            </div>
+          </div>
           <Stack>
             <Box p={3} pt={0} pb={2}>
               <Grid container spacing={2} sx={{ mt: 2 }}>
