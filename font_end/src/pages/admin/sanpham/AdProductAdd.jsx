@@ -43,6 +43,7 @@ import { useNavigate } from 'react-router-dom'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import { FaRegStar, FaStar } from 'react-icons/fa'
 import { MdOutlineRestore } from 'react-icons/md'
+import { SketchPicker } from 'react-color'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 
@@ -1593,48 +1594,73 @@ export default function AdProductAdd() {
               )}
               {openModalAddColor && (
                 <DialogAddUpdate
+                  closeButton={true}
                   open={openModalAddColor}
                   setOpen={setOpenModalAddColor}
-                  title={'Thêm mới màu sắc'}
-                  buttonSubmit={
-                    <Button
-                      onClick={() => {
-                        handleAddColor(newColor)
+                  title={'Thêm mới màu sắc'}>
+                  <Stack
+                    mt={2}
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    spacing={2}>
+                    <SketchPicker
+                      disableAlpha
+                      color={newColor.code}
+                      onChange={(e) => {
+                        setNewColor({ ...newColor, code: e.hex })
                       }}
-                      color="primary"
-                      disableElevation
-                      sx={{ ...spButton }}
-                      variant="contained">
-                      Thêm
-                    </Button>
-                  }>
-                  <TextField
-                    sx={{ mb: 2 }}
-                    id={'nameInputAdd'}
-                    onChange={(e) => {
-                      setNewColor({ ...newColor, name: e.target.value })
-                    }}
-                    defaultValue={''}
-                    fullWidth
-                    inputProps={{
-                      required: true,
-                    }}
-                    size="small"
-                    placeholder="Nhập tên màu"
-                  />
-                  <TextField
-                    type="color"
-                    id={'nameInputAdd'}
-                    onBlur={(e) => {
-                      setNewColor({ ...newColor, code: e.target.value })
-                    }}
-                    defaultValue={newColor.code}
-                    fullWidth
-                    inputProps={{
-                      required: true,
-                    }}
-                    size="small"
-                  />
+                    />
+                    <div>
+                      <div
+                        style={{
+                          width: '50px',
+                          height: '50px',
+                          backgroundColor: newColor.code,
+                          lineHeight: '50px',
+                          textAlign: 'center',
+                        }}>
+                        {newColor.code}
+                      </div>
+                      <div>
+                        <TextField
+                          sx={{ mb: 2 }}
+                          id={'nameInputAdd'}
+                          onChange={(e) => {
+                            setNewColor({ ...newColor, name: e.target.value })
+                          }}
+                          defaultValue={''}
+                          fullWidth
+                          inputProps={{
+                            required: true,
+                          }}
+                          size="small"
+                          placeholder="Nhập tên màu"
+                        />
+                      </div>
+                      <Button
+                        onClick={() => {
+                          setOpenModalAddColor(false)
+                        }}
+                        color="error"
+                        disableElevation
+                        variant="contained"
+                        sx={{ ...spButton }}>
+                        Đóng
+                      </Button>
+                      &nbsp; &nbsp;
+                      <Button
+                        onClick={() => {
+                          handleAddColor(newColor)
+                        }}
+                        color="primary"
+                        disableElevation
+                        sx={{ ...spButton }}
+                        variant="contained">
+                        Thêm
+                      </Button>
+                    </div>
+                  </Stack>
                 </DialogAddUpdate>
               )}
               {openModalUpdateColor && (
