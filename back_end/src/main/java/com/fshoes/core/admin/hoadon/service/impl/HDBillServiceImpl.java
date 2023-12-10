@@ -3,6 +3,7 @@ package com.fshoes.core.admin.hoadon.service.impl;
 import com.fshoes.core.admin.hoadon.model.request.*;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
+import com.fshoes.core.admin.hoadon.model.respone.HDNhanVienResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
@@ -399,12 +400,15 @@ public class HDBillServiceImpl implements HDBillService {
         if (billHistorys.size() > 1) {
             BillHistory billHistory1 = billHistorys.get(0); // history hiện tại
             BillHistory billHistory2 = billHistorys.get(1); // history chứa sttBill sẽ quay lại
-            String note = userLogin.getUserLogin().getCode() + " đã chuyển trạng thái hoá đơn từ " + billHistory1.getStatusBill() + " -> " + billHistory2.getStatusBill() + "\n Lý do: ";
+            String note = userLogin.getUserLogin().getCode() + " đã chuyển trạng thái hoá đơn từ " + getTitleStatusBill(billHistory1.getStatusBill()) + " -> " + getTitleStatusBill(billHistory2.getStatusBill()) + "\n Lý do: ";
             //set stt bill = trạng thái bill trước (billHistory2.getStatusBill())
             Bill bill = billHistory1.getBill();
             Integer sttBill = bill.getStatus();
             bill.setStatus(billHistory2.getStatusBill());
             hdBillRepository.save(bill);
+            if (billHistory1.getStatusBill() == 5) {
+                Integer resultDeleteTrans = transactionRepository.deleteTransactionByIdBill(idBill);
+            }
             //set billHistory gần nhất là null để ẩn khoit timeline
             billHistory1.setStatusBill(10);
             hdBillHistoryRepository.save(billHistory1);
@@ -437,6 +441,7 @@ public class HDBillServiceImpl implements HDBillService {
                             clientProductDetailRepository.updateRealTime(productDetail.getId()));
                 });
             }
+
             return true;
         } else {
             return false;
@@ -447,6 +452,30 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public HDBillResponse isCheckBillExist(String idBill) {
         return hdBillRepository.getBillExist(idBill, userLogin.getUserLogin().getId(), userLogin.getUserLogin().getEmail());
+    }
+
+    @Override
+    public Page<HDNhanVienResponse> getListNhanVien(String idBill, HDNhanVienSearchRequest hdNhanVienSearchRequest) {
+        Pageable pageable = PageRequest.of(hdNhanVienSearchRequest.getPage() - 1, hdNhanVienSearchRequest.getSize());
+        return hdBillRepository.getListNhanVien(idBill, hdNhanVienSearchRequest, pageable);
+    }
+
+    @Override
+    public Boolean themNhanVienTiepNhan(String idBill, String idAccount) {
+        try {
+            Bill bill = hdBillRepository.findById(idBill).get();
+            Account account = accountRepository.findById(idAccount).get();
+            BillHistory billHistory = new BillHistory();
+            billHistory.setNote("Thêm " + account.getCode() + "-" + account.getFullName() + " tiếp nhận đơn hàng");
+            billHistory.setAccount(userLogin.getUserLogin());
+            billHistory.setReceptionStaff(account);
+            billHistory.setBill(bill);
+            hdBillHistoryRepository.save(billHistory);
+            return true;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return false;
+        }
     }
 
 
@@ -464,6 +493,35 @@ public class HDBillServiceImpl implements HDBillService {
 
         return uniqueCode;
 
+    }
+
+    private String getTitleStatusBill(Integer status) {
+        switch (status) {
+            case 0:
+                return "Đã hủy";
+            case 1:
+                return "Chờ xác nhận";
+            case 2:
+                return "Chờ giao hàng";
+            case 3:
+                return "Đang vận chuyển";
+            case 4:
+                return "Đã giao hàng";
+            case 5:
+                return "Đã thanh toán";
+            case 6:
+                return "Chờ thanh toán";
+            case 7:
+                return "Hoàn thành";
+            case 8:
+                return "Tạo đơn hàng";
+            case 9:
+                return "Trả hàng";
+            case 10:
+                return "Không tồn tại";
+            default:
+                return "Không xác định";
+        }
     }
 
 }

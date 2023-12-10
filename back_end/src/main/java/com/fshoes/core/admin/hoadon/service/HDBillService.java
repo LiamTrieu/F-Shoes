@@ -1,7 +1,13 @@
 package com.fshoes.core.admin.hoadon.service;
 
-import com.fshoes.core.admin.hoadon.model.request.*;
+import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
+import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
+import com.fshoes.core.admin.hoadon.model.request.HDNhanVienSearchRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
+import com.fshoes.core.admin.hoadon.model.respone.HDNhanVienResponse;
 import com.fshoes.entity.Bill;
 import org.springframework.data.domain.Page;
 
@@ -32,5 +38,10 @@ public interface HDBillService {
     Boolean returnSttBill(String idBill, HDBillRequest hdBillRequest);
 
     HDBillResponse isCheckBillExist(String idBill);
+
+    Page<HDNhanVienResponse> getListNhanVien(String idBill, HDNhanVienSearchRequest hdNhanVienSearchRequest);
+
+    Boolean themNhanVienTiepNhan(String idAccount, String idBill);
+
 
 }
