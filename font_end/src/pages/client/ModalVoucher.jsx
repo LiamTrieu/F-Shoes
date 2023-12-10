@@ -97,12 +97,10 @@ export default function ModalVoucher({
   }
 
   const handleGiamGia = () => {
-    console.log('=====', dataVoucher)
     const totalMoney = arrData.reduce(
       (tong, e) => tong + calculateProductTotalPayment(e, promotionByProductDetail),
       0,
     )
-    console.log('=====', totalMoney)
     const totalVoucher = dataVoucher
       ? dataVoucher.typeValue === 0
         ? (totalMoney * dataVoucher.value) / 100

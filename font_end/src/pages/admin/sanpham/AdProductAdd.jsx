@@ -295,7 +295,6 @@ export default function AdProductAdd() {
     const deleteCheckboxChange = (image) => {
       const preImageSelect = [...imageSelect]
       const index = preImageSelect.findIndex((img) => img === image)
-      console.log(image)
       if (index !== -1) {
         preImageSelect.splice(index, 1)
       }
@@ -753,7 +752,6 @@ export default function AdProductAdd() {
     let errors = []
 
     newProductDetails.forEach((product) => {
-      console.log(product.price)
       if (isNaN(product.price) || product.price <= 0 || product.price >= 100000000) {
         errors.push({
           key: product.key,
@@ -876,7 +874,12 @@ export default function AdProductAdd() {
           return
         }
 
-        await categoryApi.addCategory(newCategory)
+        await categoryApi.addCategory(newCategory).then((respone) =>
+          setNewProducts({
+            ...newProducts,
+            category: { label: respone.data.data.name, value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm thể loại thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -909,7 +912,12 @@ export default function AdProductAdd() {
           return
         }
 
-        await bradApi.addBrand(newBrand)
+        await bradApi.addBrand(newBrand).then((respone) =>
+          setNewProducts({
+            ...newProducts,
+            brand: { label: respone.data.data.name, value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm thương hiệu thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -942,7 +950,12 @@ export default function AdProductAdd() {
           return
         }
 
-        await soleApi.addSole(newSole)
+        await soleApi.addSole(newSole).then((respone) =>
+          setNewProducts({
+            ...newProducts,
+            sole: { label: respone.data.data.name, value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm đế giày thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -975,7 +988,12 @@ export default function AdProductAdd() {
           return
         }
 
-        await materialApi.addMaterial(newMaterial)
+        await materialApi.addMaterial(newMaterial).then((respone) =>
+          setNewProducts({
+            ...newProducts,
+            material: { label: respone.data.data.name, value: respone.data.data.id },
+          }),
+        )
         toast.success('Thêm chất liệu thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1605,6 +1623,7 @@ export default function AdProductAdd() {
                     alignItems="flex-start"
                     spacing={2}>
                     <SketchPicker
+                      presetColors={[]}
                       disableAlpha
                       color={newColor.code}
                       onChange={(e) => {
@@ -1612,16 +1631,20 @@ export default function AdProductAdd() {
                       }}
                     />
                     <div>
-                      <div
-                        style={{
-                          width: '50px',
-                          height: '50px',
-                          backgroundColor: newColor.code,
-                          lineHeight: '50px',
-                          textAlign: 'center',
-                        }}>
-                        {newColor.code}
-                      </div>
+                      <Grid container spacing={2} mb={2}>
+                        <Grid item xs={4.5}>
+                          <div
+                            style={{
+                              width: '50px',
+                              height: '50px',
+                              backgroundColor: newColor.code,
+                              borderRadius: '50%',
+                            }}></div>
+                        </Grid>
+                        <Grid item xs={7.5} sx={{ display: 'flex', alignItems: 'center' }}>
+                          {newColor.code}
+                        </Grid>
+                      </Grid>
                       <div>
                         <TextField
                           sx={{ mb: 2 }}
@@ -1638,75 +1661,107 @@ export default function AdProductAdd() {
                           placeholder="Nhập tên màu"
                         />
                       </div>
-                      <Button
-                        onClick={() => {
-                          setOpenModalAddColor(false)
-                        }}
-                        color="error"
-                        disableElevation
-                        variant="contained"
-                        sx={{ ...spButton }}>
-                        Đóng
-                      </Button>
-                      &nbsp; &nbsp;
-                      <Button
-                        onClick={() => {
-                          handleAddColor(newColor)
-                        }}
-                        color="primary"
-                        disableElevation
-                        sx={{ ...spButton }}
-                        variant="contained">
-                        Thêm
-                      </Button>
+                      <Stack direction="row" justifyContent="space-between" spacing={2}>
+                        <Button
+                          onClick={() => {
+                            setOpenModalAddColor(false)
+                          }}
+                          color="error"
+                          disableElevation
+                          variant="contained"
+                          sx={{ ...spButton }}>
+                          Đóng
+                        </Button>
+                        &nbsp; &nbsp;
+                        <Button
+                          onClick={() => {
+                            handleAddColor(newColor)
+                          }}
+                          color="primary"
+                          disableElevation
+                          sx={{ ...spButton }}
+                          variant="contained">
+                          Thêm
+                        </Button>
+                      </Stack>
                     </div>
                   </Stack>
                 </DialogAddUpdate>
               )}
               {openModalUpdateColor && (
                 <DialogAddUpdate
+                  closeButton={true}
                   open={openModalUpdateColor}
                   setOpen={setOpenModalUpdateColor}
-                  title={'Cập nhật màu sắc'}
-                  buttonSubmit={
-                    <Button
-                      onClick={() => {
-                        handleUpdateColor(colorDetail, colorPreview)
-                      }}
-                      color="primary"
-                      disableElevation
-                      sx={{ ...spButton }}
-                      variant="contained">
-                      Cập nhật
-                    </Button>
-                  }>
-                  <TextField
-                    sx={{ mb: 2 }}
-                    id={'nameInputAdd'}
-                    onChange={(e) => {
-                      setColorDetail({ ...colorDetail, name: e.target.value })
-                    }}
-                    defaultValue={colorDetail.name}
-                    fullWidth
-                    inputProps={{
-                      required: true,
-                    }}
-                    size="small"
-                    placeholder="Nhập tên màu"
-                  />
-                  <TextField
-                    type="color"
-                    id={'nameInputAdd'}
-                    onBlur={(e) => {
-                      setColorDetail({ ...colorDetail, code: e.target.value })
-                    }}
-                    defaultValue={colorDetail.code}
-                    fullWidth
-                    inputProps={{
-                      required: true,
-                    }}
-                    size="small"
-                  />
+                  title={'Cập nhật màu sắc'}>
+                  <Stack
+                    mt={2}
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    spacing={2}>
+                    <SketchPicker
+                      presetColors={[]}
+                      disableAlpha
+                      color={colorDetail.code}
+                      onChange={(e) => setColorDetail({ ...colorDetail, code: e.hex })}
+                    />
+                    <div>
+                      <Grid container spacing={2} mb={2}>
+                        <Grid item xs={4.5}>
+                          <div
+                            style={{
+                              width: '50px',
+                              height: '50px',
+                              backgroundColor: colorDetail.code,
+                              borderRadius: '50%',
+                            }}></div>
+                        </Grid>
+                        <Grid item xs={7.5} sx={{ display: 'flex', alignItems: 'center' }}>
+                          {colorDetail.code}
+                        </Grid>
+                      </Grid>
+                      <div>
+                        <TextField
+                          sx={{ mb: 2 }}
+                          id={'nameInputAdd'}
+                          onChange={(e) => {
+                            setColorDetail({ ...colorDetail, name: e.target.value })
+                          }}
+                          defaultValue={colorDetail.name}
+                          fullWidth
+                          inputProps={{
+                            required: true,
+                          }}
+                          size="small"
+                          placeholder="Nhập tên màu"
+                        />
+                      </div>
+                      <Stack direction="row" justifyContent="space-between" spacing={2}>
+                        <Button
+                          onClick={() => {
+                            setOpenModalUpdateColor(false)
+                          }}
+                          color="error"
+                          disableElevation
+                          variant="contained"
+                          sx={{ ...spButton, marginLeft: 0 }}>
+                          Đóng
+                        </Button>
+                        &nbsp; &nbsp;
+                        <Button
+                          onClick={() => {
+                            handleUpdateColor(colorDetail, colorPreview)
+                          }}
+                          color="primary"
+                          disableElevation
+                          sx={{ ...spButton, marginLeft: 0 }}
+                          variant="contained">
+                          Cập nhật
+                        </Button>
+                      </Stack>
+                    </div>
+                  </Stack>
                 </DialogAddUpdate>
               )}
             </Grid>

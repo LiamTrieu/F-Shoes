@@ -85,7 +85,6 @@ export default function MyVoucher() {
     stompClient.connect({}, onConnect)
 
     return () => {
-      console.log('Socket created1')
       stompClient.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

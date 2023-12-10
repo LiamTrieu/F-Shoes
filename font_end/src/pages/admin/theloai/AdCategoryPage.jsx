@@ -66,9 +66,7 @@ export default function AdCategoryPage() {
         setListCategory(res.data.content)
         setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
       })
-      .catch((error) => {
-        console.log(error)
-      })
+      .catch((error) => {})
     setIsBackdrop(false)
   }
 

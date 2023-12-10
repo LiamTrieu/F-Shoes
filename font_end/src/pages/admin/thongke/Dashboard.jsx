@@ -96,6 +96,7 @@ export default function Dashboard() {
   const [dataProductSelling, setDataProductSelling] = useState([])
   const [dataProductTakeOut, setDataProductTakeOut] = useState([])
   const [indexButton, setIndexButton] = useState(1)
+  const [nameIndexButton, setNameIndexButton] = useState('ngày')
   const [doanhThu, setDoanhThu] = useState({})
   const [doanhThuCu, setDoanhThuCu] = useState({})
   const [doanhThuCustom, setDoanhThuCustom] = useState({})
@@ -326,6 +327,13 @@ export default function Dashboard() {
     fecthDoanhThu()
     fecthDoanhThuCu()
   }, [])
+
+  const handleIndexButton = (index, name) => {
+    setIndexButton(index)
+    setNameIndexButton(name)
+    setFilterInCustom({startDate:null,endDate:null})
+  }
+
   const handleExportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
 
@@ -474,7 +482,15 @@ export default function Dashboard() {
           <Grid item xs={12}>
             <DashboardCard
               iconCart={<AssessmentIcon />}
-              title={'Tùy chỉnh'}
+              title={
+                filterInCustom.startDate === null && filterInCustom.endDate === null
+                  ? 'Tùy chỉnh'
+                  : filterInCustom.startDate !== null && filterInCustom.endDate === null
+                    ? `${filterInCustom.startDate} ---`
+                    : filterInCustom.startDate === null && filterInCustom.endDate !== null
+                      ? `--- ${filterInCustom.endDate}`
+                      : `${filterInCustom.startDate} --- ${filterInCustom.endDate}`
+              }
               total={doanhThuCustom.doanhSo === null ? 0 : doanhThuCustom.doanhSo}
               product={doanhThuCustom.soLuong === null ? 0 : doanhThuCustom.soLuong}
               order={doanhThuCustom.donHang}
@@ -499,7 +515,7 @@ export default function Dashboard() {
               backgroundColor: indexButton === 1 ? '#f26b16' : 'white',
               color: indexButton === 1 ? 'white' : 'black',
             }}
-            onClick={() => setIndexButton(1)}>
+            onClick={() => handleIndexButton(1, 'ngày')}>
             Ngày
           </Button>
           <Button
@@ -510,7 +526,7 @@ export default function Dashboard() {
               backgroundColor: indexButton === 2 ? '#f26b16' : 'white',
               color: indexButton === 2 ? 'white' : 'black',
             }}
-            onClick={() => setIndexButton(2)}>
+            onClick={() => handleIndexButton(2, 'tuần')}>
             Tuần
           </Button>
           <Button
@@ -521,7 +537,7 @@ export default function Dashboard() {
               backgroundColor: indexButton === 3 ? '#f26b16' : 'white',
               color: indexButton === 3 ? 'white' : 'black',
             }}
-            onClick={() => setIndexButton(3)}>
+            onClick={() => handleIndexButton(3, 'tháng')}>
             Tháng
           </Button>
           <Button
@@ -532,7 +548,7 @@ export default function Dashboard() {
               backgroundColor: indexButton === 4 ? '#f26b16' : 'white',
               color: indexButton === 4 ? 'white' : 'black',
             }}
-            onClick={() => setIndexButton(4)}>
+            onClick={() => handleIndexButton(4, 'năm')}>
             Năm
           </Button>
           <Button
@@ -543,7 +559,7 @@ export default function Dashboard() {
               backgroundColor: indexButton === 5 ? '#f26b16' : 'white',
               color: indexButton === 5 ? 'white' : 'black',
             }}
-            onClick={() => setIndexButton(5)}>
+            onClick={() => handleIndexButton(5, 'tùy chỉnh')}>
             Tùy chỉnh
           </Button>
           <Button
@@ -601,7 +617,7 @@ export default function Dashboard() {
         <Grid container spacing={2} sx={{ px: 1 }}>
           <Grid item xs={7}>
             <Typography variant="h6" fontWeight={'bold'} my={1} className="typography-css">
-              Danh sách sản phẩm bán chạy theo tháng
+              Danh sách sản phẩm bán chạy theo {nameIndexButton}
             </Typography>
 
             <Table aria-label="simple table" className="table-css">
@@ -703,7 +719,7 @@ export default function Dashboard() {
           <Grid item xs={5}>
             <Grid container spacing={2} mt={1}></Grid>
             <Typography variant="h6" fontWeight={'bold'} my={1} mt={3} className="typography-css">
-              Biểu đồ trạng thái
+              Biểu đồ trạng thái {nameIndexButton}
             </Typography>
             <Paper elevation={3} sx={{ height: '415px', border: '3px solid rgb(211, 211, 211)' }}>
               <LineChartDashBoard dataBieuDo={dataBieuDo} />
