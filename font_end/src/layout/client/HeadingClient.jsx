@@ -438,7 +438,8 @@ export default function HeadingClient() {
                   <>
                     <Link to={`/profile/user`} style={{ textDecoration: 'none', color: 'black' }}>
                       <MenuItem>
-                        <Avatar /> Tài khoản của tôi
+                        <Avatar src={user && user.avatar} sx={{ width: 40, height: 40 }} /> Tài
+                        khoản của tôi
                       </MenuItem>
                     </Link>
                     <MenuItem style={{ color: 'black' }} onClick={() => handleAccount()}>

@@ -179,6 +179,7 @@ public class AdminSellServiceImpl implements AdminSellService {
             bill.setMoneyShip(request.getMoneyShip());
             bill.setMoneyReduced(request.getMoneyReduce());
             bill.setMoneyAfter(request.getMoneyAfter());
+            bill.setDesiredReceiptDate(request.getDesiredReceiptDate());
             if (request.getType() == 0) {
                 bill.setStatus(7);
             } else {
@@ -239,7 +240,6 @@ public class AdminSellServiceImpl implements AdminSellService {
         bill.setNote(request.getNote());
         bill.setCustomerAmount(request.getCustomerAmount());
         bill.setReceivingMethod(request.getReceivingMethod());
-        bill.setDesiredReceiptDate(request.getDesiredReceiptDate());
         bill.setPercentMoney(request.getPercentMoney());
         billRepository.save(bill);
 

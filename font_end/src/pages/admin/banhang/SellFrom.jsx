@@ -1239,7 +1239,9 @@ export default function SellFrom({
       type: giaoHang === true ? 1 : 0,
       receivingMethod: giaoHang === true ? 1 : 0,
       percentMoney: percentMoney === 0 ? 0 : percentMoney,
+      desiredReceiptDate: timeShip ? timeShip : '',
     }
+    console.log(data, '=0=0=0=0=0')
 
     const title = 'Xác nhận đặt hàng ?'
     const text = ''
@@ -1250,7 +1252,10 @@ export default function SellFrom({
             toast.success(' xác nhận thành công', {
               position: toast.POSITION.TOP_RIGHT,
             })
-            printBill(id)
+            if (!giaoHang) {
+              printBill(id)
+            }
+
             getAllBillTaoDonHang()
             setSelectBill('')
           }
@@ -1465,7 +1470,6 @@ export default function SellFrom({
       transactionCode: transactionCode ? transactionCode : null,
       paymentMethod: paymentMethod === '1' ? 1 : 0,
       noteTransaction: noteTransaction ? noteTransaction : null,
-      desiredReceiptDate: timeShip ? timeShip : '',
       totalMoney: calculateDesiredValue(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
       percentMoney: percentMoney === 0 ? 0 : percentMoney,
     }
@@ -2103,49 +2107,63 @@ export default function SellFrom({
                       </TableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody>
-                    {listKhachHang.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                        <TableCell align="center">{row.stt}</TableCell>
-                        <TableCell align="center">{row.email}</TableCell>
-                        <TableCell align="center">{row.fullName}</TableCell>
-                        <TableCell align="center">
-                          {dayjs(row.dateBirth).format('MM/DD/YYYY')}
-                        </TableCell>
-                        <TableCell align="center">{row.phoneNumber}</TableCell>
-                        <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
-                        <TableCell align="center">
-                          {row.status === 0 ? (
-                            <Chip
-                              // onClick={() => deleteKhachHang(row.id)}
-                              className="chip-hoat-dong"
-                              size="small"
-                              label="Hoạt động"
-                            />
-                          ) : (
-                            <Chip
-                              className="chip-khong-hoat-dong"
-                              size="small"
-                              label="Không hoạt động"
-                            />
-                          )}
-                        </TableCell>
-                        <TableCell align="center">
-                          <Button
-                            variant="outlined"
-                            color="cam"
-                            onClick={() => {
-                              handleDiaChi(row.id)
-                              setNameCustomer(row.fullName)
-                            }}>
-                            <b>chọn</b>
-                          </Button>
+                  {listKhachHang.length > 0 ? (
+                    <TableBody>
+                      {listKhachHang.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                          <TableCell align="center">{row.stt}</TableCell>
+                          <TableCell align="center">{row.email}</TableCell>
+                          <TableCell align="center">{row.fullName}</TableCell>
+                          <TableCell align="center">
+                            {dayjs(row.dateBirth).format('MM/DD/YYYY')}
+                          </TableCell>
+                          <TableCell align="center">{row.phoneNumber}</TableCell>
+                          <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
+                          <TableCell align="center">
+                            {row.status === 0 ? (
+                              <Chip
+                                // onClick={() => deleteKhachHang(row.id)}
+                                className="chip-hoat-dong"
+                                size="small"
+                                label="Hoạt động"
+                              />
+                            ) : (
+                              <Chip
+                                className="chip-khong-hoat-dong"
+                                size="small"
+                                label="Không hoạt động"
+                              />
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Button
+                              variant="outlined"
+                              color="cam"
+                              onClick={() => {
+                                handleDiaChi(row.id)
+                                setNameCustomer(row.fullName)
+                              }}>
+                              <b>chọn</b>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  ) : (
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="center" style={{ width: '100%' }}>
+                          <img
+                            style={{ width: '1100px', height: '300px' }}
+                            src={require('../../../assets/image/no-data.png')}
+                            alt="No-data"
+                          />
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
+                    </TableBody>
+                  )}
                 </Table>
 
                 <Stack
@@ -2915,52 +2933,68 @@ export default function SellFrom({
                           </TableCell>
                         </TableRow>
                       </TableHead>
-                      <TableBody>
-                        {listVoucher.map((row) => (
-                          <TableRow
-                            key={row.id}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                            <TableCell align="center">{row.stt}</TableCell>
-                            <TableCell align="center">{row.code}</TableCell>
-                            <TableCell align="center">{row.name}</TableCell>
-                            <TableCell align="center">
-                              {row.typeValue === 0 ? row.value + '%' : formatCurrency(row.value)}
-                            </TableCell>
-                            <TableCell align="center">{formatCurrency(row.maximumValue)}</TableCell>
-                            <TableCell align="center">
-                              {formatCurrency(row.minimumAmount)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.type === 0 ? (
-                                <Chip className="chip-tat-ca" size="small" label="Công khai" />
-                              ) : (
-                                <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
-                              )}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.typeValue === 0 ? (
-                                <Chip className="chip-tat-ca" size="small" label="Phần trăm" />
-                              ) : (
-                                <Chip className="chip-gioi-han" size="small" label="Giá tiền" />
-                              )}
-                            </TableCell>
-                            <TableCell align="center">
-                              {dayjs(row.startDate).format('DD/MM/YYYY HH:mm')}
-                            </TableCell>
-                            <TableCell align="center">
-                              {dayjs(row.endDate).format('DD/MM/YYYY HH:mm')}
-                            </TableCell>
-                            <TableCell align="center">
-                              <Button
-                                variant="contained"
-                                onClick={() => handleVoucher(row.id)}
-                                color="success">
-                                <b>chọn</b>
-                              </Button>
+                      {listVoucher.length > 0 ? (
+                        <TableBody>
+                          {listVoucher.map((row) => (
+                            <TableRow
+                              key={row.id}
+                              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                              <TableCell align="center">{row.stt}</TableCell>
+                              <TableCell align="center">{row.code}</TableCell>
+                              <TableCell align="center">{row.name}</TableCell>
+                              <TableCell align="center">
+                                {row.typeValue === 0 ? row.value + '%' : formatCurrency(row.value)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {formatCurrency(row.maximumValue)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {formatCurrency(row.minimumAmount)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {row.type === 0 ? (
+                                  <Chip className="chip-tat-ca" size="small" label="Công khai" />
+                                ) : (
+                                  <Chip className="chip-gioi-han" size="small" label="Cá nhân" />
+                                )}
+                              </TableCell>
+                              <TableCell align="center">
+                                {row.typeValue === 0 ? (
+                                  <Chip className="chip-tat-ca" size="small" label="Phần trăm" />
+                                ) : (
+                                  <Chip className="chip-gioi-han" size="small" label="Giá tiền" />
+                                )}
+                              </TableCell>
+                              <TableCell align="center">
+                                {dayjs(row.startDate).format('DD/MM/YYYY HH:mm')}
+                              </TableCell>
+                              <TableCell align="center">
+                                {dayjs(row.endDate).format('DD/MM/YYYY HH:mm')}
+                              </TableCell>
+                              <TableCell align="center">
+                                <Button
+                                  variant="contained"
+                                  onClick={() => handleVoucher(row.id)}
+                                  color="success">
+                                  <b>chọn</b>
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      ) : (
+                        <TableBody>
+                          <TableRow>
+                            <TableCell align="center" style={{ width: '100%' }}>
+                              <img
+                                style={{ width: '1100px', height: '300px' }}
+                                src={require('../../../assets/image/no-data.png')}
+                                alt="No-data"
+                              />
                             </TableCell>
                           </TableRow>
-                        ))}
-                      </TableBody>
+                        </TableBody>
+                      )}
                     </Table>
                     <Pagination
                       variant="outlined"
@@ -2987,9 +3021,10 @@ export default function SellFrom({
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Phí vận chuyển</Typography>
                 <TextField
-                  value={giaoHang ? formatPrice(shipTotal) : '0 ₫'}
+                  value={giaoHang ? formatPrice(shipTotal) : '0 VNĐ '}
                   onChange={handleChangeShip}
-                  variant="outlined"
+                  variant="standard"
+                  sx={{ width: '100px' }}
                   inputProps={{
                     inputMode: 'numeric',
                     pattern: '[0-9]*',
@@ -3027,14 +3062,24 @@ export default function SellFrom({
                 </Typography>
                 <Typography style={{ fontWeight: 700, color: 'red' }}>
                   {totalMoneyPayOrderByIdBill
-                    ? totalMoneyPayOrderByIdBill.toLocaleString('vi-VN', {
-                        style: 'currency',
-                        currency: 'VND',
-                      })
+                    ? formatCurrency(totalMoneyPayOrderByIdBill)
                     : '0 VNĐ'}
                 </Typography>
               </Stack>
-              <Stack
+              {totalMoneyPayOrderByIdBill - totalPrice !== 0 && (
+                <Stack
+                  sx={{ marginTop: '20px' }}
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  spacing={2}>
+                  <Typography style={{ fontSize: '20px', fontWeight: 700 }}>Tiền thừa</Typography>
+                  <Typography style={{ color: 'red', fontWeight: 700 }}>
+                    {formatCurrency(customerAmount - (totalPrice - totalMoneyPayOrderByIdBill))}
+                  </Typography>
+                </Stack>
+              )}
+              {/* <Stack
                 sx={{ marginTop: '20px' }}
                 direction="row"
                 justifyContent="space-between"
@@ -3050,7 +3095,7 @@ export default function SellFrom({
                       : totalPrice - totalMoneyPayOrderByIdBill,
                   )}{' '}
                 </Typography>
-              </Stack>
+              </Stack> */}
             </Box>
           </Grid2>
         </Grid2>
@@ -3131,11 +3176,14 @@ export default function SellFrom({
                     display: paymentMethod === '0' || paymentMethod === '1' ? 'block' : 'none',
                   }}
                   size="small"
-                  onChange={(e) => {
-                    const inputValue = e.target.value.replace(/\D/g, '')
+                  // onChange={(e) => {
+                  //   const inputValue = e.target.value.replace(/\D/g, '')
 
-                    setCustomerAmount(formatCurrency(inputValue))
-                    setErrorAddBill({ ...errorAddBill, customerAmount: '' })
+                  //   setCustomerAmount(formatCurrency(inputValue))
+                  //   setErrorAddBill({ ...errorAddBill, customerAmount: '' })
+                  // }}
+                  onChange={(e) => {
+                    setCustomerAmount(e.target.value)
                   }}
                   value={customerAmount}
                   error={Boolean(errorAddBill.customerAmount)}
@@ -3210,24 +3258,19 @@ export default function SellFrom({
                   </Table>
                 </TableContainer>
               </div>
-              <Stack
-                sx={{ marginTop: '20px' }}
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                spacing={2}>
-                <Typography style={{ fontSize: '20px', fontWeight: 700 }}>
-                  {totalPrice < totalMoneyPayOrderByIdBill ? 'Tiền thừa:' : 'Tiền thiếu'}
-                </Typography>
-                <Typography style={{ color: 'red', fontWeight: 700 }}>
-                  {formatCurrency(
-                    totalPrice - totalMoneyPayOrderByIdBill < 0
-                      ? Math.abs(totalPrice - totalMoneyPayOrderByIdBill)
-                      : totalPrice - totalMoneyPayOrderByIdBill,
-                  )}{' '}
-                </Typography>
-              </Stack>
-
+              {totalMoneyPayOrderByIdBill - totalPrice !== 0 && (
+                <Stack
+                  sx={{ marginTop: '20px' }}
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  spacing={2}>
+                  <Typography style={{ fontSize: '20px', fontWeight: 700 }}>Tiền thừa</Typography>
+                  <Typography style={{ color: 'red', fontWeight: 700 }}>
+                    {formatCurrency(customerAmount - (totalPrice - totalMoneyPayOrderByIdBill))}
+                  </Typography>
+                </Stack>
+              )}
               <div
                 style={{
                   display: 'flex',

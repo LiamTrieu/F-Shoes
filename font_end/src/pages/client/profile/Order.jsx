@@ -103,7 +103,14 @@ export default function Order() {
   return (
     <>
       <div className="order">
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: 'pink' }}>
+        <Box
+          sx={{
+            mt: 2,
+            borderBottom: 1,
+            borderColor: 'divider',
+            backgroundColor: '#EEE5DE',
+            borderRadius: '8px',
+          }}>
           <Tabs value={valueTabHD} onChange={handleChangeTab} className="tabSttHD">
             <Tab label={'Tất cả'} key={'tabSttHd all'} value={'all'}></Tab>
             {listSttHD.map((row, i) => (
@@ -118,6 +125,7 @@ export default function Order() {
             border: 'none',
             backgroundColor: 'white',
             marginBottom: '20px',
+            borderRadius: '10px',
           }}
           placeholder="Tìm kiếm theo mã hóa đơn"
           size="small"

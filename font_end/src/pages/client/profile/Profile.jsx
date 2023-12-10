@@ -44,7 +44,13 @@ export default function Profile({ children }) {
         <Grid container spacing={2}>
           <Grid item xs={3}>
             <List
-              sx={{ width: '100%', maxWidth: 250, height: '100%', bgcolor: 'background.paper' }}
+              sx={{
+                width: '100%',
+                maxWidth: 300,
+                height: '95%',
+                bgcolor: 'background.paper',
+                mt: 2,
+              }}
               component="nav"
               aria-labelledby="nested-list-subheader">
               <div style={{ display: 'flex', alignContent: 'center' }}>

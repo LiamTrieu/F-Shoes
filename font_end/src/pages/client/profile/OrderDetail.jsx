@@ -427,7 +427,7 @@ export default function OrderDetail() {
             variant="outlined"
             className="them-moi"
             color="cam"
-            style={{ marginRight: '5px' }}
+            style={{ marginRight: '5px', marginBottom: '5px' }}
             onClick={() => setOpenDialog(true)}>
             Chi tiết
           </Button>

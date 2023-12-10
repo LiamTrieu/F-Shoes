@@ -308,6 +308,8 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
                 />
               </Box>
               <div style={{ width: '30%' }}>
+                <b> {formatCurrency(minMaxPriceProduct.minPrice)}</b>
+                <b style={{ float: 'right' }}>{formatCurrency(minMaxPriceProduct.maxPrice)}</b>
                 <ListItem className="list-item">
                   <AirbnbSlider
                     onChangeCommitted={(_, value) => {
