@@ -181,7 +181,7 @@ export default function SellFrom({
   useEffect(() => {
     fetchPayOrderByIdBill(idBill)
     fetchTotalMoneyPayOrderByIdBill(idBill)
-  }, [])
+  }, [idBill])
 
   const [searchKhachHang, setSearchKhachHang] = useState({
     nameSearch: '',
@@ -1241,7 +1241,6 @@ export default function SellFrom({
       percentMoney: percentMoney === 0 ? 0 : percentMoney,
       desiredReceiptDate: timeShip ? timeShip : '',
     }
-    console.log(data, '=0=0=0=0=0')
 
     const title = 'Xác nhận đặt hàng ?'
     const text = ''
@@ -1494,6 +1493,14 @@ export default function SellFrom({
     })
   }, [listProductDetailBill, idBill])
 
+  const ExcessMoney = (customerAmount, totalPrice, totalMoneyPayOrderByIdBill) => {
+    const sanitizedCustomerAmount = parseInt(String(customerAmount).replace(/\D/g, ''), 10)
+
+    const remainingAmount = totalPrice - totalMoneyPayOrderByIdBill
+
+    return sanitizedCustomerAmount - remainingAmount
+  }
+
   return (
     <>
       <TableContainer component={Paper} variant="elevation" sx={{ mb: 4 }}>
@@ -1502,10 +1509,12 @@ export default function SellFrom({
           sx={{
             borderBottom: '1px dotted gray',
           }}>
-          <DeleteForeverIcon
-            style={{ paddingTop: '8px', color: 'red' }}
-            onClick={() => deleteProductDetail(idBill, selectedProductIds)}
-          />
+          <Tooltip title="Xóa sản phẩm">
+            <DeleteForeverIcon
+              style={{ paddingTop: '8px', color: 'red' }}
+              onClick={() => deleteProductDetail(idBill, selectedProductIds)}
+            />
+          </Tooltip>
           <Typography fontWeight={'bold'} variant="h6" display={'inline'}>
             Sản phẩm
           </Typography>
@@ -3075,7 +3084,9 @@ export default function SellFrom({
                   spacing={2}>
                   <Typography style={{ fontSize: '20px', fontWeight: 700 }}>Tiền thừa</Typography>
                   <Typography style={{ color: 'red', fontWeight: 700 }}>
-                    {formatCurrency(customerAmount - (totalPrice - totalMoneyPayOrderByIdBill))}
+                    {formatCurrency(
+                      ExcessMoney(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
+                    )}
                   </Typography>
                 </Stack>
               )}
@@ -3176,15 +3187,15 @@ export default function SellFrom({
                     display: paymentMethod === '0' || paymentMethod === '1' ? 'block' : 'none',
                   }}
                   size="small"
-                  // onChange={(e) => {
-                  //   const inputValue = e.target.value.replace(/\D/g, '')
-
-                  //   setCustomerAmount(formatCurrency(inputValue))
-                  //   setErrorAddBill({ ...errorAddBill, customerAmount: '' })
-                  // }}
                   onChange={(e) => {
-                    setCustomerAmount(e.target.value)
+                    const inputValue = e.target.value.replace(/\D/g, '')
+
+                    setCustomerAmount(formatCurrency(inputValue))
+                    setErrorAddBill({ ...errorAddBill, customerAmount: '' })
                   }}
+                  // onChange={(e) => {
+                  //   setCustomerAmount(e.target.value)
+                  // }}
                   value={customerAmount}
                   error={Boolean(errorAddBill.customerAmount)}
                   helperText={errorAddBill.customerAmount}
@@ -3267,7 +3278,9 @@ export default function SellFrom({
                   spacing={2}>
                   <Typography style={{ fontSize: '20px', fontWeight: 700 }}>Tiền thừa</Typography>
                   <Typography style={{ color: 'red', fontWeight: 700 }}>
-                    {formatCurrency(customerAmount - (totalPrice - totalMoneyPayOrderByIdBill))}
+                    {formatCurrency(
+                      ExcessMoney(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
+                    )}
                   </Typography>
                 </Stack>
               )}

@@ -485,11 +485,7 @@ public class AdminSellServiceImpl implements AdminSellService {
     public Boolean deleteTransaction(String idBill) {
         try {
 //            Transaction getONe = adminTransactionRepository.getTransactionByIdBill(idBill);
-
-
             transactionRepository.deleteById(idBill);
-
-
             return true;
         } catch (Exception e) {
             return false;

@@ -249,6 +249,7 @@ export default function CartProductHome({ products, colmd, collg }) {
                         color: 'white',
                         transform: 'rotate(32deg)',
                         transformOrigin: '0% 0%',
+                        boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.3)',
                       }}>
                       <Typography sx={{ ml: 6.7, fontWeight: 700 }}>NEW</Typography>
                     </div>

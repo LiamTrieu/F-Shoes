@@ -285,127 +285,76 @@ export default function Cart() {
                     </TableCell>
                   </TableRow>
                 </TableHead>
+                {amountProduct > 0 ? (
+                  <TableBody>
+                    {product.map((cart) => (
+                      <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        <TableCell>
+                          <Checkbox
+                            checked={productSelect.findIndex((e) => e.id === cart.id) >= 0}
+                            size="small"
+                            onClick={(e) => onChangeCheck(cart, e.target.checked)}
+                          />
+                        </TableCell>
 
-                <TableBody>
-                  {amountProduct > 0 ? (
-                    <div>
-                      {product.map((cart) => (
-                        <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                          <TableCell>
-                            <Checkbox
-                              checked={productSelect.findIndex((e) => e.id === cart.id) >= 0}
-                              size="small"
-                              onClick={(e) => onChangeCheck(cart, e.target.checked)}
-                            />
-                          </TableCell>
-
-                          <TableCell>
-                            <div style={{ position: 'relative', display: 'inline-block' }}>
-                              <img src={cart.image[0]} alt={cart.name} width={70} />
-                              <div
-                                className="delete-product-cart"
-                                onClick={() => {
-                                  const updatedProduct = product.filter(
-                                    (item) => item.id !== cart.id,
+                        <TableCell>
+                          <div style={{ position: 'relative', display: 'inline-block' }}>
+                            <img src={cart.image[0]} alt={cart.name} width={70} />
+                            <div
+                              className="delete-product-cart"
+                              onClick={() => {
+                                const updatedProduct = product.filter((item) => item.id !== cart.id)
+                                dispatch(setCart(updatedProduct))
+                              }}>
+                              xóa
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 1000, width: '30%' }} align="center">
+                          {cart.name}
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 1000, width: '10%' }} align="center">
+                          <b style={{ margin: 0 }}>
+                            <select
+                              onClick={() => {
+                                setSizes([])
+                                getListSize(cart)
+                              }}
+                              onChange={(e) => {
+                                chageSize(e.target.value, cart.id)
+                              }}
+                              value={
+                                parseFloat(cart.size) % 1 === 0
+                                  ? parseFloat(cart.size).toFixed(0)
+                                  : parseFloat(cart.size).toFixed(1)
+                              }>
+                              <option value={cart.id}>
+                                {parseFloat(cart.size) % 1 === 0
+                                  ? parseFloat(cart.size).toFixed(0)
+                                  : parseFloat(cart.size).toFixed(1)}
+                              </option>
+                              {sizes &&
+                                sizes
+                                  .filter(
+                                    (e) =>
+                                      e.id !== cart.id &&
+                                      product.filter((f) => f.id === e.id).length <= 0,
                                   )
-                                  dispatch(setCart(updatedProduct))
-                                }}>
-                                xóa
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell sx={{ fontWeight: 1000, width: '30%' }} align="center">
-                            {cart.name}
-                          </TableCell>
-                          <TableCell sx={{ fontWeight: 1000, width: '10%' }} align="center">
-                            <b style={{ margin: 0 }}>
-                              <select
-                                onClick={() => {
-                                  setSizes([])
-                                  getListSize(cart)
-                                }}
-                                onChange={(e) => {
-                                  chageSize(e.target.value, cart.id)
-                                }}
-                                value={
-                                  parseFloat(cart.size) % 1 === 0
-                                    ? parseFloat(cart.size).toFixed(0)
-                                    : parseFloat(cart.size).toFixed(1)
-                                }>
-                                <option value={cart.id}>
-                                  {parseFloat(cart.size) % 1 === 0
-                                    ? parseFloat(cart.size).toFixed(0)
-                                    : parseFloat(cart.size).toFixed(1)}
-                                </option>
-                                {sizes &&
-                                  sizes
-                                    .filter(
-                                      (e) =>
-                                        e.id !== cart.id &&
-                                        product.filter((f) => f.id === e.id).length <= 0,
+                                  .map((size) => {
+                                    return (
+                                      <option value={size.id} key={`size${size.id}`}>
+                                        {parseFloat(size.size) % 1 === 0
+                                          ? parseFloat(size.size).toFixed(0)
+                                          : parseFloat(size.size).toFixed(1)}
+                                      </option>
                                     )
-                                    .map((size) => {
-                                      return (
-                                        <option value={size.id} key={`size${size.id}`}>
-                                          {parseFloat(size.size) % 1 === 0
-                                            ? parseFloat(size.size).toFixed(0)
-                                            : parseFloat(size.size).toFixed(1)}
-                                        </option>
-                                      )
-                                    })}
-                              </select>
-                            </b>
-                          </TableCell>
-                          <TableCell align="center">
-                            {' '}
-                            <Typography fontFamily={'monospace'} fontWeight={700} color={'red'}>
-                              {promotionByProductDetail.map((item, index) => {
-                                const isDiscounted = item.idProductDetail === cart.id && item.value
-
-                                return (
-                                  <div key={index}>
-                                    {isDiscounted ? (
-                                      <div>
-                                        <div className="promotion-price">{`${formatPrice(
-                                          cart.gia,
-                                        )} `}</div>
-                                        <div>
-                                          <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                            {`${formatPrice(
-                                              calculateDiscountedPrice(cart.gia, item.value),
-                                            )} `}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    ) : null}
-                                  </div>
-                                )
-                              })}
-
-                              {!promotionByProductDetail.some(
-                                (item) => item.idProductDetail === cart.id && item.value,
-                              ) && <div>{`${formatPrice(cart.gia)} `}</div>}
-                            </Typography>
-                          </TableCell>
-                          <TableCell align="center">
-                            <div className="quantity-control">
-                              <button onClick={() => onChangeSL(cart, -1)}>-</button>
-                              <input
-                                onChange={(e) => {
-                                  let newValue = e.target.value.replace(/\D/, '')
-                                  newValue =
-                                    newValue !== ''
-                                      ? Math.max(1, Math.min(99, Number(newValue)))
-                                      : 1
-                                  dispatch(updateCart({ ...cart, soLuong: newValue }))
-                                }}
-                                value={cart.soLuong}
-                                min="1"
-                              />
-                              <button onClick={() => onChangeSL(cart, 1)}>+</button>
-                            </div>
-                          </TableCell>
-                          <TableCell align="center">
+                                  })}
+                            </select>
+                          </b>
+                        </TableCell>
+                        <TableCell align="center">
+                          {' '}
+                          <Typography fontFamily={'monospace'} fontWeight={700} color={'red'}>
                             {promotionByProductDetail.map((item, index) => {
                               const isDiscounted = item.idProductDetail === cart.id && item.value
 
@@ -413,11 +362,13 @@ export default function Cart() {
                                 <div key={index}>
                                   {isDiscounted ? (
                                     <div>
+                                      <div className="promotion-price">{`${formatPrice(
+                                        cart.gia,
+                                      )} `}</div>
                                       <div>
                                         <span style={{ color: 'red', fontWeight: 'bold' }}>
                                           {`${formatPrice(
-                                            cart.soLuong *
-                                              calculateDiscountedPrice(cart.gia, item.value),
+                                            calculateDiscountedPrice(cart.gia, item.value),
                                           )} `}
                                         </span>
                                       </div>
@@ -429,16 +380,60 @@ export default function Cart() {
 
                             {!promotionByProductDetail.some(
                               (item) => item.idProductDetail === cart.id && item.value,
-                            ) && (
-                              <div style={{ color: 'red', fontWeight: 'bold' }}>{`${formatPrice(
-                                cart.soLuong * cart.gia,
-                              )} `}</div>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </div>
-                  ) : (
+                            ) && <div>{`${formatPrice(cart.gia)} `}</div>}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <div className="quantity-control">
+                            <button onClick={() => onChangeSL(cart, -1)}>-</button>
+                            <input
+                              onChange={(e) => {
+                                let newValue = e.target.value.replace(/\D/, '')
+                                newValue =
+                                  newValue !== '' ? Math.max(1, Math.min(99, Number(newValue))) : 1
+                                dispatch(updateCart({ ...cart, soLuong: newValue }))
+                              }}
+                              value={cart.soLuong}
+                              min="1"
+                            />
+                            <button onClick={() => onChangeSL(cart, 1)}>+</button>
+                          </div>
+                        </TableCell>
+                        <TableCell align="center">
+                          {promotionByProductDetail.map((item, index) => {
+                            const isDiscounted = item.idProductDetail === cart.id && item.value
+
+                            return (
+                              <div key={index}>
+                                {isDiscounted ? (
+                                  <div>
+                                    <div>
+                                      <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                        {`${formatPrice(
+                                          cart.soLuong *
+                                            calculateDiscountedPrice(cart.gia, item.value),
+                                        )} `}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : null}
+                              </div>
+                            )
+                          })}
+
+                          {!promotionByProductDetail.some(
+                            (item) => item.idProductDetail === cart.id && item.value,
+                          ) && (
+                            <div style={{ color: 'red', fontWeight: 'bold' }}>{`${formatPrice(
+                              cart.soLuong * cart.gia,
+                            )} `}</div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                ) : (
+                  <TableBody>
                     <TableRow>
                       <TableCell colSpan={7} align="center" style={{ width: '100%' }}>
                         <img
@@ -448,8 +443,8 @@ export default function Cart() {
                         />
                       </TableCell>
                     </TableRow>
-                  )}
-                </TableBody>
+                  </TableBody>
+                )}
               </Table>
             </TableContainer>
             <Button component={Link} to="/products" variant="outlined" color="cam">
