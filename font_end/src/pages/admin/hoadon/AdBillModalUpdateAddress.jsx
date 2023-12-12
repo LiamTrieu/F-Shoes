@@ -201,7 +201,8 @@ export default function ModalAdBillUpdateAddress({
   const handleDetailDiaChi = (idDiaChi) => {
     setiddcSelected(idDiaChi)
     DiaChiApi.getById(idDiaChi).then((response) => {
-      const { name, phoneNumber, specificAddress, provinceId, districtId } = response.data.data
+      const { name, phoneNumber, specificAddress, provinceId, districtId, wardId } =
+        response.data.data
 
       loadTinh()
       loadHuyen(provinceId)
@@ -231,6 +232,48 @@ export default function ModalAdBillUpdateAddress({
           provinceId: tinhValue ? tinhValue.id : null,
           districtId: huyenValue ? huyenValue.id : null,
           wardId: xaValue ? xaValue.id : null,
+        })
+        const filtelService = {
+          shop_id: '3911708',
+          from_district: '3440',
+          to_district: districtId,
+        }
+
+        ghnAPI.getServiceId(filtelService).then((response) => {
+          const serviceId = response.data.body.serviceId
+          const totalWeight = listBillDetail.reduce((acc, item) => acc + parseInt(item.weight), 0)
+          const filterTotal = {
+            from_district_id: '3440',
+            service_id: serviceId,
+            to_district_id: districtId,
+            to_ward_code: wardId,
+            weight: totalWeight,
+            insurance_value: '10000',
+          }
+          ghnAPI.getTotal(filterTotal).then((response) => {
+            setPhiShip(response.data.body.total)
+            const moneyShip = response.data.body.total
+
+            setHdBillReq((hdBillReq) => ({
+              ...hdBillReq,
+              moneyShip: moneyShip,
+            }))
+            const filtelTime = {
+              from_district_id: '3440',
+              from_ward_code: '13010',
+              to_district_id: districtId,
+              to_ward_code: wardId,
+              service_id: serviceId,
+            }
+            ghnAPI.getime(filtelTime).then((response) => {
+              setTimeShip(response.data.body.leadtime * 1000)
+              const desiredReceiptDate = response.data.body.leadtime * 1000
+              setHdBillReq((hdBillReq) => ({
+                ...hdBillReq,
+                desiredReceiptDate: desiredReceiptDate,
+              }))
+            })
+          })
         })
 
         setHdBillReq({
