@@ -1,9 +1,6 @@
 package com.fshoes.core.admin.sell.controller;
 
-import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
-import com.fshoes.core.admin.sell.model.request.AddBillRequest;
-import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
-import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
+import com.fshoes.core.admin.sell.model.request.*;
 import com.fshoes.core.admin.sell.service.AdminSellService;
 import com.fshoes.core.admin.voucher.model.request.AdCallVoucherOfSell;
 import com.fshoes.core.admin.voucher.service.AdVoucherService;
@@ -134,6 +131,11 @@ public class SellController {
     @PutMapping("/add-bill/{id}")
     public ObjectRespone addBill(@RequestBody AddBillRequest request, @PathVariable String id) {
         return new ObjectRespone(getSell.addBill(request, id));
+    }
+
+    @PutMapping("/add-address-bill/{id}")
+    public ObjectRespone addAddressBill(@RequestBody AdAddressBillRequest request, @PathVariable String id) {
+        return new ObjectRespone(getSell.addAdressBill(request, id));
     }
 
     @PutMapping("/pay-order/{id}")

@@ -14,8 +14,8 @@ const sellApi = {
     return axiosAdmin.get(urlGet)
   },
 
-  getAllProductCart: () => {
-    const urlGetAll = `/sell/get-one-bill`
+  getAllBillId: (idBill) => {
+    const urlGetAll = `/sell/get-one-bill?idBill=${idBill}`
     return axiosAdmin.get(urlGetAll)
   },
 
@@ -84,6 +84,11 @@ const sellApi = {
 
   addBill: (data, id) => {
     const url = `/sell/add-bill/${id}`
+    return axiosAdmin.put(url, data)
+  },
+
+  addAddressBill: (data, id) => {
+    const url = `/sell/add-address-bill/${id}`
     return axiosAdmin.put(url, data)
   },
   payOrder: (data, id) => {
