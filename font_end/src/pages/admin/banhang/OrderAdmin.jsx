@@ -25,6 +25,9 @@ export default function OrderAdmin() {
   const [selectBill, setSelectBill] = useState('')
   const [soLuong, setSoLuong] = useState([])
   const [nameCustomer, setNameCustomer] = useState('')
+  const [huyenName, setHuyenName] = useState('')
+  const [tinhName, setTinhName] = useState('')
+  const [xaName, setXaName] = useState('')
   const [detailDiaChi, setDetailDiaChi] = useState({
     name: '',
     phoneNumber: '',
@@ -77,6 +80,9 @@ export default function OrderAdmin() {
       wardId: '',
       type: 0,
     })
+    setTinhName('')
+    setHuyenName('')
+    setXaName('')
     if (listBill.length === 5) {
       toast.warning('Tối đa 5 hóa đơn', { position: toast.POSITION.TOP_CENTER })
       return
@@ -196,6 +202,12 @@ export default function OrderAdmin() {
           nameCustomer={nameCustomer}
           setDetailDiaChi={setDetailDiaChi}
           detailDiaChi={detailDiaChi}
+          setXaName={setXaName}
+          xaName={xaName}
+          setHuyenName={setHuyenName}
+          huyenName={huyenName}
+          setTinhName={setTinhName}
+          tinhName={tinhName}
         />
       )}
     </Container>
