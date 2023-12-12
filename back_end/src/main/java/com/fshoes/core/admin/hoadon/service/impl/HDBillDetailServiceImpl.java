@@ -50,8 +50,6 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     @Autowired
     private AdProductDetailRepository adProductDetailRepository;
 
-    @Autowired
-    private AdminSellGetProductRepository adminSellGetProductRepository;
 
     @Autowired
     private ClientBillDetailRepository clientBillDetailRepository;
@@ -107,7 +105,12 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             bill.setMoneyAfter(tienCanThanhToan);
             hdBillRepositpory.save(bill);
 
-            billHistory.setNote("Đã thêm " + hdBillDetailRequest.getQuantity() + " sản phẩm" + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+            billHistory.setNote("Đã thêm: x" + hdBillDetailRequest.getQuantity() +
+                    " " + productDetail.getProduct().getName() +
+                    " " + productDetail.getMaterial().getName() +
+                    " " + productDetail.getSole().getName() +
+                    " " + productDetail.getColor().getName() +
+                    " [" + productDetail.getSize().getSize() + "]");
             hdBillHistoryRepository.save(billHistory);
 
             messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail",
@@ -193,7 +196,11 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                     clientBillDetailRepository.getBillDetailsByBillId(bill.getId()));
         }
         billHistory.setBill(bill);
-        billHistory.setNote("Đã xoá 1 sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+        billHistory.setNote("Đã xoá: x1 " + productDetail.getProduct().getName() +
+                " " + productDetail.getMaterial().getName() +
+                " " + productDetail.getSole().getName() +
+                " " + productDetail.getColor().getName() +
+                " [" + productDetail.getSize().getSize() + "]");
         billHistory.setAccount(userLogin.getUserLogin());
         hdBillHistoryRepository.save(billHistory);
 
@@ -241,7 +248,11 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                     clientBillDetailRepository.getBillDetailsByBillId(bill.getId()));
         }
         billHistory.setBill(bill);
-        billHistory.setNote("Đã thêm 1 sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+        billHistory.setNote("Đã thêm: x1 " + productDetail.getProduct().getName() +
+                " " + productDetail.getMaterial().getName() +
+                " " + productDetail.getSole().getName() +
+                " " + productDetail.getColor().getName() +
+                " [" + productDetail.getSize().getSize() + "]");
         billHistory.setAccount(userLogin.getUserLogin());
         hdBillHistoryRepository.save(billHistory);
         List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
@@ -291,13 +302,21 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         BillHistory billHistory = new BillHistory();
         if (billDetail.getQuantity() > quantity) {
             billHistory.setBill(bill);
-            billHistory.setNote("Đã xoá " + quantity + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+            billHistory.setNote("Đã xoá: x" + quantity + " " + productDetail.getProduct().getName() +
+                    " " + productDetail.getMaterial().getName() +
+                    " " + productDetail.getSole().getName() +
+                    " " + productDetail.getColor().getName() +
+                    " [" + productDetail.getSize().getSize() + "]");
             billHistory.setAccount(userLogin.getUserLogin());
             hdBillHistoryRepository.save(billHistory);
             hdBillDetailRepository.save(billDetail);
         } else {
             billHistory.setBill(bill);
-            billHistory.setNote("Đã thêm " + quantity + " sản phẩm " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize());
+            billHistory.setNote("Đã thêm: x" + quantity + " " + productDetail.getProduct().getName() +
+                    " " + productDetail.getMaterial().getName() +
+                    " " + productDetail.getSole().getName() +
+                    " " + productDetail.getColor().getName() +
+                    " [" + productDetail.getSize().getSize() + "]");
             billHistory.setAccount(userLogin.getUserLogin());
             hdBillHistoryRepository.save(billHistory);
         }
@@ -337,7 +356,11 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                 BillHistory billHistory = BillHistory.builder()
                         .bill(bill)
                         .account(userLogin.getUserLogin())
-                        .note("Đã xoá sản phẩm " + hdBillDetailRequest.getQuantity() + " " + productDetail.getProduct().getName() + " - " + productDetail.getColor().getName() + " - " + productDetail.getSize().getSize())
+                        .note("Đã xoá: x" + hdBillDetailRequest.getQuantity() + " " + productDetail.getProduct().getName() +
+                                " " + productDetail.getMaterial().getName() +
+                                " " + productDetail.getSole().getName() +
+                                " " + productDetail.getColor().getName() +
+                                " [" + productDetail.getSize().getSize() + "]")
                         .build();
                 hdBillHistoryRepository.save(billHistory);
                 hdBillDetailRepository.delete(billDetail);
@@ -384,7 +407,11 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                 billDetail.setStatus(1);
                 billDetail.setNote(hdBillDetailRequest.getNote());
                 hdBillDetailRepository.save(billDetail);
-                billHistory.setNote(hdBillDetailRequest.getNote());
+                billHistory.setNote("Hoàn sản phẩm: x" + hdBillDetailRequest.getQuantity() +
+                        " " + billDetail.getProductDetail().getProduct().getName() +
+                        " " + billDetail.getProductDetail().getMaterial().getName() +
+                        " " + billDetail.getProductDetail().getSole().getName() +
+                        " " + billDetail.getProductDetail().getColor().getName() + "[" + billDetail.getProductDetail().getSize().getSize() + "]");
                 hdBillHistoryRepository.save(billHistory);
             } else {
                 billDetail.setQuantity(billDetail.getQuantity() - hdBillDetailRequest.getQuantity());
@@ -398,11 +425,15 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
                         .build();
                 newBillDetail.setStatus(1);
                 hdBillDetailRepository.save(newBillDetail);
-                billHistory.setNote("Hoàn " + hdBillDetailRequest.getQuantity() + " sản phẩm " + billDetail.getProductDetail().getProduct().getName() + " - " + billDetail.getProductDetail().getSize().getSize() + " - " + billDetail.getProductDetail().getColor().getName());
+                billHistory.setNote("Hoàn sản phẩm: x" + hdBillDetailRequest.getQuantity() +
+                        " " + billDetail.getProductDetail().getProduct().getName() +
+                        " " + billDetail.getProductDetail().getMaterial().getName() +
+                        " " + billDetail.getProductDetail().getSole().getName() +
+                        " " + billDetail.getProductDetail().getColor().getName() + "[" + billDetail.getProductDetail().getSize().getSize() + "]");
                 hdBillHistoryRepository.save(billHistory);
             }
             ProductDetail detail = billDetail.getProductDetail();
-            detail.setAmount(detail.getAmount() + hdBillDetailRequest.getQuantity());
+            detail.setQuantityReturn(detail.getQuantityReturn() + hdBillDetailRequest.getQuantity());
             productDetailRepository.save(detail);
             List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
 

@@ -38,6 +38,7 @@ import { Stomp } from '@stomp/stompjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { socketUrl } from '../../../services/url'
 import * as ExcelJS from 'exceljs'
+import FileUploadIcon from '@mui/icons-material/FileUpload'
 
 var stompClient = null
 export default function AdPromotionPage() {
@@ -233,16 +234,8 @@ export default function AdPromotionPage() {
                   ),
                 }}
               />
-              <Button
-                sx={{ borderRadius: '8px' }}
-                color="cam"
-                variant="outlined"
-                component={Link}
-                to="/admin/promotion/add">
-                <AddIcon />
-                <Typography sx={{ ml: 0, fontWeight: '500' }}>Thêm mới</Typography>
-              </Button>
-              {/* <Button
+              <div>
+                {/* <Button
                 sx={{ borderRadius: '8px' }}
                 color="cam"
                 variant="outlined"
@@ -256,6 +249,24 @@ export default function AdPromotionPage() {
                 onClick={handleExportTemplate}>
                 <FileDownloadIcon />
               </Button> */}
+                <Button
+                  onClick={exportToExcel}
+                  disableElevation
+                  color="cam"
+                  variant="outlined"
+                  style={{ marginRight: '10px' }}>
+                  <FileUploadIcon /> Export Excel
+                </Button>
+                <Button
+                  sx={{ borderRadius: '8px' }}
+                  color="cam"
+                  variant="outlined"
+                  component={Link}
+                  to="/admin/promotion/add">
+                  <AddIcon />
+                  <Typography sx={{ ml: 0, fontWeight: '500' }}>Thêm mới</Typography>
+                </Button>
+              </div>
             </Stack>
             <Stack
               my={2}
@@ -337,14 +348,6 @@ export default function AdPromotionPage() {
                   <MenuItem></MenuItem>
                 </Select>
               </div>
-              <Button
-                onClick={exportToExcel}
-                disableElevation
-                color="cam"
-                variant="outlined"
-                style={{ marginLeft: '10px' }}>
-                Export Excel
-              </Button>
             </Stack>
           </Box>
         </Paper>

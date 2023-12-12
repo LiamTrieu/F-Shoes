@@ -3,6 +3,7 @@ import {
   Autocomplete,
   Box,
   Button,
+  Divider,
   Grid,
   IconButton,
   Modal,
@@ -20,6 +21,18 @@ import dayjs from 'dayjs'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 import hoaDonApi from '../../../api/admin/hoadon/hoaDonApi'
 import { toast } from 'react-toastify'
+import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
+
+const styleModalAddress = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '50vw', md: '45vw' },
+  height: '650px',
+  bgcolor: 'white',
+  borderRadius: '10px',
+}
 
 const styleAdBillModalUpdateAdd = {
   position: 'absolute',
@@ -44,9 +57,13 @@ export default function ModalAdBillUpdateAddress({
   const [selectedHuyen, setSelectedHuyen] = useState(null)
   const [selectedXa, setSelectedXa] = useState(null)
   const [selectedTinhValue, setSelectedTinhValue] = useState(null)
+  const [selectedAddress, setSelectedAddress] = useState(null)
   const [timeShip, setTimeShip] = useState('')
   const [phiShip, setPhiShip] = useState()
+  const [listDiaChiDetail, setListDiaChiDetail] = useState([])
+  const [iddcSelected, setiddcSelected] = useState('')
   const [diaChiCuThe, setDiaChiCuThe] = useState('')
+  const [isShowDiaChi, setIsShowDiaChi] = useState(false)
   const [errorsAA, setErrorsAA] = useState({
     name: '',
     email: '',
@@ -89,8 +106,6 @@ export default function ModalAdBillUpdateAddress({
         setSelectedTinh(tinhValue)
         setSelectedHuyen(huyenValue)
         setSelectedXa(xaValue)
-        console.log('tỉnh value:')
-        console.log(tinhValue)
         setDetailDiaChi({
           ...detailDiaChi,
           specificAddress: address,
@@ -105,7 +120,7 @@ export default function ModalAdBillUpdateAddress({
         }
       }
     }
-    billDetail ? setGiaoHang(billDetail.type === 1) : setGiaoHang(false)
+    billDetail ? setGiaoHang(billDetail.receivingMethod === 1) : setGiaoHang(false)
     billDetail ? setPhiShip(billDetail.moneyShip) : setPhiShip(0)
     billDetail ? setTimeShip(billDetail.desiredReceiptDate) : setTimeShip(null)
     setHdBillReq({
@@ -141,6 +156,15 @@ export default function ModalAdBillUpdateAddress({
     })
   }
 
+  const loadDiaChi = () => {
+    DiaChiApi.getAll(0, billDetail.idCustomer).then((response) => {
+      setListDiaChiDetail(response.data.data.content)
+    })
+  }
+  const handleRadioChange = (id) => {
+    setSelectedAddress(id)
+  }
+
   const handleTinhChange = (_, newValue) => {
     setSelectedTinh(newValue)
     setSelectedTinhValue(newValue)
@@ -172,6 +196,98 @@ export default function ModalAdBillUpdateAddress({
     } else {
       setXa([])
       setDetailDiaChi({ ...detailDiaChi, districtId: '' })
+    }
+  }
+  const handleDetailDiaChi = (idDiaChi) => {
+    setiddcSelected(idDiaChi)
+    DiaChiApi.getById(idDiaChi).then((response) => {
+      const { name, phoneNumber, specificAddress, provinceId, districtId, wardId } =
+        response.data.data
+
+      loadTinh()
+      loadHuyen(provinceId)
+      loadXa(districtId)
+      const addressParts = specificAddress.split(', ')
+      if (addressParts.length === 4) {
+        const [address, xaDetail, huyenDetail, tinhDetail] = addressParts
+        setXaName(xaDetail)
+        setHuyenName(huyenDetail)
+        setTinhName(tinhDetail)
+        setDiaChiCuThe(address)
+
+        const tinhValue = tinh.find((item) => item.provinceName === tinhDetail)
+        const huyenValue = huyen.find((item) => item.districtName === huyenDetail)
+        const xaValue = xa.find((item) => item.wardName === xaDetail)
+
+        if (tinhValue) {
+          loadHuyen(tinhValue.provinceID)
+        }
+
+        setSelectedTinh(tinhValue)
+        setSelectedHuyen(huyenValue)
+        setSelectedXa(xaValue)
+        setDetailDiaChi({
+          ...detailDiaChi,
+          specificAddress: address,
+          provinceId: tinhValue ? tinhValue.id : null,
+          districtId: huyenValue ? huyenValue.id : null,
+          wardId: xaValue ? xaValue.id : null,
+        })
+        const filtelService = {
+          shop_id: '3911708',
+          from_district: '3440',
+          to_district: districtId,
+        }
+
+        ghnAPI.getServiceId(filtelService).then((response) => {
+          const serviceId = response.data.body.serviceId
+          const totalWeight = listBillDetail.reduce((acc, item) => acc + parseInt(item.weight), 0)
+          const filterTotal = {
+            from_district_id: '3440',
+            service_id: serviceId,
+            to_district_id: districtId,
+            to_ward_code: wardId,
+            weight: totalWeight,
+            insurance_value: '10000',
+          }
+          ghnAPI.getTotal(filterTotal).then((response) => {
+            setPhiShip(response.data.body.total)
+            const moneyShip = response.data.body.total
+
+            setHdBillReq((hdBillReq) => ({
+              ...hdBillReq,
+              moneyShip: moneyShip,
+            }))
+            const filtelTime = {
+              from_district_id: '3440',
+              from_ward_code: '13010',
+              to_district_id: districtId,
+              to_ward_code: wardId,
+              service_id: serviceId,
+            }
+            ghnAPI.getime(filtelTime).then((response) => {
+              setTimeShip(response.data.body.leadtime * 1000)
+              const desiredReceiptDate = response.data.body.leadtime * 1000
+              setHdBillReq((hdBillReq) => ({
+                ...hdBillReq,
+                desiredReceiptDate: desiredReceiptDate,
+              }))
+            })
+          })
+        })
+
+        setHdBillReq({
+          ...hdBillReq,
+          fullName: name ? name : null,
+          phoneNumber: phoneNumber ? phoneNumber : null,
+        })
+      }
+    })
+  }
+  const handleConfirm = () => {
+    if (selectedAddress !== iddcSelected) {
+      handleDetailDiaChi(selectedAddress)
+      setIsShowDiaChi(false)
     }
   }
 
@@ -332,6 +448,94 @@ export default function ModalAdBillUpdateAddress({
               <CloseIcon />
             </IconButton>
           </Toolbar>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}>
+            <div style={{ flexShrink: 0 }}>
+              <Button
+                variant="outlined"
+                className="them-moi"
+                color="cam"
+                style={{
+                  marginLeft: 'auto',
+                  marginRight: '25px',
+                  alignSelf: 'flex-end',
+                  marginBottom: '10px',
+                }}
+                onClick={() => {
+                  loadDiaChi()
+                  setIsShowDiaChi(true)
+                  setSelectedAddress(iddcSelected)
+                }}>
+                Chọn địa chỉ
+              </Button>
+              <Modal
+                open={isShowDiaChi}
+                onClose={() => {
+                  setIsShowDiaChi(false)
+                }}>
+                <Box sx={styleModalAddress}>
+                  <p style={{ marginLeft: '20px' }} className="hs-user">
+                    Địa Chỉ của {billDetail.fullName}
+                  </p>
+                  <hr />
+                  <Grid
+                    container
+                    spacing={2}
+                    sx={{ mb: 2, ml: 1, mr: 1, width: '97%', height: '65%' }}
+                    className="gird-dcco">
+                    {listDiaChiDetail.map((item, index) => (
+                      <React.Fragment key={index}>
+                        <Grid item xs={12} md={1}>
+                          <label htmlFor={`address-${index}`}>
+                            <input
+                              type="radio"
+                              style={{ marginTop: '35px' }}
+                              id={`address-${index}`}
+                              name="selectedAddress"
+                              checked={selectedAddress === item.id}
+                              onChange={() => handleRadioChange(item.id)}
+                            />
+                          </label>
+                        </Grid>
+                        <Grid item xs={12} md={6} style={{ display: 'flex' }}>
+                          <label htmlFor={`address-${index}`}>
+                            <Typography className="title-ac-name">{item.name}</Typography>
+                            <Typography className="title-ac-ps">{item.phoneNumber}</Typography>
+                            <Typography className="title-ac-ps1">{item.specificAddress}</Typography>
+                            {item.type === true ? (
+                              <span className="mac-dinh-ac">Mặc định</span>
+                            ) : (
+                              ''
+                            )}
+                          </label>
+                        </Grid>
+                        {index < listDiaChiDetail.length - 1 && (
+                          <Grid item xs={12}>
+                            <Divider sx={{ mt: 2, mb: 2 }} />
+                          </Grid>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </Grid>
+                  <hr />
+                  <div className="btn-adck">
+                    <Button
+                      className="btn-xnck"
+                      disabled={!selectedAddress}
+                      onClick={handleConfirm}>
+                      Xác Nhận
+                    </Button>
+                    <Button className="btn-huyckad" onClick={() => setIsShowDiaChi(false)}>
+                      Hủy
+                    </Button>
+                  </div>
+                </Box>
+              </Modal>
+            </div>
+          </div>
           <Stack>
             <Box p={3} pt={0} pb={2}>
               <Grid container spacing={2} sx={{ mt: 2 }}>

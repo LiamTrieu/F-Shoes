@@ -1,6 +1,8 @@
 package com.fshoes.core.admin.hoadon.repository;
 
+import com.fshoes.core.admin.hoadon.model.request.HDNhanVienSearchRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
+import com.fshoes.core.admin.hoadon.model.respone.HDNhanVienResponse;
 import com.fshoes.repository.BillRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -172,6 +174,7 @@ public interface HDBillRepository extends BillRepository {
                   LEFT JOIN account c ON b.id_customer= c.id
             WHERE b.id = :id AND b.status <> 8
                 AND (
+                    (EXISTS (SELECT 1 FROM account acc WHERE acc.id = :idUserLogin AND acc.role = 1)) OR
                     (b.type = 1 AND b.status = 1) OR
                     (EXISTS (SELECT 1 FROM bill_history bh WHERE bh.id_bill = b.id AND bh.id_reception_staff = :idUserLogin))
                     OR
@@ -182,7 +185,39 @@ public interface HDBillRepository extends BillRepository {
                    
             """, nativeQuery = true)
     HDBillResponse getBillExist(@Param("id") String id,
-                              @Param("idUserLogin") String idUserLogin,
-                              @Param("email") String email);
+                                @Param("idUserLogin") String idUserLogin,
+                                @Param("email") String email);
+
+    @Query(value = "SELECT ROW_NUMBER() OVER (ORDER BY a.created_at DESC) as stt, a.id, a.code, a.avatar, a.email, " +
+            "a.full_name as fullName, a.date_birth as dateBirth, a.phone_number as phoneNumber, " +
+            "a.gender, a.created_at as createdAt, a.status " +
+            "FROM account a " +
+            "LEFT JOIN bill_history bh ON a.id = bh.id_account OR a.id = bh.id_reception_staff " +
+            "WHERE a.role = 0 " +
+            "AND NOT EXISTS (SELECT 1 FROM bill_history bh_inner WHERE bh_inner.id_account = a.id OR bh_inner.id_reception_staff = a.id AND bh_inner.id_bill = :billId) " +
+            "AND a.status = 0 " +
+            "AND (:#{#hdNhanVienSearchRequest.txtSearch} IS NULL OR " +
+            "a.full_name LIKE %:#{#hdNhanVienSearchRequest.txtSearch}% OR " +
+            "a.email LIKE %:#{#hdNhanVienSearchRequest.txtSearch}% OR " +
+            "a.phone_number LIKE %:#{#hdNhanVienSearchRequest.txtSearch}%) " +
+            "ORDER BY a.created_at DESC", nativeQuery = true)
+    Page<HDNhanVienResponse> getListNhanVien(@Param("billId") String billId,
+                                             @Param("hdNhanVienSearchRequest") HDNhanVienSearchRequest hdNhanVienSearchRequest,
+                                             Pageable pageable);
+
+
+//    @Query(value = "Select ROW_NUMBER() over (ORDER BY a.created_at desc ) as stt, a.id, a.code, a.avatar, a.email, a.full_name as fullName," +
+//            "a.date_birth as dateBirth, a.phone_number as phoneNumber," +
+//            "a.gender, a.created_at as createdAt, a.status from account a " +
+//            "LEFT JOIN bill_history bh ON a.id = bh.id_account OR a.id = bh.id_reception_staff " +
+//            "WHERE a.role = 0 " +
+//            "AND bh.id_bill = :billId " +
+//            "AND (:#{#hdNhanVienSearchRequest.txtSearch} IS NULL OR " +
+//            "a.full_name LIKE %:#{#hdNhanVienSearchRequest.txtSearch}% OR " +
+//            "a.email LIKE %:#{#hdNhanVienSearchRequest.txtSearch}% OR " +
+//            "a.phone_number LIKE %:#{#hdNhanVienSearchRequest.txtSearch}%) ", nativeQuery = true)
+//    Page<HDNhanVienResponse> getListNhanVien(@Param("billId") String billId,
+//                                             @Param("hdNhanVienSearchRequest") HDNhanVienSearchRequest hdNhanVienSearchRequest,
+//                                             Pageable pageable);
 
 }

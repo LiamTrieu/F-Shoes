@@ -10,6 +10,7 @@ import {
   Paper,
   IconButton,
   Stack,
+  Divider,
 } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import './productHome.css'
@@ -146,6 +147,7 @@ export default function CartProductHome({ products, colmd, collg }) {
                   textDecoration: 'none',
                   borderRadius: '10px',
                 }}
+
                 // component={Link}
                 // to={`/product/${product.id}`}
               >
@@ -194,6 +196,30 @@ export default function CartProductHome({ products, colmd, collg }) {
                         />
                       ))}
                     </Carousel>
+                    {/* {isCartHovered === i && (
+                      <div
+                        onMouseEnter={() => setIsCartChange(true)}
+                        onMouseLeave={() => setIsCartChange(false)}
+                        onClick={() => addProductToCart(product.id)}
+                        style={{
+                          position: 'absolute',
+                          zIndex: 2,
+                          bottom: '1px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '100%',
+                          backgroundColor: 'red',
+                          color: 'white',
+                          cursor: 'pointer',
+                          transition: 'height 2s ease-out',
+                          height: isCartChange ? '40px' : '10px',
+                        }}>
+                        <Typography sx={{ fontSize: '20px', fontWeight: 700 }}>
+                          THÊM VÀO GIỎ HÀNG
+                        </Typography>
+                      </div>
+                    )} */}
                     {isCartHovered === i && (
                       <div
                         onMouseEnter={() => setIsCartChange(true)}
@@ -201,8 +227,8 @@ export default function CartProductHome({ products, colmd, collg }) {
                         style={{
                           position: 'absolute',
                           zIndex: 2,
-                          top: '5px',
-                          right: '5px',
+
+                          bottom: '10px',
                         }}>
                         <Tooltip title="Thêm vào giỏ hàng">
                           <IconButton color="cam" onClick={() => addProductToCart(product.id)}>
@@ -211,6 +237,22 @@ export default function CartProductHome({ products, colmd, collg }) {
                         </Tooltip>
                       </div>
                     )}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        zIndex: 2,
+                        top: '-25px',
+                        right: '-31px',
+                        width: '120px',
+                        height: '25px',
+                        backgroundColor: 'red',
+                        color: 'white',
+                        transform: 'rotate(32deg)',
+                        transformOrigin: '0% 0%',
+                        boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.3)',
+                      }}>
+                      <Typography sx={{ ml: 6.7, fontWeight: 700 }}>NEW</Typography>
+                    </div>
                   </Box>
                 </Box>
 
@@ -311,9 +353,6 @@ export default function CartProductHome({ products, colmd, collg }) {
                     justifyContent="space-between"
                     alignItems="center"
                     spacing={2}>
-                    <Typography gutterBottom component="div" sx={{ textTransform: 'none' }}>
-                      New
-                    </Typography>
                     <div>
                       <Stack
                         direction="row"

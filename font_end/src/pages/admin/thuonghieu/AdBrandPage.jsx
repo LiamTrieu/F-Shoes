@@ -67,16 +67,13 @@ export default function AdBrandPage() {
         setListBrand(res.data.content)
         setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
       })
-      .catch((error) => {
-        console.log(error)
-      })
+      .catch((error) => {})
     setIsBackdrop(false)
   }
 
   const getAllBrand = () => {
     bradApi.getList().then((res) => {
       setListBrandEx(res.data.data)
-      console.log(res.data.data)
     })
   }
 

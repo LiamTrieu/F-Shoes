@@ -23,6 +23,13 @@ import {
   Tooltip,
   Switch,
   Modal,
+  Toolbar,
+  Container,
+  TableHead,
+  Select,
+  MenuItem,
+  Pagination,
+  InputAdornment,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -54,6 +61,10 @@ import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
 import { GetUserAdmin } from '../../../services/slices/userAdminSlice'
 import printJS from 'print-js'
+import dayjs from 'dayjs'
+import CloseIcon from '@mui/icons-material/Close'
+import SearchIcon from '@mui/icons-material/Search'
+import { TbTruckReturn } from 'react-icons/tb'
 
 const listHis = [{ link: '/admin/bill', name: 'Quản lý đơn hàng' }]
 
@@ -75,19 +86,21 @@ export default function AdBillDetail() {
   const [openModalConfirmDelive, setOpenModalConfirmDelive] = useState(false)
   const [openModalConfirmPayment, setOpenModalConfirmPayment] = useState(false)
   const [openModalConfirmComplete, setOpenModalConfirmComplete] = useState(false)
-  // const [openModalReturnProduct, setOpenModalReturnProduct] = useState(false)
+  const [openModalReturnProduct, setOpenModalReturnProduct] = useState(false)
   const [openCodalConfirmReceived, setOpenModalConfirmReceived] = useState(false)
   const [openmodalReturnStt, setOpenModalReturnStt] = useState(false)
   const [openModalCancelBill, setOpenModalCancelBill] = useState(false)
   const [isUpdateBill, setIsUpdateBill] = useState(false)
   const [openModalThemSP, setOpenModalThemSP] = useState(false)
-  // const [billDetailReturn, setBillDetailReturn] = useState()
+  const [billDetailReturn, setBillDetailReturn] = useState()
 
   const [openModalUpdateAdd, setopenModalUpdateAdd] = useState(false)
 
-  const totalProductsCost = listBillDetail.reduce((total, row) => {
-    return total + row.quantity * row.price
-  }, 0)
+  const totalProductsCost = listBillDetail
+    .filter((row) => row.status === 0)
+    .reduce((total, row) => {
+      return total + row.quantity * row.price
+    }, 0)
   const navigate = useNavigate()
 
   const [isCheckBillExist, setIsCheckBillExist] = useState(false)
@@ -95,6 +108,7 @@ export default function AdBillDetail() {
     hoaDonApi
       .checkBillExist(id)
       .then((response) => {
+        console.log(response)
         if (response.data.data.id === null) {
           navigate(-1)
           toast.warning('Hoá đơn không xác định !!')
@@ -109,11 +123,7 @@ export default function AdBillDetail() {
   }
 
   useEffect(() => {
-    if (userAdmin && userAdmin.role !== 1) {
-      checkBillExist(id)
-    } else {
-      setIsCheckBillExist(true)
-    }
+    checkBillExist(id)
   }, [id])
 
   const handleIncrementQuantity = (row, index) => {
@@ -438,6 +448,9 @@ export default function AdBillDetail() {
           setOpen(false)
         })
         .catch((error) => {
+          toast.error('Đã xảy ra lỗi', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
           console.error('Lỗi xác nhận đơn hàng', error)
         })
     }
@@ -558,7 +571,7 @@ export default function AdBillDetail() {
         transactionCode: transactionCode,
       }
       if (!isRefundMode) {
-        if (cashReceived < billDetail.totalMoney) {
+        if (paymentAmount < billDetail.totalMoney) {
           toast.error('Không đủ tiền để xác nhận thanh toán', {
             position: toast.POSITION.TOP_CENTER,
           })
@@ -898,194 +911,194 @@ export default function AdBillDetail() {
       </DialogAddUpdate>
     )
   }
-  // function ModalReturnProduct({ open, setOpen, billDetailReturn, idBill }) {
-  //   const [ghiChu, setGhiChu] = useState('')
-  //   const [soLuong, setSoLuong] = useState(billDetailReturn ? billDetailReturn.quantity : 0)
+  function ModalReturnProduct({ open, setOpen, billDetailReturn, idBill }) {
+    const [ghiChu, setGhiChu] = useState('')
+    const [soLuong, setSoLuong] = useState(billDetailReturn ? billDetailReturn.quantity : 0)
 
-  //   const hdBillDetailReq = {
-  //     productDetailId: billDetailReturn ? billDetailReturn.productDetailId : null,
-  //     idBill: idBill,
-  //     quantity: soLuong,
-  //     note: ghiChu,
-  //   }
-  //   const handleReturnProduct = (billDetailReturn, hdBillDetailReq) => {
-  //     hoaDonChiTietApi
-  //       .returnProduct(billDetailReturn.id, hdBillDetailReq)
-  //       .then(() => {
-  //         toast.success('Đã xác nhận hoàn trả', {
-  //           position: toast.POSITION.TOP_RIGHT,
-  //         })
-  //         setIsUpdateBill(true)
-  //         setOpenModalReturnProduct(false)
-  //       })
-  //       .catch(() => {
-  //         toast.error('Đã xảy ra lỗi', {
-  //           position: toast.POSITION.TOP_RIGHT,
-  //         })
-  //       })
-  //   }
-  //   const confirmReturnProduct = () => {
-  //     if (isNaN(soLuong) || soLuong <= 0) {
-  //       toast.error('Số lượng không hợp lệ', {
-  //         position: toast.POSITION.TOP_CENTER,
-  //       })
-  //       return
-  //     }
-  //     if (soLuong > billDetailReturn.quantity) {
-  //       toast.error('Số lượng hoàn trả lớn hơn số sản phẩm đã mua', {
-  //         position: toast.POSITION.TOP_CENTER,
-  //       })
-  //       return
-  //     }
-  //     if (ghiChu.trim().length === 0) {
-  //       toast.error('Vui lòng nhập ghi chú', {
-  //         position: toast.POSITION.TOP_CENTER,
-  //       })
-  //       return
-  //     }
-  //     confirmSatus('Xác nhận ', 'Xác nhận hoàn hàng?').then((result) => {
-  //       if (result.isConfirmed) {
-  //         handleReturnProduct(billDetailReturn, hdBillDetailReq)
-  //       }
-  //     })
-  //   }
+    const hdBillDetailReq = {
+      productDetailId: billDetailReturn ? billDetailReturn.productDetailId : null,
+      idBill: idBill,
+      quantity: soLuong,
+      note: ghiChu,
+    }
+    const handleReturnProduct = (billDetailReturn, hdBillDetailReq) => {
+      hoaDonChiTietApi
+        .returnProduct(billDetailReturn.id, hdBillDetailReq)
+        .then(() => {
+          toast.success('Đã xác nhận hoàn trả', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          setIsUpdateBill(true)
+          setOpenModalReturnProduct(false)
+        })
+        .catch(() => {
+          toast.error('Đã xảy ra lỗi', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+        })
+    }
+    const confirmReturnProduct = () => {
+      if (isNaN(soLuong) || soLuong <= 0) {
+        toast.error('Số lượng không hợp lệ', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+        return
+      }
+      if (soLuong > billDetailReturn.quantity) {
+        toast.error('Số lượng hoàn trả lớn hơn số sản phẩm đã mua', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+        return
+      }
+      if (ghiChu.trim().length === 0) {
+        toast.error('Vui lòng nhập ghi chú', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+        return
+      }
+      confirmSatus('Xác nhận ', 'Xác nhận hoàn hàng?').then((result) => {
+        if (result.isConfirmed) {
+          handleReturnProduct(billDetailReturn, hdBillDetailReq)
+        }
+      })
+    }
 
-  //   return (
-  //     <Modal
-  //       open={open}
-  //       setOpen={setOpen}
-  //       title={'Xác nhận hoàn hàng'}
-  //       onClose={() => {
-  //         setOpen(false)
-  //       }}>
-  //       <div>
-  //         <Box sx={styleModalReturnProduct}>
-  //           <Toolbar>
-  //             <Box
-  //               sx={{
-  //                 color: 'black',
-  //                 flexGrow: 1,
-  //               }}>
-  //               <Typography variant="h6" component="div">
-  //                 Xác nhận hoàn hàng
-  //               </Typography>
-  //             </Box>
-  //             <IconButton
-  //               onClick={() => {
-  //                 setOpen(false)
-  //               }}
-  //               aria-label="close"
-  //               color="error"
-  //               style={{
-  //                 boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
-  //               }}>
-  //               <CloseIcon />
-  //             </IconButton>
-  //           </Toolbar>
-  //           {billDetailReturn && (
-  //             <Grid container spacing={2}>
-  //               <Grid item xs={12}>
-  //                 <TableContainer
-  //                   sx={{ maxHeight: 300, marginBottom: 5 }}
-  //                   className="table-container-custom-scrollbar">
-  //                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
-  //                     <TableBody>
-  //                       <TableRow key={'billDetail' + billDetailReturn.id}>
-  //                         <TableCell align="center">
-  //                           <img src={billDetailReturn.productImg} alt="" width={'100px'} />
-  //                         </TableCell>
-  //                         <TableCell>
-  //                           {billDetailReturn.productName} <br></br>
-  //                           {billDetailReturn.price !== billDetailReturn.productPrice ? (
-  //                             <span>
-  //                               <del
-  //                                 style={{
-  //                                   color: 'gray',
-  //                                   textDecorationColor: 'gray',
-  //                                   textDecorationLine: 'line-through',
-  //                                 }}>
-  //                                 {formatCurrency(billDetailReturn.productPrice)}
-  //                               </del>
+    return (
+      <Modal
+        open={open}
+        setOpen={setOpen}
+        title={'Xác nhận hoàn hàng'}
+        onClose={() => {
+          setOpen(false)
+        }}>
+        <div>
+          <Box sx={styleModalReturnProduct}>
+            <Toolbar>
+              <Box
+                sx={{
+                  color: 'black',
+                  flexGrow: 1,
+                }}>
+                <Typography variant="h6" component="div">
+                  Xác nhận hoàn hàng
+                </Typography>
+              </Box>
+              <IconButton
+                onClick={() => {
+                  setOpen(false)
+                }}
+                aria-label="close"
+                color="error"
+                style={{
+                  boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
+                }}>
+                <CloseIcon />
+              </IconButton>
+            </Toolbar>
+            {billDetailReturn && (
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TableContainer
+                    sx={{ maxHeight: 300, marginBottom: 5 }}
+                    className="table-container-custom-scrollbar">
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableBody>
+                        <TableRow key={'billDetail' + billDetailReturn.id}>
+                          <TableCell align="center">
+                            <img src={billDetailReturn.productImg} alt="" width={'100px'} />
+                          </TableCell>
+                          <TableCell>
+                            {billDetailReturn.productName} <br></br>
+                            {billDetailReturn.price !== billDetailReturn.productPrice ? (
+                              <span>
+                                <del
+                                  style={{
+                                    color: 'gray',
+                                    textDecorationColor: 'gray',
+                                    textDecorationLine: 'line-through',
+                                  }}>
+                                  {formatCurrency(billDetailReturn.productPrice)}
+                                </del>
 
-  //                               <span
-  //                                 style={{
-  //                                   color: 'red',
-  //                                   marginLeft: 15,
-  //                                 }}>
-  //                                 {formatCurrency(billDetailReturn.price)}
-  //                               </span>
-  //                             </span>
-  //                           ) : (
-  //                             <span
-  //                               style={{
-  //                                 color: 'red',
-  //                                 marginLeft: 15,
-  //                               }}>
-  //                               {formatCurrency(billDetailReturn.productPrice)}
-  //                             </span>
-  //                           )}
-  //                           <br />
-  //                           Size: {billDetailReturn.size}
-  //                           <br />x{billDetailReturn.quantity}
-  //                         </TableCell>
-  //                       </TableRow>
-  //                       <TableRow>
-  //                         <TableCell>
-  //                           <TextField
-  //                             color="cam"
-  //                             className="search-field"
-  //                             size="small"
-  //                             fullWidth
-  //                             label="Số lượng:"
-  //                             value={soLuong}
-  //                             onChange={(e) => setSoLuong(e.target.value)}
-  //                             sx={{ marginBottom: 2 }}
-  //                           />
-  //                         </TableCell>
-  //                         <TableCell>
-  //                           <TextField
-  //                             color="cam"
-  //                             className="search-field"
-  //                             size="small"
-  //                             fullWidth
-  //                             label="Ghi chú"
-  //                             multiline
-  //                             rows={4}
-  //                             value={ghiChu}
-  //                             onChange={(e) => setGhiChu(e.target.value)}
-  //                           />
-  //                         </TableCell>
-  //                       </TableRow>
-  //                     </TableBody>
-  //                   </Table>
-  //                 </TableContainer>
-  //                 <Box>
-  //                   <Button
-  //                     variant="outlined"
-  //                     color="cam"
-  //                     style={{ width: '90%', marginLeft: '5%', marginBottom: 10 }}
-  //                     onClick={() => confirmReturnProduct()}>
-  //                     <b>Xác nhận</b>
-  //                   </Button>
-  //                 </Box>
-  //               </Grid>
-  //             </Grid>
-  //           )}
-  //         </Box>
-  //       </div>
-  //     </Modal>
-  //   )
-  // }
-  // const styleModalReturnProduct = {
-  //   position: 'absolute',
-  //   top: '50%',
-  //   left: '50%',
-  //   transform: 'translate(-50%, -50%)',
-  //   width: { xs: '50vw', md: '50vw' },
-  //   bgcolor: 'white',
-  //   borderRadius: 1.5,
-  //   boxShadow: 24,
-  // }
+                                <span
+                                  style={{
+                                    color: 'red',
+                                    marginLeft: 15,
+                                  }}>
+                                  {formatCurrency(billDetailReturn.price)}
+                                </span>
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  color: 'red',
+                                  marginLeft: 15,
+                                }}>
+                                {formatCurrency(billDetailReturn.productPrice)}
+                              </span>
+                            )}
+                            <br />
+                            Size: {billDetailReturn.size}
+                            <br />x{billDetailReturn.quantity}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>
+                            <TextField
+                              color="cam"
+                              className="search-field"
+                              size="small"
+                              fullWidth
+                              label="Số lượng:"
+                              value={soLuong}
+                              onChange={(e) => setSoLuong(e.target.value)}
+                              sx={{ marginBottom: 2 }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              color="cam"
+                              className="search-field"
+                              size="small"
+                              fullWidth
+                              label="Ghi chú"
+                              multiline
+                              rows={4}
+                              value={ghiChu}
+                              onChange={(e) => setGhiChu(e.target.value)}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Box>
+                    <Button
+                      variant="outlined"
+                      color="cam"
+                      style={{ width: '90%', marginLeft: '5%', marginBottom: 10 }}
+                      onClick={() => confirmReturnProduct()}>
+                      <b>Xác nhận</b>
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+            )}
+          </Box>
+        </div>
+      </Modal>
+    )
+  }
+  const styleModalReturnProduct = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: { xs: '50vw', md: '50vw' },
+    bgcolor: 'white',
+    borderRadius: 1.5,
+    boxShadow: 24,
+  }
   function ModalCancelBill({ open, setOpen, billDetail }) {
     const [ghiChu, setGhiChu] = useState('')
 
@@ -1302,10 +1315,10 @@ export default function AdBillDetail() {
     })
   }
 
-  // const handleReturnProduct = (item) => {
-  //   setBillDetailReturn(item)
-  //   setOpenModalReturnProduct(true)
-  // }
+  const handleReturnProduct = (item) => {
+    setBillDetailReturn(item)
+    setOpenModalReturnProduct(true)
+  }
 
   const confirmPrintBill = async (idBill) => {
     const comfirm = await confirmSatus(
@@ -1366,6 +1379,67 @@ export default function AdBillDetail() {
     setPdfContent('')
     setModalOpen(false)
   }
+  const [isShowModalChonNhanVien, setIsShowModalChonNhanVien] = useState(false, false)
+
+  const styleModalChonNhanVien = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: { xs: '90vw', md: '80vw' },
+    height: '600px',
+    bgcolor: 'white',
+    borderRadius: 1.5,
+    boxShadow: 24,
+  }
+  const [searchNhanVien, setSearchNhanVien] = useState({
+    txtSearch: '',
+    size: 5,
+    page: 1,
+  })
+  const [totalPages, setTotalPages] = useState(0)
+  const [listNhanVien, setListNhanVien] = useState([])
+  const fetchDataNhanVien = () => {
+    hoaDonApi.getNhanVien(id, searchNhanVien).then((response) => {
+      setListNhanVien(response.data.data.content)
+      setTotalPages(response.data.data.totalPages)
+      if (searchNhanVien.page > response.data.data.totalPages)
+        if (response.data.data.totalPages > 0) {
+          setSearchNhanVien({ ...searchNhanVien, page: response.data.data.totalPages })
+        }
+    })
+  }
+
+  const themNhanVienTiepNhan = (idBill, idAcc) => {
+    confirmSatus('Xác nhận ', 'Xác nhận thêm nhân viên tiếp nhận?').then((result) => {
+      if (result.isConfirmed) {
+        hoaDonApi
+          .addStaffReception(idBill, idAcc)
+          .then((response) => {
+            toast.success('Đã thêm nhân viên xác nhận', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            handleCloseModalChonNhanVien()
+            setIsUpdateBill(true)
+          })
+          .catch((error) => {
+            toast.error('Đã xảy ra lỗi', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            console.error('Lỗi thêm nhân viên tiếp nhận', error)
+          })
+      }
+    })
+  }
+  const handleCloseModalChonNhanVien = () => {
+    setIsShowModalChonNhanVien(false)
+    setSearchNhanVien({ ...searchNhanVien, txtSearch: '', page: 1, size: 5 })
+  }
+  const handleOpenModalChonNhanVien = () => {
+    fetchDataNhanVien(searchNhanVien)
+    setIsShowModalChonNhanVien(true)
+    setSearchNhanVien({ ...searchNhanVien, txtSearch: '', page: 1, size: 5 })
+  }
 
   return (
     isCheckBillExist && (
@@ -1403,12 +1477,12 @@ export default function AdBillDetail() {
             billDetail={billDetail}
           />
         )}
-        {/* <ModalReturnProduct
-      setOpen={setOpenModalReturnProduct}
-      open={openModalReturnProduct}
-      billDetailReturn={billDetailReturn}
-      idBill={billDetail ? billDetail.id : null}
-    /> */}
+        <ModalReturnProduct
+          setOpen={setOpenModalReturnProduct}
+          open={openModalReturnProduct}
+          billDetailReturn={billDetailReturn}
+          idBill={billDetail ? billDetail.id : null}
+        />
         {openModalCancelBill && (
           <ModalCancelBill
             setOpen={setOpenModalCancelBill}
@@ -1448,8 +1522,180 @@ export default function AdBillDetail() {
             listBillDetail={listBillDetail}
           />
         )}
+        <Modal
+          open={isShowModalChonNhanVien}
+          onClose={() => {
+            handleCloseModalChonNhanVien()
+          }}>
+          <Box sx={styleModalChonNhanVien}>
+            <Toolbar sx={{ mb: 1 }}>
+              <Box
+                sx={{
+                  color: 'black',
+                  flexGrow: 1,
+                }}>
+                <Typography variant="h6" component="div">
+                  Chọn nhân viên
+                </Typography>
+              </Box>
+              <IconButton
+                onClick={() => {
+                  handleCloseModalChonNhanVien()
+                }}
+                aria-label="close"
+                color="error"
+                style={{
+                  boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
+                }}>
+                <CloseIcon />
+              </IconButton>
+            </Toolbar>
+            <Container>
+              <Box>
+                <TextField
+                  sx={{ width: '40%' }}
+                  className="search-field"
+                  size="small"
+                  color="cam"
+                  value={searchNhanVien.txtSearch || ''}
+                  placeholder="Tìm kiếm tên hoặc sđt hoặc email"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon color="cam" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  onChange={(e) => {
+                    setSearchNhanVien({ ...searchNhanVien, txtSearch: e.target.value })
+                  }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  mt: 3,
+                  maxHeight: '400px',
+                  overflow: 'auto',
+                }}></Box>
+            </Container>
+            <Container>
+              <Table className="tableCss mt-5">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center" width={'7%'}>
+                      STT
+                    </TableCell>
+                    <TableCell align="center" width={'25%'}>
+                      Email
+                    </TableCell>
+                    <TableCell align="center" width={'12%'}>
+                      Họ tên
+                    </TableCell>
+                    <TableCell align="center" width={'15%'}>
+                      Ngày sinh
+                    </TableCell>
+                    <TableCell align="center" width={'15%'}>
+                      Số điện thoại
+                    </TableCell>
+                    <TableCell align="center" width={'15%'}>
+                      Giới tính
+                    </TableCell>
+                    <TableCell align="center" width={'15%'}>
+                      Trạng thái
+                    </TableCell>
+                    <TableCell align="center" width={'10%'}>
+                      Thao tác
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {listNhanVien.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell align="center">{row.stt}</TableCell>
+                      <TableCell align="center">{row.email}</TableCell>
+                      <TableCell align="center">{row.fullName}</TableCell>
+                      <TableCell align="center">
+                        {dayjs(row.dateBirth).format('MM/DD/YYYY')}
+                      </TableCell>
+                      <TableCell align="center">{row.phoneNumber}</TableCell>
+                      <TableCell align="center">{row.gender ? 'Nam' : 'Nữ'}</TableCell>
+                      <TableCell align="center">
+                        {row.status === 0 ? (
+                          <Chip
+                            // onClick={() => deleteKhachHang(row.id)}
+                            className="chip-hoat-dong"
+                            size="small"
+                            label="Hoạt động"
+                          />
+                        ) : (
+                          <Chip
+                            className="chip-khong-hoat-dong"
+                            size="small"
+                            label="Không hoạt động"
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="outlined"
+                          className="them-moi"
+                          color="cam"
+                          style={{ marginRight: '5px' }}
+                          onClick={() => themNhanVienTiepNhan(id, row.id)}>
+                          Chọn
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              <Stack
+                mt={2}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-start"
+                spacing={0}>
+                <Typography component="span" variant={'body2'} mt={0.5}>
+                  <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>Xem</Typography>
+                  <Select
+                    color="cam"
+                    onChange={(e) => {
+                      setSearchNhanVien({ ...searchNhanVien, size: e.target.value })
+                    }}
+                    sx={{ height: '25px', mx: 0.5 }}
+                    size="small"
+                    value={searchNhanVien.size}>
+                    <MenuItem value={5}>5</MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={15}>15</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                  </Select>
+                  <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                    nhân viên
+                  </Typography>
+                </Typography>
+                <Pagination
+                  page={searchNhanVien.page}
+                  onChange={(e, value) => {
+                    e.preventDefault()
+                    setSearchNhanVien({ ...searchNhanVien, page: value })
+                  }}
+                  count={totalPages}
+                  color="cam"
+                  variant="outlined"
+                />
+              </Stack>
+            </Container>
+          </Box>
+        </Modal>
         <BreadcrumbsCustom listLink={listHis} nameHere={billDetail?.code} />
-        <Paper className="time-line" elevation={3} sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
+        <Paper
+          className="time-line"
+          elevation={3}
+          sx={{ mt: 2, mb: 2, paddingLeft: 1, paddingBottom: 2 }}>
           <h3>Lịch sử đơn hàng</h3>
           <Stack direction="row" alignItems="flex-start" spacing={2} sx={{ mb: 2 }}>
             {loadingTimeline ? (
@@ -1457,46 +1703,58 @@ export default function AdBillDetail() {
             ) : (
               <TimeLine orderTimeLine={listOrderTimeLine} />
             )}
-            <Button
-              variant="outlined"
-              className="them-moi"
-              color="cam"
-              style={{
-                marginLeft: 'auto',
-                marginRight: '5px',
-                alignSelf: 'flex-end',
-                marginTop: '5px',
-                marginBottom: '10px',
-                cursor: billDetail && billDetail.status === 1 ? 'not-allowed' : 'pointer',
-                opacity: billDetail && billDetail.status === 1 ? 0.5 : 1,
-              }}
-              onClick={() => {
-                if (!(billDetail && billDetail.status === 1)) {
-                  setOpenModalReturnStt(true)
-                }
-              }}>
-              <IoReturnUpBack style={{ fontSize: '20px' }} />
-              Quay lại trạng thái trước
-            </Button>
-            {console.log('use admin')}
-            {console.log(userAdmin)}
-            {userAdmin && userAdmin.role === 1 && (
-              <Button
-                variant="outlined"
-                className="them-moi"
-                color="cam"
-                style={{
-                  marginLeft: 'auto',
-                  marginRight: '5px',
-                  alignSelf: 'flex-end',
-                  marginTop: '5px',
-                  marginBottom: '10px',
-                }}>
-                <IoReturnUpBack style={{ fontSize: '20px' }} />
-                Thêm nhân viên tiếp nhận
-              </Button>
-            )}
           </Stack>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}>
+            <div style={{ flexShrink: 0 }}>
+              {billDetail && billDetail.status > 1 && billDetail.status <= 7 && (
+                <Button
+                  variant="outlined"
+                  className="them-moi"
+                  color="cam"
+                  style={{
+                    marginLeft: 'auto',
+                    marginRight: '5px',
+                    alignSelf: 'flex-end',
+                    cursor: billDetail && billDetail.status === 1 ? 'not-allowed' : 'pointer',
+                    opacity: billDetail && billDetail.status === 1 ? 0.5 : 1,
+                  }}
+                  onClick={() => {
+                    if (!(billDetail && billDetail.status === 1)) {
+                      setOpenModalReturnStt(true)
+                    }
+                  }}>
+                  <IoReturnUpBack style={{ fontSize: '20px' }} />
+                  Quay lại trạng thái trước
+                </Button>
+              )}
+            </div>
+
+            <div style={{ flexShrink: 0 }}>
+              {userAdmin &&
+                userAdmin.role === 1 &&
+                billDetail &&
+                billDetail.status < 7 &&
+                billDetail.status > 1 && (
+                  <Button
+                    variant="outlined"
+                    className="them-moi"
+                    color="cam"
+                    style={{
+                      marginLeft: 'auto',
+                      marginRight: '5px',
+                      alignSelf: 'flex-end',
+                    }}
+                    onClick={() => handleOpenModalChonNhanVien()}>
+                    <IoReturnUpBack style={{ fontSize: '20px' }} />
+                    Thêm nhân viên tiếp nhận
+                  </Button>
+                )}
+            </div>
+          </div>
         </Paper>
 
         <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>
@@ -1798,6 +2056,17 @@ export default function AdBillDetail() {
                                                       handleDeleteSPConfirmation(row, billDetail.id)
                                                     }>
                                                     <CiCircleRemove />
+                                                  </IconButton>
+                                                </Tooltip>
+                                              )}
+                                            {billDetail &&
+                                              listTransaction.length < 1 &&
+                                              listBillDetail.length > 1 &&
+                                              billDetail.status === 3 && (
+                                                <Tooltip title="Hoàn hàng">
+                                                  <IconButton
+                                                    onClick={() => handleReturnProduct(row)}>
+                                                    <TbTruckReturn />
                                                   </IconButton>
                                                 </Tooltip>
                                               )}

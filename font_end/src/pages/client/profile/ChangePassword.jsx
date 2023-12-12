@@ -7,6 +7,7 @@ import {
   Typography,
   InputAdornment,
   IconButton,
+  Stack,
 } from '@mui/material'
 import { toast } from 'react-toastify'
 import authenticationAPi from '../../../api/authentication/authenticationAPi'
@@ -95,8 +96,9 @@ const ChangePassword = () => {
   return !token ? (
     <Navigate to={'/home'} />
   ) : (
-    <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '450px', mx: 'auto' }}>
+    <Paper elevation={3} sx={{ mt: 2, padding: 2, width: '100%', mx: 'auto', height: 'auto' }}>
       <p className="hs-user">Đổi mật khẩu</p>
+      <Typography>Để bảo mật tài khoản, vui lòng không chia sẻ mật khẩu cho người khác</Typography>
       <hr />
       <Box
         component="form"
@@ -105,101 +107,122 @@ const ChangePassword = () => {
           mt: 3,
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-start',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
-        <Typography sx={{ textAlign: 'left' }}>
-          <span className="required"> *</span>Mật khẩu hiện tại
-        </Typography>
-        <TextField
-          required
-          fullWidth
-          size="small"
-          type={showCurrentPassword ? 'text' : 'password'}
-          autoComplete="current-password"
-          value={currentPassword}
-          onChange={(e) => {
-            setCurrentPassword(e.target.value)
-            setErrors({ ...errors, passOld: '' })
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => handleTogglePasswordVisibility('currentPassword')}
-                  edge="end">
-                  {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          error={Boolean(errors.passOld)}
-          helperText={errors.passOld}
-        />
-        <Typography sx={{ textAlign: 'left', mt: 3 }}>
-          <span className="required"> *</span>Mật khẩu mới
-        </Typography>
-        <TextField
-          required
-          fullWidth
-          size="small"
-          name="newPassword"
-          type={showNewPassword ? 'text' : 'password'}
-          autoComplete="new-password"
-          value={newPassword}
-          onChange={(e) => {
-            setNewPassword(e.target.value)
-            setErrors({ ...errors, newPass: '' })
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => handleTogglePasswordVisibility('newPassword')}
-                  edge="end">
-                  {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          error={Boolean(errors.newPass)}
-          helperText={errors.newPass}
-        />
-        <Typography sx={{ textAlign: 'left', mt: 3 }}>
-          <span className="required"> *</span>Nhập lại mật khẩu mới
-        </Typography>
-        <TextField
-          required
-          fullWidth
-          size="small"
-          name="confirmNewPassword"
-          type={showConfirmNewPassword ? 'text' : 'password'}
-          autoComplete="new-password"
-          value={confirmNewPassword}
-          onChange={(e) => {
-            setConfirmNewPassword(e.target.value)
-            setErrors({ ...errors, confirmPass: '' })
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => handleTogglePasswordVisibility('confirmNewPassword')}
-                  edge="end">
-                  {showConfirmNewPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          error={Boolean(errors.confirmPass)}
-          helperText={errors.confirmPass}
-        />
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          spacing={2}
+          sx={{ mb: 3 }}>
+          {' '}
+          <Typography sx={{ textAlign: 'left' }}>
+            <span className="required"> *</span>Mật khẩu hiện tại
+          </Typography>
+          <TextField
+            required
+            size="small"
+            type={showCurrentPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            value={currentPassword}
+            onChange={(e) => {
+              setCurrentPassword(e.target.value)
+              setErrors({ ...errors, passOld: '' })
+            }}
+            sx={{ width: '400px' }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => handleTogglePasswordVisibility('currentPassword')}
+                    edge="end">
+                    {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            error={Boolean(errors.passOld)}
+            helperText={errors.passOld}
+          />
+        </Stack>
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          spacing={2}
+          sx={{ mb: 3, ml: 4 }}>
+          <Typography sx={{ textAlign: 'left', mt: 3 }}>
+            <span className="required"> *</span>Mật khẩu mới
+          </Typography>
+          <TextField
+            required
+            size="small"
+            name="newPassword"
+            type={showNewPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            value={newPassword}
+            sx={{ width: '400px' }}
+            onChange={(e) => {
+              setNewPassword(e.target.value)
+              setErrors({ ...errors, newPass: '' })
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => handleTogglePasswordVisibility('newPassword')}
+                    edge="end">
+                    {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            error={Boolean(errors.newPass)}
+            helperText={errors.newPass}
+          />
+        </Stack>
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          spacing={2}
+          sx={{ mb: 3, mr: 4 }}>
+          <Typography sx={{ textAlign: 'left', mt: 3 }}>
+            <span className="required"> *</span>Nhập lại mật khẩu mới
+          </Typography>
+          <TextField
+            required
+            size="small"
+            name="confirmNewPassword"
+            type={showConfirmNewPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            value={confirmNewPassword}
+            sx={{ width: '400px' }}
+            onChange={(e) => {
+              setConfirmNewPassword(e.target.value)
+              setErrors({ ...errors, confirmPass: '' })
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => handleTogglePasswordVisibility('confirmNewPassword')}
+                    edge="end">
+                    {showConfirmNewPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            error={Boolean(errors.confirmPass)}
+            helperText={errors.confirmPass}
+          />
+        </Stack>
         <Button
           type="button"
-          fullWidth
-          variant="outlined"
+          variant="contained"
           className="btn-luupf"
-          sx={{ mt: 3, mb: 2 }}
+          sx={{ mt: 3, mb: 2, width: '200px' }}
           onClick={handleChangePassword}>
           Đổi Mật Khẩu
         </Button>

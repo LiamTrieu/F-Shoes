@@ -44,6 +44,14 @@ const hoaDonApi = {
     const url = `/bill/return-stt/${idBill}`
     return axiosAdmin.put(url, hdBillReq)
   },
+  getNhanVien: (idBill, searchNhanVien) => {
+    const url = `/bill/get-list-staff/${idBill}`
+    return axiosAdmin.get(url, { params: searchNhanVien })
+  },
+  addStaffReception: (idBill, idAcc) => {
+    const url = `/bill/add-staff-reception-bill/${idBill}/${idAcc}`
+    return axiosAdmin.put(url)
+  },
 }
 
 export default hoaDonApi
