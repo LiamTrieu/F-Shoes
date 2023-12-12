@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Image, StyleSheet, View, ActivityIndicator, Text } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import HomeScreen from "./component/HomeScreen";
-import ProductScreen from "./component/ProductScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import clientProductApi from "./api/clientProductApi";
-import BillScreen from "./component/BillScreen";
+import { NativeBaseProvider, View } from "native-base";
+import Loading from "./layout/Loading";
+import ProductDetailScreen from "./screen/ProductDetailScreen";
+import TabNavigator from "./navigator/TabNavigator";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Image, TouchableOpacity } from "react-native";
+import BillScreen from "./screen/BillScreen";
 
-const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -28,124 +30,48 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return (
-      <View style={styles.splashContainer}>
-        <Image
-          source={require("./assets/splash.png")}
-          style={styles.splashImage}
-        />
-        <ActivityIndicator size="large" color="#f2741f" />
-        <Text style={styles.loadingText}>Server free, vui lòng đợi!</Text>
-      </View>
-    );
+    return <Loading />;
   }
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-            if (route.name === "Trang chủ") {
-              iconName = "home";
-            } else if (route.name === "Sản phẩm") {
-              iconName = "shoe-sneaker";
-            } else if (route.name === "Đơn hàng") {
-              iconName = "cart";
-            }
-
-            return <Icon name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: "#f2741f",
-          tabBarInactiveTintColor: "gray",
-          tabBarStyle: [
-            {
-              display: "flex",
-            },
-            null,
-          ],
-        })}>
-        <Tab.Screen
-          name="Trang chủ"
-          component={HomeScreen}
-          options={{
-            headerTitle: (props) => (
-              <View style={styles.headerContainer}>
-                <Image
-                  source={require("./assets/image/logowebnobg.png")}
-                  style={styles.headerImage}
-                />
-              </View>
-            ),
-            headerStyle: { backgroundColor: "white" },
-            headerTitleStyle: { color: "white" },
-            headerTitleAlign: "center",
-          }}
-        />
-        <Tab.Screen
-          name="Sản phẩm"
-          component={ProductScreen}
-          options={{
-            headerTitle: (props) => (
-              <View style={styles.headerContainer}>
-                <Image
-                  source={require("./assets/image/logowebnobg.png")}
-                  style={styles.headerImage}
-                />
-              </View>
-            ),
-            headerStyle: { backgroundColor: "white" },
-            headerTitleStyle: { color: "white" },
-            headerTitleAlign: "center",
-          }}
-        />
-        <Tab.Screen
-          name="Đơn hàng"
-          component={BillScreen}
-          options={{
-            headerTitle: (props) => (
-              <View style={styles.headerContainer}>
-                <Image
-                  source={require("./assets/image/logowebnobg.png")}
-                  style={styles.headerImage}
-                />
-              </View>
-            ),
-            headerStyle: { backgroundColor: "white" },
-            headerTitleStyle: { color: "white" },
-            headerTitleAlign: "center",
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <NativeBaseProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            component={TabNavigator}
+            options={options}
+          />
+          <Stack.Screen
+            name="ProductDetails"
+            component={ProductDetailScreen}
+            options={options}
+          />
+          <Stack.Screen name="Cart" component={BillScreen} options={options} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </NativeBaseProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  splashContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff", // Background color
-  },
-  splashImage: {
-    width: 600,
-    height: 600,
-    resizeMode: "contain",
-    marginBottom: 20,
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: "#f2741f",
-    fontWeight: "bold",
-  },
-  headerContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerImage: {
-    width: 100,
-    resizeMode: "contain",
-  },
+const HeaderLogo = ({ navigation }) => (
+  <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+    <Image
+      source={require("./assets/image/logowebnobg.png")}
+      style={{ width: 100, height: 40, resizeMode: "contain" }}
+    />
+  </TouchableOpacity>
+);
+
+const HeaderRight = ({ navigation }) => (
+  <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
+    <Icon name={"cart"} size={25} />
+  </TouchableOpacity>
+);
+
+const options = ({ navigation }) => ({
+  headerTitle: () => <HeaderLogo navigation={navigation} />,
+  headerStyle: { backgroundColor: "white" },
+  headerTitleStyle: { color: "white" },
+  headerTitleAlign: "center",
+  headerRight: () => <HeaderRight navigation={navigation} />,
 });

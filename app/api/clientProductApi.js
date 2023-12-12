@@ -55,5 +55,21 @@ const clientProductApi = {
     const url = `/check-start`;
     return axiosApi.get(url);
   },
+  getColors: (request) => {
+    const url = `/client/product/color`;
+    return axiosApi.get(url, { params: request });
+  },
+  getById: (id) => {
+    const url = `/client/product/${id}`;
+    return axiosApi.get(url);
+  },
+  getCungLoai: (filter) => {
+    const url = `/client/product/cung-loai`;
+    return axiosApi.get(url, { params: filter });
+  },
+  getSizes: (request) => {
+    const url = `/client/product/size`;
+    return axiosApi.get(url, { params: request });
+  },
 };
 export default clientProductApi;
