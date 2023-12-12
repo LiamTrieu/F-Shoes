@@ -156,6 +156,7 @@ export default function AdPromotionDetail() {
       .map((selectedProduct) => selectedProduct.id)
     setSelectedProductIds(selectedProductIds)
   }
+
   const getProductDetailById = (filterProductDetail, selectedProductIds) => {
     console.log(selectedProductIds)
     if (selectedProductIds.length > 0) {
@@ -713,7 +714,11 @@ export default function AdPromotionDetail() {
                         <TableCell>
                           <Checkbox
                             key={row.productDetail}
-                            checked={selectedRows.indexOf(row.productDetail) !== -1}
+                            checked={
+                              row.productPromotion
+                                ? true
+                                : selectedRows.indexOf(row.productDetail) !== -1
+                            }
                             onChange={(event) => handleRowCheckboxChange(event, row.productDetail)}
                           />
                         </TableCell>

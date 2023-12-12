@@ -251,41 +251,41 @@ export default function Cart() {
                 Bạn đang có <span style={{ fontWeight: 700 }}>{amountProduct} sản phẩm</span> trong
                 giỏ hàng
               </Typography>
-              <div style={{}}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead style={{ backgroundColor: '#333', color: 'white' }}>
-                    <TableRow>
-                      <TableCell width="4%">
-                        {' '}
-                        <Checkbox
-                          size="small"
-                          checked={selectAll}
-                          onClick={(e) => {
-                            checkAll(e.target.checked)
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell style={{ color: 'white' }} align="center">
-                        ẢNH SẢN PHẨM
-                      </TableCell>
-                      <TableCell style={{ color: 'white' }} align="center">
-                        TÊN SẢN PHẨM
-                      </TableCell>
-                      <TableCell style={{ color: 'white' }} align="center">
-                        SIZE
-                      </TableCell>
-                      <TableCell style={{ color: 'white' }} align="center">
-                        ĐƠN GIÁ
-                      </TableCell>
-                      <TableCell style={{ color: 'white', width: '20%' }} align="center">
-                        SỐ LƯỢNG
-                      </TableCell>
-                      <TableCell style={{ color: 'white' }} align="center">
-                        THÀNH TIỀN
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
 
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead style={{ backgroundColor: '#F26B16', color: 'white' }}>
+                  <TableRow>
+                    <TableCell width="3%">
+                      {' '}
+                      <Checkbox
+                        size="small"
+                        checked={selectAll}
+                        onClick={(e) => {
+                          checkAll(e.target.checked)
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell style={{ color: 'white' }} align="center">
+                      ẢNH
+                    </TableCell>
+                    <TableCell style={{ color: 'white' }} align="center">
+                      TÊN SẢN PHẨM
+                    </TableCell>
+                    <TableCell style={{ color: 'white' }} align="center">
+                      SIZE
+                    </TableCell>
+                    <TableCell style={{ color: 'white' }} align="center">
+                      ĐƠN GIÁ
+                    </TableCell>
+                    <TableCell style={{ color: 'white', width: '20%' }} align="center">
+                      SỐ LƯỢNG
+                    </TableCell>
+                    <TableCell style={{ color: 'white' }} width="20%" align="center">
+                      THÀNH TIỀN
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                {amountProduct > 0 ? (
                   <TableBody>
                     {product.map((cart) => (
                       <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -354,7 +354,7 @@ export default function Cart() {
                         </TableCell>
                         <TableCell align="center">
                           {' '}
-                          <Typography fontFamily={'monospace'} fontWeight={'700'} color={'red'}>
+                          <Typography fontFamily={'monospace'} fontWeight={700} color={'red'}>
                             {promotionByProductDetail.map((item, index) => {
                               const isDiscounted = item.idProductDetail === cart.id && item.value
 
@@ -424,7 +424,7 @@ export default function Cart() {
                           {!promotionByProductDetail.some(
                             (item) => item.idProductDetail === cart.id && item.value,
                           ) && (
-                            <div style={{ color: 'red' }}>{`${formatPrice(
+                            <div style={{ color: 'red', fontWeight: 'bold' }}>{`${formatPrice(
                               cart.soLuong * cart.gia,
                             )} `}</div>
                           )}
@@ -432,8 +432,20 @@ export default function Cart() {
                       </TableRow>
                     ))}
                   </TableBody>
-                </Table>
-              </div>
+                ) : (
+                  <TableBody>
+                    <TableRow>
+                      <TableCell colSpan={7} align="center" style={{ width: '100%' }}>
+                        <img
+                          style={{ width: '600px' }}
+                          src={require('../../assets/image/no-data.png')}
+                          alt="No-data"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                )}
+              </Table>
             </TableContainer>
             <Button component={Link} to="/products" variant="outlined" color="cam">
               <ArrowBackIcon />

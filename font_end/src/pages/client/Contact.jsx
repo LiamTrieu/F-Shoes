@@ -32,7 +32,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <span className="title-contact">Điện thoại:</span>
-                  <div>0763104018</div>
+                  <div>0123456789</div>
                 </div>
               </div>
               <div className="information-contact">
@@ -41,7 +41,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <span className="title-contact">Email:</span>
-                  <div>kienvan131203@gmail.com</div>
+                  <div>Fshoes131203@gmail.com</div>
                 </div>
               </div>
               <div style={{ marginTop: '30px' }}>

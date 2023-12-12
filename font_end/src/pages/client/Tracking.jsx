@@ -1,4 +1,4 @@
-import { Button, Container, Paper, TextField, Typography } from '@mui/material'
+import { Button, Container, Grid, Paper, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ClientAccountApi from '../../api/client/clientAccount'
@@ -23,67 +23,79 @@ export default function Tracking() {
 
   return (
     <>
-      <Container>
-        <div
-          style={{
-            textAlign: 'center',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginLeft: '30%',
-            marginTop: '80px',
-          }}>
-          <div
-            style={{
-              width: '420px',
-              height: '320px',
-              backgroundColor: 'rgb(30, 39, 51)',
-              borderTopRightRadius: '10px',
-              borderTopLeftRadius: '10px',
-            }}>
+      <Container maxWidth="xl">
+        <Grid container spacing={2}>
+          <Grid item xs={6} sx={{ mt: 2 }}>
             <img
-              src={require('../../assets/image/TinTuc/tracking.png')}
+              src={require('../../assets/image/TinTuc/bannerTracking.webp')}
               alt=""
-              style={{ width: '200px', height: '100px', marginTop: '10px' }}
+              style={{ width: '1450px', height: '600px' }}
             />
-            <Typography style={{ color: 'white', fontSize: '30px', fontWeight: 700 }}>
-              KIỂM TRA ĐƠN HÀNG
-            </Typography>
-            <Typography style={{ color: 'white', fontSize: '16px' }}>
-              Vui lòng nhập thông tin sau để kiểm tra nhanh đơn hàng. Nếu không có mã đơn hàng xin
-              vui lòng liên hệ hỗ trợ qua email
-            </Typography>
-          </div>
-
-          <Paper style={{ width: '420px' }}>
+          </Grid>
+          <Grid item xs={6}>
+            {' '}
             <div
               style={{
                 textAlign: 'center',
-                width: '420px',
-                border: '3px solid white',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: '30%',
+                marginTop: '95px',
               }}>
-              <TextField
-                id="outlined-basic"
-                placeholder="Nhập mã đơn hàng"
-                variant="outlined"
-                onChange={(e) => setGetCodeBill(e.target.value)}
-                style={{ width: '400px', marginTop: '10px' }}
-              />
-              <div>
-                <Button
-                  variant="contained"
-                  style={{
-                    width: '400px',
-                    backgroundColor: 'black',
-                    marginTop: '10px',
-                    marginBottom: '10px',
-                  }}
-                  onClick={() => getBillByIdBill(getCodeBill)}>
-                  Tra cứu
-                </Button>
+              <div
+                style={{
+                  width: '420px',
+                  height: '320px',
+                  backgroundColor: '#FF9933',
+                  borderTopRightRadius: '10px',
+                  borderTopLeftRadius: '10px',
+                }}>
+                <img
+                  src={require('../../assets/image/TinTuc/tracking.png')}
+                  alt=""
+                  style={{ width: '200px', height: '100px', marginTop: '10px' }}
+                />
+                <Typography style={{ color: 'white', fontSize: '30px', fontWeight: 700 }}>
+                  KIỂM TRA ĐƠN HÀNG
+                </Typography>
+                <Typography style={{ color: 'white', fontSize: '16px' }}>
+                  Vui lòng nhập thông tin sau để kiểm tra nhanh đơn hàng. Nếu không có mã đơn hàng
+                  xin vui lòng liên hệ hỗ trợ qua email
+                </Typography>
               </div>
+
+              <Paper style={{ width: '420px' }}>
+                <div
+                  style={{
+                    textAlign: 'center',
+                    width: '420px',
+                    border: '3px solid white',
+                  }}>
+                  <TextField
+                    id="outlined-basic"
+                    placeholder="Nhập mã đơn hàng"
+                    variant="outlined"
+                    onChange={(e) => setGetCodeBill(e.target.value)}
+                    style={{ width: '400px', marginTop: '10px' }}
+                  />
+                  <div>
+                    <Button
+                      variant="contained"
+                      style={{
+                        width: '400px',
+                        backgroundColor: '#FF6600',
+                        marginTop: '10px',
+                        marginBottom: '10px',
+                      }}
+                      onClick={() => getBillByIdBill(getCodeBill)}>
+                      Tra cứu
+                    </Button>
+                  </div>
+                </div>
+              </Paper>
             </div>
-          </Paper>
-        </div>
+          </Grid>
+        </Grid>
       </Container>
     </>
   )

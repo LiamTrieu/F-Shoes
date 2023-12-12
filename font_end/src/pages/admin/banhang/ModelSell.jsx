@@ -52,7 +52,7 @@ const styleModalProductDetail = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: { xs: '100vw', md: '38vw' },
-  height: '240px',
+  height: '270px',
   bgcolor: 'white',
   borderRadius: 1.5,
   boxShadow: 24,
@@ -308,6 +308,8 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
                 />
               </Box>
               <div style={{ width: '30%' }}>
+                <b> {formatCurrency(minMaxPriceProduct.minPrice)}</b>
+                <b style={{ float: 'right' }}>{formatCurrency(minMaxPriceProduct.maxPrice)}</b>
                 <ListItem className="list-item">
                   <AirbnbSlider
                     onChangeCommitted={(_, value) => {
@@ -607,15 +609,25 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
                 setIsShowProductDetail(false)
               }}>
               <Box sx={styleModalProductDetail}>
+                <div style={{ float: 'right', padding: 4 }}>
+                  <IconButton
+                    onClick={() => {
+                      setIsShowProductDetail(false)
+                    }}
+                    aria-label="close"
+                    color="error"
+                    style={{
+                      boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
+                    }}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
                 <Toolbar>
                   <Box
                     sx={{
                       color: 'black',
                       flexGrow: 1,
                       marginTop: '10px',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
                     }}>
                     <Typography variant="h5" fontFamily={'monospace'} fontWeight={'bolder'}>
                       {getAmountProduct.nameProduct +
@@ -657,18 +669,6 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
                     </p>
                     {'size:' + getAmountProduct.size}
                   </Box>
-
-                  <IconButton
-                    onClick={() => {
-                      setIsShowProductDetail(false)
-                    }}
-                    aria-label="close"
-                    color="error"
-                    style={{
-                      boxShadow: '1px 2px 3px 1px rgba(0,0,0,.05)',
-                    }}>
-                    <CloseIcon />
-                  </IconButton>
                 </Toolbar>
                 <Container>
                   <Box py={1}>
