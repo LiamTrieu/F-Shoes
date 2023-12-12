@@ -108,6 +108,12 @@ export default function SellFrom({
   nameCustomer,
   setDetailDiaChi,
   detailDiaChi,
+  setXaName,
+  xaName,
+  setHuyenName,
+  huyenName,
+  setTinhName,
+  tinhName,
 }) {
   const theme = useTheme()
   const [giaoHang, setGiaoHang] = useState(false)
@@ -425,12 +431,17 @@ export default function SellFrom({
   }
 
   useEffect(() => {
-    fecthDataCustomer(searchKhachHang)
-    fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
-    fecthListVoucherByIdCustomer(adCallVoucherOfSell)
-    fecthListVoucherByIdCustomerUnqualified(adCallVoucherOfSell)
-    loadTinh()
-    loadList()
+    const fetchData = async () => {
+      await loadTinh()
+      fecthDataCustomer(searchKhachHang)
+      fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
+      fecthListVoucherByIdCustomer(adCallVoucherOfSell)
+      fecthListVoucherByIdCustomerUnqualified(adCallVoucherOfSell)
+      loadList()
+      detailAddress()
+    }
+
+    fetchData()
   }, [adCallVoucherOfSell, searchKhachHang])
 
   const loadDiaChi = (initPage, idCustomer) => {
@@ -474,16 +485,16 @@ export default function SellFrom({
     })
   }
 
-  const loadHuyen = (idProvince) => {
-    ghnAPI.getDistrict(idProvince).then((response) => {
-      setHuyen(response.data)
-    })
+  async function loadHuyen(idProvince) {
+    const response = await ghnAPI.getDistrict(idProvince)
+    setHuyen(response.data)
+    return response.data
   }
 
-  const loadXa = (idDistrict) => {
-    ghnAPI.getWard(idDistrict).then((response) => {
-      setXa(response.data)
-    })
+  async function loadXa(idDistrict) {
+    const response = await ghnAPI.getWard(idDistrict)
+    setXa(response.data)
+    return response.data
   }
 
   const [selectedTinh, setSelectedTinh] = useState(null)
@@ -585,6 +596,67 @@ export default function SellFrom({
     })
   }
 
+  const detailAddress = () => {
+    sellApi.getAllBillId(idBill).then((result) => {
+      if (
+        result.data.data.customer !== null &&
+        result.data.data.fullName !== null &&
+        result.data.data.address !== null &&
+        result.data.data.phoneNumber !== null
+      ) {
+        loadDiaChi(initPage, result.data.data.customer.id)
+        setNameCustomer(result.data.data.customer.fullName)
+        setKhachHang({ ...khachHang, note: result.data.data.note })
+        const [specificAddress, wardLabel, districtLabel, provinceLabel] =
+          result.data.data.address.split(', ')
+        setTinhName(provinceLabel)
+        setHuyenName(districtLabel)
+        setXaName(wardLabel)
+        const selectTinh = tinh.find((item) => item.provinceName === provinceLabel) || null
+        console.log(tinh, 'tinh')
+        console.log(selectTinh, 'selectTinh')
+        console.log(idBill, 'idBill')
+
+        if (selectTinh) {
+          setSelectedTinh({ id: selectTinh.provinceID, label: selectTinh.provinceName })
+          ;(async () => {
+            const huyenData = await loadHuyen(selectTinh.provinceID)
+            const selectHuyen =
+              huyenData.find((item) => item.districtName === districtLabel) || null
+            setSelectedHuyen({ id: selectHuyen.districtID, label: selectHuyen.districtName })
+
+            if (selectHuyen) {
+              ;(async () => {
+                const xaData = await loadXa(selectHuyen.districtID)
+                const selectXa = xaData.find((item) => item.wardName === wardLabel) || null
+                setSelectedXa({ id: selectXa.wardCode, label: selectXa.wardName })
+                setDetailDiaChi({
+                  ...detailDiaChi,
+                  name: result.data.data.fullName,
+                  phoneNumber: result.data.data.phoneNumber,
+                  provinceId: selectTinh.provinceID,
+                  districtId: selectHuyen.districtID,
+                  wardId: selectXa.wardCode,
+                  specificAddress: specificAddress,
+                })
+              })()
+            }
+          })()
+        }
+      } else {
+        setDetailDiaChi({
+          name: '',
+          phoneNumber: '',
+          email: '',
+          specificAddress: '',
+          provinceId: '',
+          districtId: '',
+          wardId: '',
+        })
+      }
+    })
+  }
+
   const clearSelectAddress = () => {
     setSelectedTinh(null)
     setSelectedHuyen(null)
@@ -612,10 +684,6 @@ export default function SellFrom({
   const isEmailDuplicate = (email) => {
     return list.some((customer) => customer.email === email)
   }
-
-  const [xaName, setXaName] = useState('')
-  const [huyenName, setHuyenName] = useState('')
-  const [tinhName, setTinhName] = useState('')
 
   const onSubmit = (khachHang) => {
     const newErrors = {}
@@ -806,40 +874,53 @@ export default function SellFrom({
           districtId: districtId,
           wardId: wardId,
         })
-        const filtelService = {
-          shop_id: '3911708',
-          from_district: '3440',
-          to_district: districtId,
+        const data = {
+          fullName: name,
+          phoneNumber: phoneNumber,
+          idCustomer: idCustomer,
+          address: specificAddress,
+          note: khachHang.note,
         }
 
-        ghnAPI.getServiceId(filtelService).then((response) => {
-          const serviceId = response.data.body.serviceId
-          const filterTotal = {
-            from_district_id: '3440',
-            service_id: serviceId,
-            to_district_id: districtId,
-            to_ward_code: wardId,
-            weight: listProductDetailBill.reduce(
-              (totalWeight, e) => totalWeight + parseInt(e.weight),
-              0,
-            ),
-            insurance_value: '10000',
-          }
-
-          ghnAPI.getTotal(filterTotal).then((response) => {
-            setShipTotal(response.data.body.total)
-
-            const filtelTime = {
-              from_district_id: '3440',
-              from_ward_code: '13010',
-              to_district_id: districtId,
-              to_ward_code: wardId,
-              service_id: serviceId,
+        sellApi.addAddressBill(data, idBill).then(() => {
+          if (giaoHang) {
+            const filtelService = {
+              shop_id: '3911708',
+              from_district: '3440',
+              to_district: districtId,
             }
-            ghnAPI.getime(filtelTime).then((response) => {
-              setTimeShip(response.data.body.leadtime * 1000)
+
+            ghnAPI.getServiceId(filtelService).then((response) => {
+              const serviceId = response.data.body.serviceId
+              const filterTotal = {
+                from_district_id: '3440',
+                service_id: serviceId,
+                to_district_id: districtId,
+                to_ward_code: wardId,
+                weight: listProductDetailBill.reduce(
+                  (totalWeight, e) => totalWeight + parseInt(e.weight),
+                  0,
+                ),
+                insurance_value: '10000',
+              }
+
+              ghnAPI.getTotal(filterTotal).then((response) => {
+                setShipTotal(response.data.body.total)
+
+                const filtelTime = {
+                  from_district_id: '3440',
+                  from_ward_code: '13010',
+                  to_district_id: districtId,
+                  to_ward_code: wardId,
+                  service_id: serviceId,
+                }
+                ghnAPI.getime(filtelTime).then((response) => {
+                  setTimeShip(response.data.body.leadtime * 1000)
+                })
+              })
             })
-          })
+          }
+          detailAddress()
         })
       }
     })
@@ -881,38 +962,48 @@ export default function SellFrom({
           districtId: districtId,
           wardId: wardId,
         })
-        const filtelService = {
-          shop_id: '3911708',
-          from_district: '3440',
-          to_district: districtId,
+
+        const data = {
+          fullName: name,
+          phoneNumber: phoneNumber,
+          address: specificAddress,
+          note: khachHang.note,
         }
 
-        ghnAPI.getServiceId(filtelService).then((response) => {
-          const serviceId = response.data.body.serviceId
-          const filterTotal = {
-            from_district_id: '3440',
-            service_id: serviceId,
-            to_district_id: districtId,
-            to_ward_code: wardId,
-            weight: listProductDetailBill.reduce(
-              (totalWeight, e) => totalWeight + parseInt(e.weight),
-              0,
-            ),
-            insurance_value: '10000',
+        sellApi.addAddressBill(data, idBill).then(() => {
+          const filtelService = {
+            shop_id: '3911708',
+            from_district: '3440',
+            to_district: districtId,
           }
 
-          ghnAPI.getTotal(filterTotal).then((response) => {
-            setShipTotal(response.data.body.total)
-
-            const filtelTime = {
+          ghnAPI.getServiceId(filtelService).then((response) => {
+            const serviceId = response.data.body.serviceId
+            const filterTotal = {
               from_district_id: '3440',
-              from_ward_code: '13010',
+              service_id: serviceId,
               to_district_id: districtId,
               to_ward_code: wardId,
-              service_id: serviceId,
+              weight: listProductDetailBill.reduce(
+                (totalWeight, e) => totalWeight + parseInt(e.weight),
+                0,
+              ),
+              insurance_value: '10000',
             }
-            ghnAPI.getime(filtelTime).then((response) => {
-              setTimeShip(response.data.body.leadtime * 1000)
+
+            ghnAPI.getTotal(filterTotal).then((response) => {
+              setShipTotal(response.data.body.total)
+
+              const filtelTime = {
+                from_district_id: '3440',
+                from_ward_code: '13010',
+                to_district_id: districtId,
+                to_ward_code: wardId,
+                service_id: serviceId,
+              }
+              ghnAPI.getime(filtelTime).then((response) => {
+                setTimeShip(response.data.body.leadtime * 1000)
+              })
             })
           })
         })
@@ -941,7 +1032,9 @@ export default function SellFrom({
   })
 
   const [btnad, setBtnad] = useState(false)
+
   const handleDiaChi = (idCustomer) => {
+    console.log(idCustomer, 'handle')
     setBtnad(true)
     setIsShowCustomer(false)
     loadDiaChi(initPage, idCustomer)
@@ -1295,7 +1388,10 @@ export default function SellFrom({
     percentMoney < 0 || percentMoney > 100
       ? 0
       : ((totalPriceCart + ShipingFree - totalMoneyReduce) * percentMoney) / 100
-  const totalPrice = totalPriceCart + Number(ShipingFree) - totalMoneyReduce - moneyPercent
+  const totalPrice =
+    totalPriceCart < totalMoneyReduce
+      ? 0
+      : totalPriceCart + Number(ShipingFree) - totalMoneyReduce - moneyPercent
 
   const moneyUnqualified =
     voucherUnqualified.minimumAmount > voucher.minimumAmount ||
@@ -1742,11 +1838,7 @@ export default function SellFrom({
           </Typography>
           <Button
             onClick={() => {
-              if (listProductDetailBill.length > 0) {
-                setIsShowCustomer(true)
-              } else {
-                toast.warning('Vui lòng thêm sản phẩm trước!')
-              }
+              setIsShowCustomer(true)
             }}
             sx={{ float: 'right', borderRadius: '8px' }}
             size="small"
@@ -2214,7 +2306,7 @@ export default function SellFrom({
                   color="cam"
                   size="small"
                   variant="outlined"
-                  style={{ display: btnad ? 'block' : 'none' }}
+                  style={{ display: btnad && giaoHang ? 'block' : 'none' }}
                   onClick={() => setIsShowDiaChi(true)}>
                   <b>Chọn Địa chỉ</b>
                 </Button>
@@ -2224,7 +2316,11 @@ export default function SellFrom({
                 <b>Giao hàng</b>
                 <Switch
                   onChange={() => {
-                    setGiaoHang(!giaoHang)
+                    if (listProductDetailBill.length > 0) {
+                      setGiaoHang(!giaoHang)
+                    } else {
+                      toast.warning('Vui lòng thêm sản phẩm trước!')
+                    }
                   }}
                   color="secondary"
                   checked={giaoHang}

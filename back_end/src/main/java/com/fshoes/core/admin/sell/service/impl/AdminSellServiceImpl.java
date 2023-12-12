@@ -4,10 +4,7 @@ import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
-import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
-import com.fshoes.core.admin.sell.model.request.AddBillRequest;
-import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
-import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
+import com.fshoes.core.admin.sell.model.request.*;
 import com.fshoes.core.admin.sell.model.response.*;
 import com.fshoes.core.admin.sell.repository.*;
 import com.fshoes.core.admin.sell.service.AdminSellService;
@@ -201,6 +198,30 @@ public class AdminSellServiceImpl implements AdminSellService {
             }
             billHistoryRepository.save(billHistory);
             messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Boolean addAdressBill(AdAddressBillRequest request, String id) {
+        try {
+            Bill bill = billRepository.findById(id).orElseThrow(() -> {
+                throw new RestApiException(Message.API_ERROR);
+            });
+            if (request.getIdCustomer() != null) {
+                Account account = khachHangRepository.findById(request.getIdCustomer()).orElse(null);
+                assert account != null;
+                bill.setCustomer(account);
+            }
+            bill.setAddress(request.getAddress());
+            bill.setPhoneNumber(request.getPhoneNumber());
+            bill.setFullName(request.getFullName());
+            bill.setFullName(request.getFullName());
+            bill.setNote(request.getNote());
+            billRepository.save(bill);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
