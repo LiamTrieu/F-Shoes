@@ -10,7 +10,14 @@
   align-items: center;
   margin-top: 30px;
 }
-
+.name-sale {
+  font-size: 56px !important;
+  font-weight: 1000 !important;
+  color: orange;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 30px !important;
+}
 .brand-filter {
   width: 70px;
   height: 70px;

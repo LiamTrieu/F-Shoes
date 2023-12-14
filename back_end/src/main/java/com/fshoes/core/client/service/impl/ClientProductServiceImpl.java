@@ -77,6 +77,11 @@ public class ClientProductServiceImpl implements ClientProductService {
     }
 
     @Override
+    public List<ClientProductResponse> getSaleProduct(ClientProductRequest request) {
+        return clientProductDetailRepository.getSaleProduct(request);
+    }
+
+    @Override
     public List<ClientProductDetailResponse> getProductBySize(ClientProductDetailRequest request) {
         return clientProductDetailRepository.getAllSize(request);
     }

@@ -28,6 +28,7 @@
   display: flex !important;
   align-items: center !important;
   max-width: 90% !important;
+  margin-top: 20px !important;
 }
 
 .list-product-portfolio .list-item-button .icon-portfolio {
@@ -119,11 +120,12 @@
 
 .radio-color {
   border-radius: 50% !important;
-  width: 40px !important;
-  height: 40px !important;
+  width: 32px !important;
+  height: 32px !important;
   display: flex;
   align-items: center !important;
   justify-content: center;
+  margin-bottom: 30px !important;
 }
 
 .cart-icon-container {
@@ -131,4 +133,10 @@
   top: 20%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.list-product-portfolio .MuiButtonBase-root {
+  padding: 0 16px !important;
+}
+.list-product-portfolio .MuiButtonBase-root:hover {
+  background-color: #f9f9f6 !important;
 }

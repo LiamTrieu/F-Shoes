@@ -21,6 +21,7 @@ public interface ClientProductService {
     List<ClientProductResponse> getProductsHome(ClientProductRequest request);
 
     List<ClientProductResponse> getSellingProduct(ClientProductRequest request);
+    List<ClientProductResponse> getSaleProduct(ClientProductRequest request);
 
     List<ClientProductDetailResponse> getProductBySize(ClientProductDetailRequest request);
     List<ClientProductDetailResponse> getProductByColor(ClientProductDetailRequest request);
