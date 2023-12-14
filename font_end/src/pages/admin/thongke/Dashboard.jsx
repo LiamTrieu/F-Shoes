@@ -331,7 +331,7 @@ export default function Dashboard() {
   const handleIndexButton = (index, name) => {
     setIndexButton(index)
     setNameIndexButton(name)
-    setFilterInCustom({startDate:null,endDate:null})
+    setFilterInCustom({ startDate: null, endDate: null })
   }
 
   const handleExportToExcel = () => {
@@ -641,7 +641,8 @@ export default function Dashboard() {
                   {dataProductSelling.map((row) => (
                     <TableRow
                       key={row.name}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      // sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
                       <TableCell align="left" width={'5%'}>
                         <img src={row.image[0]} width={'100%'} alt="error" />
                       </TableCell>

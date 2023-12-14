@@ -4,9 +4,11 @@ import com.fshoes.entity.base.IsIdentified;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public interface ClientProductResponse extends IsIdentified {
 
+    Long getTimeRemainingInSeconds();
     Integer getCountSize();
     Integer getValue();
 

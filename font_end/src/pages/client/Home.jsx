@@ -1,15 +1,18 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
-import { Button, Container, Grid, Typography } from '@mui/material'
+import { Button, Container, Divider, Grid, Stack, Typography } from '@mui/material'
 import './Home.css'
 import clientProductApi from '../../api/client/clientProductApi'
 import CartProductHome from '../../layout/client/CartProductHome'
 import CartSellingProduct from '../../layout/client/CartSellingProduct'
+import CartSaleProduct from '../../layout/client/CartSaleProduct'
 import { getStompClient } from '../../services/socket'
+import { IoMdGift } from 'react-icons/io'
 
 export default function Home() {
   const [products, setProducts] = useState([])
   const [sellingProducts, setSellingProducts] = useState([])
+  const [saleProducts, setSaleProducts] = useState([])
   const videoRef = useRef(null)
   useEffect(() => {
     clientProductApi.getProductHome().then((result) => {
@@ -144,6 +147,39 @@ export default function Home() {
     })
   }, [])
 
+  useEffect(() => {
+    clientProductApi.getSaleProduct().then((result) => {
+      const data = result.data.data
+      setSaleProducts(
+        data.map((e) => {
+          return {
+            id: e.id,
+            title: e.name,
+            priceBefort: e.price,
+            priceAfter: e.price,
+            value: e.value,
+            amount: e.amount,
+            timeRemainingInSeconds: e.timeRemainingInSeconds,
+            promotion: e.promotion,
+            nameBrand: e.nameBrand,
+            nameCate: e.nameCate,
+            nameColor: e.nameColor,
+            codeColor: e.codeColor,
+            size: e.size,
+            statusPromotion: e.statusPromotion,
+            image: e.image.split(','),
+            idProduct: e.idProduct,
+            idColor: e.idColor,
+            idMaterial: e.idMaterial,
+            idSole: e.idSole,
+            idCategory: e.idCategory,
+            idBrand: e.idBrand,
+          }
+        }),
+      )
+    })
+  }, [])
+
   const handleVideoEnded = () => {
     videoRef.current.play()
   }
@@ -170,16 +206,16 @@ export default function Home() {
             </Grid>
           </Box>
           <Container maxWidth="xl">
-            <Typography className="title-banner">RUN YOUR RUN</Typography>
+            {/* <Typography className="title-banner">RUN YOUR RUN</Typography>
             <Typography className="title-banner-child">
               Follow the feeling that keeps you running your best in the city
             </Typography>
             <div className="btn-div-product">
               <Button className="btn-product">Shop Apparel</Button>
               <Button className="btn-product">Shop Apparel</Button>
-            </div>
-            <Typography className="text-just-in">Trending</Typography>
-            <Box>
+            </div> */}
+
+            {/* <Box>
               <Grid container spacing={12}>
                 <Grid item xs={12}>
                   <img
@@ -189,6 +225,22 @@ export default function Home() {
                   />
                 </Grid>
               </Grid>
+            </Box> */}
+            <Box className="new-product">
+              <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+                <Typography className="name-sale">
+                  <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} />{' '}
+                  <IoMdGift /> Siêu Sale
+                  <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} />{' '}
+                </Typography>
+              </Stack>
+
+              <CartSaleProduct
+                endTime={saleProducts.timeRemainingInSeconds}
+                products={saleProducts}
+                colmd={6}
+                collg={3}
+              />
             </Box>
             <Typography className="title-banner">NIKE ZOOM TRI</Typography>
             <Typography className="title-banner-child">

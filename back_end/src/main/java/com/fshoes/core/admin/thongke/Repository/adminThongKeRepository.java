@@ -36,7 +36,7 @@ public interface adminThongKeRepository extends BillDetailRepository {
             AND bd.status != 1
             AND DATE(FROM_UNIXTIME(b.complete_date / 1000)) = DATE(CURDATE())
             GROUP BY p.id, c.id,m.id,s.id,ca.id,br.id
-            ORDER BY Sum(bd.quantity) DESC;
+            ORDER BY quantity DESC;
             """, nativeQuery = true)
     Page<GetDataDashBoardResponse> getProductInDay(GetDataDashBoardRequest request, Pageable pageable);
 

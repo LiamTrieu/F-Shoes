@@ -176,6 +176,53 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
             """, nativeQuery = true)
     List<ClientProductResponse> getSellingProduct(@Param("request") ClientProductRequest request);
 
+    @Query(value = """ 
+                  select  pd.id as id,
+                    MAX(pr.value) as value,
+                    CONCAT(p.name, ' ', m.name, ' ', s.name) AS name,
+                   (pr.time_end) as timeRemainingInSeconds,
+                    ca.name as nameCate,
+                    b.name as nameBrand,
+                    c.code as codeColor,
+                    c.name as nameColor,
+                    si.size as size,
+                    pd.price as price,
+                    pd.weight as weight,
+                    (pd.amount) as amount,
+                    pd.description as description,
+                    GROUP_CONCAT(DISTINCT i.url) as image,
+                    pd.id_product,
+                    pd.id_color,
+                    pd.id_material,
+                    pd.id_sole,
+                    pd.id_category,
+                    pd.id_brand
+                FROM product_detail pd
+                        LEFT JOIN product_promotion pp on pp.id_product_detail = pd.id
+                        LEFT JOIN promotion pr on pr.id = pp.id_promotion and pr.status = 1
+                         JOIN
+                     product p ON p.id = pd.id_product
+                         JOIN
+                     size si ON si.id = pd.id_size
+                         JOIN
+                     color c ON c.id = pd.id_color
+                         JOIN
+                     category ca ON ca.id = pd.id_category
+                         JOIN
+                     brand b ON b.id = pd.id_brand
+                         JOIN
+                     sole s ON s.id = pd.id_sole
+                         JOIN
+                     material m ON m.id = pd.id_material
+                         LEFT JOIN
+                     image i ON pd.id = i.id_product_detail
+                WHERE p.deleted = 0 AND pd.deleted = 0
+                GROUP BY pd.id,pr.time_end
+                having value > 50
+                ORDER BY value DESC
+            """, nativeQuery = true)
+    List<ClientProductResponse> getSaleProduct(@Param("request") ClientProductRequest request);
+
     @Query(value = """
                 select  pd.id as id,
                     MAX(pr.value) as value,
@@ -263,7 +310,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
                 WHERE pd.id = :id 
                 AND p.deleted = 0 AND pd.deleted = 0
-                GROUP BY pd.id, pr.id, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand
+                GROUP BY pd.id
             """, nativeQuery = true)
     ClientProductResponse updateRealTime(String id);
 
