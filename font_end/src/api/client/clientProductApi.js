@@ -25,6 +25,10 @@ const clientProductApi = {
     const url = `/client/selling-product`
     return axiosApi.get(url, { params: filter })
   },
+  getSaleProduct: (filter) => {
+    const url = `/client/sale-product`
+    return axiosApi.get(url, { params: filter })
+  },
   getSizes: (request) => {
     const url = `/client/product/size`
     return axiosApi.get(url, { params: request })

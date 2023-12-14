@@ -46,6 +46,11 @@ public class ClientProductController {
         return new ObjectRespone((clientProductService.getSellingProduct(request)));
     }
 
+    @GetMapping("/sale-product")
+    public ObjectRespone getSaleProduct(ClientProductRequest request) {
+        return new ObjectRespone((clientProductService.getSaleProduct(request)));
+    }
+
     @GetMapping("/product/size")
     public ObjectRespone getProductBySize(ClientProductDetailRequest request) {
         return new ObjectRespone(clientProductService.getProductBySize(request));

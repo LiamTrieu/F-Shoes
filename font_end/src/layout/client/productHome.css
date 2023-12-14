@@ -6,7 +6,16 @@
   text-transform: lowercase;
   text-decoration: line-through;
 }
-
+.sale-amount {
+  width: 200px;
+  height: 20px;
+  background: linear-gradient(to right, #ef3713, #ff7f00);
+  color: white;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  margin-top: 10px;
+}
 .buy {
   text-transform: lowercase;
 }
@@ -33,7 +42,7 @@
 
 .cart-product-hover {
   transition: transform 0.3s ease-in-out;
-  border-radius: "10px";
+  border-radius: '10px';
 }
 
 .cart-product-hover:hover {
