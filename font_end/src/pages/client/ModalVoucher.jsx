@@ -33,7 +33,6 @@ const styleModalVoucher = {
 }
 
 export default function ModalVoucher({
-  product,
   open,
   setOpen,
   setVoucher,
@@ -97,18 +96,25 @@ export default function ModalVoucher({
   }
 
   const handleGiamGia = () => {
-    const totalMoney = arrData.reduce(
-      (tong, e) => tong + calculateProductTotalPayment(e, promotionByProductDetail),
-      0,
-    )
-    const totalVoucher = dataVoucher
-      ? dataVoucher.typeValue === 0
-        ? (totalMoney * dataVoucher.value) / 100
-        : dataVoucher.value
-      : 0
-    dataVoucher != null ? setVoucher(dataVoucher) : setVoucher(null)
-    setGiamGia(totalVoucher > dataVoucher.maximumValue ? dataVoucher.maximumValue : totalVoucher)
-    setOpen(false)
+    if (codeVoucher === '') {
+      toast.error('Vui lòng chọn phiếu giảm giá: ', {
+        position: toast.POSITION.TOP_CENTER,
+      })
+    } else {
+      const totalMoney = arrData.reduce(
+        (tong, e) => tong + calculateProductTotalPayment(e, promotionByProductDetail),
+        0,
+      )
+      const totalVoucher = dataVoucher
+        ? dataVoucher.typeValue === 0
+          ? (totalMoney * dataVoucher.value) / 100
+          : dataVoucher.value
+        : 0
+      dataVoucher != null ? setVoucher(dataVoucher) : setVoucher(null)
+      setGiamGia(totalVoucher > dataVoucher.maximumValue ? dataVoucher.maximumValue : totalVoucher)
+      setCodeVoucher('')
+      setOpen(false)
+    }
   }
 
   useEffect(() => {

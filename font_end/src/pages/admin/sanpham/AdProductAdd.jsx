@@ -1511,7 +1511,8 @@ export default function AdProductAdd() {
                             width: '20px',
                             height: '30px',
                             backgroundColor: `${s.code}`,
-                            border: `1px solid ${s.code}`,
+                            border:
+                              s.code === '#ffffff' ? `1px solid #000000` : `1px solid ${s.code}`,
                           }}></Button>
                         <span
                           onClick={() => {
@@ -1584,7 +1585,14 @@ export default function AdProductAdd() {
                             <span
                               style={{
                                 fontSize: '10px',
-                                color: c.code === '#000000' ? 'white' : 'black',
+                                color:
+                                  selectColor.findIndex(
+                                    (selectedColor) => selectedColor.value === c.id,
+                                  ) !== -1
+                                    ? 'black'
+                                    : c.code === '#ffffff'
+                                      ? 'black'
+                                      : 'white',
                               }}>
                               {c.code}
                             </span>

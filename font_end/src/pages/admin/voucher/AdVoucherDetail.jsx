@@ -34,6 +34,7 @@ import '../../../assets/styles/admin.css'
 import './voucher.css'
 import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import SearchIcon from '@mui/icons-material/Search'
 
 const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
 
@@ -84,14 +85,16 @@ export default function AdVoucherDetail() {
   const [minimumvalueDefault, setMinimumValueDefault] = useState(0)
   const [quantityDefault, setQuantityDefault] = useState(0)
   const [isSelectVisible, setIsSelectVisible] = useState(false)
+  const [findCustomer, setFindCustomer] = useState({ page: 1, size: 5, textSearch: '' })
 
   useEffect(() => {
     fetchData(id)
-    handelCustomeFill(initPage)
+    handelCustomeFill(findCustomer)
     haldleAllCodeVoucher()
     haldleAllNameVoucher()
     haldleAllCustomer()
-  }, [id, initPage])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, findCustomer])
 
   useEffect(() => {
     fetchListIdCustomer(id)
@@ -348,9 +351,9 @@ export default function AdVoucherDetail() {
     }
   }
 
-  const handelCustomeFill = (initPage) => {
+  const handelCustomeFill = (findCustomer) => {
     voucherApi
-      .getPageCustomer(initPage - 1)
+      .getPageCustomer(findCustomer)
       .then((response) => {
         setListCustomer(response.data.data.content)
         setTotalPages(response.data.data.totalPages)
@@ -363,7 +366,7 @@ export default function AdVoucherDetail() {
 
   const handelOnchangePage = (page) => {
     setInitPage(page)
-    handelCustomeFill(page)
+    setFindCustomer({ ...findCustomer, page: page })
   }
 
   const handleSelectAllChange = (event) => {
@@ -671,6 +674,23 @@ export default function AdVoucherDetail() {
             </div>
           </Grid>
           <Grid item xs={7}>
+            <TextField
+              className="search-customer-voucher"
+              placeholder="Tìm kiếm khách hàng"
+              type="text"
+              size="small"
+              fullWidth
+              onChange={(e) =>
+                setFindCustomer({ ...findCustomer, textSearch: e.target.value, page: 1 })
+              }
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
             {dataFetched && (
               <Table className="tableCss" aria-label="simple table">
                 <TableHead>

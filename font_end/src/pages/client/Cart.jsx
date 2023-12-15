@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Checkbox, Container, Divider, TableFooter, Typography } from '@mui/material'
+import {
+  Button,
+  Checkbox,
+  Container,
+  Divider,
+  TableFooter,
+  TextField,
+  Typography,
+} from '@mui/material'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -16,7 +24,7 @@ import { NoBoder } from '../../styles/TableStyle'
 import './Cart.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
-import { setCheckout } from '../../services/slices/checkoutSlice'
+import { GetCheckout, setCheckout } from '../../services/slices/checkoutSlice'
 
 import clientProductApi from '../../api/client/clientProductApi'
 import clientCartApi from '../../api/client/clientCartApi'
@@ -25,6 +33,7 @@ import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../../services/url'
 import confirmSatus from '../../components/comfirmSwal'
 import { toast } from 'react-toastify'
+import ModalVoucher from './ModalVoucher'
 
 var stompClient = null
 export default function Cart() {
@@ -34,6 +43,8 @@ export default function Cart() {
   // const dispatch = useDispatch()
 
   const onChangeSL = (cart, num) => {
+    setGiamGiaCart('')
+    setVoucherCart(null)
     const soluong = cart.soLuong + num
 
     const updatedProduct = {
@@ -82,12 +93,43 @@ export default function Cart() {
     }
   }
 
+  const [giamGiaCart, setGiamGiaCart] = useState('')
+  const [openModalVoucherCart, setOpenModalVoucherCart] = useState(false)
+  const [voucherCart, setVoucherCart] = useState(null)
+  const [voucherFilterCart, setVoucherFilterCart] = useState({
+    idCustomer: null,
+    condition: 0,
+    page: 1,
+    size: 5,
+  })
+  const handleFilterVoucherCart = () => {
+    setVoucherFilterCart({
+      ...voucherFilterCart,
+      condition: productSelect.reduce((total, cart) => {
+        const matchingPromotion = promotionByProductDetail.find(
+          (item) => item.idProductDetail === cart.id,
+        )
+
+        const itemTotal =
+          cart.soLuong *
+          (matchingPromotion && matchingPromotion.id !== ''
+            ? calculateDiscountedPrice(cart.gia, matchingPromotion.value)
+            : cart.gia)
+
+        return total + itemTotal
+      }, 0),
+    })
+    setOpenModalVoucherCart(true)
+  }
+
   const product = useSelector(GetCart)
   const amountProduct = useSelector(GetCart).length
 
   const productIds = product.map((cart) => cart.id)
 
   const onChangeCheck = (cart, checked) => {
+    setGiamGiaCart('')
+    setVoucherCart(null)
     const preProductSelect = [...productSelect]
 
     if (checked) {
@@ -155,6 +197,8 @@ export default function Cart() {
     )
   }
   function chageSize(id, cart) {
+    setGiamGiaCart('')
+    setVoucherCart(null)
     const size = sizes.find((s) => s.id === id)
     const carts = [...product]
     const index = product.findIndex((c) => c.id === cart)
@@ -177,6 +221,8 @@ export default function Cart() {
   }
 
   const checkAll = (checked) => {
+    setGiamGiaCart('')
+    setVoucherCart(null)
     const newProductSelect = checked ? [...product] : []
     const newTotalSelectedAmount = newProductSelect.reduce(
       (total, item) => total + item.soLuong * item.gia,
@@ -234,6 +280,20 @@ export default function Cart() {
     }
   }
 
+  const cartMoney =
+    productSelect.reduce((total, cart) => {
+      const matchingPromotion = promotionByProductDetail.find(
+        (item) => item.idProductDetail === cart.id,
+      )
+
+      const itemTotal =
+        cart.soLuong *
+        (matchingPromotion && matchingPromotion.id !== ''
+          ? calculateDiscountedPrice(cart.gia, matchingPromotion.value)
+          : cart.gia)
+
+      return total + itemTotal
+    }, 0) - giamGiaCart
   return (
     <div className="cart">
       <Container maxWidth="xl">
@@ -303,6 +363,8 @@ export default function Cart() {
                             <div
                               className="delete-product-cart"
                               onClick={() => {
+                                setGiamGiaCart('')
+                                setVoucherCart(null)
                                 const updatedProduct = product.filter((item) => item.id !== cart.id)
                                 dispatch(setCart(updatedProduct))
                               }}>
@@ -463,27 +525,43 @@ export default function Cart() {
                 <TableFooter sx={NoBoder}>
                   <OrderCartFotter
                     label="Tổng tiền"
-                    value={productSelect
-                      .reduce((total, cart) => {
-                        const matchingPromotion = promotionByProductDetail.find(
-                          (item) => item.idProductDetail === cart.id,
-                        )
-
-                        const itemTotal =
-                          cart.soLuong *
-                          (matchingPromotion && matchingPromotion.id !== ''
-                            ? calculateDiscountedPrice(cart.gia, matchingPromotion.value)
-                            : cart.gia)
-
-                        return total + itemTotal
-                      }, 0)
-                      .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}
+                    value={cartMoney.toLocaleString('it-IT', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
                   />
                 </TableFooter>
               </Table>
               <Divider style={{ height: '1px', backgroundColor: 'black', marginBottom: '20px' }} />
               <Typography sx={{ fontSize: '14px' }}>
-                . Phí vận chuyển sẽ được tính ở trang thanh toán.
+                .Phí vận chuyển sẽ được tính ở trang thanh toán.
+              </Typography>
+              <Typography sx={{ fontSize: '14px', marginTop: '16px' }}>
+                <TextField
+                  sx={{ flex: 1, minWidth: '100px', width: '100%' }}
+                  value={voucherCart === null ? 'Phiếu giảm giá' : voucherCart.name}
+                  size="small"
+                  className="input-voucher"
+                  disabled
+                  InputProps={{
+                    endAdornment: (
+                      <Button
+                        variant="contained"
+                        onClick={() => handleFilterVoucherCart()}
+                        style={{ backgroundColor: 'black' }}>
+                        <b>Chọn </b>
+                      </Button>
+                    ),
+                  }}
+                />
+                <ModalVoucher
+                  open={openModalVoucherCart}
+                  setOpen={setOpenModalVoucherCart}
+                  setVoucher={setVoucherCart}
+                  arrData={productSelect}
+                  setGiamGia={setGiamGiaCart}
+                  voucherFilter={voucherFilterCart}
+                />
               </Typography>
               <Typography sx={{ fontSize: '14px', marginBottom: '20px' }}>
                 .Bạn cũng có thể nhập phiếu giảm giá ở trang thanh toán.
