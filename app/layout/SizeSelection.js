@@ -1,7 +1,14 @@
 import React from "react";
 import { HStack, Pressable, Text } from "native-base";
 import IconFeather from "react-native-vector-icons/Feather";
-export default function SizeSelection({ product, navigation }) {
+
+export default function SizeSelection({
+  product,
+  navigation,
+  arrMap,
+  i,
+  setArrMap,
+}) {
   const maxColorsToShow = 3;
 
   const renderSizeButtons = () => {

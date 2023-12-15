@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import IconFontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import IconMaterialIcons from "react-native-vector-icons/MaterialIcons";
-import clientProductApi from "../api/clientProductApi";
+import clientApi from "../api/clientApi";
 import CartProduct from "../component/CartProduct";
 import { HStack, Input } from "native-base";
 import FillterProduct from "../component/FillterProduct";
@@ -40,7 +40,7 @@ export default function ProductScreen({ navigation }) {
 
   async function fetchData(filter) {
     setLoading(true);
-    const result = await clientProductApi.getAllProduct(filter);
+    const result = await clientApi.getAllProduct(filter);
     setProducts(
       result.data.data.map((e) => {
         return {
@@ -67,22 +67,22 @@ export default function ProductScreen({ navigation }) {
   const [listSize, setListSize] = useState([]);
 
   useEffect(() => {
-    clientProductApi.getBrand().then((response) => {
+    clientApi.getBrand().then((response) => {
       setListBrand(response.data.data);
     });
-    clientProductApi.getMaterial().then((response) => {
+    clientApi.getMaterial().then((response) => {
       setListMaterial(response.data.data);
     });
-    clientProductApi.getColor().then((response) => {
+    clientApi.getColor().then((response) => {
       setListColor(response.data.data);
     });
-    clientProductApi.getSole().then((response) => {
+    clientApi.getSole().then((response) => {
       setListSole(response.data.data);
     });
-    clientProductApi.getCategory().then((response) => {
+    clientApi.getCategory().then((response) => {
       setListCategory(response.data.data);
     });
-    clientProductApi.getSize().then((response) => {
+    clientApi.getSize().then((response) => {
       setListSize(response.data.data);
     });
   }, []);

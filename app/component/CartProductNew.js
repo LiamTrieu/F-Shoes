@@ -181,7 +181,13 @@ export default function CartProductNew({ products, navigation, setLoading }) {
                   paddingRight: 5,
                   justifyContent: "space-between",
                 }}>
-                <SizeSelection product={product} navigation={navigation} />
+                <SizeSelection
+                 setArrMap={setArrMap}
+                 product={product}
+                 i={i}
+                 navigation={navigation}
+                 arrMap={arrMap}
+                />
                 <HStack space={1} marginLeft={1}>
                   <Pressable
                     style={{

@@ -64,7 +64,10 @@ const router = createBrowserRouter([
       ...adReturnRoute,
       ...adChangeRoute,
       ...adReturnPolicy,
-      { path: '/admin/dashboard', element: <Dashboard /> },
+      {
+        path: '/admin/dashboard',
+        element: <Dashboard />,
+      },
     ],
   },
   { path: '/vnpay-payment', element: <Payment /> },

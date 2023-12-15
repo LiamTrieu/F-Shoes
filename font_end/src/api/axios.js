@@ -2,7 +2,6 @@ import axios from 'axios'
 import { setLoading } from '../services/slices/loadingSlice'
 import store from '../services/store'
 import { getCookie, removeCookie } from '../services/cookie'
-import { toast } from 'react-toastify'
 
 const axiosAdmin = axios.create({
   baseURL: process.env.REACT_APP_API_ADMIN_URL,
@@ -26,9 +25,7 @@ axiosApi.interceptors.request.use(
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  },
+  () => {},
 )
 
 axiosApi.interceptors.response.use(
@@ -47,9 +44,8 @@ axiosApi.interceptors.response.use(
       window.location.href = '/login'
     }
     if (error.response && error.response.status === 400) {
-      toast.error(error.response.data.message)
+      console.error(error.response.data.message)
     }
-    return Promise.reject(error)
   },
 )
 
@@ -62,9 +58,7 @@ axiosAdmin.interceptors.request.use(
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  },
+  () => {},
 )
 
 axiosAdmin.interceptors.response.use(
@@ -82,9 +76,8 @@ axiosAdmin.interceptors.response.use(
       window.location.href = '/not-authorization'
     }
     if (error.response && error.response.status === 400) {
-      toast.error(error.response.data.message)
+      console.error(error.response.data.message)
     }
-    return Promise.reject(error)
   },
 )
 

@@ -208,6 +208,7 @@ export default function OrderAdmin() {
           huyenName={huyenName}
           setTinhName={setTinhName}
           tinhName={tinhName}
+          listBill={listBill}
         />
       )}
     </Container>

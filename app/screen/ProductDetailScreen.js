@@ -10,7 +10,7 @@ import {
 } from "native-base";
 import React, { useEffect, useState } from "react";
 import IconFontisto from "react-native-vector-icons/Fontisto";
-import clientProductApi from "../api/clientProductApi";
+import clientApi from "../api/clientApi";
 import { RefreshControl, ScrollView, TouchableOpacity } from "react-native";
 import Swiper from "react-native-swiper";
 import { formatCurrency } from "../service/formatCurrency";
@@ -39,7 +39,7 @@ export default function ProductDetailScreen({ route, navigation }) {
 
   useEffect(() => {
     if (product) {
-      clientProductApi
+      clientApi
         .getSizes({
           idProduct: product.idProduct,
           idColor: product.idColor,
@@ -57,7 +57,7 @@ export default function ProductDetailScreen({ route, navigation }) {
           }
         );
     }
-    clientProductApi
+    clientApi
       .getCungLoai({
         category: product.idCategory,
         brand: product.idBrand,
@@ -81,10 +81,10 @@ export default function ProductDetailScreen({ route, navigation }) {
 
   async function fetchData(id) {
     setLoading(true);
-    const resultProduct = await clientProductApi.getById(id);
+    const resultProduct = await clientApi.getById(id);
     if (resultProduct.data.success) {
       const data = resultProduct.data.data;
-      const resultColor = await clientProductApi.getColors({
+      const resultColor = await clientApi.getColors({
         idProduct: data.idProduct,
         idCategory: data.idCategory,
         idBrand: data.idBrand,

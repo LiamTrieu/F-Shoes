@@ -24,8 +24,8 @@ import authenticationAPi from '../api/authentication/authenticationAPi'
 import { Logout } from '@mui/icons-material'
 import confirmSatus from '../components/comfirmSwal'
 import KeyIcon from '@mui/icons-material/Key'
-import { useDispatch } from 'react-redux'
-import { addUserAdmin } from '../services/slices/userAdminSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { GetUserAdmin, addUserAdmin } from '../services/slices/userAdminSlice'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../services/url'
@@ -260,8 +260,7 @@ export default function AppBarAdmin({ children }) {
     )
   }
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-  const token = getCookie('AdminToken')
+  const user = useSelector(GetUserAdmin)
   const [anchorEl, setAnchorEl] = useState(null)
   const [openMenuProfile, setOpenMenuProfile] = useState(false)
   const handleClick = (event) => {
@@ -282,18 +281,8 @@ export default function AppBarAdmin({ children }) {
       navigate('/login')
     }
   }
-  const dispatch = useDispatch()
-  useEffect(() => {
-    if (token) {
-      authenticationAPi.getAdmin().then((response) => {
-        setUser(response.data.data)
-        dispatch(addUserAdmin(response.data.data))
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token])
 
-  return token ? (
+  return (
     <Box
       sx={{ display: 'flex', backgroundColor: '#F0F2F5', minHeight: '100vh', maxWidth: '100vw' }}>
       <ThemeAdmin>
@@ -427,7 +416,5 @@ export default function AppBarAdmin({ children }) {
         </Box>
       </ThemeAdmin>
     </Box>
-  ) : (
-    <Navigate to={'/admin/login'} />
   )
 }

@@ -1,55 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import clientProductApi from "./api/clientProductApi";
 import { NativeBaseProvider, View } from "native-base";
-import Loading from "./layout/Loading";
 import ProductDetailScreen from "./screen/ProductDetailScreen";
 import TabNavigator from "./navigator/TabNavigator";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image, TouchableOpacity } from "react-native";
 import BillScreen from "./screen/BillScreen";
+import { Provider, useDispatch } from "react-redux";
+import store from "./service/store";
+import Init from "./layout/Init";
 
 const Stack = createNativeStackNavigator();
-
 export default function App() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await clientProductApi.check();
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <Loading />;
-  }
   return (
-    <NativeBaseProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Home"
-            component={TabNavigator}
-            options={options}
-          />
-          <Stack.Screen
-            name="ProductDetails"
-            component={ProductDetailScreen}
-            options={options}
-          />
-          <Stack.Screen name="Cart" component={BillScreen} options={options} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </NativeBaseProvider>
+    <Provider store={store}>
+      <Init>
+        <NativeBaseProvider>
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="Home"
+                component={TabNavigator}
+                options={options}
+              />
+              <Stack.Screen
+                name="ProductDetails"
+                component={ProductDetailScreen}
+                options={options}
+              />
+              <Stack.Screen
+                name="Cart"
+                component={BillScreen}
+                options={options}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </NativeBaseProvider>
+      </Init>
+    </Provider>
   );
 }
 

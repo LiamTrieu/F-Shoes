@@ -1,6 +1,6 @@
 import axiosApi from "./axios";
 
-const clientProductApi = {
+const clientApi = {
   getProductHome: (filter) => {
     const url = `/client/product-home`;
     return axiosApi.get(url, { params: filter });
@@ -71,5 +71,13 @@ const clientProductApi = {
     const url = `/client/product/size`;
     return axiosApi.get(url, { params: request });
   },
+  getBillOrder: (text) => {
+    const url = `/app/get-order/${text}`;
+    return axiosApi.get(url);
+  },
+  getProductDetailBill: (id) => {
+    const url = `/app/get-product-detail-bill/${id}`;
+    return axiosApi.get(url);
+  },
 };
-export default clientProductApi;
+export default clientApi;

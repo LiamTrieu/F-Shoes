@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Image, ScrollView, RefreshControl } from "react-native";
 import { Button, Title, Subheading } from "react-native-paper";
-import clientProductApi from "../api/clientProductApi";
+import clientApi from "../api/clientApi";
 import CartProductSelling from "../component/CartProductSelling";
 import CartProductNew from "../component/CartProductNew";
 
@@ -27,8 +27,8 @@ export default function HomeScreen({ navigation }) {
 
   async function fetchData() {
     setLoading(true);
-    const dataProduct = await clientProductApi.getProductHome();
-    const dataProductSelling = await clientProductApi.getSellingProduct();
+    const dataProduct = await clientApi.getProductHome();
+    const dataProductSelling = await clientApi.getSellingProduct();
     setProducts(
       dataProduct.data.data.map((e) => {
         return {

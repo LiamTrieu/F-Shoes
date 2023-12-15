@@ -13,7 +13,7 @@ const cartSlice = createSlice({
     setCart(state, action) {
       localStorage.setItem('cart', JSON.stringify(action.payload))
       if (token) {
-        clientCartApi.set(action.payload)
+        clientCartApi.set(action.payload).catch(() => {})
       }
       return action.payload
     },
@@ -25,7 +25,7 @@ const cartSlice = createSlice({
         state.push(action.payload)
       }
       if (token) {
-        clientCartApi.set(state)
+        clientCartApi.set(state).catch(() => {})
       }
       localStorage.setItem('cart', JSON.stringify(state))
     },
@@ -35,7 +35,7 @@ const cartSlice = createSlice({
         state.splice(index, 1)
         localStorage.setItem('cart', JSON.stringify(state))
         if (token) {
-          clientCartApi.set(state)
+          clientCartApi.set(state).catch(() => {})
         }
       }
     },
@@ -45,7 +45,7 @@ const cartSlice = createSlice({
         state[itemIndex] = action.payload
         localStorage.setItem('cart', JSON.stringify(state))
         if (token) {
-          clientCartApi.set(state)
+          clientCartApi.set(state).catch(() => {})
         }
       }
     },

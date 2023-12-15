@@ -29,6 +29,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import { AiOutlineDisconnect } from 'react-icons/ai'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import CloseIcon from '@mui/icons-material/Close'
@@ -61,8 +62,10 @@ import { RiDeleteBin6Line } from 'react-icons/ri'
 import QrCodeIcon from '@mui/icons-material/QrCode'
 import Scanner from '../../../layout/Scanner'
 import axios from 'axios'
-import { url } from '../../../services/url'
+import { socketUrl, url } from '../../../services/url'
 import printJS from 'print-js'
+import SockJS from 'sockjs-client'
+import { Stomp } from '@stomp/stompjs'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -98,7 +101,7 @@ const styleCustomerPays = {
   boxShadow: 24,
   p: 4,
 }
-
+var stompClient = null
 export default function SellFrom({
   idBill,
   getAllBillTaoDonHang,
@@ -114,6 +117,7 @@ export default function SellFrom({
   huyenName,
   setTinhName,
   tinhName,
+  listBill,
 }) {
   const theme = useTheme()
   const [giaoHang, setGiaoHang] = useState(false)
@@ -292,6 +296,11 @@ export default function SellFrom({
   const fectchProductBillSell = (id) => {
     sellApi.getProductDetailBill(id).then((response) => {
       setListProductDetailBill(response.data.data)
+      if (stompClient !== null && stompClient.connected) {
+        const mess = { appLoad: true }
+        stompClient.send(`/topic/app-load/${idBill}`, {}, JSON.stringify(mess))
+      }
+
       const conditionMoney = response.data.data.reduce((sum, cart) => {
         if (cart.statusPromotion === 1) {
           return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
@@ -1596,6 +1605,39 @@ export default function SellFrom({
 
     return sanitizedCustomerAmount - remainingAmount
   }
+  useEffect(() => {
+    stompClient = Stomp.over(() => new SockJS(socketUrl))
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idBill])
+
+  const [app, setApp] = useState([])
+  const onConnect = () => {
+    listBill.forEach((bill) => {
+      stompClient.subscribe(`/topic/online-bill/${bill.id}`, (message) => {
+        if (message.body) {
+          const mess = { idOrder: bill.id }
+          const data = JSON.parse(message.body)
+          if (data.idApp) {
+            setApp([...app, { idBill: bill.id, idApp: data.idApp }])
+            stompClient.send(`/topic/app-online/${data.idApp}`, {}, JSON.stringify(mess))
+          }
+        }
+      })
+    })
+  }
+
+  const disconnectApp = () => {
+    const mess = { idOrder: null }
+    const idApp = app.find((e) => e.idBill === idBill).idApp
+    setApp([...app.filter((e) => e.idApp !== idApp)])
+    stompClient.send(`/topic/app-online/${idApp}`, {}, JSON.stringify(mess))
+  }
 
   return (
     <>
@@ -1614,6 +1656,18 @@ export default function SellFrom({
           <Typography fontWeight={'bold'} variant="h6" display={'inline'}>
             Sản phẩm
           </Typography>
+          {app.filter((a) => a.idBill === idBill).length > 0 && (
+            <Tooltip title="Ngắt kết nối">
+              <Button
+                onClick={disconnectApp}
+                sx={{ float: 'right', borderRadius: '8px', ml: 3 }}
+                size="small"
+                variant="contained"
+                color="error">
+                <AiOutlineDisconnect size={20} />
+              </Button>
+            </Tooltip>
+          )}
           <Button
             onClick={openAddProductModal}
             sx={{ float: 'right', borderRadius: '8px' }}
@@ -1664,7 +1718,6 @@ export default function SellFrom({
                         size="small"
                       />
                     </TableCell>
-
                     <TableCell style={{ verticalAlign: 'middle' }} sx={{ px: 0 }} width={'40%'}>
                       <Box
                         component="span"
