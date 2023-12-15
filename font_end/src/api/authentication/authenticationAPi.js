@@ -40,19 +40,13 @@ const authenticationAPi = {
     return axiosApi.get(url)
   },
 
-  getAdmin: () => {
-    const token = getCookie('AdminToken')
+  getAdmin: (token) => {
     const url = process.env.REACT_APP_API_URL + `/authentication`
-    if (token) {
-      return axios.get(url, { headers: { Authorization: `Bearer ${token}` } })
-    }
+    return axios.get(url, { headers: { Authorization: `Bearer ${token}` } })
   },
-  getClient: () => {
-    const token = getCookie('ClientToken')
+  getClient: (token) => {
     const url = `/authentication`
-    if (token) {
-      return axiosApi.get(url, { headers: { Authorization: `Bearer ${token}` } })
-    }
+    return axiosApi.get(url, { headers: { Authorization: `Bearer ${token}` } })
   },
 }
 export default authenticationAPi

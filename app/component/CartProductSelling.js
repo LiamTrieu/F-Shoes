@@ -1,110 +1,234 @@
-import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import IconFontisto from "react-native-vector-icons/Fontisto";
+import { useRef } from "react";
+import {
+  View,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Pressable,
+} from "react-native";
+
+import ColorSelection from "../layout/ColorSelection ";
+import colorPromotion from "./../service/colorPromotion";
+import SizeSelection from "../layout/SizeSelection";
+import PriceProduct from "../layout/PriceProduct";
+import { HStack } from "native-base";
 import Swiper from "react-native-swiper";
 
-export default function CartProductSelling({ products }) {
-  const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
-    const discountAmount = (discountPercentage / 100) * originalPrice;
-    const discountedPrice = originalPrice - discountAmount;
-    return discountedPrice;
+export default function CartProductSelling({
+  products,
+  navigation,
+  setLoading,
+}) {
+  const swiperRef = useRef(null);
+
+  useEffect(() => {
+    const autoScroll = setInterval(() => {
+      if (swiperRef.current) {
+        swiperRef.current.scrollBy(1, true);
+      }
+    }, 5000);
+
+    return () => clearInterval(autoScroll);
+  }, []);
+
+  const processArray = (inputArray) => {
+    const fields = [
+      "idProduct",
+      "idSole",
+      "idCategory",
+      "idBrand",
+      "idMaterial",
+    ];
+    const groupedItems = {};
+
+    inputArray.forEach((item) => {
+      const key = fields.map((field) => item[field]).join("-");
+      const colorKey = item.idColor;
+
+      if (!groupedItems[key]) {
+        groupedItems[key] = { ...item, duplicates: { [colorKey]: [item] } };
+      } else {
+        if (!groupedItems[key].duplicates[colorKey]) {
+          groupedItems[key].duplicates[colorKey] = [item];
+        } else {
+          groupedItems[key].duplicates[colorKey].push(item);
+        }
+      }
+    });
+    const newArrMap = Object.values(groupedItems).map((group) => {
+      group.duplicates = Object.values(group.duplicates).map((colorGroup) => {
+        return {
+          idColor: colorGroup[0].idColor,
+          codeColor: colorGroup[0].codeColor,
+          nameColor: colorGroup[0].nameColor,
+          sizes: colorGroup,
+        };
+      });
+      return group;
+    });
+    return newArrMap.slice(0, 8);
   };
+
+  const [arrMap, setArrMap] = useState([]);
+  useEffect(() => {
+    setLoading(true);
+    const uniqueFields = [
+      "idProduct",
+      "idSole",
+      "idCategory",
+      "idBrand",
+      "idMaterial",
+    ];
+    const processedArray = processArray(products, uniqueFields).map(
+      (product) => {
+        return {
+          ...product,
+          duplicate: product.duplicates[0],
+          ...product.duplicates[0].sizes[0],
+        };
+      }
+    );
+    setArrMap(processedArray);
+    setLoading(false);
+  }, [products]);
 
   return (
     <View style={styles.container}>
-      {products.map((product, i) => {
-        const hasPromotion =
-          product.promotion !== null && product.statusPromotion === 1;
+      {arrMap.map((product, i) => {
         const discountValue = product.value || 0;
-
-        const red = [255, 0, 0];
-        const green = [255, 255, 0];
-        const interpolatedColor = [
-          Math.round(
-            (1 - discountValue / 100) * green[0] +
-              (discountValue / 100) * red[0]
-          ),
-          Math.round(
-            (1 - discountValue / 100) * green[1] +
-              (discountValue / 100) * red[1]
-          ),
-          Math.round(
-            (1 - discountValue / 100) * green[2] +
-              (discountValue / 100) * red[2]
-          ),
-        ];
-
         return (
-          <View key={i} style={styles.productContainer}>
-            <View style={{ width: "100%", aspectRatio: 1 }}>
-              {hasPromotion && (
+          <TouchableOpacity
+            key={"cartNewProductSelling" + i}
+            style={styles.productContainer}
+            onPress={() =>
+              navigation.navigate("ProductDetails", {
+                id: product.id,
+              })
+            }>
+            <View>
+              <View style={{ width: "100%", aspectRatio: 1 }}>
+                {product.value && (
+                  <View
+                    style={{
+                      backgroundColor: colorPromotion(discountValue),
+                      ...styles.discountBadge,
+                    }}>
+                    <Text style={{ color: "white" }}>{`${
+                      discountValue ? discountValue : ""
+                    }%`}</Text>
+                  </View>
+                )}
                 <View
                   style={{
-                    backgroundColor: `rgb(${interpolatedColor[0]}, ${interpolatedColor[1]}, ${interpolatedColor[2]})`,
-                    padding: 5,
-                    borderRadius: 5,
-                    position: "absolute",
-                    top: 5,
-                    left: 5,
-                    zIndex: 1000,
+                    ...styles.sellingBadge,
                   }}>
-                  <Text style={{ color: "white" }}>{`${
-                    discountValue ? discountValue : ""
-                  }%`}</Text>
-                </View>
-              )}
-              <Swiper
-                style={styles.swiper}
-                showsPagination={false}
-                autoplay={true}
-                autoplayTimeout={3}>
-                {product.image.map((item, j) => (
-                  <Image key={j} source={{ uri: item }} style={styles.image} />
-                ))}
-              </Swiper>
-            </View>
-            <View>
-              <Text
-                style={{
-                  textAlign: "center",
-                  marginTop: 10,
-                  fontWeight: "bold",
-                }}>
-                {product.title}
-              </Text>
-              <Text style={{ textAlign: "center", marginTop: 5 }}>
-                {product.promotion && product.statusPromotion === 1 ? (
-                  <Text>
-                    <Text style={{ textDecorationLine: "line-through" }}>
-                      {`${product.priceBefort.toLocaleString("it-IT", {
-                        style: "currency",
-                        currency: "VND",
-                      })} `}
-                    </Text>
-                    <Text style={{ color: "red", fontWeight: "bold" }}>
-                      {`${calculateDiscountedPrice(
-                        product.priceBefort,
-                        product.value
-                      ).toLocaleString("it-IT", {
-                        style: "currency",
-                        currency: "VND",
-                      })} `}
-                    </Text>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: 10,
+                    }}>
+                    Đã bán: {product.amount}
                   </Text>
-                ) : (
-                  <Text>{`${product.priceBefort.toLocaleString("it-IT", {
-                    style: "currency",
-                    currency: "VND",
-                  })} `}</Text>
-                )}
-              </Text>
-              <Text style={{ textAlign: "center", marginTop: 5 }}>
-                <Text>
-                  <Text>Đã bán: </Text>
-                  <Text style={{ fontWeight: "bold" }}>{product.amount}</Text>
+                </View>
+                <Swiper
+                  containerStyle={{ borderRadius: 10, overflow: "hidden" }}
+                  removeClippedSubviews={false}
+                  loop
+                  autoplay
+                  showsPagination={false}>
+                  {product.image.map((image, index) => {
+                    return (
+                      <Image
+                        key={i + "image" + index}
+                        source={{ uri: image }}
+                        alt="anh"
+                        style={{
+                          height: "100%",
+                          borderRadius: 10,
+                        }}
+                      />
+                    );
+                  })}
+                </Swiper>
+              </View>
+              <View style={styles.layoutColor}>
+                <Text
+                  style={styles.nameBrand}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
+                  {product.nameBrand}
                 </Text>
-              </Text>
+                <ColorSelection
+                  arrMap={arrMap}
+                  i={i}
+                  product={product}
+                  setArrMap={setArrMap}
+                  navigation={navigation}
+                />
+              </View>
+              <View>
+                <Text
+                  style={{
+                    ...styles.nameProduct,
+                    paddingLeft: 5,
+                    paddingRight: 5,
+                    paddingTop: 3,
+                    maxWidth: 200,
+                  }}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
+                  {product.name}
+                </Text>
+              </View>
+              <PriceProduct product={product} />
+
+              <View
+                style={{
+                  marginTop: 10,
+                  flexDirection: "row",
+                  paddingRight: 5,
+                  justifyContent: "space-between",
+                }}>
+                <SizeSelection
+                  setArrMap={setArrMap}
+                  product={product}
+                  i={i}
+                  navigation={navigation}
+                  arrMap={arrMap}
+                />
+                <HStack space={1} marginLeft={1}>
+                  <Pressable
+                    style={{
+                      height: 20,
+                      width: 55,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "green",
+                      borderRadius: 10,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "white",
+                      }}>
+                      <IconFontisto
+                        name="shopping-basket-add"
+                        size={10}
+                        color={"white"}
+                      />
+                      &nbsp; Thêm
+                    </Text>
+                  </Pressable>
+                </HStack>
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         );
       })}
     </View>
@@ -119,59 +243,74 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   productContainer: {
-    width: "48%",
+    width: "48.5%",
+    padding: 5,
+    paddingBottom: 10,
     marginBottom: 10,
-    borderWidth: 0.5,
-    borderRadius: 5,
-    overflow: "hidden",
-    elevation: 0.5,
-    shadowColor: "grayText",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.8,
-    paddingBottom: 5,
-  },
-  swiperContainer: {
-    height: 200,
-  },
-  slide: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   swiper: {
     width: "100%",
     aspectRatio: 1,
   },
+  layoutColor: {
+    flexDirection: "row",
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 5,
+    paddingBottom: 5,
+    justifyContent: "space-between",
+  },
+  nameBrand: {
+    lineHeight: 20,
+    fontSize: 13,
+    color: "#F48A42",
+    fontWeight: "bold",
+    maxWidth: 100,
+  },
+  nameProduct: {
+    paddingBottom: 5,
+    lineHeight: 20,
+    fontSize: 17,
+    color: "black",
+    fontWeight: "bold",
+    maxWidth: 100,
+  },
   image: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "flex-end",
-    alignItems: "center",
+    borderRadius: 10,
   },
   discountBadge: {
     padding: 5,
     borderRadius: 5,
-    marginBottom: 10,
+    position: "absolute",
+    top: 5,
+    left: 5,
+    zIndex: 1000,
+  },
+  sellingBadge: {
+    padding: 4,
+    borderRadius: 5,
+    position: "absolute",
+    top: 5,
+    right: 5,
+    zIndex: 1000,
+    backgroundColor: "black",
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  price: {
-    flexDirection: "row",
-    alignItems: "baseline",
-  },
-  originalPrice: {
-    textDecorationLine: "line-through",
-    marginRight: 5,
-  },
-  discountedPrice: {
-    color: "red",
-    fontWeight: "bold",
   },
 });

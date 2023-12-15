@@ -54,16 +54,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public UserLoginResponse userLogin() {
         Account account = userLogin.getUserLogin();
-        UserLoginResponse response = null;
         if (account != null) {
-            response = new UserLoginResponse();
+            UserLoginResponse response = new UserLoginResponse();
             response.setId(account.getId());
             response.setEmail(account.getEmail());
             response.setName(account.getFullName());
             response.setAvatar(account.getAvatar());
             response.setRole(account.getRole());
+            return response;
         }
-        return response;
+        return null;
     }
 
     @Override

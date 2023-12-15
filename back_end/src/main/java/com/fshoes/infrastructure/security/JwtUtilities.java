@@ -63,6 +63,7 @@ public class JwtUtilities {
         return Jwts.builder()
                 .setSubject(account.getEmail())
                 .claim("id", account.getId())
+                .claim("role", account.getRole())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(Date.from(Instant.now().plus(jwtExpiration, ChronoUnit.MILLIS)))
                 .signWith(SignatureAlgorithm.HS256, secret).compact();

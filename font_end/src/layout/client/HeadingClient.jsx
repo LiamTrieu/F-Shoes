@@ -77,6 +77,8 @@ export default function HeadingClient() {
         }
       })
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const amountProduct = useSelector(GetCart).length
