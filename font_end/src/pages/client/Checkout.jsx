@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Box,
+  Breadcrumbs,
   Button,
   Container,
   FormControl,
@@ -491,12 +492,12 @@ export default function Checkout() {
 
   function calculateProductTotalPayment(cart, promotionByProductDetail) {
     const isDiscounted = promotionByProductDetail.some(
-      (item) => item.idProductDetail === cart.id && item.id,
+      (item) => item.idProductDetail === cart.id && item.value,
     )
 
     if (isDiscounted) {
       const discountedPrice = promotionByProductDetail
-        .filter((item) => item.idProductDetail === cart.id && item.id)
+        .filter((item) => item.idProductDetail === cart.id && item.value)
         .map((item) => cart.soLuong * calculateDiscountedPrice(cart.gia, item.value))
         .reduce((total, price) => total + price, 0)
       console.log('')
@@ -507,12 +508,12 @@ export default function Checkout() {
   }
   function calculateProductTotalPaymentBillDetail(cart, promotionByProductDetail) {
     const isDiscounted = promotionByProductDetail.some(
-      (item) => item.idProductDetail === cart.id && item.id,
+      (item) => item.idProductDetail === cart.id && item.value,
     )
 
     if (isDiscounted) {
       const discountedPrice = promotionByProductDetail
-        .filter((item) => item.idProductDetail === cart.id && item.id)
+        .filter((item) => item.idProductDetail === cart.id && item.value)
         .map((item) => calculateDiscountedPrice(cart.gia, item.value))
         .reduce((total, price) => total + price, 0)
       console.log('')
@@ -525,6 +526,22 @@ export default function Checkout() {
   return (
     <div className="check-out">
       <Container maxWidth="xl" sx={{ mt: 3 }}>
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 3, mb: 3 }}>
+          <Typography
+            color="inherit"
+            component={Link}
+            to="/home"
+            sx={{
+              color: 'black',
+              textDecoration: 'none',
+              fontWeight: '600 !important',
+              fontSize: 'calc(0.9rem + 0.15vw) !important',
+            }}>
+            Giỏ hàng
+          </Typography>
+
+          <Typography color="text.primary"> Thông tin thanh toán</Typography>
+        </Breadcrumbs>
         <Paper
           sx={{
             padding: '40px',

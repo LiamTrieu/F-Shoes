@@ -3,6 +3,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Breadcrumbs,
   Button,
   Container,
   IconButton,
@@ -38,6 +39,10 @@ import { socketUrl } from '../../services/url'
 import { isColorDark } from '../../services/common/isColorDark'
 import { FaCheck } from 'react-icons/fa'
 import CartProductCungLoai from '../../layout/client/CartProductCungLoai'
+import BreadcrumbsCustom from '../../components/BreadcrumbsCustom'
+
+const listBreadcrumbs = [{ name: 'Trang chủ', link: '/home' }]
+const listBreadcrumbs2 = [{ name: 'Sản phẩm', link: '/products' }]
 
 var stompClient = null
 export default function DetailProduct() {
@@ -307,6 +312,33 @@ export default function DetailProduct() {
   return (
     <div className="detail-product">
       <Container maxWidth="xl">
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 3, mb: 3 }}>
+          <Typography
+            color="inherit"
+            component={Link}
+            to="/home"
+            sx={{
+              color: 'black',
+              textDecoration: 'none',
+              fontWeight: '600 !important',
+              fontSize: 'calc(0.9rem + 0.15vw) !important',
+            }}>
+            Trang chủ
+          </Typography>
+          <Typography
+            color="inherit"
+            component={Link}
+            to="/products"
+            sx={{
+              color: 'black',
+              textDecoration: 'none',
+              fontWeight: '600 !important',
+              fontSize: 'calc(0.9rem + 0.15vw) !important',
+            }}>
+            Sản phẩm
+          </Typography>
+          <Typography color="text.primary"> {product.name}</Typography>
+        </Breadcrumbs>
         <Grid2 container rowSpacing={1} columnSpacing={3}>
           <Grid2 md={6} textAlign={'center'} width={'100%'}>
             <ReactImageGallery

@@ -227,13 +227,17 @@ export default function Home() {
               </Grid>
             </Box> */}
             <Box className="new-product">
-              <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
-                <Typography className="name-sale">
-                  <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} />{' '}
-                  <IoMdGift /> Siêu Sale
-                  <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} />{' '}
-                </Typography>
-              </Stack>
+              {saleProducts.length > 0 && (
+                <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+                  <Typography className="name-sale">
+                    <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} />{' '}
+                    <IoMdGift /> Siêu Sale
+                    <Divider
+                      sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }}
+                    />{' '}
+                  </Typography>
+                </Stack>
+              )}
 
               <CartSaleProduct
                 endTime={saleProducts.timeRemainingInSeconds}

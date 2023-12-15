@@ -1,6 +1,6 @@
-import { Button, Container, Grid, Paper, TextField, Typography } from '@mui/material'
+import { Breadcrumbs, Button, Container, Grid, Paper, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import ClientAccountApi from '../../api/client/clientAccount'
 import { toast } from 'react-toastify'
 
@@ -24,6 +24,22 @@ export default function Tracking() {
   return (
     <>
       <Container maxWidth="xl">
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 1.5, mb: 1.5 }}>
+          <Typography
+            color="inherit"
+            component={Link}
+            to="/home"
+            sx={{
+              color: 'black',
+              textDecoration: 'none',
+              fontWeight: '600 !important',
+              fontSize: 'calc(0.9rem + 0.15vw) !important',
+            }}>
+            Trang chủ
+          </Typography>
+
+          <Typography color="text.primary"> Tin tức</Typography>
+        </Breadcrumbs>
         <Grid container spacing={2}>
           <Grid item xs={6} sx={{ mt: 2 }}>
             <img
