@@ -1,4 +1,5 @@
 import {
+  Breadcrumbs,
   Container,
   Divider,
   Grid,
@@ -11,7 +12,7 @@ import {
   Typography,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import TimeLine from '../admin/hoadon/TimeLine'
 import ClientAccountApi from '../../api/client/clientAccount'
 import { formatCurrency } from '../../services/common/formatCurrency '
@@ -62,6 +63,34 @@ export default function TrackingDetail() {
   return (
     <div>
       <Container maxWidth="lg">
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 3, mb: 3 }}>
+          <Typography
+            color="inherit"
+            component={Link}
+            to="/home"
+            sx={{
+              color: 'black',
+              textDecoration: 'none',
+              fontWeight: '600 !important',
+              fontSize: 'calc(0.9rem + 0.15vw) !important',
+            }}>
+            Trang chủ
+          </Typography>
+          <Typography
+            color="inherit"
+            component={Link}
+            to="/tracking"
+            sx={{
+              color: 'black',
+              textDecoration: 'none',
+              fontWeight: '600 !important',
+              fontSize: 'calc(0.9rem + 0.15vw) !important',
+            }}>
+            Tra cứu
+          </Typography>
+
+          <Typography color="text.primary"> {code}</Typography>
+        </Breadcrumbs>
         <Paper elevation={3} className="time-line" sx={{ mt: 2, mb: 2, paddingLeft: 1 }}>
           <h3>Lịch sử đơn hàng</h3>
           {loadingTimeline ? <div>Loading...</div> : <TimeLine orderTimeLine={listOrderTimeLine} />}

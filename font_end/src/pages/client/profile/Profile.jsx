@@ -1,5 +1,6 @@
 import {
   Box,
+  Breadcrumbs,
   Container,
   Divider,
   Grid,
@@ -41,6 +42,22 @@ export default function Profile({ children }) {
   return (
     <div className="profile">
       <Container maxWidth="xl">
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 3, mb: 3 }}>
+          <Typography
+            color="inherit"
+            component={Link}
+            to="/home"
+            sx={{
+              color: 'black',
+              textDecoration: 'none',
+              fontWeight: '600 !important',
+              fontSize: 'calc(0.9rem + 0.15vw) !important',
+            }}>
+            Trang chủ
+          </Typography>
+
+          <Typography color="text.primary"> Tài khoản của tôi</Typography>
+        </Breadcrumbs>
         <Grid container spacing={2}>
           <Grid item xs={3}>
             <List

@@ -1,10 +1,27 @@
-import { Container, Grid } from '@mui/material'
+import { Breadcrumbs, Container, Grid, Typography } from '@mui/material'
 import React from 'react'
 import './Contact.css'
+import { Link } from 'react-router-dom'
 
 export default function Contact() {
   return (
     <>
+      <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 1.5, mb: 1.5, ml: 5 }}>
+        <Typography
+          color="inherit"
+          component={Link}
+          to="/home"
+          sx={{
+            color: 'black',
+            textDecoration: 'none',
+            fontWeight: '600 !important',
+            fontSize: 'calc(0.9rem + 0.15vw) !important',
+          }}>
+          Trang chủ
+        </Typography>
+
+        <Typography color="text.primary"> Liên hệ</Typography>
+      </Breadcrumbs>
       <div className="contact">
         <img
           src={require('../../assets/image/TinTuc/banner-contact.webp')}

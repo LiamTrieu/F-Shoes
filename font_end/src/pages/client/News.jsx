@@ -1,6 +1,7 @@
-import { Container, Grid } from '@mui/material'
+import { Breadcrumbs, Container, Grid, Typography } from '@mui/material'
 import React, { useRef } from 'react'
 import './News.css'
+import { Link } from 'react-router-dom'
 
 export default function News() {
   const videoRef = useRef(null)
@@ -11,6 +12,22 @@ export default function News() {
 
   return (
     <>
+      <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 1.5, mb: 1.5, ml: 5 }}>
+        <Typography
+          color="inherit"
+          component={Link}
+          to="/home"
+          sx={{
+            color: 'black',
+            textDecoration: 'none',
+            fontWeight: '600 !important',
+            fontSize: 'calc(0.9rem + 0.15vw) !important',
+          }}>
+          Trang chủ
+        </Typography>
+
+        <Typography color="text.primary"> Tin tức</Typography>
+      </Breadcrumbs>
       <div className="news">
         <div>
           <img

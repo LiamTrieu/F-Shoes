@@ -40,6 +40,10 @@ import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../../services/url'
 import { isColorDark } from '../../services/common/isColorDark'
+import { MdKeyboardArrowLeft } from 'react-icons/md'
+import BreadcrumbsCustom from '../../components/BreadcrumbsCustom'
+
+const listBreadcrumbs = [{ name: 'Trang chủ', link: '/home' }]
 function AirbnbThumbComponent(props) {
   const { children, ...other } = props
   return <SliderThumb {...other}>{children}</SliderThumb>
@@ -304,316 +308,320 @@ export default function Product() {
 
   const MenuBar = () => {
     return (
-      <List
-        className="list-product-portfolio"
-        component="nav"
-        aria-labelledby="nested-list-subheader">
-        <div className="menubar-portfolio" style={{ padding: '10px 0px' }}>
-          <TextField
-            sx={{ marginLeft: '10px', display: { md: 'none', xs: 'block' } }}
-            className="stack-input-filter"
-            placeholder="Tìm sản phẩm"
-            type="text"
-            size="small"
-            onChange={(e) => setFilter({ ...filter, nameProductDetail: e.target.value })}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+      <>
+        <List
+          className="list-product-portfolio"
+          component="nav"
+          aria-labelledby="nested-list-subheader">
+          <div className="menubar-portfolio" style={{ padding: '10px 0px' }}>
+            <TextField
+              sx={{ marginLeft: '10px', display: { md: 'none', xs: 'block' } }}
+              className="stack-input-filter"
+              placeholder="Tìm sản phẩm"
+              type="text"
+              size="small"
+              onChange={(e) => setFilter({ ...filter, nameProductDetail: e.target.value })}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-          {/* --------------------------------------------- CATEGORY --------------------------------------------- */}
-          <ListItemButton
-            onClick={() => setOpenCategory(!openCategory)}
-            className="list-item-button">
-            {/* <BiCategoryAlt className="icon-portfolio" /> */}
-            <ListItemText
-              style={{ fontSize: '20px !important', fontWeight: 700, color: 'green !important' }}
-              primary="Loại giày"
-            />
-            {openCategory ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          {!openCategory && (
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '85%',
-                marginLeft: '15px',
-                marginTop: '13px',
-                marginBottom: '13px',
-              }}
-            />
-          )}
-          <Collapse in={openCategory} timeout="auto" unmountOnExit className="collapse-portfolio">
-            <List component="div" disablePadding>
-              {listCategory.map((lf) => (
-                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxCategory(e, lf.id)}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectCategory.includes(lf.id)}
-                    size="small"
-                    style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
-                  />
-                  <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
-                </ListItemButton>
-              ))}
-            </List>
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '93%',
-                marginLeft: '15px',
-                marginBottom: '13px',
-              }}
-            />
-          </Collapse>
-          {/* --------------------------------------------- BRAND --------------------------------------------- */}
-          <ListItemButton onClick={() => setOpenBrand(!openBrand)} className="list-item-button">
-            {/* <GiBrandyBottle className="icon-portfolio" /> */}
-            <ListItemText primary="Thương hiệu" />
-            {openBrand ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          {!openBrand && (
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '85%',
-                marginLeft: '15px',
-                marginTop: '13px',
-                marginBottom: '13px',
-              }}
-            />
-          )}
-          <Collapse in={openBrand} timeout="auto" unmountOnExit className="collapse-portfolio">
-            <List component="div" disablePadding>
-              {listBrand.map((lf) => (
-                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxBrand(e, lf.id)}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectBrand.includes(lf.id)}
-                    size="small"
-                    style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
-                  />
-                  <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
-                </ListItemButton>
-              ))}
-            </List>
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '93%',
-                marginLeft: '15px',
-                marginBottom: '13px',
-              }}
-            />
-          </Collapse>
-          {/* --------------------------------------------- MATERIAL --------------------------------------------- */}
-          <ListItemButton
-            onClick={() => setOpenMaterial(!openMaterial)}
-            className="list-item-button">
-            {/* <GiMaterialsScience className="icon-portfolio" /> */}
-            <ListItemText primary="Chất liệu" />
-            {openMaterial ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          {!openMaterial && (
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '85%',
-                marginLeft: '15px',
-                marginTop: '13px',
-                marginBottom: '13px',
-              }}
-            />
-          )}
-          <Collapse in={openMaterial} timeout="auto" unmountOnExit className="collapse-portfolio">
-            <List component="div" disablePadding>
-              {listMaterial.map((lf) => (
-                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxMaterial(e, lf.id)}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectMaterial.includes(lf.id)}
-                    size="small"
-                    style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
-                  />
-                  <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
-                </ListItemButton>
-              ))}
-            </List>{' '}
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '93%',
-                marginLeft: '15px',
-                marginBottom: '13px',
-              }}
-            />
-          </Collapse>
-          {/* --------------------------------------------- SOLE --------------------------------------------- */}
-          <ListItemButton onClick={() => setOpenSole(!openSole)} className="list-item-button">
-            {/* <GiBootPrints className="icon-portfolio" /> */}
-            <ListItemText primary="Đế giày" />
-            {openSole ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          {!openSole && (
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '85%',
-                marginLeft: '15px',
-                marginTop: '13px',
-                marginBottom: '13px',
-              }}
-            />
-          )}
-          <Collapse in={openSole} timeout="auto" unmountOnExit className="collapse-portfolio">
-            <List component="div" disablePadding>
-              {listSole.map((lf) => (
-                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxSole(e, lf.id)}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectSole.includes(lf.id)}
-                    size="small"
-                    style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
-                  />
-                  <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
-                </ListItemButton>
-              ))}
-            </List>{' '}
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '93%',
-                marginLeft: '15px',
-                marginBottom: '13px',
-              }}
-            />
-          </Collapse>
-          {/* --------------------------------------------- SIZE --------------------------------------------- */}
-          <ListItemButton onClick={() => setOpenSize(!openSize)} className="list-item-button">
-            {/* <GiMeepleCircle className="icon-portfolio" /> */}
-            <ListItemText primary="Kích cỡ" />
-            {openSize ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          {!openSize && (
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '85%',
-                marginLeft: '15px',
-                marginTop: '13px',
-                marginBottom: '13px',
-              }}
-            />
-          )}
-          <Collapse in={openSize} timeout="auto" unmountOnExit className="collapse-portfolio">
-            <List component="div" disablePadding>
-              {listSize.map((lf) => (
-                <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxSize(e, lf.id)}>
-                  <Checkbox
-                    key={lf.id}
-                    checked={selectSize.includes(lf.id)}
-                    size="small"
-                    style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
-                  />
-                  <ListItemText primary={lf.size} key={lf.id} value={lf.id} />
-                </ListItemButton>
-              ))}
-            </List>{' '}
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '93%',
-                marginLeft: '15px',
-                marginBottom: '13px',
-              }}
-            />
-          </Collapse>
-          {/* --------------------------------------------- COLOR --------------------------------------------- */}
-          <ListItemButton onClick={() => setOpenColor(!openColor)} className="list-item-button">
-            {/* <BiSolidColorFill className="icon-portfolio" /> */}
-            <ListItemText primary="Màu sắc" />
-            {openColor ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          {!openColor && (
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '85%',
-                marginLeft: '15px',
-                marginTop: '13px',
-                marginBottom: '13px',
-              }}
-            />
-          )}
-
-          <Collapse in={openColor} timeout="auto" unmountOnExit className="collapse-portfolio">
-            <List component="div" disablePadding>
-              <Grid container>
-                {listColor.map((lf) => (
-                  <Grid items xs={4} key={lf.id}>
-                    <ListItem>
-                      <div
-                        style={{
-                          backgroundColor: `${lf.code}`,
-                          border: isColorDark(lf.code) ? `1px solid ${lf.code}` : '1px solid black',
-                        }}
-                        className="radio-color"
-                        onClick={(e) => handleCheckBoxColor(e, lf.id)}>
-                        {/* {filter.color === lf.id && <FaCheck color="white" />} */}
-                        {selectColor.includes(lf.id) && <FaCheck color="white" />}
-                        <span style={{ fontWeight: 600, marginTop: '65px' }}>{lf.name}</span>
-                      </div>
-                    </ListItem>
-                  </Grid>
+            {/* --------------------------------------------- CATEGORY --------------------------------------------- */}
+            <ListItemButton
+              onClick={() => setOpenCategory(!openCategory)}
+              className="list-item-button">
+              {/* <BiCategoryAlt className="icon-portfolio" /> */}
+              <ListItemText
+                style={{ fontSize: '20px !important', fontWeight: 700, color: 'green !important' }}
+                primary="Loại giày"
+              />
+              {openCategory ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            {!openCategory && (
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '85%',
+                  marginLeft: '15px',
+                  marginTop: '13px',
+                  marginBottom: '13px',
+                }}
+              />
+            )}
+            <Collapse in={openCategory} timeout="auto" unmountOnExit className="collapse-portfolio">
+              <List component="div" disablePadding>
+                {listCategory.map((lf) => (
+                  <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxCategory(e, lf.id)}>
+                    <Checkbox
+                      key={lf.id}
+                      checked={selectCategory.includes(lf.id)}
+                      size="small"
+                      style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
+                    />
+                    <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
+                  </ListItemButton>
                 ))}
-              </Grid>
-            </List>
-            <Divider
-              sx={{
-                height: '1px',
-                backgroundColor: 'black',
-                width: '93%',
-                marginLeft: '15px',
-                marginBottom: '13px',
-              }}
-            />
-          </Collapse>
-          {/* --------------------------------------------- PRICE --------------------------------------------- */}
-          <ListItemButton className="list-item-button">
-            {/* <GrMoney className="icon-portfolio" /> */}
-            <ListItemText primary="Giá tiền (Giá gốc)" />
-          </ListItemButton>
-          <ListItem className="list-item">
-            <AirbnbSlider
-              onChangeCommitted={(_, value) => {
-                setFilter({ ...filter, minPrice: value[0], maxPrice: value[1] })
-                setPriceMax(value[1])
-              }}
-              min={minMaxPrice.minPrice}
-              max={minMaxPrice.maxPrice}
-              valueLabelDisplay="auto"
-              slots={{ thumb: AirbnbThumbComponent }}
-              defaultValue={[filter.minPrice, priceMax]}
-              valueLabelFormat={(value) => formatCurrency(value)}
-            />
-          </ListItem>
-        </div>
-      </List>
+              </List>
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '93%',
+                  marginLeft: '15px',
+                  marginBottom: '13px',
+                }}
+              />
+            </Collapse>
+            {/* --------------------------------------------- BRAND --------------------------------------------- */}
+            <ListItemButton onClick={() => setOpenBrand(!openBrand)} className="list-item-button">
+              {/* <GiBrandyBottle className="icon-portfolio" /> */}
+              <ListItemText primary="Thương hiệu" />
+              {openBrand ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            {!openBrand && (
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '85%',
+                  marginLeft: '15px',
+                  marginTop: '13px',
+                  marginBottom: '13px',
+                }}
+              />
+            )}
+            <Collapse in={openBrand} timeout="auto" unmountOnExit className="collapse-portfolio">
+              <List component="div" disablePadding>
+                {listBrand.map((lf) => (
+                  <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxBrand(e, lf.id)}>
+                    <Checkbox
+                      key={lf.id}
+                      checked={selectBrand.includes(lf.id)}
+                      size="small"
+                      style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
+                    />
+                    <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
+                  </ListItemButton>
+                ))}
+              </List>
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '93%',
+                  marginLeft: '15px',
+                  marginBottom: '13px',
+                }}
+              />
+            </Collapse>
+            {/* --------------------------------------------- MATERIAL --------------------------------------------- */}
+            <ListItemButton
+              onClick={() => setOpenMaterial(!openMaterial)}
+              className="list-item-button">
+              {/* <GiMaterialsScience className="icon-portfolio" /> */}
+              <ListItemText primary="Chất liệu" />
+              {openMaterial ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            {!openMaterial && (
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '85%',
+                  marginLeft: '15px',
+                  marginTop: '13px',
+                  marginBottom: '13px',
+                }}
+              />
+            )}
+            <Collapse in={openMaterial} timeout="auto" unmountOnExit className="collapse-portfolio">
+              <List component="div" disablePadding>
+                {listMaterial.map((lf) => (
+                  <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxMaterial(e, lf.id)}>
+                    <Checkbox
+                      key={lf.id}
+                      checked={selectMaterial.includes(lf.id)}
+                      size="small"
+                      style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
+                    />
+                    <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
+                  </ListItemButton>
+                ))}
+              </List>{' '}
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '93%',
+                  marginLeft: '15px',
+                  marginBottom: '13px',
+                }}
+              />
+            </Collapse>
+            {/* --------------------------------------------- SOLE --------------------------------------------- */}
+            <ListItemButton onClick={() => setOpenSole(!openSole)} className="list-item-button">
+              {/* <GiBootPrints className="icon-portfolio" /> */}
+              <ListItemText primary="Đế giày" />
+              {openSole ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            {!openSole && (
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '85%',
+                  marginLeft: '15px',
+                  marginTop: '13px',
+                  marginBottom: '13px',
+                }}
+              />
+            )}
+            <Collapse in={openSole} timeout="auto" unmountOnExit className="collapse-portfolio">
+              <List component="div" disablePadding>
+                {listSole.map((lf) => (
+                  <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxSole(e, lf.id)}>
+                    <Checkbox
+                      key={lf.id}
+                      checked={selectSole.includes(lf.id)}
+                      size="small"
+                      style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
+                    />
+                    <ListItemText primary={lf.name} key={lf.id} value={lf.id} />
+                  </ListItemButton>
+                ))}
+              </List>{' '}
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '93%',
+                  marginLeft: '15px',
+                  marginBottom: '13px',
+                }}
+              />
+            </Collapse>
+            {/* --------------------------------------------- SIZE --------------------------------------------- */}
+            <ListItemButton onClick={() => setOpenSize(!openSize)} className="list-item-button">
+              {/* <GiMeepleCircle className="icon-portfolio" /> */}
+              <ListItemText primary="Kích cỡ" />
+              {openSize ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            {!openSize && (
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '85%',
+                  marginLeft: '15px',
+                  marginTop: '13px',
+                  marginBottom: '13px',
+                }}
+              />
+            )}
+            <Collapse in={openSize} timeout="auto" unmountOnExit className="collapse-portfolio">
+              <List component="div" disablePadding>
+                {listSize.map((lf) => (
+                  <ListItemButton key={lf.id} onClick={(e) => handleCheckBoxSize(e, lf.id)}>
+                    <Checkbox
+                      key={lf.id}
+                      checked={selectSize.includes(lf.id)}
+                      size="small"
+                      style={{ color: selectCategory.indexOf(lf.id) !== -1 ? 'black' : 'black' }}
+                    />
+                    <ListItemText primary={lf.size} key={lf.id} value={lf.id} />
+                  </ListItemButton>
+                ))}
+              </List>{' '}
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '93%',
+                  marginLeft: '15px',
+                  marginBottom: '13px',
+                }}
+              />
+            </Collapse>
+            {/* --------------------------------------------- COLOR --------------------------------------------- */}
+            <ListItemButton onClick={() => setOpenColor(!openColor)} className="list-item-button">
+              {/* <BiSolidColorFill className="icon-portfolio" /> */}
+              <ListItemText primary="Màu sắc" />
+              {openColor ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            {!openColor && (
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '85%',
+                  marginLeft: '15px',
+                  marginTop: '13px',
+                  marginBottom: '13px',
+                }}
+              />
+            )}
+
+            <Collapse in={openColor} timeout="auto" unmountOnExit className="collapse-portfolio">
+              <List component="div" disablePadding>
+                <Grid container>
+                  {listColor.map((lf) => (
+                    <Grid items xs={4} key={lf.id}>
+                      <ListItem>
+                        <div
+                          style={{
+                            backgroundColor: `${lf.code}`,
+                            border: isColorDark(lf.code)
+                              ? `1px solid ${lf.code}`
+                              : '1px solid black',
+                          }}
+                          className="radio-color"
+                          onClick={(e) => handleCheckBoxColor(e, lf.id)}>
+                          {/* {filter.color === lf.id && <FaCheck color="white" />} */}
+                          {selectColor.includes(lf.id) && <FaCheck color="white" />}
+                          <span style={{ fontWeight: 600, marginTop: '65px' }}>{lf.name}</span>
+                        </div>
+                      </ListItem>
+                    </Grid>
+                  ))}
+                </Grid>
+              </List>
+              <Divider
+                sx={{
+                  height: '1px',
+                  backgroundColor: 'black',
+                  width: '93%',
+                  marginLeft: '15px',
+                  marginBottom: '13px',
+                }}
+              />
+            </Collapse>
+            {/* --------------------------------------------- PRICE --------------------------------------------- */}
+            <ListItemButton className="list-item-button">
+              {/* <GrMoney className="icon-portfolio" /> */}
+              <ListItemText primary="Giá tiền (Giá gốc)" />
+            </ListItemButton>
+            <ListItem className="list-item">
+              <AirbnbSlider
+                onChangeCommitted={(_, value) => {
+                  setFilter({ ...filter, minPrice: value[0], maxPrice: value[1] })
+                  setPriceMax(value[1])
+                }}
+                min={minMaxPrice.minPrice}
+                max={minMaxPrice.maxPrice}
+                valueLabelDisplay="auto"
+                slots={{ thumb: AirbnbThumbComponent }}
+                defaultValue={[filter.minPrice, priceMax]}
+                valueLabelFormat={(value) => formatCurrency(value)}
+              />
+            </ListItem>
+          </div>
+        </List>
+      </>
     )
   }
 
@@ -645,6 +653,7 @@ export default function Product() {
 
   return (
     <Container maxWidth="xl" className="container-portfolio">
+      <BreadcrumbsCustom nameHere={'Sản phẩm'} listLink={listBreadcrumbs} />
       <Grid container spacing={1}>
         {isMenuBarVisible && (
           <Grid item xs={1} md={2.5} className="grid-drawer-portfolio">
