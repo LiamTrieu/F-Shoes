@@ -33,6 +33,14 @@ const hoaDonChiTietApi = {
     const url = `/billDetail/return-product/${idBillDetail}`
     return axiosAdmin.put(url, hdBillDetailReq)
   },
+  getByIdBillAndIdPrd: (idBill, idPrd) => {
+    const urlGetByIdBill = `/billDetail/get-by-billAndProductDetail`
+    return axiosAdmin.get(urlGetByIdBill, { params: { idBill, idPrd } })
+  },
+  getByIdBillAndIdPrdAndPrice: (idBill, idPrd, price) => {
+    const urlGetByIdBillPrdAndPrice = `/billDetail/get-by-billAndProductDetailAndPrice`
+    return axiosAdmin.get(urlGetByIdBillPrdAndPrice, { params: { idBill, idPrd, price } })
+  },
 }
 
 export default hoaDonChiTietApi

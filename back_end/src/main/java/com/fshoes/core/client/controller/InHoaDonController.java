@@ -43,5 +43,25 @@ public class InHoaDonController {
             return ResponseEntity.status(500).body(null);
         }
     }
+    @GetMapping("/hd-giao-hang/{id}")
+    public ResponseEntity<byte[]> inHoaDonGiaoHang(@PathVariable("id") String id) throws IOException {
+        File pdfFile = hdBillService.xuatHoaDonGiaoHang(id);
+        if (pdfFile != null) {
+            byte[] pdfBytes = Files.readAllBytes(pdfFile.toPath());
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.attachment().filename(pdfFile.getName()).build());
+
+            pdfFile.delete();
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(pdfBytes.length)
+                    .body(pdfBytes);
+        } else {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
 
 }
