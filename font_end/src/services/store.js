@@ -18,6 +18,7 @@ import productReducer from './slices/productSlice'
 import promotionReducer from './slices/promotionSlice'
 import sellReducer from './slices/sellSlice'
 import sizeReducer from './slices/sizeSlice'
+import appReducer from './slices/appSlice'
 import soleReducer from './slices/soleSlice'
 import transactionReducer from './slices/transactionSlice'
 import voucherReducer from './slices/voucherSlice'
@@ -47,6 +48,7 @@ const store = configureStore({
     promotion: promotionReducer,
     sell: sellReducer,
     size: sizeReducer,
+    app: appReducer,
     sole: soleReducer,
     transaction: transactionReducer,
     voucher: voucherReducer,

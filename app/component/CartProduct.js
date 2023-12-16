@@ -12,8 +12,13 @@ import ColorSelection from "../layout/ColorSelection ";
 import colorPromotion from "./../service/colorPromotion";
 import SizeSelection from "../layout/SizeSelection";
 import PriceProduct from "../layout/PriceProduct";
-import { HStack, Image } from "native-base";
+import { Box, HStack, Image, useToast } from "native-base";
 import Swiper from "react-native-swiper";
+import { useDispatch, useSelector } from "react-redux";
+import { GetOrder } from "../service/slices/orderSilce";
+import clientApi from "../api/clientApi";
+import { getStomptClient } from "../layout/Init";
+import { setOrderDetailSlice } from "../service/slices/orderDetailSlice";
 
 export default function CartProduct({ products, navigation, setLoading }) {
   const processArray = (inputArray) => {
@@ -76,6 +81,55 @@ export default function CartProduct({ products, navigation, setLoading }) {
     setArrMap(processedArray);
     setLoading(false);
   }, [products]);
+
+  const toast = useToast();
+  const idBill = useSelector(GetOrder);
+  const dispatch = useDispatch();
+  const addProduct = async (product, addAmount) => {
+    const BillDetail = {
+      billId: idBill,
+      productDetailId: product.id,
+      quantity: addAmount,
+      price: product.price,
+    };
+    const response = await clientApi.addBillDetail(BillDetail, idBill);
+    if (response.status === 200 && response.data.success) {
+      toast.show({
+        render: () => {
+          return (
+            <Box bg="green.300" px="2" py="1" rounded="sm" mb={5}>
+              Thêm sản phẩm thành công!
+            </Box>
+          );
+        },
+      });
+      const data = {
+        id: product.id,
+        idBillDetail: response.data.data.id,
+        image: product.image[0],
+        nameProduct: product.name,
+        price: product.price,
+        promotion: null,
+        quantity: response.data.data.quantity,
+        size: product.size,
+        statusPromotion: null,
+        value: product.value,
+        weight: product.weight,
+      };
+      getStomptClient().send(
+        `/topic/online-bill/${idBill}`,
+        {},
+        JSON.stringify({ method: "POST", data: data })
+      );
+      fectchProductBillSell(idBill);
+    }
+  };
+
+  const fectchProductBillSell = (id) => {
+    clientApi.getProductDetailBill(id).then((response) => {
+      dispatch(setOrderDetailSlice(response.data.data));
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -169,32 +223,37 @@ export default function CartProduct({ products, navigation, setLoading }) {
                   navigation={navigation}
                   arrMap={arrMap}
                 />
-                <HStack space={1} marginLeft={1}>
-                  <Pressable
-                    style={{
-                      height: 20,
-                      width: 55,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "green",
-                      borderRadius: 10,
-                    }}>
-                    <Text
+                {idBill && (
+                  <HStack space={1} marginLeft={1}>
+                    <Pressable
+                      onPress={() => {
+                        addProduct(product, 1);
+                      }}
                       style={{
-                        fontSize: 10,
-                        fontWeight: "bold",
-                        textAlign: "center",
-                        color: "white",
+                        height: 20,
+                        width: 55,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "green",
+                        borderRadius: 10,
                       }}>
-                      <IconFontisto
-                        name="shopping-basket-add"
-                        size={10}
-                        color={"white"}
-                      />
-                      &nbsp; Thêm
-                    </Text>
-                  </Pressable>
-                </HStack>
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          color: "white",
+                        }}>
+                        <IconFontisto
+                          name="shopping-basket-add"
+                          size={10}
+                          color={"white"}
+                        />
+                        &nbsp; Thêm
+                      </Text>
+                    </Pressable>
+                  </HStack>
+                )}
               </View>
             </View>
           </TouchableOpacity>

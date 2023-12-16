@@ -1,10 +1,11 @@
-import axiosApi from "./axios";
+import axiosApi, { axiosApiRealtime } from "./axios";
 
 const clientApi = {
   getProductHome: (filter) => {
     const url = `/client/product-home`;
     return axiosApi.get(url, { params: filter });
   },
+
   getSellingProduct: (filter) => {
     const url = `/client/selling-product`;
     return axiosApi.get(url, { params: filter });
@@ -77,7 +78,23 @@ const clientApi = {
   },
   getProductDetailBill: (id) => {
     const url = `/app/get-product-detail-bill/${id}`;
-    return axiosApi.get(url);
+    return axiosApiRealtime.get(url);
+  },
+  increaseQuantityBillDetail: (idBillDetail, idPrDetail) => {
+    const url = `/app/increase-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`;
+    return axiosApi.put(url);
+  },
+  decreaseQuantityBillDetail: (idBillDetail, idPrDetail) => {
+    const url = `/app/decrease-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`;
+    return axiosApi.put(url);
+  },
+  rollBackQuantityProductDetail: (idBill, idPrDetail) => {
+    const url = `/app/roll-back-quantity-product-detail?idBill=${idBill}&idPrDetail=${idPrDetail}`;
+    return axiosApi.put(url);
+  },
+  addBillDetail: (billDetail, id) => {
+    const urlGetAll = `/app/add-product-sell/${id}`;
+    return axiosApi.post(urlGetAll, billDetail);
   },
 };
 export default clientApi;

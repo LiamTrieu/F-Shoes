@@ -19,7 +19,7 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
                       SELECT 
                 MAX(pr.value) as value,
-                      (p.name) as nameProduct,
+                      CONCAT(p.name, ' ', m.name, ' ', so.name) as nameProduct,
                       bd.id as idBillDetail,
                          s.size,
                          pd.id as id,
@@ -33,6 +33,8 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
                    left join bill_detail bd on bd.id_product_detail = pd.id 
                    left join bill b on b.id = bd.id_bill 
                    left join product p on p.id = pd.id_product 
+                   left join material m on m.id = pd.id_material 
+                   left join sole so on so.id = pd.id_sole
                    left join size s on s.id = pd.id_size
                    left join image i on i.id_product_detail = pd.id 
                    left join product_promotion pp on pp.id_product_detail = pd.id

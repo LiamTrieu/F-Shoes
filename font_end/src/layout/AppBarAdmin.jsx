@@ -18,52 +18,70 @@ import { AiOutlineMenuFold } from 'react-icons/ai'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
 import '../assets/styles/admin.css'
-import { getCookie, removeCookie } from '../services/cookie'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
-import authenticationAPi from '../api/authentication/authenticationAPi'
+import { removeCookie } from '../services/cookie'
+import { Link, useNavigate } from 'react-router-dom'
 import { Logout } from '@mui/icons-material'
 import confirmSatus from '../components/comfirmSwal'
 import KeyIcon from '@mui/icons-material/Key'
 import { useDispatch, useSelector } from 'react-redux'
-import { GetUserAdmin, addUserAdmin } from '../services/slices/userAdminSlice'
+import { GetUserAdmin } from '../services/slices/userAdminSlice'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../services/url'
 import dayjs from 'dayjs'
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled'
+import { GetApp, setApp } from '../services/slices/appSlice'
 
 const drawerWidth = '17vw'
 var stompClient = null
-
 export default function AppBarAdmin({ children }) {
   const [notification, setNotification] = useState([])
-  const NotificationButton = () => {
-    function getNotification(data) {
-      setNotification([data, ...notification])
-    }
 
-    useEffect(() => {
-      const socket = new SockJS(socketUrl)
-      stompClient = Stomp.over(socket)
-      stompClient.debug = () => {}
-      stompClient.connect({}, onConnect)
+  const navigate = useNavigate()
+  const user = useSelector(GetUserAdmin)
+  const app = useSelector(GetApp)
 
-      return () => {
-        stompClient.disconnect()
-      }
+  const dispatch = useDispatch()
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [openMenuProfile, setOpenMenuProfile] = useState(false)
 
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const onConnect = () => {
-      stompClient.subscribe('/topic/thong-bao', (message) => {
-        if (message.body) {
-          const data = JSON.parse(message.body)
-          setAnchorEl(true)
-          getNotification(data)
-        }
+  function handleDisconnectAction() {
+    if (app && app.length > 0) {
+      const mess = { idOrder: null }
+      app.forEach((e) => {
+        stompClient.send(`/topic/app-online/${e.idApp}`, {}, JSON.stringify(mess))
       })
+      dispatch(setApp([]))
     }
+  }
+
+  useEffect(() => {
+    stompClient = Stomp.over(() => new SockJS(socketUrl))
+    stompClient.connect({}, onConnect)
+    stompClient.onclose = () => {
+      handleDisconnectAction()
+    }
+    return () => {
+      stompClient.disconnect()
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  window.addEventListener('beforeunload', function (event) {
+    handleDisconnectAction()
+  })
+
+  // Xử lý sự kiện mất mạng (offline)
+  window.addEventListener('offline', () => {
+    handleDisconnectAction()
+  })
+
+  function getNotification(data) {
+    setNotification([data, ...notification])
+  }
+
+  const NotificationButton = () => {
     const [anchorEl, setAnchorEl] = useState(null)
 
     const handleButtonClick = (event) => {
@@ -259,10 +277,7 @@ export default function AppBarAdmin({ children }) {
       </div>
     )
   }
-  const navigate = useNavigate()
-  const user = useSelector(GetUserAdmin)
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [openMenuProfile, setOpenMenuProfile] = useState(false)
+
   const handleClick = (event) => {
     anchorEl === null ? setAnchorEl(event.currentTarget) : setAnchorEl(null)
     openMenuProfile === false ? setOpenMenuProfile(true) : setOpenMenuProfile(false)
@@ -280,6 +295,31 @@ export default function AppBarAdmin({ children }) {
     } else {
       navigate('/login')
     }
+  }
+
+  const onConnect = () => {
+    stompClient.subscribe('/topic/thong-bao', (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        setAnchorEl(true)
+        getNotification(data)
+      }
+    })
+
+    stompClient.subscribe(`/topic/web-online/${user.id}`, (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        if (data.idApp) {
+          const mess = { idOrder: data.idBill }
+          if (data.isConnect) {
+            dispatch(setApp([...app, { idBill: data.idBill, idApp: data.idApp }]))
+            stompClient.send(`/topic/app-online/${data.idApp}`, {}, JSON.stringify(mess))
+          } else {
+            dispatch(setApp([...app.filter((e) => e.idApp !== data.idApp)]))
+          }
+        }
+      }
+    })
   }
 
   return (

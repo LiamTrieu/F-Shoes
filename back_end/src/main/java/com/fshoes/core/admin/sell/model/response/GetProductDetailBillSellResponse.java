@@ -10,7 +10,7 @@ public interface GetProductDetailBillSellResponse extends IsIdentified {
 
     String getPrice();
 
-    String getSize();
+    Float getSize();
 
     String getWeight();
 
