@@ -121,8 +121,8 @@ const sellApi = {
   },
 
   inputQuantityBillDetail: (idBillDetail, idPrDetail, quantity) => {
-    const url = `/sell/decrease-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}`
-    return axiosAdmin.put(url, quantity)
+    const url = `/sell/input-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}&quantity=${quantity}`
+    return axiosAdmin.put(url)
   },
 
   getNameProduct: () => {

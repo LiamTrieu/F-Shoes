@@ -9,7 +9,7 @@ export default function Loading() {
         style={styles.splashImage}
       />
       <ActivityIndicator size="large" color="#f2741f" />
-      <Text style={styles.loadingText}>Server free, vui lòng đợi!</Text>
+      <Text style={styles.loadingText}>Đang tải, vui lòng đợi!</Text>
     </View>
   );
 }

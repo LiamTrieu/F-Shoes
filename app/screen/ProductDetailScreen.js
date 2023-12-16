@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Divider,
   HStack,
@@ -7,16 +8,27 @@ import {
   Skeleton,
   Text,
   View,
+  useToast,
 } from "native-base";
 import React, { useEffect, useState } from "react";
 import IconFontisto from "react-native-vector-icons/Fontisto";
 import clientApi from "../api/clientApi";
-import { RefreshControl, ScrollView, TouchableOpacity } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import Swiper from "react-native-swiper";
 import { formatCurrency } from "../service/formatCurrency";
 import { isColorDark } from "./../service/isColorDark";
 import CartProduct from "./../component/CartProduct";
 import colorPromotion from "../service/colorPromotion";
+import { useDispatch, useSelector } from "react-redux";
+import { GetOrder } from "../service/slices/orderSilce";
+import { getStomptClient } from "../layout/Init";
+import { setOrderDetailSlice } from "../service/slices/orderDetailSlice";
 
 const calculateDiscountedPrice = (originalPrice, discountPercentage) => {
   const discountAmount = (discountPercentage / 100) * originalPrice;
@@ -104,6 +116,56 @@ export default function ProductDetailScreen({ route, navigation }) {
     setRefreshing(false);
   }
 
+  const toast = useToast();
+  const idBill = useSelector(GetOrder);
+  const dispatch = useDispatch();
+  const [quantity, setQuantity] = useState(1);
+  const addProduct = async (product, addAmount) => {
+    const BillDetail = {
+      billId: idBill,
+      productDetailId: product.id,
+      quantity: addAmount,
+      price: product.price,
+    };
+    const response = await clientApi.addBillDetail(BillDetail, idBill);
+    if (response.status === 200 && response.data.success) {
+      toast.show({
+        render: () => {
+          return (
+            <Box bg="green.300" px="2" py="1" rounded="sm" mb={5}>
+              Thêm sản phẩm thành công!
+            </Box>
+          );
+        },
+      });
+      const data = {
+        id: product.id,
+        idBillDetail: response.data.data.id,
+        image: product.image[0],
+        nameProduct: product.name,
+        price: product.price,
+        promotion: null,
+        quantity: response.data.data.quantity,
+        size: product.size,
+        statusPromotion: null,
+        value: product.value,
+        weight: product.weight,
+      };
+      getStomptClient().send(
+        `/topic/online-bill/${idBill}`,
+        {},
+        JSON.stringify({ method: "POST", data: data })
+      );
+      fectchProductBillSell(idBill);
+    }
+  };
+
+  const fectchProductBillSell = (id) => {
+    clientApi.getProductDetailBill(id).then((response) => {
+      dispatch(setOrderDetailSlice(response.data.data));
+    });
+  };
+
   if (id === null) {
     navigation.goBack();
   }
@@ -143,7 +205,7 @@ export default function ProductDetailScreen({ route, navigation }) {
             }}
           />
         }
-        style={{ backgroundColor: "white", height: "94%" }}>
+        style={{ backgroundColor: "white", height: "92%" }}>
         {/* <Text>{JSON.stringify(product)}</Text> */}
         <Swiper
           style={{ height: 400 }}
@@ -419,23 +481,89 @@ export default function ProductDetailScreen({ route, navigation }) {
           )}
         </View>
       </ScrollView>
-      <View>
-        <Text
-          style={{
-            textAlign: "center",
-            lineHeight: 50,
-            fontWeight: "bold",
-            fontSize: 20,
-            color: "#F48A42",
-          }}>
-          <IconFontisto
-            name="shopping-basket-add"
-            size={20}
-            color={"#F48A42"}
+      <HStack mt={3} space={100} alignItems="center" justifyContent="center">
+        <HStack style={{ height: 25, marginTop: 3 }}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setQuantity(parseInt(quantity) - 1);
+            }}>
+            <Text style={styles.buttonText}>-</Text>
+          </TouchableOpacity>
+          <TextInput
+            onChangeText={(text) => {
+              setQuantity(text);
+            }}
+            value={quantity + ""}
+            style={styles.input}
+            keyboardType="numeric"
           />
-          &nbsp; Thêm vào đơn
-        </Text>
-      </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setQuantity(parseInt(quantity) + 1);
+            }}>
+            <Text style={styles.buttonText}>+</Text>
+          </TouchableOpacity>
+        </HStack>
+        <View>
+          <TouchableOpacity
+            onPress={() => {
+              addProduct(product, parseInt(quantity));
+            }}>
+            <Text
+              style={{
+                backgroundColor: "black",
+                borderRadius: 10,
+                padding: 5,
+                textAlign: "center",
+                lineHeight: 34,
+                fontWeight: "bold",
+                fontSize: 20,
+                color: "white",
+              }}>
+              <IconFontisto
+                name="shopping-basket-add"
+                size={20}
+                color={"white"}
+              />
+              &nbsp; Thêm vào đơn
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </HStack>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: "black",
+    padding: 8,
+    paddingTop: 5,
+    paddingBottom: 5,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  input: {
+    borderRadius: 5,
+    width: 50,
+    fontSize: 20,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  container: {
+    alignItems: "center",
+    padding: 16,
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  title: {
+    fontSize: 20,
+    marginBottom: 16,
+  },
+});

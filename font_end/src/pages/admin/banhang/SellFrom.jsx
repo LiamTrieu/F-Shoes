@@ -66,6 +66,10 @@ import { socketUrl, url } from '../../../services/url'
 import printJS from 'print-js'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
+import InputQuantity from './InputQuantity'
+import { useDispatch, useSelector } from 'react-redux'
+import { GetApp, setApp } from '../../../services/slices/appSlice'
+import Swal from 'sweetalert2'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -356,10 +360,23 @@ export default function SellFrom({
     })
   }
 
-  const inputQuantityBillDetail = (idBillDetail, idPrDetail, quantity) => {
-    sellApi.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity).then(() => {
-      fectchProductBillSell(idBill)
-    })
+  const inputQuantityBillDetail = (idBillDetail, idPrDetail, quantity, cart) => {
+    let sum = 0
+    if (cart.value) {
+      sum = calculateDiscountedPrice(cart.price, cart.value) * quantity
+    } else {
+      sum = cart.price * quantity
+    }
+    console.log(sum)
+    if (Number(sum) < 500000000) {
+      sellApi.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity).then(() => {
+        fectchProductBillSell(idBill)
+      })
+      return quantity
+    } else {
+      toast.error('Vượt quá số lượng cho phép')
+      return cart.quantity
+    }
   }
 
   const fecthDataVoucherByIdCustomer = (adCallVoucherOfSell) => {
@@ -622,9 +639,6 @@ export default function SellFrom({
         setHuyenName(districtLabel)
         setXaName(wardLabel)
         const selectTinh = tinh.find((item) => item.provinceName === provinceLabel) || null
-        console.log(tinh, 'tinh')
-        console.log(selectTinh, 'selectTinh')
-        console.log(idBill, 'idBill')
 
         if (selectTinh) {
           setSelectedTinh({ id: selectTinh.provinceID, label: selectTinh.provinceName })
@@ -1348,19 +1362,77 @@ export default function SellFrom({
     const text = ''
     confirmSatus(title, text, theme).then((result) => {
       if (result.isConfirmed) {
-        sellApi.addBill(data, id).then((response) => {
-          if (response.data.success) {
-            toast.success(' xác nhận thành công', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            if (!giaoHang) {
-              printBill(id)
+        const handleSuccessfulConfirmation = () => {
+          sellApi.addBill(data, id).then((response) => {
+            if (response.data.success) {
+              disconnectApp()
+              toast.success('Xác nhận thành công', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              if (!giaoHang) {
+                printBill(id)
+              }
+              getAllBillTaoDonHang()
+              setSelectBill('')
             }
+          })
+        }
 
-            getAllBillTaoDonHang()
-            setSelectBill('')
+        const filteredApp = app.filter((a) => a.idBill === idBill)
+        if (filteredApp.length > 0) {
+          const idApp = filteredApp[0].idApp
+
+          const subscribeToTopic = stompClient.subscribe(
+            `/topic/bill-comfirm/${idBill}`,
+            (response) => {
+              const result = JSON.parse(response.body)
+              handleBillConfirmation(result)
+            },
+          )
+          stompClient.send(
+            `/topic/app-comfirm/${idApp}`,
+            {},
+            JSON.stringify({ data: data, giaoDich: payOrderByIdBill }),
+          )
+          let timerInterval
+          Swal.fire({
+            title: 'Đang chờ khách hàng xác nhận...',
+            html: 'Trong <b>10</b> giây khách hàng không phản hồi coi như đồng ý',
+            showConfirmButton: false,
+            timer: 10000,
+            timerProgressBar: true,
+            didOpen: () => {
+              Swal.showLoading()
+              const timer = Swal.getPopup().querySelector('b')
+              let remainingTime = Math.ceil(Swal.getTimerLeft() / 1000) // Chuyển đổi từ mili giây sang giây và làm tròn lên
+              timer.textContent = `${remainingTime}`
+              timerInterval = setInterval(() => {
+                remainingTime = Math.ceil(Swal.getTimerLeft() / 1000)
+                timer.textContent = `${remainingTime}`
+              }, 1000)
+            },
+            willClose: () => {
+              clearInterval(timerInterval)
+            },
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {
+              subscribeToTopic.unsubscribe()
+              handleSuccessfulConfirmation()
+            }
+          })
+
+          const handleBillConfirmation = (result) => {
+            Swal.close()
+            subscribeToTopic.unsubscribe()
+            if (result === false) {
+              toast.warning('Xác nhận đơn hàng bị khách hàng từ chối!')
+            } else {
+              handleSuccessfulConfirmation()
+            }
           }
-        })
+        } else {
+          handleSuccessfulConfirmation()
+        }
       }
     })
   }
@@ -1614,28 +1686,47 @@ export default function SellFrom({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idBill])
+  }, [idBill, listProductDetailBill])
 
-  const [app, setApp] = useState([])
+  const app = useSelector(GetApp)
   const onConnect = () => {
-    listBill.forEach((bill) => {
-      stompClient.subscribe(`/topic/online-bill/${bill.id}`, (message) => {
-        if (message.body) {
-          const mess = { idOrder: bill.id }
-          const data = JSON.parse(message.body)
-          if (data.idApp) {
-            setApp([...app, { idBill: bill.id, idApp: data.idApp }])
-            stompClient.send(`/topic/app-online/${data.idApp}`, {}, JSON.stringify(mess))
-          }
+    stompClient.subscribe(`/topic/online-bill/${idBill}`, (message) => {
+      if (message.body) {
+        const data = JSON.parse(message.body)
+        switch (data.method) {
+          case 'PUT':
+            if (data.data) {
+              const updatedList = listProductDetailBill.map((e) => {
+                return e.idBillDetail === data.data.idBillDetail ? data.data : e
+              })
+              setListProductDetailBill(updatedList)
+            }
+            break
+          case 'DELETE':
+            if (data.id) {
+              const updatedList = listProductDetailBill.filter((e) => e.id !== data.id)
+              setListProductDetailBill(updatedList)
+            }
+            break
+          case 'POST':
+            if (data.data) {
+              console.log(listProductDetailBill)
+              const updatedList = listProductDetailBill.filter((e) => e.id !== data.data.id)
+              setListProductDetailBill([...updatedList, data.data])
+            }
+            break
+          default:
+            break
         }
-      })
+      }
     })
   }
 
+  const dispatch = useDispatch()
   const disconnectApp = () => {
     const mess = { idOrder: null }
     const idApp = app.find((e) => e.idBill === idBill).idApp
-    setApp([...app.filter((e) => e.idApp !== idApp)])
+    dispatch(setApp([...app.filter((e) => e.idApp !== idApp)]))
     stompClient.send(`/topic/app-online/${idApp}`, {}, JSON.stringify(mess))
   }
 
@@ -1787,54 +1878,14 @@ export default function SellFrom({
                       </span>
                     </TableCell>
                     <TableCell sx={{ px: 0 }} width={'5%'}>
-                      <Box
-                        width={'65px'}
-                        display="flex"
-                        alignItems="center"
-                        sx={{
-                          border: '1px solid gray',
-                          borderRadius: '20px',
-                        }}
-                        p={'3px'}>
-                        <IconButton
-                          size="small"
-                          sx={{ p: 0 }}
-                          onClick={() => {
-                            decreaseQuantityBillDetail(cart.idBillDetail, cart.id, cart.quantity)
-                          }}
-                          disabled={cart.quantity <= 1}>
-                          <RemoveIcon fontSize="1px" />
-                        </IconButton>
-                        <TextField
-                          value={cart.quantity}
-                          inputProps={{ min: 1 }}
-                          size="small"
-                          sx={{
-                            width: '30px ',
-                            '& input': { p: 0, textAlign: 'center' },
-                            '& fieldset': {
-                              border: 'none',
-                            },
-                          }}
-                          // onChange={(e) => {
-                          //   const inputValue = e.target.value
-                          //   const numericValue = Number(inputValue)
-
-                          //   if (!isNaN(numericValue) && numericValue >= 1) {
-                          //     inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue)
-                          //   }
-                          // }}
-                        />
-                        <IconButton
-                          disabled={Number(totalSum) >= 500000000}
-                          size="small"
-                          sx={{ p: 0 }}
-                          onClick={() => {
-                            increaseQuantityBillDetail(cart.idBillDetail, cart.id, cart.quantity)
-                          }}>
-                          <AddIcon fontSize="1px" />
-                        </IconButton>
-                      </Box>
+                      <InputQuantity
+                        cart={cart}
+                        decreaseQuantityBillDetail={decreaseQuantityBillDetail}
+                        increaseQuantityBillDetail={increaseQuantityBillDetail}
+                        inputQuantityBillDetail={inputQuantityBillDetail}
+                        totalSum={totalSum}
+                        key={'input' + cart.id}
+                      />
                     </TableCell>
                     <TableCell
                       sx={{
