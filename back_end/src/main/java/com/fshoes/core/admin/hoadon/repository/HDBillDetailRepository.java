@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -41,7 +42,7 @@ public interface HDBillDetailRepository extends BillDetailRepository {
 
     List<BillDetail> getBillDetailByBillId(String idBill);
 
-//    @Query(value = "Select ROW_NUMBER() over (ORDER BY created_at desc ) as stt, a.id, a.code, a.avatar, a.email, a.full_name as fullName," +
+    //    @Query(value = "Select ROW_NUMBER() over (ORDER BY created_at desc ) as stt, a.id, a.code, a.avatar, a.email, a.full_name as fullName," +
 //            "a.date_birth as dateBirth, a.phone_number as phoneNumber," +
 //            "a.gender, a.created_at as createdAt, a.status from account a " +
 //            "LEFT JOIN bill_history bh on a.id = bh.id_account" +
@@ -49,6 +50,29 @@ public interface HDBillDetailRepository extends BillDetailRepository {
 //            "or a.email like %:#{#hdNhanVienSearchRequest.txtSearch}% or a.phone_number like %:#{#hdNhanVienSearchRequest.txtSearch}%) " +
 //            "order by a.created_at desc", nativeQuery = true)
 //    Page<HDNhanVienResponse> getListNhanVien(Pageable pageable, HDNhanVienSearchRequest hdNhanVienSearchRequest);
+    @Query(value = """
+            SELECT bd.id, b.id as idBill,
+                    bd.price, pd.price as productPrice,
+                    bd.status as status, bd.note as note, pd.weight as weight, pd.id as productDetailId, bd.quantity
+             FROM bill_detail bd
+                 LEFT JOIN product_detail pd ON bd.id_product_detail = pd.id
+                 LEFT JOIN bill b ON bd.id_bill = b.id
+             WHERE b.id = :idBill AND pd.id = :idPrd 
+             GROUP BY bd.id, bd.price, pd.price, pd.id, bd.status;            
+             """, nativeQuery = true)
+    List<HDBillDetailResponse> getBillDtResByIdBillAndIDPrd(@Param("idBill") String idBill, @Param("idPrd") String idPrd);
+
+    @Query(value = """
+            SELECT bd.id, b.id as idBill,
+                    bd.price, pd.price as productPrice,
+                    bd.status as status, bd.note as note, pd.weight as weight, pd.id as productDetailId, bd.quantity
+             FROM bill_detail bd
+                 LEFT JOIN product_detail pd ON bd.id_product_detail = pd.id
+                 LEFT JOIN bill b ON bd.id_bill = b.id
+             WHERE b.id = :idBill AND pd.id = :idPrd  AND bd.price = :price
+             GROUP BY bd.id, bd.price, pd.price, pd.id, bd.status;            
+             """, nativeQuery = true)
+    HDBillDetailResponse getBillDtResByIdBillAndIDPrdAndPrice(@Param("idBill") String idBill, @Param("idPrd") String idPrd, @Param("price")BigDecimal price);
 
 
 }

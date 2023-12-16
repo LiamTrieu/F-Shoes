@@ -4,6 +4,7 @@ import com.fshoes.entity.Account;
 import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
 import com.fshoes.entity.BillHistory;
+import com.fshoes.infrastructure.constant.Constants;
 import com.fshoes.infrastructure.constant.MailConstant;
 import com.fshoes.repository.ProductDetailRepository;
 import com.itextpdf.text.*;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class GenHoaDon {
@@ -110,7 +112,7 @@ public class GenHoaDon {
             cell1.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell1);
             PdfPCell cell4 = new PdfPCell(new Paragraph("Địa chỉ nhận hàng: " +
-                                                        (bill.getReceivingMethod() == 0 ? "Tại cửa hàng" : bill.getAddress()), normalFont));
+                    (bill.getReceivingMethod() == 0 ? "Tại cửa hàng" : bill.getAddress()), normalFont));
             cell4.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell4.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell4);
@@ -121,8 +123,8 @@ public class GenHoaDon {
             invoiceTable.addCell(cell2);
 
             PdfPCell cell5 = new PdfPCell(new Paragraph("Nhân viên: " +
-                                                        account.getCode() + " - " +
-                                                        account.getFullName(), normalFont));
+                    account.getCode() + " - " +
+                    account.getFullName(), normalFont));
             cell5.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell5.setBorder(Rectangle.NO_BORDER);
             invoiceTable.addCell(cell5);
@@ -245,4 +247,188 @@ public class GenHoaDon {
         }
         return pdfFile;
     }
+
+    public File genHoaDonGiaoHang(Bill bill, List<BillDetail> billDetails, BillHistory billHistory, Account account) {
+        Document document = new Document();
+        document.setMargins(30, 30, 30, 30);
+        document.setMarginMirroring(true); // Bật đối xứng viền
+
+        File pdfFile = null;
+
+        try {
+            DecimalFormat decimalFormat = new DecimalFormat("###,###.## VND");
+
+            pdfFile = new File(bill.getCode() + ".pdf");
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
+            document.open();
+
+            // Thiết lập đường viền cho toàn bộ document
+            PdfContentByte canvas = writer.getDirectContent();
+            canvas.rectangle(30, 30, PageSize.A4.getWidth() - 60, PageSize.A4.getHeight() - 60);
+            canvas.stroke();
+
+            BaseFont unicodeFont = BaseFont.createFont(MailConstant.FONT_INVOICE, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font titleFont = new Font(unicodeFont, 25, Font.BOLD);
+            Font headerFont = new Font(unicodeFont, 12, Font.BOLD);
+            Font normalFont = new Font(unicodeFont, 12);
+
+
+            ClassPathResource resourceLogoWeb = new ClassPathResource(Constants.LOGO_WEB_PATH);
+            ClassPathResource resourceLogoGhn = new ClassPathResource(Constants.LOGO_GHN_PATH);
+            Image imgLogoWeb = Image.getInstance(resourceLogoWeb.getURL());
+            Image imgLogoGhn = Image.getInstance(resourceLogoGhn.getURL());
+
+            //Hàng 1: Logo
+            PdfPTable logoTable = new PdfPTable(2);
+            logoTable.setWidthPercentage(100);
+            logoTable.getDefaultCell().setBorder(Rectangle.NO_BORDER); // Remove border
+
+            //Cột 1: logoWeb
+            imgLogoWeb.scaleAbsolute(200f, 100f); // căn chỉnh kích thước logo
+
+            PdfPCell logoWebCell = new PdfPCell(new Phrase(new Chunk(imgLogoWeb, 0, 0, true)));
+            logoWebCell.setBorder(Rectangle.NO_BORDER); // Remove border
+            logoWebCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            logoTable.addCell(logoWebCell);
+
+            //Cột 2: LogoGhn
+            imgLogoGhn.scaleAbsolute(200f, 100f); // căn chỉnh kích thước logo
+
+            PdfPCell logoGhnCell = new PdfPCell(new Phrase(new Chunk(imgLogoGhn, 0, 0, true)));
+            logoGhnCell.setBorder(Rectangle.NO_BORDER); // Remove border
+            logoGhnCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+            logoTable.addCell(logoGhnCell);
+
+            document.add(logoTable);
+
+            document.add(new Paragraph(" "));
+
+            //Hàng 2: From - To
+            PdfPTable row2_info = new PdfPTable(2);
+            row2_info.setWidthPercentage(100);
+
+            //Cột 1: From
+            String row2Column1TextContent = "Từ: \n + " +
+                    "Shop giày thể thao sneaker F-Shoes \n\n " +
+                    "Đ/c: FPT PolyTechnic cơ sở Kiều Mai Tunzo, P.Kiều Mai, Phúc Diễn, Từ Liêm, Hà Nội \n\n" +
+                    "Sđt: 0987676767";
+            Phrase row2_info_cell1Content = new Phrase(row2Column1TextContent, normalFont);
+            PdfPCell row2_info_cell1 = new PdfPCell(row2_info_cell1Content);
+            row2_info_cell1.setPaddingBottom(10);
+            row2_info_cell1.setPaddingTop(10);
+            row2_info_cell1.setPaddingLeft(10);
+
+            row2_info_cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
+            row2_info.addCell(row2_info_cell1);
+
+            // Cột 2: Text "Cột 2"
+            String row2Column2TextContent = "Đến: \n" +
+                    bill.getFullName() + "\n\n"
+                    + "Đ/c: " + bill.getAddress() + "\n\n" +
+                    "Sđt: " + bill.getPhoneNumber();
+            Phrase row2_info_cell2Content = new Phrase(row2Column2TextContent, normalFont);
+            PdfPCell row2_info_cell2 = new PdfPCell(row2_info_cell2Content);
+            row2_info_cell2.setPaddingBottom(10);
+            row2_info_cell2.setPaddingTop(10);
+            row2_info_cell2.setPaddingLeft(10);
+
+            row2_info.addCell(row2_info_cell2);
+
+            document.add(row2_info);
+
+//            document.add(new Paragraph(" "));
+
+// Hàng 3: From - To
+            PdfPTable row3_info = new PdfPTable(2);
+            row3_info.setWidthPercentage(100);
+
+// Cột 1: QR Code
+            BarcodeQRCode qrcode = new BarcodeQRCode(bill.getCode(), 1, 1, null);
+            Image qrcodeImage = qrcode.getImage();
+            qrcodeImage.scaleAbsolute(100, 100);  // Điều chỉnh kích thước của mã QR Code
+
+// Tính tỉ lệ giữa kích thước QR Code và phần còn lại
+            float qrCodeWidthPercentage = 35;  // Điều chỉnh tỉ lệ
+            float contentWidthPercentage = 100 - qrCodeWidthPercentage;
+
+// Thêm QR Code vào Cột 1
+            PdfPCell row3_info_cell1 = new PdfPCell(qrcodeImage);
+            row3_info_cell1.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+// Đặt viền cho cột 1
+            row3_info_cell1.setBorder(Rectangle.NO_BORDER); // Xoá hết viền
+            row3_info_cell1.setPaddingBottom(10);
+            row3_info_cell1.setPaddingTop(10);
+            row3_info_cell1.setBorder(Rectangle.BOTTOM | Rectangle.RIGHT);
+
+// Tính chiều rộng tương đối của cột 1 và cột 2
+            float[] relativeWidths = {qrCodeWidthPercentage, contentWidthPercentage};
+            row3_info.setWidths(relativeWidths);
+
+            row3_info.addCell(row3_info_cell1);
+
+            AtomicReference<String> dsachSP = new AtomicReference<>("");
+            billDetails.forEach(billDetail -> {
+                dsachSP.set(dsachSP + "+ " + billDetail.getProductDetail().getProduct().getName() + " "
+                        + billDetail.getProductDetail().getMaterial().getName() + " " +
+                        billDetail.getProductDetail().getSole().getName() + " " +
+                        billDetail.getProductDetail().getColor().getName() + " " +
+                        "[" + billDetail.getProductDetail().getSize().getSize() + "]  SL: " + billDetail.getQuantity() + "\n");
+            });
+
+// Cột 2: Dsach SP
+            String row3Column2TextContent = "Nội dung hàng (Tổng SL sản phẩm: " + billDetails.size() + ") \n\n" + dsachSP;
+            Phrase row3_info_cell2Content = new Phrase(row3Column2TextContent, normalFont);
+            PdfPCell row3_info_cell2 = new PdfPCell(row3_info_cell2Content);
+            row3_info_cell2.setPaddingBottom(10);
+            row3_info_cell2.setPaddingTop(10);
+            row3_info_cell2.setPaddingLeft(10);
+            row3_info_cell2.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+// Đặt viền cho cột 2
+            row3_info_cell2.setBorder(Rectangle.NO_BORDER); // Xoá hết viền
+            row3_info_cell2.setBorder(Rectangle.BOTTOM); // Giữ lại viền dưới
+
+
+            row3_info.addCell(row3_info_cell2);
+
+            document.add(row3_info);
+
+
+            document.add(new Paragraph(" "));
+
+            // Hàng 4: Cột 1: From
+            PdfPTable row4_info = new PdfPTable(2);
+            row4_info.setWidthPercentage(90);
+
+            String row4Column1TextContent = "Tiền thu người nhận: \n\n \t\t" + decimalFormat.format(bill.getMoneyAfter().longValue());
+            Phrase row4_info_cell1Content = new Phrase();
+            row4_info_cell1Content.add(new Chunk(row4Column1TextContent, new Font(unicodeFont, 12, Font.BOLD))); // Đặt in đậm ở đây
+            PdfPCell row4_info_cell1 = new PdfPCell(row4_info_cell1Content);
+
+            row4_info_cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
+            row4_info_cell1.setPaddingBottom(10); // Thêm khoảng trắng ở dưới
+            row4_info_cell1.setBorder(Rectangle.NO_BORDER); // Remove border
+            row4_info.addCell(row4_info_cell1);
+
+// Cột 2: Text "Cột 2"
+            String row4Column2TextContent = "Chữ ký người nhận \n (Xác nhận hàng nguyên vẹn, không móp/méo)";
+            Phrase row4_info_cell2Content = new Phrase(row4Column2TextContent, normalFont);
+            PdfPCell row4_info_cell2 = new PdfPCell(row4_info_cell2Content);
+            row4_info_cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            row4_info_cell2.setPaddingBottom(80); // Thêm khoảng trắng ở dưới
+            row4_info.addCell(row4_info_cell2);
+
+            document.add(row4_info);
+
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            document.close();
+        }
+        return pdfFile;
+    }
+
+
 }

@@ -478,6 +478,17 @@ public class HDBillServiceImpl implements HDBillService {
         }
     }
 
+    @Override
+    public File xuatHoaDonGiaoHang(String idBill) {
+        Bill bill = hdBillRepository.findById(idBill).get();
+        BillHistory billHistory = hdBillHistoryRepository.findDistinctFirstByBillOrderByCreatedAtDesc(bill).orElseThrow(
+                () -> new RestApiException(Message.API_ERROR));
+        Account account = accountRepository.findByEmail(billHistory.getCreatedBy()).orElseThrow(
+                () -> new RestApiException(Message.API_ERROR));
+        List<BillDetail> lstBillDetail = hdBillDetailRepository.getBillDetailByBillId(idBill);
+        return genHoaDon.genHoaDonGiaoHang(bill, lstBillDetail, billHistory, account);
+    }
+
 
     // Phương thức để tạo mã hóa đơn duy nhất
     private String generateUniqueBillCode() {

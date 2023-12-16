@@ -31,8 +31,8 @@ public class HDBillDetailController {
 
     @GetMapping("/get-by-billAndProductDetail")
     public ObjectRespone getByBillAndProductDetail(@RequestParam(name = "idBill") String idBill,
-                                                   @RequestParam(name = "idProductDetail") String idProductDetail) {
-        return new ObjectRespone(hdBillDetailService.getBillDetailByBillIdAndProductDetailId(idBill, idProductDetail));
+                                                   @RequestParam(name = "idPrd") String idPrd) {
+        return new ObjectRespone(hdBillDetailService.getBillDtResByIdBillAndIDPrd(idBill, idPrd));
     }
 
     @PutMapping("/decrementQuantity/{idBillDetail}")
@@ -59,6 +59,12 @@ public class HDBillDetailController {
     public ObjectRespone returnProduct(@PathVariable("id") String id,
                                        @RequestBody HDBillDetailRequest hdBillDetailRequest) {
         return new ObjectRespone(hdBillDetailService.returnProduct(id, hdBillDetailRequest));
+    }
+
+    @GetMapping("/get-by-billAndProductDetailAndPrice")
+    public ObjectRespone checkBillDetailByBillPrdAndPrice(@RequestParam(name = "idBill") String idBill,
+                                                          @RequestParam(name = "idPrd") String idPrd, @RequestParam(name = "price") String price) {
+        return new ObjectRespone(hdBillDetailService.getBillDtResByIdBillAndIDPrdAndPrice(idBill, idPrd, price));
     }
 
 }

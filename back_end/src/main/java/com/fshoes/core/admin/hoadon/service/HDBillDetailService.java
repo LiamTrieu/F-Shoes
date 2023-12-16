@@ -7,7 +7,7 @@ import com.fshoes.entity.BillDetail;
 import java.util.List;
 
 public interface HDBillDetailService {
-    BillDetail save(HDBillDetailRequest hdBillDetailRequest);
+    Boolean save(HDBillDetailRequest hdBillDetailRequest);
 
     List<HDBillDetailResponse> getBillDetailByBillId(String idBill);
 
@@ -24,5 +24,9 @@ public interface HDBillDetailService {
     Boolean delete(HDBillDetailRequest hdBillDetailRequest);
 
     Boolean returnProduct(String idBillDetail, HDBillDetailRequest hdBillDetailRequest);
+
+    List<HDBillDetailResponse> getBillDtResByIdBillAndIDPrd(String idBill, String idPrd);
+
+    HDBillDetailResponse getBillDtResByIdBillAndIDPrdAndPrice(String idBill, String idPrd, String price);
 
 }

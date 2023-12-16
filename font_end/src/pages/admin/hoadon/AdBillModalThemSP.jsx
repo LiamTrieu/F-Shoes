@@ -34,6 +34,7 @@ import { toast } from 'react-toastify'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../../../services/url'
+import confirmSatus from '../../../components/comfirmSwal'
 const styleAdBillModalThemSP = {
   position: 'absolute',
   top: '50%',
@@ -141,6 +142,52 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
       setAddAmount(1)
     }
   }
+  const saveBillDetail = (idBill, selectedProduct) => {
+    var price = 0
+    if (selectedProduct.value != null) {
+      price = (
+        selectedProduct.price -
+        (selectedProduct.price * selectedProduct.value) / 100
+      ).toFixed(0)
+    } else {
+      price = selectedProduct.price
+    }
+    const billDetailReq = {
+      productDetailId: selectedProduct.productDetailId,
+      idBill: idBill,
+      quantity: addAmount,
+      price: price,
+      status: 0,
+    }
+    if (billDetailReq.quantity > 5) {
+      toast.error('Vượt quá số lượng cho phép', {
+        position: toast.POSITION.TOP_CENTER,
+      })
+      return
+    } else if (billDetailReq.quantity <= 0) {
+      toast.error('Vui lòng kiểm tra lại số lượng', {
+        position: toast.POSITION.TOP_CENTER,
+      })
+      return
+    } else {
+      hoaDonChiTietApi
+        .saveBillDetail(billDetailReq)
+        .then((response) => {
+          toast.success('Đã thêm sản phẩm', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          load(true)
+          setIsProductDetailModalOpen(false)
+        })
+        .catch((error) => {
+          toast.error('Đã xảy ra lỗi', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          console.error('Lỗi khi gửi yêu cầu APIsaveBillDetail: ', error)
+        })
+      return
+    }
+  }
   const confirmAddProduct = (idBill, selectedProduct) => {
     var price = 0
     if (selectedProduct.value != null) {
@@ -159,13 +206,31 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
       status: 0,
     }
     hoaDonChiTietApi
-      .saveBillDetail(billDetailReq)
+      .getByIdBillAndIdPrdAndPrice(idBill, selectedProduct.id, billDetailReq.price)
       .then((response) => {
-        toast.success('Đã thêm sản phẩm', {
-          position: toast.POSITION.TOP_RIGHT,
-        })
-        load(true)
-        setIsProductDetailModalOpen(false)
+        if (response.data.data === null) {
+          saveBillDetail(idBill, selectedProduct)
+        } else {
+          const billDetailExsit = response.data.data
+          if (billDetailExsit.quantity + billDetailReq.quantity > 5) {
+            toast.error('Vượt quá số lượng cho phép', {
+              position: toast.POSITION.TOP_CENTER,
+            })
+            return
+          } else {
+            if (billDetailExsit.price !== billDetailReq.price) {
+              confirmSatus(
+                'Đơn giá sản phẩm đã thay đổi',
+                'Chắc chắn xác nhận với đơn giá mới?',
+              ).then((result) => {
+                if (result.isConfirmed) {
+                  console.log('Đã confirm')
+                  saveBillDetail(idBill, selectedProduct)
+                }
+              })
+            }
+          }
+        }
       })
       .catch((error) => {
         toast.error('Đã xảy ra lỗi', {
@@ -516,7 +581,7 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
                         }}>
                         <p style={{ color: 'red', margin: '5px 0' }}>
                           {/* <b>{cart.price}.000&#8363;</b> */}
-                          {cart.promotion ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
+                          {cart.value !== null ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
                             <div>
                               <div className="promotion-price">{`${formatCurrency(
                                 cart.price,
@@ -533,7 +598,9 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
                             </div>
                           ) : (
                             // Nếu không có khuyến mãi, chỉ hiển thị giá gốc
-                            <span>hihii</span>
+                            <span style={{ color: 'red', fontWeight: 'bold' }}>
+                              {formatCurrency(cart.price)}
+                            </span>
                           )}
                         </p>
                       </TableCell>
@@ -608,9 +675,11 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
                       <IconButton
                         sx={{ p: 0 }}
                         size="small"
-                        onClick={() => handleDecrementQuantity(selectedProduct)}>
+                        onClick={() => handleDecrementQuantity(selectedProduct)}
+                        disabled={addAmount - 1 === 0}>
                         <RemoveIcon fontSize="1px" />
                       </IconButton>
+
                       <TextField
                         value={addAmount}
                         inputProps={{ min: 1 }}
@@ -631,7 +700,8 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
                       <IconButton
                         sx={{ p: 0 }}
                         size="small"
-                        onClick={() => handleIncrementQuantity(selectedProduct)}>
+                        onClick={() => handleIncrementQuantity(selectedProduct)}
+                        disabled={addAmount + 1 > 5}>
                         <AddIcon fontSize="1px" />
                       </IconButton>
                     </Box>

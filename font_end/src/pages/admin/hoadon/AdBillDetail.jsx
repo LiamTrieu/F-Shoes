@@ -65,6 +65,7 @@ import dayjs from 'dayjs'
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import { TbTruckReturn } from 'react-icons/tb'
+import { IoIosAdd } from 'react-icons/io'
 
 const listHis = [{ link: '/admin/bill', name: 'Quản lý đơn hàng' }]
 
@@ -438,21 +439,26 @@ export default function AdBillDetail() {
           status: 0,
         })),
       }
-      hoaDonApi
-        .confirmBill(billDetail.id, updatedBillConfirmRequest)
-        .then((response) => {
-          toast.success('Đã xác nhận hoá đơn', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          setIsUpdateBill(true)
-          setOpen(false)
-        })
-        .catch((error) => {
-          toast.error('Đã xảy ra lỗi', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          console.error('Lỗi xác nhận đơn hàng', error)
-        })
+      confirmSatus('Xác nhận ', 'Xác nhận hoá đơn?').then((result) => {
+        if (result.isConfirmed) {
+          hoaDonApi
+            .confirmBill(billDetail.id, updatedBillConfirmRequest)
+            .then((response) => {
+              // toast.success('Đã xác nhận hoá đơn', {
+              //   position: toast.POSITION.TOP_RIGHT,
+              // })
+              confirmPrintBillGiaoHang(billDetail.id)
+              setIsUpdateBill(true)
+              setOpen(false)
+            })
+            .catch((error) => {
+              toast.error('Đã xảy ra lỗi', {
+                position: toast.POSITION.TOP_RIGHT,
+              })
+              console.error('Lỗi xác nhận đơn hàng', error)
+            })
+        }
+      })
     }
     return (
       <DialogAddUpdate
@@ -1344,6 +1350,26 @@ export default function AdBillDetail() {
     }
   }
 
+  const confirmPrintBillGiaoHang = async (idBill) => {
+    try {
+      const response = await axios.get(url + '/in-hoa-don/hd-giao-hang/' + idBill, {
+        responseType: 'blob',
+      })
+      const pdfContent = await new Response(response.data).blob()
+
+      // Tạo URL từ Blob
+      const pdfUrl = URL.createObjectURL(pdfContent)
+
+      // In PDF khi lấy được nội dung
+      printJS({ printable: pdfUrl, type: 'pdf', header: 'Header for the PDF' })
+
+      // Đảm bảo giải phóng tài nguyên khi không cần thiết
+      URL.revokeObjectURL(pdfUrl)
+    } catch (error) {
+      console.error('Error fetching or printing PDF:', error)
+    }
+  }
+
   const PDFViewerModal = ({ open, handleClose, pdfContent }) => {
     const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' })
     const pdfUrl = URL.createObjectURL(pdfBlob)
@@ -1749,7 +1775,7 @@ export default function AdBillDetail() {
                       alignSelf: 'flex-end',
                     }}
                     onClick={() => handleOpenModalChonNhanVien()}>
-                    <IoReturnUpBack style={{ fontSize: '20px' }} />
+                    <IoIosAdd style={{ fontSize: '20px' }} />
                     Thêm nhân viên tiếp nhận
                   </Button>
                 )}
@@ -1950,6 +1976,7 @@ export default function AdBillDetail() {
                                 className="table-container-custom-scrollbar">
                                 {/* billDetail.stt === 0 */}
                                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                  {console.log(listBillDetail)}
                                   <TableBody>
                                     {listBillDetail
                                       .filter((row) => row.status === 0)
@@ -1960,12 +1987,25 @@ export default function AdBillDetail() {
                                           </TableCell>
                                           <TableCell>
                                             {row.productName} <br></br>
-                                            <span
-                                              style={{
-                                                color: 'red',
-                                              }}>
-                                              {formatCurrency(row.price)}
-                                            </span>
+                                            {row.productPrice !== row.price ? (
+                                              <>
+                                                <span
+                                                  style={{
+                                                    color: 'grey',
+                                                    textDecoration: 'line-through',
+                                                  }}>
+                                                  {formatCurrency(row.productPrice)}
+                                                </span>{' '}
+                                                <br />
+                                                <span style={{ color: 'red' }}>
+                                                  {formatCurrency(row.price)}
+                                                </span>
+                                              </>
+                                            ) : (
+                                              <span style={{ color: 'red' }}>
+                                                {formatCurrency(row.price)}
+                                              </span>
+                                            )}
                                             <br />
                                             Size: {row.size}
                                             <br />x{row.quantity}

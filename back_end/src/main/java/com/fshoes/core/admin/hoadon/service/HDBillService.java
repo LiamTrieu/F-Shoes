@@ -43,5 +43,7 @@ public interface HDBillService {
 
     Boolean themNhanVienTiepNhan(String idAccount, String idBill);
 
+    File xuatHoaDonGiaoHang(String idBill);
+
 
 }
