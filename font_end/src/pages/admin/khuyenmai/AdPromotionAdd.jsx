@@ -140,6 +140,7 @@ export default function AdPromotionAdd() {
     setSelectedRowsProduct(selectedIds)
     setSelectedRows(selectedIds)
     setSelectAllProduct(event.target.checked)
+    getProductDetailById(filterProductDetail, selectedIds)
   }
 
   const handleRowCheckboxChange1 = (event, ProductId) => {
@@ -171,6 +172,13 @@ export default function AdPromotionAdd() {
         .then((response) => {
           setGetProductDetailByProduct(response.data.data.data)
           setTotalPagesDetailByProduct(response.data.data.totalPages)
+          if (filterProductDetail.page > response.data.data.totalPages)
+            if (response.data.data.totalPages > 0) {
+              setFilterProductDetail({
+                ...filterProductDetail,
+                page: response.data.data.totalPages,
+              })
+            }
         })
     } else {
       setGetProductDetailByProduct([])
@@ -222,18 +230,19 @@ export default function AdPromotionAdd() {
     const minBirthYear = 1900
 
     if (addPromotionRe.name.trim() === '') {
-      errors.name = 'Vui lòng nhập tên khuyến mại'
+      errors.name = 'Vui lòng nhập tên đợt giảm giá'
     } else if (!isNaN(addPromotionRe.name)) {
-      errors.name = 'Tên khuyến mại phải là chữ'
+      errors.name = 'Tên đợt giảm giá phải là chữ'
     } else if (promotionNames.includes(addPromotionRe.name)) {
-      errors.name = 'không được trùng tên khuyến mại'
+      errors.name = 'không được trùng tên đợt giảm giá'
     } else if (addPromotionRe.name.length > 50) {
       errors.name = 'Tên không được dài hơn 50 ký tự'
     } else if (addPromotionRe.name.length < 5) {
       errors.name = 'Tên không được bé hơn 5 ký tự'
-    } else if (addPromotionRe.name !== addPromotionRe.name.trim()) {
-      errors.name = 'Tên không được chứa khoảng trắng thừa'
     }
+    // else if (addPromotionRe.name !== addPromotionRe.name.trim()) {
+    //   errors.name = 'Tên không được chứa khoảng trắng thừa'
+    // }
 
     if (addPromotionRe.value === '') {
       errors.value = 'Vui lòng nhập giá trị'
@@ -281,16 +290,15 @@ export default function AdPromotionAdd() {
   const onSubmit = (addPromotionRe, selectProductDetail) => {
     const check = validate()
     const addProductPromotion = { ...addPromotionRe, idProductDetail: selectProductDetail }
-    console.log('danh sach da chon:', selectProductDetail)
     if (check < 1) {
-      const title = 'bạn có muốn add Khuyến mại không'
+      const title = 'Bạn có muốn thêm đợt giảm giá không'
       const text = ''
       confirmSatus(title, text, theme).then((result) => {
         if (result.isConfirmed) {
           khuyenMaiApi
             .addProductPromotion(addProductPromotion)
             .then(() => {
-              toast.success('Add thành công', {
+              toast.success('Thêm đợt giảm giá thành công', {
                 position: toast.POSITION.TOP_RIGHT,
               })
             })
@@ -300,7 +308,7 @@ export default function AdPromotionAdd() {
         }
       })
     } else {
-      toast.error('Thêm khuyện mại không thành công', {
+      toast.error('Thêm đợt giảm giá không thành công', {
         position: toast.POSITION.TOP_RIGHT,
       })
     }
@@ -310,12 +318,12 @@ export default function AdPromotionAdd() {
     <>
       <div className="promotionAdd">
         <BreadcrumbsCustom nameHere={'Thêm đợt giảm giá'} listLink={listBreadcrumbs} />
-        <Paper elevation={3} sx={{ mt: 2, padding: 2, width: '100%' }}>
+        <Paper elevation={3} sx={{ mt: 2, padding: 2, width: '100%', pb: 6 }}>
           <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={5} sx={{ mt: 2 }}>
+            <Grid item xs={5} sx={{ mt: 4 }}>
               <div style={{ marginBottom: '20px' }}>
                 <Typography>
-                  <span style={{ color: 'red', fontWeight: 'bold' }}> *</span>Tên khuyến mại
+                  <span style={{ color: 'red', fontWeight: 'bold' }}> *</span>Tên đợt giảm giá
                 </Typography>
 
                 <TextField
@@ -408,17 +416,31 @@ export default function AdPromotionAdd() {
                 </LocalizationProvider>
                 <span className="error">{errorTimeEnd}</span>
               </div>
-              <Button
-                variant="outlined"
-                color="cam"
-                sx={{ marginBottom: '0px', marginTop: '30px' }}
-                onClick={() => onSubmit(addPromotionRe, selectedRows)}>
-                Tạo Mới
-              </Button>
+              {selectedRowsProduct.length > 0 ? (
+                ''
+              ) : (
+                <Button
+                  variant="outlined"
+                  color="cam"
+                  sx={{ marginBottom: '0px', marginTop: '30px' }}
+                  onClick={() => onSubmit(addPromotionRe, selectedRows)}>
+                  Tạo Mới
+                </Button>
+              )}
             </Grid>
 
             <Grid item xs={7}>
               <div style={{ height: 400, width: '100%' }}>
+                <div style={{ float: 'right' }}>
+                  <TextField
+                    id="outlined-basic"
+                    className="text-field-css"
+                    label="Tìm tên sản phẩm"
+                    variant="outlined"
+                    size="small"
+                    onChange={(e) => setFilter({ ...filter, nameProduct: e.target.value })}
+                  />
+                </div>
                 <Table sx={{ minWidth: '100%' }} aria-label="simple table" className="tableCss">
                   <TableHead>
                     <TableRow>
@@ -449,7 +471,7 @@ export default function AdPromotionAdd() {
                             onChange={(event) => handleRowCheckboxChange1(event, row.id)}
                           />
                         </TableCell>
-                        <TableCell align="center" component="th" scope="row">
+                        <TableCell align="center" scope="row">
                           {index + 1}
                         </TableCell>
 
@@ -486,15 +508,28 @@ export default function AdPromotionAdd() {
           <Paper elevation={3} sx={{ mt: 2, padding: 2, width: '100%' }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Typography
-                  sx={{
-                    fontSize: '25px',
-                    fontWeight: 600,
-                    marginBottom: '10px',
-                    marginTop: '10px',
-                  }}>
-                  CHI TIẾT SẢN PHẨM
-                </Typography>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  spacing={2}>
+                  <Typography
+                    sx={{
+                      fontSize: '25px',
+                      fontWeight: 600,
+                      marginBottom: '10px',
+                      marginTop: '10px',
+                    }}>
+                    CHI TIẾT SẢN PHẨM
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="cam"
+                    sx={{ marginBottom: '0px', marginTop: '30px' }}
+                    onClick={() => onSubmit(addPromotionRe, selectedRows)}>
+                    Tạo Mới
+                  </Button>
+                </Stack>
                 <div style={{ height: '100%', width: '100%' }}>
                   <Box>
                     <TextField
@@ -504,7 +539,8 @@ export default function AdPromotionAdd() {
                       }}
                       size="small"
                       variant="outlined"
-                      placeholder="Tên sản phẩm"
+                      placeholder="Tên sản phẩm, thể loại, thương hiệu, chất liệu, màu sắc"
+                      className="text-field-css"
                       onChange={(e) => {
                         setFilterProductDetail({
                           ...filterProductDetail,
@@ -682,16 +718,13 @@ export default function AdPromotionAdd() {
                           Thương hiệu
                         </TableCell>
                         <TableCell align="center" sx={{ width: '30%' }}>
-                          Chát liệu
+                          Chất liệu
                         </TableCell>
                         <TableCell align="center" sx={{ width: '30%' }}>
                           Màu sắc
                         </TableCell>
                         <TableCell align="center" sx={{ width: '30%' }}>
                           Đế giày
-                        </TableCell>
-                        <TableCell align="center" sx={{ width: '30%' }}>
-                          Kích cỡ
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -709,7 +742,7 @@ export default function AdPromotionAdd() {
                               }
                             />
                           </TableCell>
-                          <TableCell align="center" component="th" scope="row">
+                          <TableCell align="center" scope="row">
                             {index + 1}
                           </TableCell>
                           <TableCell align="center">{row.name}</TableCell>
@@ -718,7 +751,6 @@ export default function AdPromotionAdd() {
                           <TableCell align="center">{row.material}</TableCell>
                           <TableCell align="center">{row.color}</TableCell>
                           <TableCell align="center">{row.sole}</TableCell>
-                          <TableCell align="center">{row.size}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

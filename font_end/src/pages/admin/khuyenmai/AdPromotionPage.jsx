@@ -133,6 +133,13 @@ export default function AdPromotionPage() {
 
       setListKhuyenMai(response.data.data)
       setTotalPages(response.data.totalPages)
+      if (filter.page > response.data.totalPages)
+        if (response.data.totalPages > 0) {
+          setFilter({
+            ...filter,
+            page: response.data.totalPages,
+          })
+        }
     })
   }
 

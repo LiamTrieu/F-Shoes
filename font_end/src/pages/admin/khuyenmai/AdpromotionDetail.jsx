@@ -124,7 +124,6 @@ export default function AdPromotionDetail() {
         ...selectedRows.slice(selectedIndex + 1),
       ]
     }
-
     setSelectedRows(newSelected)
     setSelectAll(newSelected.length === getProductDetailByProduct.length)
   }
@@ -133,6 +132,7 @@ export default function AdPromotionDetail() {
     const selectedIds = event.target.checked ? getProduct.map((row) => row.id) : []
     setSelectedRowsProduct(selectedIds)
     setSelectAllProduct(event.target.checked)
+    getProductDetailById(filterProductDetail, selectedIds)
   }
 
   const handleRowCheckboxChange1 = (event, ProductId) => {
@@ -158,13 +158,19 @@ export default function AdPromotionDetail() {
   }
 
   const getProductDetailById = (filterProductDetail, selectedProductIds) => {
-    console.log(selectedProductIds)
     if (selectedProductIds.length > 0) {
       khuyenMaiApi
         .getAllProductDetailByProduct(filterProductDetail, selectedProductIds)
         .then((response) => {
           setGetProductDetailByProduct(response.data.data.data)
           setTotalPagesDetailByProduct(response.data.data.totalPages)
+          if (filterProductDetail.page > response.data.data.totalPages)
+            if (response.data.data.totalPages > 0) {
+              setFilterProductDetail({
+                ...filterProductDetail,
+                page: response.data.data.totalPages,
+              })
+            }
         })
     } else {
       setGetProductDetailByProduct([])
@@ -285,10 +291,9 @@ export default function AdPromotionDetail() {
       .getProductAndProductDetailById(id)
       .then((response) => {
         setSelectedRowsProduct(response.data.data)
+        getProductDetailById(filterProductDetail, response.data.data)
       })
-      .catch((error) => {
-        console.log(error)
-      })
+      .catch((error) => {})
   }
 
   const getLisProductDetail = (id) => {
@@ -297,9 +302,7 @@ export default function AdPromotionDetail() {
       .then((response) => {
         setSelectedRows(response.data.data)
       })
-      .catch((error) => {
-        console.log(error)
-      })
+      .catch((error) => {})
   }
 
   useEffect(() => {
@@ -308,7 +311,7 @@ export default function AdPromotionDetail() {
 
   useEffect(() => {
     getLisProduct(id)
-  }, [id])
+  }, [id, filterProductDetail])
 
   useEffect(() => {
     getLisProductDetail(id)
@@ -324,7 +327,6 @@ export default function AdPromotionDetail() {
       setTotalPages(response.data.data.totalPages)
     })
   }
-
   useEffect(() => {
     getAllProduct(filter)
   }, [filter])
@@ -333,7 +335,7 @@ export default function AdPromotionDetail() {
     <>
       <div className="promotionUpdate">
         <BreadcrumbsCustom nameHere={'Chi tiết đợt giảm giá'} listLink={listBreadcrumbs} />
-        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%' }}>
+        <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%', pb: 7 }}>
           <Grid container spacing={2} sx={{ pl: 2 }}>
             <Grid item xs={5.5} sx={{ mt: 4 }}>
               <div style={{ marginBottom: '20px' }}>
@@ -430,18 +432,32 @@ export default function AdPromotionDetail() {
                   </DemoContainer>
                 </LocalizationProvider>
                 <span className="error">{errorTimeEnd}</span>
+                {selectedRowsProduct.length > 0 ? (
+                  ''
+                ) : (
+                  <Button
+                    variant="outlined"
+                    color="cam"
+                    sx={{ marginTop: '30px' }}
+                    onClick={() => onSubmit(updatePromotion, id)}>
+                    Chỉnh sửa
+                  </Button>
+                )}
               </div>
-              <Button
-                variant="outlined"
-                color="cam"
-                sx={{ marginTop: '30px' }}
-                onClick={() => onSubmit(updatePromotion, id)}>
-                Chỉnh sửa
-              </Button>
             </Grid>
 
             <Grid item xs={6.5}>
-              <div style={{ height: 400, width: '100%', marginTop: '42px' }}>
+              <div style={{ height: 400, width: '100%' }}>
+                <div style={{ float: 'right' }}>
+                  <TextField
+                    id="outlined-basic"
+                    className="text-field-css"
+                    label="Tìm tên sản phẩm"
+                    variant="outlined"
+                    size="small"
+                    onChange={(e) => setFilter({ ...filter, nameProduct: e.target.value })}
+                  />
+                </div>
                 <Table sx={{ minWidth: '100%' }} aria-label="simple table" className="tableCss">
                   <TableHead>
                     <TableRow>
@@ -472,7 +488,7 @@ export default function AdPromotionDetail() {
                             onChange={(event) => handleRowCheckboxChange1(event, row.id)}
                           />
                         </TableCell>
-                        <TableCell align="center" component="th" scope="row">
+                        <TableCell align="center" scope="row">
                           {index + 1}
                         </TableCell>
 
@@ -486,6 +502,7 @@ export default function AdPromotionDetail() {
                     display: 'flex',
                     justifyContent: 'center',
                     marginTop: '10px',
+                    marginBottom: '30px',
                   }}>
                   <Pagination
                     page={filter.page}
@@ -507,7 +524,26 @@ export default function AdPromotionDetail() {
         </Paper>
         {selectedRowsProduct.length > 0 && (
           <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '100%' }}>
-            <Typography className="title-chi-tiet-san-pham">Chi tiết sản phẩm</Typography>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+              {' '}
+              <Typography
+                sx={{
+                  fontSize: '25px',
+                  fontWeight: 600,
+                  marginBottom: '10px',
+                  marginTop: '10px',
+                }}>
+                CHI TIẾT SẢN PHẨM
+              </Typography>
+              <Button
+                variant="outlined"
+                color="cam"
+                sx={{ marginTop: '30px' }}
+                onClick={() => onSubmit(updatePromotion, id)}>
+                Chỉnh sửa
+              </Button>
+            </Stack>
+
             <Grid item xs={12}>
               <div style={{ height: '100%', width: '100%' }}>
                 <Box>
@@ -518,7 +554,8 @@ export default function AdPromotionDetail() {
                     }}
                     size="small"
                     variant="outlined"
-                    placeholder="Tên sản phẩm"
+                    placeholder="Tên sản phẩm, thể loại, thương hiệu, chất liệu, màu sắc"
+                    className="text-field-css"
                     onChange={(e) => {
                       setFilterProductDetail({
                         ...filterProductDetail,
@@ -527,7 +564,7 @@ export default function AdPromotionDetail() {
                     }}
                   />
                 </Box>
-                {/* <Box>
+                <Box>
                   <b>Danh mục:</b>
                   <Select
                     displayEmpty
@@ -675,7 +712,7 @@ export default function AdPromotionDetail() {
                       </MenuItem>
                     ))}
                   </Select>
-                </Box> */}
+                </Box>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table" className="tableCss">
                   <TableHead>
                     <TableRow>
@@ -696,7 +733,7 @@ export default function AdPromotionDetail() {
                         Thương hiệu
                       </TableCell>
                       <TableCell align="center" sx={{ width: '30%' }}>
-                        Chát liệu
+                        Chất liệu
                       </TableCell>
                       <TableCell align="center" sx={{ width: '30%' }}>
                         Màu sắc
@@ -713,16 +750,14 @@ export default function AdPromotionDetail() {
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                         <TableCell>
                           <Checkbox
-                            key={row.productDetail}
-                            checked={
-                              row.productPromotion
-                                ? true
-                                : selectedRows.indexOf(row.productDetail) !== -1
+                            key={row.productDetailCB}
+                            checked={selectedRows.indexOf(row.productDetailCB) !== -1}
+                            onChange={(event) =>
+                              handleRowCheckboxChange(event, row.productDetailCB)
                             }
-                            onChange={(event) => handleRowCheckboxChange(event, row.productDetail)}
                           />
                         </TableCell>
-                        <TableCell align="center" component="th" scope="row">
+                        <TableCell align="center" scope="row">
                           {index + 1}
                         </TableCell>
 
@@ -754,7 +789,6 @@ export default function AdPromotionDetail() {
                       sx={{ height: '25px', mx: 0.5 }}
                       size="small"
                       value={filterProductDetail.size}>
-                      <MenuItem value={1}>1</MenuItem>
                       <MenuItem value={5}>5</MenuItem>
                       <MenuItem value={10}>10</MenuItem>
                       <MenuItem value={15}>15</MenuItem>
@@ -767,7 +801,8 @@ export default function AdPromotionDetail() {
                   <Pagination
                     page={filterProductDetail.page}
                     color="cam"
-                    onChange={(_, value) => {
+                    onChange={(e, value) => {
+                      e.preventDefault()
                       setFilterProductDetail({
                         ...filterProductDetail,
                         page: value,
