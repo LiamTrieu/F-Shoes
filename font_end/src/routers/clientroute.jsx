@@ -21,19 +21,103 @@ import ReturnPolicy from '../pages/client/ReturnPolicy'
 
 const clientRoute = [
   { path: '/home', element: <Home />, index: true },
-  { path: '/products', element: <Product /> },
-  { path: '/news', element: <News /> },
-  { path: '/contact', element: <Contact /> },
-  { path: '/about-us', element: <AboutUs /> },
-  { path: '/cart', element: <Cart /> },
-  { path: '/login', element: <Login /> },
-  { path: '/checkout', element: <Checkout /> },
-  { path: '/profile', element: <Profile /> },
-  { path: '/return-policy-client', element: <ReturnPolicy /> },
+  {
+    path: '/products',
+    element: <Product />,
+    loader: () => {
+      document.title = 'F-Shoes - Sản phẩm'
+      return null
+    },
+  },
+  {
+    path: '/news',
+    element: <News />,
+    loader: () => {
+      document.title = 'F-Shoes - Tin tức'
+      return null
+    },
+  },
+  {
+    path: '/contact',
+    element: <Contact />,
+    loader: () => {
+      document.title = 'F-Shoes - Liên hệ'
+      return null
+    },
+  },
+  {
+    path: '/about-us',
+    element: <AboutUs />,
+    loader: () => {
+      document.title = 'F-Shoes - Giới thiệu'
+      return null
+    },
+  },
+  {
+    path: '/cart',
+    element: <Cart />,
+    loader: () => {
+      document.title = 'F-Shoes - Giỏ hàng'
+      return null
+    },
+  },
+  {
+    path: '/login',
+    element: <Login />,
+    loader: () => {
+      document.title = 'F-Shoes - Đăng nhập'
+      return null
+    },
+  },
+  {
+    path: '/checkout',
+    element: <Checkout />,
+    loader: () => {
+      document.title = 'F-Shoes - Thanh toán'
+      return null
+    },
+  },
+  {
+    path: '/profile',
+    element: <Profile />,
+    loader: () => {
+      document.title = 'F-Shoes - Thông tin cá nhân'
+      return null
+    },
+  },
+  {
+    path: '/return-policy-client',
+    element: <ReturnPolicy />,
+    loader: () => {
+      document.title = 'F-Shoes - Chính sách trả hàng'
+      return null
+    },
+  },
   // { path: `/profile/get-by-idBill/:id`, element: <OrderDetail /> },
-  { path: `/tracking/:code`, element: <TrackingDetail /> },
-  { path: `/tracking`, element: <Tracking /> },
-  { path: '/forgot-password', element: <ForgotPassword /> },
+  {
+    path: `/tracking/:code`,
+    element: <TrackingDetail />,
+    loader: () => {
+      document.title = 'F-Shoes - Tra cứu đơn hàng'
+      return null
+    },
+  },
+  {
+    path: `/tracking`,
+    element: <Tracking />,
+    loader: () => {
+      document.title = 'F-Shoes - Tra cứu đơn hàng'
+      return null
+    },
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />,
+    loader: () => {
+      document.title = 'F-Shoes - Quên mật khẩu'
+      return null
+    },
+  },
   {
     path: '/profile/change-password',
     element: (
@@ -41,6 +125,10 @@ const clientRoute = [
         <ChangePassword />
       </Profile>
     ),
+    loader: () => {
+      document.title = 'F-Shoes - Đổi mật khẩu'
+      return null
+    },
   },
   {
     path: `/profile/get-by-idBill/:id`,
@@ -49,6 +137,10 @@ const clientRoute = [
         <OrderDetail />
       </Profile>
     ),
+    loader: () => {
+      document.title = 'F-Shoes - Chi tiết đơn hàng'
+      return null
+    },
   },
 
   {
@@ -58,6 +150,10 @@ const clientRoute = [
         <UserProfile />
       </Profile>
     ),
+    loader: () => {
+      document.title = 'F-Shoes - Thông tin'
+      return null
+    },
   },
   {
     path: '/profile/order',
@@ -66,6 +162,10 @@ const clientRoute = [
         <Order />
       </Profile>
     ),
+    loader: () => {
+      document.title = 'F-Shoes - Đơn hàng'
+      return null
+    },
   },
   {
     path: '/profile/address',
@@ -74,6 +174,10 @@ const clientRoute = [
         <AddressUser />
       </Profile>
     ),
+    loader: () => {
+      document.title = 'F-Shoes - Địa chỉ'
+      return null
+    },
   },
 
   {
@@ -83,10 +187,18 @@ const clientRoute = [
         <MyVoucher />
       </Profile>
     ),
+    loader: () => {
+      document.title = 'F-Shoes - Phiếu giảm giá'
+      return null
+    },
   },
   {
     path: '/product/:id',
     element: <DetailProduct />,
+    loader: () => {
+      document.title = 'F-Shoes - Chi tiết sản phẩm'
+      return null
+    },
   },
 ]
 

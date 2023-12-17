@@ -32,7 +32,7 @@ export default function Forbidden403() {
           variant="contained"
           color="primary"
           onClick={() => {
-            navigate(-1)
+            navigate(-2)
           }}>
           <IoMdArrowRoundBack />
           &nbsp; Quay lại

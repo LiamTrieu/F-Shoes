@@ -1,11 +1,45 @@
-import AdStaffDetail from "../../pages/admin/nhanvien/AdStaffDetailP";
-import AdStaffPage from "../../pages/admin/nhanvien/AdStaffPage";
-import AdStaffAdd from "../../pages/admin/nhanvien/AdStaffAdd"
+import AdStaffDetail from '../../pages/admin/nhanvien/AdStaffDetailP'
+import AdStaffPage from '../../pages/admin/nhanvien/AdStaffPage'
+import AdStaffAdd from '../../pages/admin/nhanvien/AdStaffAdd'
+import AutGuardAdmin from '../../layout/AutGuardAdmin'
 
 const adStaffRoute = [
-    { path: "/admin/staff", element: <AdStaffPage /> },
-    { path: "/admin/staff/detail/:id", element: <AdStaffDetail /> },
-    { path: "/admin/staff/add", element: <AdStaffAdd /> },
-];
+  {
+    path: '/admin/staff',
+    element: (
+      <AutGuardAdmin>
+        <AdStaffPage />
+      </AutGuardAdmin>
+    ),
+    loader: () => {
+      document.title = 'Admin - Nhân viên'
+      return null
+    },
+  },
+  {
+    path: '/admin/staff/detail/:id',
+    element: (
+      <AutGuardAdmin>
+        <AdStaffDetail />
+      </AutGuardAdmin>
+    ),
+    loader: () => {
+      document.title = 'Admin - Nhân viên chi tiết'
+      return null
+    },
+  },
+  {
+    path: '/admin/staff/add',
+    element: (
+      <AutGuardAdmin>
+        <AdStaffAdd />
+      </AutGuardAdmin>
+    ),
+    loader: () => {
+      document.title = 'Admin - Thêm nhân viên'
+      return null
+    },
+  },
+]
 
-export default adStaffRoute;
+export default adStaffRoute

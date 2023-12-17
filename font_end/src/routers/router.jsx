@@ -37,7 +37,17 @@ const router = createBrowserRouter([
         <FooterClient />
       </AutGuardClient>
     ),
-    children: [{ index: true, element: <Navigate to={'/home'} /> }, ...clientRoute],
+    children: [
+      {
+        index: true,
+        element: <Navigate to={'/home'} />,
+        loader: () => {
+          document.title = 'F-Shoes - Trang chủ'
+          return null
+        },
+      },
+      ...clientRoute,
+    ],
   },
   {
     path: '/admin',
@@ -67,13 +77,45 @@ const router = createBrowserRouter([
       {
         path: '/admin/dashboard',
         element: <Dashboard />,
+        loader: () => {
+          document.title = 'Admin - Thống kê'
+          return null
+        },
       },
     ],
   },
-  { path: '/vnpay-payment', element: <Payment /> },
-  { path: '/admin/login', element: <AdminLogin /> },
-  { path: '/not-authorization', element: <Forbidden403 /> },
-  { path: '*', element: <NotFound404 /> },
+  {
+    path: '/vnpay-payment',
+    element: <Payment />,
+    loader: () => {
+      document.title = 'F-Shoes - Payment'
+      return null
+    },
+  },
+  {
+    path: '/admin/login',
+    element: <AdminLogin />,
+    loader: () => {
+      document.title = 'F-Shoes - Đăng nhập'
+      return null
+    },
+  },
+  {
+    path: '/not-authorization',
+    element: <Forbidden403 />,
+    loader: () => {
+      document.title = 'Error 403'
+      return null
+    },
+  },
+  {
+    path: '*',
+    element: <NotFound404 />,
+    loader: () => {
+      document.title = 'Error 404'
+      return null
+    },
+  },
 ])
 
 export default router

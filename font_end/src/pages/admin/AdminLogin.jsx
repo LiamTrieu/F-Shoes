@@ -13,7 +13,6 @@ import {
 } from '@mui/material'
 import { useNavigate, Navigate } from 'react-router-dom'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import axios from 'axios'
 import { toast } from 'react-toastify'
 import { getCookie, setCookie } from '../../services/cookie'
 import authenticationAPi from '../../api/authentication/authenticationAPi'
@@ -50,15 +49,6 @@ export default function AdminLogin() {
           toast.success('Đăng nhập thành công!')
           SetError(null)
           setCookie('AdminToken', response.data.data, 7)
-          authenticationAPi.getAdmin().then((data) => {
-            if (data.data.success) {
-              if (data.data.data.role === 0) {
-                navigate('/admin/sell')
-              } else {
-                navigate('/admin/dashboard')
-              }
-            }
-          })
         } else {
           toast.error('Đăng nhập thất bại!')
           SetError('Tài khoản hoặc mật khẩu không chính xác')
@@ -77,7 +67,7 @@ export default function AdminLogin() {
   return (
     <Fragment>
       {token ? (
-        <Navigate to={'/admin/dashboard'} />
+        <Navigate to={'/admin/sell'} />
       ) : (
         <ThemeProvider theme={theme}>
           <CssBaseline />

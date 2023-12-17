@@ -410,8 +410,6 @@ export default function Checkout() {
           clientCheckoutApi
             .datHang({ ...preRequest, status: 1 })
             .then((response) => {
-              console.log('pre request')
-              console.log(preRequest)
               if (response.data.success) {
                 arrData.forEach((e) => {
                   dispatch(removeCart(e))
