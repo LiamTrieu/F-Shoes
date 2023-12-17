@@ -21,12 +21,14 @@ public interface HDBillDetailService {
 
     BillDetail changeQuantity(String idBillDetail, Integer quantity);
 
-    Boolean delete(HDBillDetailRequest hdBillDetailRequest);
+    Boolean delete(String id);
 
     Boolean returnProduct(String idBillDetail, HDBillDetailRequest hdBillDetailRequest);
 
     List<HDBillDetailResponse> getBillDtResByIdBillAndIDPrd(String idBill, String idPrd);
 
     HDBillDetailResponse getBillDtResByIdBillAndIDPrdAndPrice(String idBill, String idPrd, String price);
+
+    Boolean isCheckDonGiaVsPricePrd(String id);
 
 }

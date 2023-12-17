@@ -2,6 +2,7 @@ package com.fshoes.core.admin.hoadon.controller;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
+import com.fshoes.core.admin.hoadon.service.HDProductDetailService;
 import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,9 @@ public class HDBillDetailController {
 
     @Autowired
     private HDBillDetailService hdBillDetailService;
+
+    @Autowired
+    private HDProductDetailService hdBillDetailServic;
 
     @GetMapping("/get-by-idBill/{idBill}")
     public ObjectRespone getByIdBill(@PathVariable("idBill") String idBill) {
@@ -50,9 +54,9 @@ public class HDBillDetailController {
         return new ObjectRespone(hdBillDetailService.changeQuantity(idBillDetail, quantity));
     }
 
-    @PutMapping("/delete")
-    public Boolean delete(@RequestBody HDBillDetailRequest hdBillDetailRequest) {
-        return hdBillDetailService.delete(hdBillDetailRequest);
+    @PutMapping("/delete/{id}")
+    public Boolean delete(@PathVariable("id") String id) {
+        return hdBillDetailService.delete(id);
     }
 
     @PutMapping("/return-product/{id}")
@@ -65,6 +69,16 @@ public class HDBillDetailController {
     public ObjectRespone checkBillDetailByBillPrdAndPrice(@RequestParam(name = "idBill") String idBill,
                                                           @RequestParam(name = "idPrd") String idPrd, @RequestParam(name = "price") String price) {
         return new ObjectRespone(hdBillDetailService.getBillDtResByIdBillAndIDPrdAndPrice(idBill, idPrd, price));
+    }
+
+    @GetMapping("/isCheckDonGiaVsPricePrd/{id}")
+    public ObjectRespone isCheckDonGiaVsPricePrd(@PathVariable("id") String id) {
+        return new ObjectRespone(hdBillDetailService.isCheckDonGiaVsPricePrd(id));
+    }
+
+    @GetMapping("/getHDPrdRes/{id}")
+    public ObjectRespone getHDPrdRes(@PathVariable("id") String id) {
+        return new ObjectRespone(hdBillDetailServic.getPrdVsMaxKMValue(id));
     }
 
 }
