@@ -14,5 +14,4 @@ public class AdAddressBillRequest {
 
     private String idCustomer;
 
-    private String note;
 }
