@@ -25,9 +25,9 @@ const hoaDonChiTietApi = {
     const url = `/billDetail/save`
     return axiosAdmin.post(url, billDetailReq)
   },
-  delete: (billDetailReq) => {
-    const url = `/billDetail/delete`
-    return axiosAdmin.put(url, billDetailReq)
+  delete: (id) => {
+    const url = `/billDetail/delete/${id}`
+    return axiosAdmin.put(url)
   },
   returnProduct: (idBillDetail, hdBillDetailReq) => {
     const url = `/billDetail/return-product/${idBillDetail}`
@@ -40,6 +40,14 @@ const hoaDonChiTietApi = {
   getByIdBillAndIdPrdAndPrice: (idBill, idPrd, price) => {
     const urlGetByIdBillPrdAndPrice = `/billDetail/get-by-billAndProductDetailAndPrice`
     return axiosAdmin.get(urlGetByIdBillPrdAndPrice, { params: { idBill, idPrd, price } })
+  },
+  // isCheckDonGiaVsPricePrd: (id) => {
+  //   const url = `/billDetail/getHDPrdRes/${id}`
+  //   return axiosAdmin.get(url)
+  // },
+  isCheckDonGiaVsPricePrd: (id) => {
+    const url = `/billDetail/isCheckDonGiaVsPricePrd/${id}`
+    return axiosAdmin.get(url)
   },
 }
 

@@ -209,7 +209,20 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
       .getByIdBillAndIdPrdAndPrice(idBill, selectedProduct.id, billDetailReq.price)
       .then((response) => {
         if (response.data.data === null) {
-          saveBillDetail(idBill, selectedProduct)
+          hoaDonChiTietApi.getByIdBillAndIdPrd(idBill, selectedProduct.id).then((response) => {
+            if (response.data.data.length > 0) {
+              confirmSatus(
+                'Đơn giá sản phẩm đã thay đổi',
+                'Chắc chắn xác nhận với đơn giá mới?',
+              ).then((result) => {
+                if (result.isConfirmed) {
+                  saveBillDetail(idBill, selectedProduct)
+                }
+              })
+            } else {
+              saveBillDetail(idBill, selectedProduct)
+            }
+          })
         } else {
           const billDetailExsit = response.data.data
           if (billDetailExsit.quantity + billDetailReq.quantity > 5) {
@@ -218,17 +231,7 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
             })
             return
           } else {
-            if (billDetailExsit.price !== billDetailReq.price) {
-              confirmSatus(
-                'Đơn giá sản phẩm đã thay đổi',
-                'Chắc chắn xác nhận với đơn giá mới?',
-              ).then((result) => {
-                if (result.isConfirmed) {
-                  console.log('Đã confirm')
-                  saveBillDetail(idBill, selectedProduct)
-                }
-              })
-            }
+            saveBillDetail(idBill, selectedProduct)
           }
         }
       })
