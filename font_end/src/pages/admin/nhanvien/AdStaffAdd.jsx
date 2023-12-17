@@ -25,7 +25,6 @@ import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
 import confirmSatus from '../../../components/comfirmSwal'
-import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
 import Scanner from '../../../layout/Scanner'
 
 const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
@@ -102,8 +101,9 @@ const AddStaff = () => {
   }, [])
 
   const loadList = () => {
-    khachHangApi.getAll().then((response) => {
+    staffApi.getAll().then((response) => {
       setList(response.data)
+      console.log(response.data)
     })
   }
   const loadTinh = () => {

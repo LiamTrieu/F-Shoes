@@ -28,6 +28,7 @@ export default function OrderAdmin() {
   const [huyenName, setHuyenName] = useState('')
   const [tinhName, setTinhName] = useState('')
   const [xaName, setXaName] = useState('')
+  const [giaoHang, setGiaoHang] = useState(false)
   const [detailDiaChi, setDetailDiaChi] = useState({
     name: '',
     phoneNumber: '',
@@ -83,6 +84,7 @@ export default function OrderAdmin() {
     setTinhName('')
     setHuyenName('')
     setXaName('')
+    setGiaoHang(false)
     if (listBill.length === 5) {
       toast.warning('Tối đa 5 hóa đơn', { position: toast.POSITION.TOP_CENTER })
       return
@@ -91,6 +93,27 @@ export default function OrderAdmin() {
       if (res.data.success) {
         setlistBill([...listBill, res.data.data])
         setSelectBill(res.data.data.id)
+      }
+    })
+  }
+
+  const detailAddress = (idBill) => {
+    sellApi.getAllBillId(idBill).then((result) => {
+      if (result.data.data.customer === null) {
+        setNameCustomer('')
+        setDetailDiaChi({
+          name: '',
+          phoneNumber: '',
+          email: '',
+          specificAddress: '',
+          provinceId: '',
+          districtId: '',
+          wardId: '',
+          type: 0,
+        })
+        setTinhName('')
+        setHuyenName('')
+        setXaName('')
       }
     })
   }
@@ -152,6 +175,7 @@ export default function OrderAdmin() {
                 value={Bill.id}
                 onClick={() => {
                   setSelectBill(Bill.id)
+                  detailAddress(Bill.id)
                 }}
                 style={{
                   padding: 0,
@@ -209,6 +233,8 @@ export default function OrderAdmin() {
           setTinhName={setTinhName}
           tinhName={tinhName}
           listBill={listBill}
+          giaoHang={giaoHang}
+          setGiaoHang={setGiaoHang}
         />
       )}
     </Container>

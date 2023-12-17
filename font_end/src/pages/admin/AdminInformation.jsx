@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import staffApi from '../../../api/admin/nhanvien/nhanVienApi'
+import { useParams } from 'react-router-dom'
 import {
   Button,
   FormControl,
@@ -22,16 +21,13 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
-import confirmSatus from '../../../components/comfirmSwal'
-import './AdStaffPage.css'
-import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import ghnAPI from '../../../api/admin/ghn/ghnApi'
-import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
+import confirmSatus from '../../components/comfirmSwal'
+import DiaChiApi from '../../api/admin/khachhang/DiaChiApi'
+import ghnAPI from '../../api/admin/ghn/ghnApi'
+import informationApi from '../../api/admin/nhanvien/informationApi'
 
-const listBreadcrumbs = [{ name: 'Nhân viên', link: '/admin/staff' }]
-
-export default function AdStaffDetail() {
+export default function AdminInformation() {
   const { id } = useParams()
   const [staffDetail, setStaffDetail] = useState({ code: '', avatar: null, gender: '', role: '' })
   const [image, setImage] = useState(null)
@@ -43,7 +39,6 @@ export default function AdStaffDetail() {
   const [huyen, setHuyen] = useState([])
   const [xa, setXa] = useState([])
   const [list, setList] = useState([])
-  const navigate = useNavigate()
 
   useEffect(() => {
     loadData(id)
@@ -56,7 +51,7 @@ export default function AdStaffDetail() {
   const loadData = (id) => {
     setLoading(true)
 
-    staffApi
+    informationApi
       .getOne(id)
       .then((response) => {
         const formatDateBirth = dayjs(response.data.dateBirth).format('DD-MM-YYYY')
@@ -74,14 +69,8 @@ export default function AdStaffDetail() {
   }
 
   const loadList = () => {
-    staffApi.getAll().then((response) => {
+    informationApi.getAll().then((response) => {
       setList(response.data)
-    })
-  }
-  const handleRoleRadioChange = (event) => {
-    setStaffDetail({
-      ...staffDetail,
-      role: event.target.value,
     })
   }
 
@@ -278,21 +267,20 @@ export default function AdStaffDetail() {
       return
     }
 
-    const title = 'Xác nhận cập nhật nhân viên?'
+    const title = 'Xác nhận cập nhật thông tin?'
     const text = ''
     confirmSatus(title, text).then((result) => {
       if (result.isConfirmed) {
-        staffApi
+        informationApi
           .update(id, staffDetail)
           .then(() => {
             onUpdateDiaChi(detailDiaChi)
-            toast.success('Cập nhật nhân viên thành công!', {
+            toast.success('Cập nhật thông tin thành công!', {
               position: toast.POSITION.TOP_RIGHT,
             })
-            navigate('/admin/staff')
           })
           .catch(() => {
-            toast.error('Cập nhật nhân viên thất bại', {
+            toast.error('Cập nhật thông tin thất bại', {
               position: toast.POSITION.TOP_RIGHT,
             })
           })
@@ -423,14 +411,12 @@ export default function AdStaffDetail() {
         })
       })
   }
-
   return (
     <div className="nhanvienadd">
-      <BreadcrumbsCustom nameHere={staffDetail?.code} listLink={listBreadcrumbs} />
       <Paper elevation={3} sx={{ mt: 2, mb: 2, padding: 2, width: '97%' }}>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={4}>
-            <h3>Thông tin nhân viên</h3>
+            <h3>Thông tin cá nhân</h3>
             <hr />
             <div
               onClick={() => {
@@ -440,7 +426,7 @@ export default function AdStaffDetail() {
               {staffDetail.avatar || image ? (
                 <img
                   src={image || staffDetail.avatar}
-                  alt="Ảnh nhân viên"
+                  alt="Ảnh cá  nhân"
                   style={{ width: '100%', height: '100%' }}
                 />
               ) : (
@@ -586,7 +572,7 @@ export default function AdStaffDetail() {
               {errors.dateBirth}
             </Typography>
             <Grid container spacing={2} sx={{ mt: 3 }}>
-              <Grid item xs={5}>
+              <Grid item xs={12}>
                 <Typography>
                   <span className="required"> *</span>Giới tính
                 </Typography>
@@ -598,21 +584,6 @@ export default function AdStaffDetail() {
                     onChange={handleGenderRadioChange}>
                     <FormControlLabel value={true} control={<Radio />} label="Nam" />
                     <FormControlLabel value={false} control={<Radio />} label="Nữ" />
-                  </RadioGroup>
-                </FormControl>
-              </Grid>
-              <Grid item xs={7}>
-                <Typography>
-                  <span className="required"> *</span>Chức vụ
-                </Typography>
-                <FormControl size="small">
-                  <RadioGroup
-                    name="gender"
-                    row
-                    value={staffDetail.role}
-                    onChange={handleRoleRadioChange}>
-                    <FormControlLabel value={0} control={<Radio />} label="Nhân viên" />
-                    <FormControlLabel value={1} control={<Radio />} label="Quản lí" />
                   </RadioGroup>
                 </FormControl>
               </Grid>
@@ -807,7 +778,7 @@ export default function AdStaffDetail() {
                 </div>
               )}
               <Button onClick={handleButtonUpdateStaff} variant="outlined" fullWidth color="cam">
-                {loading ? 'Đang cập nhật...' : 'Cập Nhật Nhân Viên'}
+                {loading ? 'Đang cập nhật...' : 'Cập Nhật thông tin'}
               </Button>
             </div>
           </Grid>

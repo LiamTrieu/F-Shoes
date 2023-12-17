@@ -121,10 +121,11 @@ export default function SellFrom({
   huyenName,
   setTinhName,
   tinhName,
+  giaoHang,
+  setGiaoHang,
   listBill,
 }) {
   const theme = useTheme()
-  const [giaoHang, setGiaoHang] = useState(false)
   const [isShowCustomer, setIsShowCustomer] = useState(false)
   const [isShowVoucher, setIsShowVoucher] = useState(false)
   const [isShowDiaChi, setIsShowDiaChi] = useState(false)
@@ -367,7 +368,6 @@ export default function SellFrom({
     } else {
       sum = cart.price * quantity
     }
-    console.log(sum)
     if (Number(sum) < 500000000) {
       sellApi.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity).then(() => {
         fectchProductBillSell(idBill)
@@ -624,58 +624,50 @@ export default function SellFrom({
 
   const detailAddress = () => {
     sellApi.getAllBillId(idBill).then((result) => {
-      if (
-        result.data.data.customer !== null &&
-        result.data.data.fullName !== null &&
-        result.data.data.address !== null &&
-        result.data.data.phoneNumber !== null
-      ) {
-        loadDiaChi(initPage, result.data.data.customer.id)
+      if (result.data.data.customer !== null) {
         setNameCustomer(result.data.data.customer.fullName)
-        setKhachHang({ ...khachHang, note: result.data.data.note })
-        const [specificAddress, wardLabel, districtLabel, provinceLabel] =
-          result.data.data.address.split(', ')
-        setTinhName(provinceLabel)
-        setHuyenName(districtLabel)
-        setXaName(wardLabel)
-        const selectTinh = tinh.find((item) => item.provinceName === provinceLabel) || null
+        loadDiaChi(initPage, result.data.data.customer.id)
+        if (
+          result.data.data.fullName !== null &&
+          result.data.data.address !== null &&
+          result.data.data.phoneNumber !== null
+        ) {
+          const [specificAddress, wardLabel, districtLabel, provinceLabel] =
+            result.data.data.address.split(', ')
+          setTinhName(provinceLabel)
+          setHuyenName(districtLabel)
+          setXaName(wardLabel)
+          const selectTinh = tinh.find((item) => item.provinceName === provinceLabel) || null
 
-        if (selectTinh) {
-          setSelectedTinh({ id: selectTinh.provinceID, label: selectTinh.provinceName })
-          ;(async () => {
-            const huyenData = await loadHuyen(selectTinh.provinceID)
-            const selectHuyen =
-              huyenData.find((item) => item.districtName === districtLabel) || null
-            setSelectedHuyen({ id: selectHuyen.districtID, label: selectHuyen.districtName })
+          if (selectTinh) {
+            setSelectedTinh({ id: selectTinh.provinceID, label: selectTinh.provinceName })
+            ;(async () => {
+              const huyenData = await loadHuyen(selectTinh.provinceID)
+              const selectHuyen =
+                huyenData.find((item) => item.districtName === districtLabel) || null
+              setSelectedHuyen({ id: selectHuyen.districtID, label: selectHuyen.districtName })
 
-            if (selectHuyen) {
-              ;(async () => {
-                const xaData = await loadXa(selectHuyen.districtID)
-                const selectXa = xaData.find((item) => item.wardName === wardLabel) || null
-                setSelectedXa({ id: selectXa.wardCode, label: selectXa.wardName })
-                setDetailDiaChi({
-                  ...detailDiaChi,
-                  name: result.data.data.fullName,
-                  phoneNumber: result.data.data.phoneNumber,
-                  provinceId: selectTinh.provinceID,
-                  districtId: selectHuyen.districtID,
-                  wardId: selectXa.wardCode,
-                  specificAddress: specificAddress,
-                })
-              })()
-            }
-          })()
+              if (selectHuyen) {
+                ;(async () => {
+                  const xaData = await loadXa(selectHuyen.districtID)
+                  const selectXa = xaData.find((item) => item.wardName === wardLabel) || null
+                  setSelectedXa({ id: selectXa.wardCode, label: selectXa.wardName })
+                  setDetailDiaChi({
+                    ...detailDiaChi,
+                    name: result.data.data.fullName,
+                    phoneNumber: result.data.data.phoneNumber,
+                    provinceId: selectTinh.provinceID,
+                    districtId: selectHuyen.districtID,
+                    wardId: selectXa.wardCode,
+                    specificAddress: specificAddress,
+                  })
+                })()
+              }
+            })()
+          }
         }
       } else {
-        setDetailDiaChi({
-          name: '',
-          phoneNumber: '',
-          email: '',
-          specificAddress: '',
-          provinceId: '',
-          districtId: '',
-          wardId: '',
-        })
+        setNameCustomer('khách lẻ')
       }
     })
   }
@@ -897,16 +889,15 @@ export default function SellFrom({
           districtId: districtId,
           wardId: wardId,
         })
-        const data = {
-          fullName: name,
-          phoneNumber: phoneNumber,
-          idCustomer: idCustomer,
-          address: specificAddress,
-          note: khachHang.note,
-        }
 
-        sellApi.addAddressBill(data, idBill).then(() => {
-          if (giaoHang) {
+        if (giaoHang) {
+          const data = {
+            fullName: name,
+            phoneNumber: phoneNumber,
+            idCustomer: idCustomer,
+            address: specificAddress,
+          }
+          sellApi.addAddressBill(data, idBill).then(() => {
             const filtelService = {
               shop_id: '3911708',
               from_district: '3440',
@@ -942,9 +933,52 @@ export default function SellFrom({
                 })
               })
             })
+            detailAddress()
+          })
+        } else {
+          const data = {
+            idCustomer: idCustomer,
           }
-          detailAddress()
-        })
+
+          sellApi.addAddressBill(data, idBill).then(() => {
+            const filtelService = {
+              shop_id: '3911708',
+              from_district: '3440',
+              to_district: districtId,
+            }
+
+            ghnAPI.getServiceId(filtelService).then((response) => {
+              const serviceId = response.data.body.serviceId
+              const filterTotal = {
+                from_district_id: '3440',
+                service_id: serviceId,
+                to_district_id: districtId,
+                to_ward_code: wardId,
+                weight: listProductDetailBill.reduce(
+                  (totalWeight, e) => totalWeight + parseInt(e.weight),
+                  0,
+                ),
+                insurance_value: '10000',
+              }
+
+              ghnAPI.getTotal(filterTotal).then((response) => {
+                setShipTotal(response.data.body.total)
+
+                const filtelTime = {
+                  from_district_id: '3440',
+                  from_ward_code: '13010',
+                  to_district_id: districtId,
+                  to_ward_code: wardId,
+                  service_id: serviceId,
+                }
+                ghnAPI.getime(filtelTime).then((response) => {
+                  setTimeShip(response.data.body.leadtime * 1000)
+                })
+              })
+            })
+            detailAddress()
+          })
+        }
       }
     })
   }
@@ -990,7 +1024,6 @@ export default function SellFrom({
           fullName: name,
           phoneNumber: phoneNumber,
           address: specificAddress,
-          note: khachHang.note,
         }
 
         sellApi.addAddressBill(data, idBill).then(() => {
@@ -1034,6 +1067,30 @@ export default function SellFrom({
     })
   }
 
+  const saveAddressKH = () => {
+    if (!giaoHang) {
+      const data = {
+        fullName: detailDiaChi.name,
+        phoneNumber: detailDiaChi.phoneNumber,
+        address: detailDiaChi.specificAddress + ', ' + xaName + ', ' + huyenName + ', ' + tinhName,
+      }
+
+      sellApi.addAddressBill(data, idBill).then(() => {
+        console.log('thành công')
+      })
+    } else {
+      const data = {
+        fullName: '',
+        phoneNumber: '',
+        address: '',
+      }
+
+      sellApi.addAddressBill(data, idBill).then(() => {
+        console.log('thành công')
+      })
+    }
+  }
+
   const [newDiaChi, setNewDiaChi] = useState({
     name: '',
     phoneNumber: '',
@@ -1057,7 +1114,6 @@ export default function SellFrom({
   const [btnad, setBtnad] = useState(false)
 
   const handleDiaChi = (idCustomer) => {
-    console.log(idCustomer, 'handle')
     setBtnad(true)
     setIsShowCustomer(false)
     loadDiaChi(initPage, idCustomer)
@@ -1326,9 +1382,9 @@ export default function SellFrom({
       }
     }
 
-    if (percentMoney === null) {
+    if (percentMoney === null || percentMoney === '') {
       setPercentMoney(0)
-    } else if (!Number.isInteger(parseInt(percentMoney))) {
+    } else if (percentMoney !== null && !Number.isInteger(parseInt(percentMoney))) {
       toast.error('Phần trăm giảm chưa phù hợp', {
         position: toast.POSITION.TOP_RIGHT,
       })
@@ -1710,7 +1766,6 @@ export default function SellFrom({
             break
           case 'POST':
             if (data.data) {
-              console.log(listProductDetailBill)
               const updatedList = listProductDetailBill.filter((e) => e.id !== data.data.id)
               setListProductDetailBill([...updatedList, data.data])
             }
@@ -1725,9 +1780,11 @@ export default function SellFrom({
   const dispatch = useDispatch()
   const disconnectApp = () => {
     const mess = { idOrder: null }
-    const idApp = app.find((e) => e.idBill === idBill).idApp
-    dispatch(setApp([...app.filter((e) => e.idApp !== idApp)]))
-    stompClient.send(`/topic/app-online/${idApp}`, {}, JSON.stringify(mess))
+    const idApp = app.find((e) => e.idBill === idBill)
+    if (idApp) {
+      dispatch(setApp([...app.filter((e) => e.idApp !== idApp.idApp)]))
+      stompClient.send(`/topic/app-online/${idApp.idApp}`, {}, JSON.stringify(mess))
+    }
   }
 
   return (
@@ -2449,6 +2506,7 @@ export default function SellFrom({
                   onChange={() => {
                     if (listProductDetailBill.length > 0) {
                       setGiaoHang(!giaoHang)
+                      saveAddressKH()
                     } else {
                       toast.warning('Vui lòng thêm sản phẩm trước!')
                     }

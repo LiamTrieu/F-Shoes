@@ -217,11 +217,15 @@ public class AdminSellServiceImpl implements AdminSellService {
                 assert account != null;
                 bill.setCustomer(account);
             }
-            bill.setAddress(request.getAddress());
-            bill.setPhoneNumber(request.getPhoneNumber());
-            bill.setFullName(request.getFullName());
-            bill.setFullName(request.getFullName());
-            bill.setNote(request.getNote());
+            if(request.getAddress() != null){
+                bill.setAddress(request.getAddress());
+            }
+            if(request.getPhoneNumber() != null){
+                bill.setPhoneNumber(request.getPhoneNumber());
+            }
+            if(request.getFullName() != null){
+                bill.setFullName(request.getFullName());
+            }
             billRepository.save(bill);
             return true;
         } catch (Exception e) {
