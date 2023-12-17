@@ -197,9 +197,9 @@ export default function AdPromotionDetail() {
     const minBirthYear = 1900
 
     if (updatePromotion.name.trim() === '') {
-      errors.name = 'Vui lòng nhập tên khuyến mại'
+      errors.name = 'Vui lòng nhập tên đợt giảm giá'
     } else if (!isNaN(updatePromotion.name)) {
-      errors.name = 'Tên khuyến mại phải là chữ'
+      errors.name = 'Tên đợt giảm giá phải là chữ'
     } else if (updatePromotion.name.length > 50) {
       errors.name = 'Tên không được dài hơn 50 ký tự'
     } else if (updatePromotion.name.length < 5) {
@@ -340,7 +340,7 @@ export default function AdPromotionDetail() {
             <Grid item xs={5.5} sx={{ mt: 4 }}>
               <div style={{ marginBottom: '20px' }}>
                 <Typography>
-                  <span style={{ color: 'red', fontWeight: 'bold' }}> *</span>Tên khuyến mại
+                  <span style={{ color: 'red', fontWeight: 'bold' }}> *</span>Tên đợt giảm giá
                 </Typography>
                 <TextField
                   id="outlined-basic"

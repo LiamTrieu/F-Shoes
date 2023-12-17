@@ -568,10 +568,10 @@ export default function Product() {
 
             <Collapse in={openColor} timeout="auto" unmountOnExit className="collapse-portfolio">
               <List component="div" disablePadding>
-                <Grid container>
+                <Grid container sx={{ marginLeft: '30px' }}>
                   {listColor.map((lf) => (
                     <Grid items xs={4} key={lf.id}>
-                      <ListItem>
+                      <div>
                         <div
                           style={{
                             backgroundColor: `${lf.code}`,
@@ -583,9 +583,11 @@ export default function Product() {
                           onClick={(e) => handleCheckBoxColor(e, lf.id)}>
                           {/* {filter.color === lf.id && <FaCheck color="white" />} */}
                           {selectColor.includes(lf.id) && <FaCheck color="white" />}
-                          <span style={{ fontWeight: 600, marginTop: '65px' }}>{lf.name}</span>
                         </div>
-                      </ListItem>
+                        <span style={{ fontWeight: 600, marginTop: '65px', textAlign: 'center' }}>
+                          {lf.name}
+                        </span>
+                      </div>
                     </Grid>
                   ))}
                 </Grid>

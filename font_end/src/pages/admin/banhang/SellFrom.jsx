@@ -1595,19 +1595,19 @@ export default function SellFrom({
     if (!customerAmount) {
       newErrors.customerAmount = 'Tiền khách đưa không được để trống'
       checkAA++
-    } else if (customerAmount < 0) {
+    } else if (Number(customerAmount) <= 0) {
       newErrors.customerAmount = 'Tiền khách đưa phải lớn hơn 0'
       checkAA++
     } else {
       newErrors.customerAmount = ''
     }
-    const sanitizedCustomerAmount = parseInt(customerAmount.replace(/\D/g, ''), 10)
-    if (paymentMethod === '1' && Number(sanitizedCustomerAmount) > 50000000) {
-      newErrors.customerAmount = 'Tiền khách đưa không lớn hơn 50tr VNĐ'
-      checkAA++
-    } else {
-      newErrors.customerAmount = ''
-    }
+    // const sanitizedCustomerAmount = parseInt(customerAmount.replace(/\D/g, ''), 10)
+    // if (paymentMethod === '1' && Number(sanitizedCustomerAmount) > 50000000) {
+    //   newErrors.customerAmount = 'Tiền khách đưa không lớn hơn 50tr VNĐ'
+    //   checkAA++
+    // } else {
+    //   newErrors.customerAmount = ''
+    // }
 
     if (paymentMethod === '0' && !transactionCode) {
       newErrors.payMent = 'Vui lòng nhập mã giao dịch'
