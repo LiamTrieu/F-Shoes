@@ -1,17 +1,11 @@
 package com.fshoes.entity;
 
+import com.fshoes.entity.base.PrimaryEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.Calendar;
+import lombok.*;
 
 @Getter
 @Setter
@@ -20,17 +14,14 @@ import java.util.Calendar;
 @Builder
 @Entity
 @Table(name = "cart")
-public class Cart {
-    @Id
-    private Integer id;
+public class Cart extends PrimaryEntity {
+    private Integer quantity;
 
     @ManyToOne
-    @JoinColumn(name = "id_customer", referencedColumnName = "id")
-    private Customer customer;
+    @JoinColumn(name = "id_account", referencedColumnName = "id")
+    private Account account;
 
-    private Long createAt = getLongDate();
-
-    private Long getLongDate() {
-        return Calendar.getInstance().getTimeInMillis();
-    }
+    @ManyToOne
+    @JoinColumn(name = "id_product_detail", referencedColumnName = "id")
+    private ProductDetail productDetail;
 }

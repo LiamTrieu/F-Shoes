@@ -1,15 +1,12 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.StatusVoucher;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -18,18 +15,27 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "promotion")
-public class Promotion extends IntegerEntity {
-    @Column(length = EntityProperties.LENGTH_CODE)
-    private String code;
+public class Promotion extends PrimaryEntity {
 
-    @Column(length = EntityProperties.LENGTH_NAME)
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME, unique = true)
     private String name;
 
     private Long timeStart;
 
     private Long timeEnd;
 
+    private Boolean type;
+
     private Integer value;
 
-    private Integer status;
+    private StatusVoucher status;
+
+    public Integer getStatus() {
+        return status.ordinal();
+    }
+
+    public void setStatus(Integer status) {
+        this.status = StatusVoucher.values()[status];
+    }
+
 }

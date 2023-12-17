@@ -1,63 +1,53 @@
 package com.fshoes.core.admin.khachhang.controller;
 
+import com.fshoes.core.admin.khachhang.model.request.AdKhachHangSearch;
+import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
 import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
 import com.fshoes.core.admin.khachhang.service.impl.KhachHangServiceImpl;
-import com.fshoes.entity.Customer;
+import com.fshoes.core.common.ObjectRespone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/khach-hang")
+@RequestMapping("/api/admin/khach-hang")
 public class KhachHangController {
     @Autowired
-    KhachHangServiceImpl khachHangService;
+    private KhachHangServiceImpl khachHangService;
 
-
-    public List<KhachHangRespone> seriolizeList(List<Customer> lst){
-        List iteams = new ArrayList();
-        for(Customer cu : lst) iteams.add(new KhachHangRespone(cu));
-        return iteams;
+    @GetMapping("/search")
+    public ObjectRespone search(@ModelAttribute AdKhachHangSearch adKhachHangSearch) {
+        return new ObjectRespone(khachHangService.findKhachHang(adKhachHangSearch));
     }
-
-    @GetMapping("/get-all")
-    public List<?> getAll(Model model){
-        return seriolizeList(khachHangService.getAll());
-    }
-
-    @GetMapping("/get-page")
-    public List<?> getPage(@RequestParam( defaultValue = "0")int p){
-        return seriolizeList(khachHangService.getPage(p).toList());
-    }
-
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody Customer cu){
-        String error = "";
-        if(!error.isEmpty()){
-           return ResponseEntity.badRequest().body(error);
-        }
-        khachHangService.save(cu);
-       return ResponseEntity.ok(new KhachHangRespone(cu));
+    public ObjectRespone create(@ModelAttribute KhachHangRequest khachHangRequest) throws ParseException {
+        khachHangRequest.setStatus(0);
+        return new ObjectRespone(khachHangService.add(khachHangRequest));
+    }
+
+    @GetMapping("/get-one/{id}")
+    public ObjectRespone getOne(@PathVariable String id) {
+        return new ObjectRespone(khachHangService.getOne(id));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Customer cu){
-        String error = "";
-        if(!error.isEmpty()){
-            return ResponseEntity.badRequest().body(error);
-        }
-        cu.setId(id);
-        khachHangService.save(cu);
-        return ResponseEntity.ok(new KhachHangRespone(cu));
+    public ObjectRespone update(@PathVariable String id, @ModelAttribute KhachHangRequest khachHangRequest) throws ParseException {
+        return new ObjectRespone(khachHangService.update(id, khachHangRequest));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable int id){
+    public void delete(@PathVariable String id) {
         khachHangService.delete(id);
     }
+
+
+    @GetMapping("/get-all")
+    public List<KhachHangRespone> getAllAccount() {
+        return khachHangService.getAllAccount();
+    }
+
+
 }

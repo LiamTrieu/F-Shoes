@@ -1,19 +1,28 @@
 package com.fshoes.core.admin.khachhang.service;
 
-import com.fshoes.entity.Customer;
+import com.fshoes.core.admin.khachhang.model.request.AdKhachHangSearch;
+import com.fshoes.core.admin.khachhang.model.request.KhachHangRequest;
+import com.fshoes.core.admin.khachhang.model.respone.KhachHangRespone;
+import com.fshoes.entity.Account;
 import org.springframework.data.domain.Page;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface KhachHangService {
 
-     List<Customer> getAll();
 
-    Page<Customer> getPage(int p);
+    Page<KhachHangRespone> findKhachHang(AdKhachHangSearch adKhachHangSearch);
 
-    void save(Customer cu);
+    Account add(KhachHangRequest khachHangRequest) throws ParseException;
 
-    void delete(int id );
+    Boolean update(String id, KhachHangRequest khachHangRequest) throws ParseException;
 
-    Customer getOne(int id);
+    void delete(String id);
+
+    Account getOne(String id);
+
+    List<KhachHangRespone> getAllAccount();
+
+
 }

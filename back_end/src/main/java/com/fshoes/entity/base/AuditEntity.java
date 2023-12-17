@@ -1,17 +1,16 @@
 package com.fshoes.entity.base;
 
+import com.fshoes.infrastructure.listener.AuditEntityListener;
 import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Calendar;
 
 @Getter
 @Setter
 @MappedSuperclass
+@EntityListeners(AuditEntityListener.class)
 public abstract class AuditEntity {
 
     @Column(updatable = false)
@@ -25,22 +24,4 @@ public abstract class AuditEntity {
 
     @Column
     private String updatedBy;
-
-    @PrePersist
-    private void onCreate(){
-        this.setCreatedAt(getLongDate());
-        this.setUpdatedAt(getLongDate());
-        this.setCreatedBy("Nguyen Van A");
-        this.setUpdatedBy("Nguyen Van A");
-    }
-
-    @PreUpdate
-    private void onUpdate(){
-        this.setUpdatedAt(getLongDate());
-        this.setUpdatedBy("Nguyen Van B");
-    }
-
-    private Long getLongDate() {
-        return Calendar.getInstance().getTimeInMillis();
-    }
 }

@@ -1,15 +1,12 @@
 package com.fshoes.entity;
 
-import com.fshoes.entity.base.IntegerEntity;
+import com.fshoes.entity.base.PrimaryEntity;
 import com.fshoes.infrastructure.constant.EntityProperties;
+import com.fshoes.infrastructure.constant.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -18,9 +15,17 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "product")
-public class Product extends IntegerEntity {
-    @Column(length = EntityProperties.LENGTH_NAME)
+public class Product extends PrimaryEntity {
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME, unique = true)
     private String name;
 
-    private Boolean deleted = false;
+    private Status deleted = Status.HOAT_DONG;
+
+    public Integer getDeleted() {
+        return deleted.ordinal();
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = Status.values()[deleted];
+    }
 }
