@@ -941,41 +941,6 @@ export default function SellFrom({
           }
 
           sellApi.addAddressBill(data, idBill).then(() => {
-            const filtelService = {
-              shop_id: '3911708',
-              from_district: '3440',
-              to_district: districtId,
-            }
-
-            ghnAPI.getServiceId(filtelService).then((response) => {
-              const serviceId = response.data.body.serviceId
-              const filterTotal = {
-                from_district_id: '3440',
-                service_id: serviceId,
-                to_district_id: districtId,
-                to_ward_code: wardId,
-                weight: listProductDetailBill.reduce(
-                  (totalWeight, e) => totalWeight + parseInt(e.weight),
-                  0,
-                ),
-                insurance_value: '10000',
-              }
-
-              ghnAPI.getTotal(filterTotal).then((response) => {
-                setShipTotal(response.data.body.total)
-
-                const filtelTime = {
-                  from_district_id: '3440',
-                  from_ward_code: '13010',
-                  to_district_id: districtId,
-                  to_ward_code: wardId,
-                  service_id: serviceId,
-                }
-                ghnAPI.getime(filtelTime).then((response) => {
-                  setTimeShip(response.data.body.leadtime * 1000)
-                })
-              })
-            })
             detailAddress()
           })
         }
@@ -1086,7 +1051,41 @@ export default function SellFrom({
       }
 
       sellApi.addAddressBill(data, idBill).then(() => {
-        console.log('thành công')
+        const filtelService = {
+          shop_id: '3911708',
+          from_district: '3440',
+          to_district: detailDiaChi.districtId,
+        }
+
+        ghnAPI.getServiceId(filtelService).then((response) => {
+          const serviceId = response.data.body.serviceId
+          const filterTotal = {
+            from_district_id: '3440',
+            service_id: serviceId,
+            to_district_id: detailDiaChi.districtId,
+            to_ward_code: detailDiaChi.wardId,
+            weight: listProductDetailBill.reduce(
+              (totalWeight, e) => totalWeight + parseInt(e.weight),
+              0,
+            ),
+            insurance_value: '10000',
+          }
+
+          ghnAPI.getTotal(filterTotal).then((response) => {
+            setShipTotal(response.data.body.total)
+
+            const filtelTime = {
+              from_district_id: '3440',
+              from_ward_code: '13010',
+              to_district_id: detailDiaChi.districtId,
+              to_ward_code: detailDiaChi.wardId,
+              service_id: serviceId,
+            }
+            ghnAPI.getime(filtelTime).then((response) => {
+              setTimeShip(response.data.body.leadtime * 1000)
+            })
+          })
+        })
       })
     }
   }
@@ -1599,15 +1598,17 @@ export default function SellFrom({
       newErrors.customerAmount = 'Tiền khách đưa phải lớn hơn 0'
       checkAA++
     } else {
-      newErrors.customerAmount = ''
+      const sanitizedCustomerAmount = parseInt(customerAmount.replace(/\D/g, ''), 10)
+      if (Number(sanitizedCustomerAmount) === 0) {
+        newErrors.customerAmount = 'Tiền khách đưa phải lớn hơn 0'
+        checkAA++
+      } else if (paymentMethod === '1' && Number(sanitizedCustomerAmount) > 50000000) {
+        newErrors.customerAmount = 'Tiền khách đưa không lớn hơn 50tr VNĐ'
+        checkAA++
+      } else {
+        newErrors.customerAmount = ''
+      }
     }
-    // const sanitizedCustomerAmount = parseInt(customerAmount.replace(/\D/g, ''), 10)
-    // if (paymentMethod === '1' && Number(sanitizedCustomerAmount) > 50000000) {
-    //   newErrors.customerAmount = 'Tiền khách đưa không lớn hơn 50tr VNĐ'
-    //   checkAA++
-    // } else {
-    //   newErrors.customerAmount = ''
-    // }
 
     if (paymentMethod === '0' && !transactionCode) {
       newErrors.payMent = 'Vui lòng nhập mã giao dịch'
