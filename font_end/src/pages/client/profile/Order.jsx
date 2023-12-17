@@ -57,6 +57,14 @@ export default function Order() {
       currency: 'VND',
     })
   }
+  const formatCurrency = (value) => {
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      currencyDisplay: 'code',
+    })
+    return formatter.format(value)
+  }
 
   useEffect(() => {
     const socket = new SockJS(socketUrl)
@@ -199,9 +207,9 @@ export default function Order() {
                         </div>
                         <div style={{ paddingTop: '20px', paddingRight: '20px' }}>
                           <Typography style={{ marginBottom: '20px' }}>
-                            Tiền ship: {formatPrice(item.moneyShip)}
+                            Tiền ship: {formatCurrency(item.moneyShip)}
                           </Typography>
-                          <Typography>Tổng tiền: {formatPrice(item.moneyAfter)}</Typography>
+                          <Typography>Tổng tiền: {formatCurrency(item.moneyAfter)}</Typography>
                         </div>
                       </Stack>
                     </div>

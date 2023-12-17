@@ -4,6 +4,8 @@ import com.fshoes.entity.base.IsIdentified;
 
 public interface AddProductPromotionResponse extends IsIdentified {
 
+    String getProductDetailCB();
+    String getIdCate();
     String getProductDetail();
 
     String getProductPromotion();

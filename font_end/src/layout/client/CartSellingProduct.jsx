@@ -138,7 +138,7 @@ export default function CartSellingProduct({ products, colmd, collg }) {
                 }
               }}
               className="cart-product-hover">
-              <Card sx={{ width: '100%', height: '520px' }}>
+              <Card sx={{ width: '100%', height: '550px' }}>
                 <Box
                   sx={{
                     position: 'relative',

@@ -143,7 +143,7 @@ export default function CartProductHome({ products, colmd, collg }) {
               <Card
                 sx={{
                   width: '25%',
-                  height: '550px',
+                  height: '570px',
                   textDecoration: 'none',
                   borderRadius: '10px',
                 }}

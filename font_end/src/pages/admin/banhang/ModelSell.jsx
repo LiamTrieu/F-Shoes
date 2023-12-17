@@ -198,7 +198,7 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
 
   const onSubmitAddBillDetail = (id, idBill) => {
     let priceToAdd = selectedProduct.price
-    if (selectedProduct.value) {
+    if (selectedProduct.value && selectedProduct.statusPromotion === 1) {
       priceToAdd = (selectedProduct.price * (100 - selectedProduct.value)) / 100
     } else {
       priceToAdd = selectedProduct.price
@@ -637,7 +637,7 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
                         getAmountProduct.sole}{' '}
                       "{getAmountProduct.color}"
                     </Typography>
-                    <div style={{ marginTop: '5px', marginBottom: '10px' }}>
+                    <div style={{ marginTop: '5px', marginBottom: '10px', textAlign: 'center' }}>
                       <b>Loại giày: </b>
                       {getAmountProduct.category}
                       &nbsp;&nbsp;&nbsp;&nbsp;
