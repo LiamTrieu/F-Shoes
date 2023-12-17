@@ -384,7 +384,7 @@ export default function AppBarAdmin({ children }) {
                 {user ? (
                   <>
                     <Link
-                      to={`/admin/staff/detail/${user.id}`}
+                      to={`/admin/infomation/${user.id}`}
                       style={{ textDecoration: 'none', color: 'black' }}>
                       <MenuItem>
                         <Avatar /> Tài khoản của tôi

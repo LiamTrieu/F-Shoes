@@ -2,6 +2,7 @@ import AdStaffDetail from '../../pages/admin/nhanvien/AdStaffDetailP'
 import AdStaffPage from '../../pages/admin/nhanvien/AdStaffPage'
 import AdStaffAdd from '../../pages/admin/nhanvien/AdStaffAdd'
 import AutGuardAdmin from '../../layout/AutGuardAdmin'
+import AdminInformation from '../../pages/admin/AdminInformation'
 
 const adStaffRoute = [
   {
@@ -37,6 +38,14 @@ const adStaffRoute = [
     ),
     loader: () => {
       document.title = 'Admin - Thêm nhân viên'
+      return null
+    },
+  },
+  {
+    path: '/admin/infomation/:id',
+    element: <AdminInformation />,
+    loader: () => {
+      document.title = 'Admin - Thông tin cá nhân'
       return null
     },
   },

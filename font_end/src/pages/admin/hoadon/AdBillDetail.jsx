@@ -109,7 +109,6 @@ export default function AdBillDetail() {
     hoaDonApi
       .checkBillExist(id)
       .then((response) => {
-        console.log(response)
         if (response.data.data.id === null) {
           navigate(-1)
           toast.warning('Hoá đơn không xác định !!')
@@ -128,29 +127,63 @@ export default function AdBillDetail() {
   }, [id])
 
   const handleIncrementQuantity = (row, index) => {
-    if (row.quantity >= 0) {
-      const updatedList = listBillDetail.map((item, i) =>
-        i === index ? { ...item, quantity: item.quantity + 1 } : item,
-      )
-      const updatedRow = { ...row, quantity: row.quantity + 1 }
-      updatedList[index] = updatedRow
-      setListBillDetail(updatedList)
-      incrementQuantity(row.id)
-      if (billDetail.moneyReduced != null) {
-        const newMoneyAfter =
-          updatedList.reduce(
-            (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
-            0,
-          ) - billDetail.moneyReduced
-        setMoneyAfter(newMoneyAfter)
-      } else {
-        const newMoneyAfter = updatedList.reduce(
-          (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
-          0,
+    hoaDonChiTietApi.isCheckDonGiaVsPricePrd(row.id).then((response) => {
+      if (response.data.data === false) {
+        confirmSatus(
+          'Đơn giá sản phẩm đã thay đổi',
+          'Vui lòng chọn "Thêm sản phẩm" để biết thêm thông tin chi tiết!',
         )
-        setMoneyAfter(newMoneyAfter)
+      } else {
+        if (row.quantity >= 0) {
+          const updatedList = listBillDetail.map((item, i) =>
+            i === index ? { ...item, quantity: item.quantity + 1 } : item,
+          )
+          const updatedRow = { ...row, quantity: row.quantity + 1 }
+          updatedList[index] = updatedRow
+          setListBillDetail(updatedList)
+          incrementQuantity(row.id)
+          if (billDetail.moneyReduced != null) {
+            const newMoneyAfter =
+              updatedList.reduce(
+                (totalMoney, item) =>
+                  billDetail.moneyShip + totalMoney + item.quantity * item.price,
+                0,
+              ) - billDetail.moneyReduced
+            setMoneyAfter(newMoneyAfter)
+          } else {
+            const newMoneyAfter = updatedList.reduce(
+              (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
+              0,
+            )
+            setMoneyAfter(newMoneyAfter)
+          }
+        }
       }
-    }
+    })
+
+    // if (row.quantity >= 0) {
+    //   const updatedList = listBillDetail.map((item, i) =>
+    //     i === index ? { ...item, quantity: item.quantity + 1 } : item,
+    //   )
+    //   const updatedRow = { ...row, quantity: row.quantity + 1 }
+    //   updatedList[index] = updatedRow
+    //   setListBillDetail(updatedList)
+    //   incrementQuantity(row.id)
+    //   if (billDetail.moneyReduced != null) {
+    //     const newMoneyAfter =
+    //       updatedList.reduce(
+    //         (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
+    //         0,
+    //       ) - billDetail.moneyReduced
+    //     setMoneyAfter(newMoneyAfter)
+    //   } else {
+    //     const newMoneyAfter = updatedList.reduce(
+    //       (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
+    //       0,
+    //     )
+    //     setMoneyAfter(newMoneyAfter)
+    //   }
+    // }
   }
 
   const handleDecrementQuantity = (row, index) => {
@@ -1015,7 +1048,7 @@ export default function AdBillDetail() {
                           </TableCell>
                           <TableCell>
                             {billDetailReturn.productName} <br></br>
-                            {billDetailReturn.price !== billDetailReturn.productPrice ? (
+                            {/* {billDetailReturn.price !== billDetailReturn.productPrice ? (
                               <span>
                                 <del
                                   style={{
@@ -1042,7 +1075,14 @@ export default function AdBillDetail() {
                                 }}>
                                 {formatCurrency(billDetailReturn.productPrice)}
                               </span>
-                            )}
+                            )} */}
+                            <span
+                              style={{
+                                color: 'red',
+                                marginLeft: 15,
+                              }}>
+                              {formatCurrency(billDetailReturn.productPrice)}
+                            </span>
                             <br />
                             Size: {billDetailReturn.size}
                             <br />x{billDetailReturn.quantity}
@@ -1291,15 +1331,9 @@ export default function AdBillDetail() {
     }
   }
 
-  const deleteBillDetail = (hdct, idBill) => {
-    const hdBillDetailReq = {
-      productDetailId: hdct.productDetailId,
-      idBill: idBill,
-      status: hdct.status,
-      quantity: hdct.quantity,
-    }
+  const deleteBillDetail = (hdct) => {
     hoaDonChiTietApi
-      .delete(hdBillDetailReq)
+      .delete(hdct.id)
       .then(() => {
         toast.success('Đã xoá sản phẩm khỏi đơn hàng', {
           position: toast.POSITION.TOP_RIGHT,
@@ -1313,10 +1347,10 @@ export default function AdBillDetail() {
       })
   }
 
-  const handleDeleteSPConfirmation = (hdct, idBill) => {
+  const handleDeleteSPConfirmation = (hdct) => {
     confirmSatus('Xác nhận xoá', 'Bạn có chắc chắn muốn xoá sản phẩm này?').then((result) => {
       if (result.isConfirmed) {
-        deleteBillDetail(hdct, idBill)
+        deleteBillDetail(hdct)
       }
     })
   }
@@ -1976,7 +2010,6 @@ export default function AdBillDetail() {
                                 className="table-container-custom-scrollbar">
                                 {/* billDetail.stt === 0 */}
                                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                  {console.log(listBillDetail)}
                                   <TableBody>
                                     {listBillDetail
                                       .filter((row) => row.status === 0)
@@ -1987,7 +2020,10 @@ export default function AdBillDetail() {
                                           </TableCell>
                                           <TableCell>
                                             {row.productName} <br></br>
-                                            {row.productPrice !== row.price ? (
+                                            <span style={{ color: 'red' }}>
+                                              {formatCurrency(row.price)}
+                                            </span>
+                                            {/* {row.productPrice !== row.price ? (
                                               <>
                                                 <span
                                                   style={{
@@ -2005,7 +2041,7 @@ export default function AdBillDetail() {
                                               <span style={{ color: 'red' }}>
                                                 {formatCurrency(row.price)}
                                               </span>
-                                            )}
+                                            )} */}
                                             <br />
                                             Size: {row.size}
                                             <br />x{row.quantity}
@@ -2092,9 +2128,7 @@ export default function AdBillDetail() {
                                               billDetail.status < 3 && (
                                                 <Tooltip title="Xoá sản phẩm">
                                                   <IconButton
-                                                    onClick={() =>
-                                                      handleDeleteSPConfirmation(row, billDetail.id)
-                                                    }>
+                                                    onClick={() => handleDeleteSPConfirmation(row)}>
                                                     <CiCircleRemove />
                                                   </IconButton>
                                                 </Tooltip>

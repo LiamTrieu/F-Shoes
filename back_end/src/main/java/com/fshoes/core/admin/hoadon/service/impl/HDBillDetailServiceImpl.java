@@ -2,9 +2,11 @@ package com.fshoes.core.admin.hoadon.service.impl;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
+import com.fshoes.core.admin.hoadon.model.respone.HDProductDetailResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillDetailRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
+import com.fshoes.core.admin.hoadon.repository.HDProductDetailRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
 import com.fshoes.core.admin.sell.repository.AdminSellGetProductRepository;
@@ -23,6 +25,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,6 +60,9 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
     @Autowired
     private UserLogin userLogin;
 
+    @Autowired
+    private HDProductDetailRepository hdProductDetailRepository;
+
     @Transactional
     @Override
     public Boolean save(HDBillDetailRequest hdBillDetailRequest) {
@@ -64,106 +70,62 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
         ProductDetail productDetail = productDetailRepository.findById(hdBillDetailRequest.getProductDetailId()).get();
 
-        BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
+
+        HDBillDetailResponse hdBillDetailResponse = hdBillDetailRepository.getBillDtResByIdBillAndIDPrdAndPrice(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId(), hdBillDetailRequest.getPrice());
+        if (hdBillDetailResponse != null) {
+            BillDetail billDetail = hdBillDetailRepository.findById(hdBillDetailResponse.getId()).get();
+            billDetail.setQuantity(billDetail.getQuantity() + hdBillDetailRequest.getQuantity());
+            hdBillDetailRepository.save(billDetail);
+        } else {
+            BillDetail billDetail = new BillDetail();
+            billDetail.setQuantity(hdBillDetailRequest.getQuantity());
+            billDetail.setBill(bill);
+            billDetail.setProductDetail(productDetail);
+            billDetail.setPrice(hdBillDetailRequest.getPrice());
+            billDetail.setStatus(0);
+            hdBillDetailRepository.save(billDetail);
+        }
+
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill);
         billHistory.setAccount(userLogin.getUserLogin());
-
-        if (billDetail == null) {
-
-            BillDetail newBillDetail = BillDetail.builder()
-                    .bill(bill)
-                    .productDetail(productDetail)
-                    .price(hdBillDetailRequest.getPrice())
-                    .quantity(hdBillDetailRequest.getQuantity())
-                    .status(StatusBillDetail.values()[hdBillDetailRequest.getStatus()])
-                    .build();
-            hdBillDetailRepository.save(newBillDetail);
-            if (bill.getStatus() == 2 || bill.getStatus() == 6) {
-                productDetail.setAmount(productDetail.getAmount() - hdBillDetailRequest.getQuantity());
-                productDetailRepository.save(productDetail);
-                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-add-in-bill-detail",
-                        clientProductDetailRepository.updateRealTime(productDetail.getId()));
-                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-admin-by-add-in-bill-detail",
-                        adProductDetailRepository.realTimeProductDetailAdmin(productDetail.getId()));
-            }
-            List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
-
-            BigDecimal totalAmount = listBillDetail.stream()
-                    .filter(item -> item.getStatus() == 0)
-                    .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            bill.setTotalMoney(totalAmount);
-            BigDecimal tienCanThanhToan = totalAmount;
-            if (bill.getMoneyReduced() != null) {
-                tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
-            }
-            if (bill.getMoneyShip() != null) {
-                tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
-            }
-            bill.setMoneyAfter(tienCanThanhToan);
-            hdBillRepositpory.save(bill);
-
-            billHistory.setNote("Đã thêm: x" + hdBillDetailRequest.getQuantity() +
-                    " " + productDetail.getProduct().getName() +
-                    " " + productDetail.getMaterial().getName() +
-                    " " + productDetail.getSole().getName() +
-                    " " + productDetail.getColor().getName() +
-                    " [" + productDetail.getSize().getSize() + "]");
-            hdBillHistoryRepository.save(billHistory);
-            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail",
-                    clientBillDetailRepository.getBillDetailsByBillId(bill.getId()));
-            return true;
-
-        } else {
-            int differenceQuantity = billDetail.getQuantity() - hdBillDetailRequest.getQuantity();
-            //nếu đơn > chờ xác nhận: tính số lượgn productDetail
-            if (bill.getStatus() == 2 || bill.getStatus() == 6) {
-                productDetail.setAmount(productDetail.getAmount() + differenceQuantity);
-                productDetailRepository.save(productDetail);
-            }
-
-            billHistory.setNote("Đã thêm: x" + hdBillDetailRequest.getQuantity() + " " + productDetail.getProduct().getName() + " " + productDetail.getMaterial().getName() + " " + " " + productDetail.getSole().getName() + " " + productDetail.getColor().getName() + " " + "[" + productDetail.getSize().getSize() + "]");
-            hdBillHistoryRepository.save(billHistory);
-
-            if (billDetail.getPrice() != hdBillDetailRequest.getPrice()) {
-                BillDetail detail = new BillDetail();
-                detail.setProductDetail(productDetail);
-                detail.setBill(bill);
-                detail.setQuantity(hdBillDetailRequest.getQuantity());
-                detail.setPrice(hdBillDetailRequest.getPrice());
-                detail.setStatus(0);
-                hdBillDetailRepository.save(detail);
-            } else {
-                billDetail.setQuantity(hdBillDetailRequest.getQuantity() + billDetail.getQuantity());
-                billDetail.setStatus(hdBillDetailRequest.getStatus());
-                billDetail.setPrice(hdBillDetailRequest.getPrice());
-                hdBillDetailRepository.save(billDetail);
-            }
-
-            List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
-
-            BigDecimal totalAmount = listBillDetail.stream()
-                    .filter(item -> item.getStatus() == 0)
-                    .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            bill.setTotalMoney(totalAmount);
-            BigDecimal tienCanThanhToan = totalAmount;
-            if (bill.getMoneyReduced() != null) {
-                tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
-            }
-            if (bill.getMoneyShip() != null) {
-                tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
-            }
-            bill.setMoneyAfter(tienCanThanhToan);
-            hdBillRepositpory.save(bill);
-            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail",
-                    clientBillDetailRepository.getBillDetailsByBillId(bill.getId()));
-            return true;
-
+        // nếu bill.status là đã xác nhận
+        if (bill.getStatus() == 2 || bill.getStatus() == 6) {
+            productDetail.setAmount(productDetail.getAmount() - hdBillDetailRequest.getQuantity());
+            productDetailRepository.save(productDetail);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-add-in-bill-detail",
+                    clientProductDetailRepository.updateRealTime(productDetail.getId()));
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-admin-by-add-in-bill-detail",
+                    adProductDetailRepository.realTimeProductDetailAdmin(productDetail.getId()));
         }
+        List<HDBillDetailResponse> listBillDetail = hdBillDetailRepository.getBillDetailsByBillId(bill.getId());
+
+        BigDecimal totalAmount = listBillDetail.stream()
+                .filter(item -> item.getStatus() == 0)
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        bill.setTotalMoney(totalAmount);
+        BigDecimal tienCanThanhToan = totalAmount;
+        if (bill.getMoneyReduced() != null) {
+            tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
+        }
+        if (bill.getMoneyShip() != null) {
+            tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
+        }
+        bill.setMoneyAfter(tienCanThanhToan);
+        hdBillRepositpory.save(bill);
+
+        billHistory.setNote("Đã thêm: x" + hdBillDetailRequest.getQuantity() +
+                " " + productDetail.getProduct().getName() +
+                " " + productDetail.getMaterial().getName() +
+                " " + productDetail.getSole().getName() +
+                " " + productDetail.getColor().getName() +
+                " [" + productDetail.getSize().getSize() + "]");
+        hdBillHistoryRepository.save(billHistory);
+        messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-modal-add-admin-by-add-in-bill-detail",
+                clientBillDetailRepository.getBillDetailsByBillId(bill.getId()));
+        return true;
 
     }
 
@@ -383,21 +345,22 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
 
     @Transactional
     @Override
-    public Boolean delete(HDBillDetailRequest hdBillDetailRequest) {
+    public Boolean delete(String id) {
         try {
-            Bill bill = hdBillRepositpory.findById(hdBillDetailRequest.getIdBill()).get();
+            BillDetail billDetail = hdBillDetailRepository.findById(id).get();
+            Bill bill = billDetail.getBill();
             if (bill.getStatus() == 1 || bill.getStatus() == 2 || bill.getStatus() == 6) {
-                BillDetail billDetail = hdBillDetailRepository.getBillDetailByBillIdAndProductDetailId(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId());
-                billDetail.setStatus(1);
-                ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
+//                HDBillDetailResponse billDetail = hdBillDetailRepository.getBillDtResByIdBillAndIDPrdAndPrice(hdBillDetailRequest.getIdBill(), hdBillDetailRequest.getProductDetailId(), hdBillDetailRequest.getPrice());
+//                BillDetail billDetailRe = hdBillDetailRepository.findById(billDetail.getId()).get();
+                ProductDetail productDetail = billDetail.getProductDetail();
                 if (bill.getStatus() != 1) {
-                    productDetail.setAmount(productDetail.getAmount() + hdBillDetailRequest.getQuantity());
+                    productDetail.setAmount(productDetail.getAmount() + billDetail.getQuantity());
                     productDetailRepository.save(productDetail);
                 }
                 BillHistory billHistory = BillHistory.builder()
                         .bill(bill)
                         .account(userLogin.getUserLogin())
-                        .note("Đã xoá: x" + hdBillDetailRequest.getQuantity() + " " + productDetail.getProduct().getName() +
+                        .note("Đã xoá: x" + billDetail.getQuantity() + " " + productDetail.getProduct().getName() +
                                 " " + productDetail.getMaterial().getName() +
                                 " " + productDetail.getSole().getName() +
                                 " " + productDetail.getColor().getName() +
@@ -512,6 +475,24 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             return hdBillDetailRepository.getBillDtResByIdBillAndIDPrdAndPrice(idBill, idPrd, priceReq);
         } catch (Exception exception) {
             return null;
+        }
+    }
+
+    @Override
+    public Boolean isCheckDonGiaVsPricePrd(String id) {
+        //trả về true => đơn giá = giá sp đang bán
+        // ngược lại trả về false: đơn giá đã có khác giá sản phẩm đang bán
+        BillDetail billDetail = hdBillDetailRepository.findById(id).get();
+        ProductDetail productDetail = billDetail.getProductDetail();
+        HDProductDetailResponse hdProductDetailResponse = hdProductDetailRepository.getPrdVsKM(productDetail.getId());
+        if (hdProductDetailResponse == null) {
+            // nếu sp này ko có khuyến mại => so sánh giá sp vs đơn giá trong billDetail
+            return billDetail.getPrice().equals(productDetail.getPrice());
+        } else {
+            // nếu sp này có khuyến mại thì ss đơn giá trong billDetail vs giá đã được KM
+            BigDecimal valueKM = (productDetail.getPrice().multiply(BigDecimal.valueOf(hdProductDetailResponse.getValue()))).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+            BigDecimal priceAfterKM = productDetail.getPrice().subtract(valueKM);
+            return priceAfterKM.equals(billDetail.getPrice());
         }
     }
 
