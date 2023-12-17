@@ -528,7 +528,7 @@ export default function Checkout() {
           <Typography
             color="inherit"
             component={Link}
-            to="/home"
+            to="/cart"
             sx={{
               color: 'black',
               textDecoration: 'none',
@@ -971,7 +971,13 @@ export default function Checkout() {
                           return total + productTotal
                         }, 0) -
                           giamGia +
-                          phiShip,
+                          (arrData.reduce((total, cart) => {
+                            const productTotal =
+                              calculateProductTotalPayment(cart, promotionByProductDetail) || 0
+                            return total + productTotal
+                          }, 0) > 1000000
+                            ? 0
+                            : phiShip),
                       )}
                     </b>
                   </Typography>

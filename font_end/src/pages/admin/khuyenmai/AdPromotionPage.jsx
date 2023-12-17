@@ -96,18 +96,18 @@ export default function AdPromotionPage() {
 
   const handleDelete = (id) => {
     if (listKhuyenMai?.status === 2) {
-      toast.success('Khuyến mại đã kết thúc', {
+      toast.success('Đợt giảm giá đã kết thúc', {
         position: toast.POSITION.TOP_RIGHT,
       })
     } else {
-      const title = 'Bạn có muốn kết thúc khuyến mại không ?'
+      const title = 'Bạn có muốn kết thúc đợt giảm giá không ?'
       const text = ''
 
       confirmSatus(title, text, theme).then((result) => {
         if (result.isConfirmed) {
           khuyenMaiApi.deletePromotion(id).then(() => {
             fecthData(filter)
-            toast.success('Khuyến mại đã kết thúc', {
+            toast.success('Đợt giảm giá đã kết thúc', {
               position: toast.POSITION.TOP_RIGHT,
             })
           })
@@ -229,7 +229,7 @@ export default function AdPromotionPage() {
               <TextField
                 sx={{ width: '48%' }}
                 value={filter.name}
-                placeholder="Tìm kiếm theo tên khuyến mại"
+                placeholder="Tìm kiếm theo tên đợt giảm giá"
                 className="text-field-css"
                 size="small"
                 onChange={handleInputChange}
@@ -367,7 +367,7 @@ export default function AdPromotionPage() {
                   STT
                 </TableCell>
                 <TableCell align="left" width={'20%'}>
-                  Tên Khuyến Mại
+                  Tên Đợt giảm giá
                 </TableCell>
                 <TableCell align="center" width={'6%'}>
                   Giá trị
@@ -428,7 +428,7 @@ export default function AdPromotionPage() {
                   </TableCell>
                   <TableCell>
                     <Link to={`/admin/promotion/get-one/${promotion.id}`}>
-                      <Tooltip title="Xem chi tiết khuyến mại">
+                      <Tooltip title="Xem chi tiết đợt giảm giá">
                         <IconButton sx={{ marginLeft: '30px' }} color="cam">
                           <TbEyeEdit />
                         </IconButton>
