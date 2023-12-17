@@ -31,6 +31,7 @@ import { toast } from 'react-toastify'
 import confirmSatus from '../../../components/comfirmSwal'
 import './voucher.css'
 import Empty from '../../../components/Empty'
+import { formatCurrency } from '../../../services/common/formatCurrency '
 import { Stomp } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
@@ -220,7 +221,7 @@ export default function AdVoucherPage() {
   }
 
   const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
-  return (
+  return listVoucher ? (
     <div className="voucher-css">
       <BreadcrumbsCustom listLink={listBreadcrumbs} />
       <Paper elevation={3}>
@@ -358,25 +359,28 @@ export default function AdVoucherPage() {
                   <TableCell align="center" width={'5%'}>
                     STT
                   </TableCell>
-                  <TableCell align="center" width={'8%'}>
+                  <TableCell align="center" width={'10.5%'}>
                     Mã
                   </TableCell>
                   <TableCell align="center" width={'15%'}>
                     Tên
                   </TableCell>
-                  <TableCell align="center" width={'15%'}>
+                  <TableCell align="center" width={'12.5%'}>
                     Kiểu
                   </TableCell>
                   <TableCell align="center" width={'15%'}>
                     Loại
                   </TableCell>
-                  <TableCell align="center" width={'17.5%'}>
+                  <TableCell align="center" width={'10%'}>
+                    Số lượng
+                  </TableCell>
+                  <TableCell align="center" width={'15%'}>
                     Ngày bắt đầu
                   </TableCell>
-                  <TableCell align="center" width={'17.5%'}>
+                  <TableCell align="center" width={'15%'}>
                     Ngày kết thúc
                   </TableCell>
-                  <TableCell align="center" width={'20%'}>
+                  <TableCell align="center" width={'15%'}>
                     Trạng thái
                   </TableCell>
                   <TableCell align="center" width={'10%'}>
@@ -398,12 +402,9 @@ export default function AdVoucherPage() {
                       )}
                     </TableCell>
                     <TableCell align="center">
-                      {row.typeValue === 0 ? (
-                        <Chip className="chip-tat-ca" size="small" label="Phần trăm" />
-                      ) : (
-                        <Chip className="chip-gioi-han" size="small" label="Giá tiền" />
-                      )}
+                      {row.typeValue === 0 ? row.value + '%' : formatCurrency(row.value)}
                     </TableCell>
+                    <TableCell align="center">{row.quantity}</TableCell>
                     <TableCell align="center">
                       {dayjs(row.startDate).format('DD/MM/YYYY HH:mm')}
                     </TableCell>
@@ -484,5 +485,7 @@ export default function AdVoucherPage() {
         </Grid>
       </Paper>
     </div>
+  ) : (
+    <div></div>
   )
 }

@@ -194,6 +194,11 @@ public class SellController {
         return new ObjectRespone(voucherService.getListVoucherByIdCustomerUnqualified(adCallVoucherOfSell));
     }
 
+    @GetMapping("/view/one/voucher/{id}")
+    public ObjectRespone getOneVoucherById(@PathVariable String id) {
+        return new ObjectRespone(voucherService.getVoucherById(id));
+    }
+
     @GetMapping
     public ObjectRespone getUserLogin() {
         Account account = userLogin.getUserLogin();

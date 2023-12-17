@@ -9,7 +9,8 @@ import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.repository.HDProductDetailRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillDetailService;
 import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
-import com.fshoes.core.admin.sell.repository.AdminSellGetProductRepository;
+import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
+import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
 import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.UserLogin;
@@ -17,7 +18,6 @@ import com.fshoes.entity.Bill;
 import com.fshoes.entity.BillDetail;
 import com.fshoes.entity.BillHistory;
 import com.fshoes.entity.ProductDetail;
-import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.repository.ProductDetailRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +62,9 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
 
     @Autowired
     private HDProductDetailRepository hdProductDetailRepository;
+
+    @Autowired
+    private AdVoucherRepository adVoucherRepository;
 
     @Transactional
     @Override
@@ -494,6 +497,16 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
             BigDecimal priceAfterKM = productDetail.getPrice().subtract(valueKM);
             return priceAfterKM.equals(billDetail.getPrice());
         }
+    }
+
+    @Override
+    public AdVoucherRespone getVoucherByIdBill(String idBill) {
+        return adVoucherRepository.getVoucherByIdBill(idBill).orElse(null);
+    }
+
+    @Override
+    public BigDecimal getPercentInBill(String idBill) {
+        return hdBillDetailRepository.getPercentInBill(idBill);
     }
 
 

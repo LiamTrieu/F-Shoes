@@ -72,7 +72,12 @@ public interface HDBillDetailRepository extends BillDetailRepository {
              WHERE b.id = :idBill AND pd.id = :idPrd  AND bd.price = :price
              GROUP BY bd.id, bd.price, pd.price, pd.id, bd.status;            
              """, nativeQuery = true)
-    HDBillDetailResponse getBillDtResByIdBillAndIDPrdAndPrice(@Param("idBill") String idBill, @Param("idPrd") String idPrd, @Param("price")BigDecimal price);
+    HDBillDetailResponse getBillDtResByIdBillAndIDPrdAndPrice(@Param("idBill") String idBill, @Param("idPrd") String idPrd, @Param("price") BigDecimal price);
 
-
+    @Query(value = """
+            SELECT b.percent_money
+            FROM bill b
+            WHERE b.id = :idBill
+            """, nativeQuery = true)
+    BigDecimal getPercentInBill(String idBill);
 }

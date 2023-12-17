@@ -66,6 +66,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import { TbTruckReturn } from 'react-icons/tb'
 import { IoIosAdd } from 'react-icons/io'
+import sellApi from '../../../api/admin/sell/SellApi'
 
 const listHis = [{ link: '/admin/bill', name: 'Quản lý đơn hàng' }]
 
@@ -149,13 +150,23 @@ export default function AdBillDetail() {
                   billDetail.moneyShip + totalMoney + item.quantity * item.price,
                 0,
               ) - billDetail.moneyReduced
+            const conditionMoney = updatedList.reduce(
+              (totalMoney, item) => totalMoney + item.quantity * item.price,
+              0,
+            )
             setMoneyAfter(newMoneyAfter)
+            setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
           } else {
             const newMoneyAfter = updatedList.reduce(
               (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
               0,
             )
+            const conditionMoney = updatedList.reduce(
+              (totalMoney, item) => totalMoney + item.quantity * item.price,
+              0,
+            )
             setMoneyAfter(newMoneyAfter)
+            setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
           }
         }
       }
@@ -201,13 +212,23 @@ export default function AdBillDetail() {
             (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
             0,
           ) - billDetail.moneyReduced
+        const conditionMoney = updatedList.reduce(
+          (totalMoney, item) => totalMoney + item.quantity * item.price,
+          0,
+        )
         setMoneyAfter(newMoneyAfter)
+        setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
       } else {
         const newMoneyAfter = updatedList.reduce(
           (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
           0,
         )
+        const conditionMoney = updatedList.reduce(
+          (totalMoney, item) => totalMoney + item.quantity * item.price,
+          0,
+        )
         setMoneyAfter(newMoneyAfter)
+        setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
       }
     }
   }
@@ -228,13 +249,23 @@ export default function AdBillDetail() {
           (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
           0,
         ) - billDetail.moneyReduced
+      const conditionMoney = updatedList.reduce(
+        (totalMoney, item) => totalMoney + item.quantity * item.price,
+        0,
+      )
       setMoneyAfter(newMoneyAfter)
+      setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
     } else {
       const newMoneyAfter = updatedList.reduce(
         (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
         0,
       )
+      const conditionMoney = updatedList.reduce(
+        (totalMoney, item) => totalMoney + item.quantity * item.price,
+        0,
+      )
       setMoneyAfter(newMoneyAfter)
+      setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
     }
   }
 
@@ -280,6 +311,117 @@ export default function AdBillDetail() {
       })
   }
 
+  const [voucherInBill, setVoucherInBill] = useState({
+    id: '',
+    code: '',
+    name: '',
+    value: '',
+    maximumValue: '',
+    type: '',
+    typeValue: '',
+    minimumAmount: '',
+    startDate: '',
+    endDate: '',
+  })
+
+  const [voucherMax, setVoucherMax] = useState({
+    id: '',
+    code: '',
+    name: '',
+    value: '',
+    maximumValue: '',
+    minimumAmount: '',
+    type: '',
+    typeValue: '',
+    startDate: '',
+    endDate: '',
+  })
+  const [adCallVoucherOfSell, setAdCallVoucherOfSell] = useState({
+    idCustomer: null,
+    condition: 0,
+    textSearch: '',
+    typeSearch: null,
+    typeValueSearch: null,
+    page: 1,
+    size: 5,
+  })
+  const [percentInBill, setPercentInBill] = useState(null)
+  const fetchVoucherByIdBill = (idBill) => {
+    hoaDonChiTietApi.getVoucherByIdBill(idBill).then((response) => {
+      setVoucherInBill(response.data.data)
+    })
+  }
+
+  const fetchPercentByIdBill = (idBill) => {
+    hoaDonChiTietApi.getPercentByIdBill(idBill).then((response) => {
+      setPercentInBill(response.data.data)
+    })
+  }
+
+  const fecthListVoucherByIdCustomer = (adCallVoucherOfSell, totalProductsCost) => {
+    sellApi
+      .getListVoucherByIdCustomer(adCallVoucherOfSell)
+      .then((response) => {
+        findMaxValueElement(response.data.data, totalProductsCost)
+      })
+      .catch((error) => {
+        toast.error('Vui Lòng f5 tải lại trang', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
+  }
+
+  const findMaxValueElement = (lstVoucher, totalProductsCost) => {
+    const lstVoucherMax =
+      totalProductsCost < voucherInBill.minimumAmount
+        ? [...lstVoucher]
+        : [...lstVoucher, voucherInBill]
+
+    if (lstVoucherMax.length < 1) {
+      setVoucherMax({
+        id: '',
+        code: '',
+        name: '',
+        value: '',
+        maximumValue: '',
+        minimumAmount: '',
+        type: '',
+        typeValue: '',
+        startDate: '',
+        endDate: '',
+      })
+      return null
+    }
+
+    console.log('totalProductsCost:', totalProductsCost)
+    console.log('minimumAmount:', voucherInBill.minimumAmount)
+    console.log('lstVoucherMax:', lstVoucherMax)
+
+    let maxElement = lstVoucherMax[0]
+    lstVoucherMax.forEach((element) => {
+      if (element.maximumValue > maxElement.maximumValue) {
+        maxElement = element
+      }
+    })
+
+    return handleVoucher(maxElement.id)
+  }
+
+  const handleVoucher = (idVoucher) => {
+    sellApi
+      .getOneVoucherById(idVoucher)
+      .then((response) => {
+        setVoucherMax(response.data.data)
+      })
+      .catch(() => {})
+  }
+
+  useEffect(() => {
+    fetchVoucherByIdBill(id)
+    fetchPercentByIdBill(id)
+    fecthListVoucherByIdCustomer(adCallVoucherOfSell, totalProductsCost)
+  }, [id, adCallVoucherOfSell, totalProductsCost])
+
   useEffect(() => {
     const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
@@ -317,7 +459,6 @@ export default function AdBillDetail() {
     // stompClient.subscribe(
     //   '/topic/realtime-san-pham-detail-modal-add-client-by-add-in-bill-detail',
     //   (message) => {
-    //     console.log('=====', message)
     //     if (message.body) {
     //       const data = JSON.parse(message.body)
     //       updateRealTimeListBillDetailByCustomer(data)
@@ -341,9 +482,7 @@ export default function AdBillDetail() {
   }
 
   // function updateRealTimeListBillDetailByCustomer(data) {
-  //   console.log('=====', data)
   //   const index = id === data[0].idBill ? 0 : -1
-  //   console.log('=====', index)
   //   if (index !== -1) {
   //     setListBillDetail(data)
   //   }
@@ -463,6 +602,7 @@ export default function AdBillDetail() {
         note: billDetail.note,
         status: 2,
         noteBillHistory: ghiChu,
+        idVoucher: voucherMax.id,
 
         listHdctReq: listHDCT.map((item) => ({
           productDetailId: item.productDetailId,
@@ -529,6 +669,7 @@ export default function AdBillDetail() {
     const updateStatusBillRequest = {
       noteBillHistory: ghiChu,
       status: 3,
+      idVoucher: voucherMax.id,
     }
 
     const handleConfirmDeliver = (id, updateStatusBillRequest) => {
@@ -1271,6 +1412,11 @@ export default function AdBillDetail() {
       .then((response) => {
         setBillDetail(response.data.data)
         setMoneyAfter(response.data.data.moneyAfter)
+        setAdCallVoucherOfSell({
+          ...adCallVoucherOfSell,
+          condition: response.data.data.totalMoney,
+          idCustomer: response.data.data.idCustomer,
+        })
         setLoading(false)
       })
       .catch((error) => {
@@ -1500,7 +1646,6 @@ export default function AdBillDetail() {
     setIsShowModalChonNhanVien(true)
     setSearchNhanVien({ ...searchNhanVien, txtSearch: '', page: 1, size: 5 })
   }
-
   return (
     isCheckBillExist && (
       <div className="hoa-don">
@@ -2311,39 +2456,87 @@ export default function AdBillDetail() {
 
         <Paper elevation={3} sx={{ mt: 2, mb: 2, paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>
           <div>
-            <Stack sx={{ marginLeft: 'auto', width: 300, paddingRight: 5 }}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                Tổng tiền hàng:
-                <span style={{ fontWeight: 'bold' }}>{formatCurrency(totalProductsCost)}</span>
-              </div>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span>Giảm giá:</span>
-                <span style={{ fontWeight: 'bold' }}>
-                  {billDetail && billDetail.moneyReduced
-                    ? formatCurrency(billDetail.moneyReduced)
-                    : formatCurrency(0)}
-                </span>
-              </div>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span>Phí vận chuyển:</span>
-                <span style={{ fontWeight: 'bold' }}>
-                  {billDetail && billDetail.moneyShip
-                    ? formatCurrency(billDetail.moneyShip)
-                    : formatCurrency(0)}
-                </span>
-              </div>
-              <Divider style={{ backgroundColor: 'black', height: '2px' }} />
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ fontWeight: 'bold' }}>Tổng tiền:</span>
-                <span style={{ fontWeight: 'bold', color: 'red' }}>
-                  {formatCurrency(moneyAfter)}
-                </span>
-              </div>
-            </Stack>
+            <Grid spacing={2} container>
+              <Grid item xs={6}>
+                <Stack sx={{ marginRight: 'auto', width: 300, paddingRight: 1 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '10px',
+                    }}>
+                    Phiếu giảm giá:
+                    <span style={{ fontWeight: 'bold' }}>
+                      {voucherMax.code !== '' ? voucherMax.code : ''}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '10px',
+                    }}>
+                    <span>Giảm giá từ cửa hàng:</span>
+                    <span style={{ fontWeight: 'bold' }}>
+                      {percentInBill === null || percentInBill === ''
+                        ? 0 + '%'
+                        : percentInBill + '%'}
+                    </span>
+                  </div>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Stack sx={{ marginLeft: 'auto', width: 300, paddingRight: 5 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '10px',
+                    }}>
+                    Tổng tiền hàng:
+                    <span style={{ fontWeight: 'bold' }}>{formatCurrency(totalProductsCost)}</span>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '10px',
+                    }}>
+                    <span>Giảm giá:</span>
+                    <span style={{ fontWeight: 'bold' }}>
+                      {billDetail && billDetail.moneyReduced
+                        ? formatCurrency(billDetail.moneyReduced)
+                        : formatCurrency(0)}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '10px',
+                    }}>
+                    <span>Phí vận chuyển:</span>
+                    <span style={{ fontWeight: 'bold' }}>
+                      {billDetail && billDetail.moneyShip
+                        ? formatCurrency(billDetail.moneyShip)
+                        : formatCurrency(0)}
+                    </span>
+                  </div>
+                  <Divider style={{ backgroundColor: 'black', height: '2px' }} />
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '10px',
+                    }}>
+                    <span style={{ fontWeight: 'bold' }}>Tổng tiền:</span>
+                    <span style={{ fontWeight: 'bold', color: 'red' }}>
+                      {formatCurrency(moneyAfter)}
+                    </span>
+                  </div>
+                </Stack>
+              </Grid>
+            </Grid>
           </div>
         </Paper>
       </div>
