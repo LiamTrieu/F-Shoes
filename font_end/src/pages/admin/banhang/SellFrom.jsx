@@ -1052,7 +1052,40 @@ export default function SellFrom({
       }
 
       sellApi.addAddressBill(data, idBill).then(() => {
-        console.log('thành công')
+        const filtelService = {
+          shop_id: '3911708',
+          from_district: '3440',
+          to_district: detailDiaChi.districtId,
+        }
+        if(filtelService.to_district){
+          ghnAPI.getServiceId(filtelService).then((response) => {
+            const serviceId = response.data.body.serviceId
+            const filterTotal = {
+              from_district_id: '3440',
+              service_id: serviceId,
+              to_district_id: detailDiaChi.districtId,
+              to_ward_code: detailDiaChi.wardId,
+              weight: listProductDetailBill.reduce(
+                (totalWeight, e) => totalWeight + parseInt(e.weight),
+                0,
+              ),
+              insurance_value: '10000',
+            }
+            ghnAPI.getTotal(filterTotal).then((response) => {
+              setShipTotal(response.data.body.total)
+              const filtelTime = {
+                from_district_id: '3440',
+                from_ward_code: '13010',
+                to_district_id: detailDiaChi.districtId,
+                to_ward_code: detailDiaChi.wardId,
+                service_id: serviceId,
+              }
+              ghnAPI.getime(filtelTime).then((response) => {
+                setTimeShip(response.data.body.leadtime * 1000)
+              })
+            })
+          })
+        }
       })
     } else {
       const data = {
@@ -1062,38 +1095,7 @@ export default function SellFrom({
       }
 
       sellApi.addAddressBill(data, idBill).then(() => {
-        // const filtelService = {
-        //   shop_id: '3911708',
-        //   from_district: '3440',
-        //   to_district: detailDiaChi.districtId,
-        // }
-        // ghnAPI.getServiceId(filtelService).then((response) => {
-        //   const serviceId = response.data.body.serviceId
-        //   const filterTotal = {
-        //     from_district_id: '3440',
-        //     service_id: serviceId,
-        //     to_district_id: detailDiaChi.districtId,
-        //     to_ward_code: detailDiaChi.wardId,
-        //     weight: listProductDetailBill.reduce(
-        //       (totalWeight, e) => totalWeight + parseInt(e.weight),
-        //       0,
-        //     ),
-        //     insurance_value: '10000',
-        //   }
-        //   ghnAPI.getTotal(filterTotal).then((response) => {
-        //     setShipTotal(response.data.body.total)
-        //     const filtelTime = {
-        //       from_district_id: '3440',
-        //       from_ward_code: '13010',
-        //       to_district_id: detailDiaChi.districtId,
-        //       to_ward_code: detailDiaChi.wardId,
-        //       service_id: serviceId,
-        //     }
-        //     ghnAPI.getime(filtelTime).then((response) => {
-        //       setTimeShip(response.data.body.leadtime * 1000)
-        //     })
-        //   })
-        // })
+        
       })
     }
   }

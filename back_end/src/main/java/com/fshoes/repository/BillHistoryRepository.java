@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface BillHistoryRepository extends JpaRepository<BillHistory, String> {
-    @Query(value = "SELECT * FROM bill_detail WHERE id_bill = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM bill_history WHERE id_bill = :id", nativeQuery = true)
     List<BillHistory> getBillHistorys(String id);
 }

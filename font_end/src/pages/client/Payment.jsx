@@ -50,10 +50,12 @@ export default function Payment() {
       const response = await clientCheckoutApi.payment(requestData)
       if (response.status === 200) {
         if (response.data.success) {
-          response.data.data.forEach((e) => {
-            dispatch(removeCart(e))
-          })
-          toast.success('Đặt hàng thành công')
+          if (response.data.data.length > 0) {
+            response.data.data.forEach((e) => {
+              dispatch(removeCart(e))
+            })
+            toast.success('Đặt hàng thành công')
+          }
           setData(response.data.data)
         }
       }
@@ -69,31 +71,65 @@ export default function Payment() {
     !loading && (
       <>
         {data ? (
-          <Container maxWidth="sm" className={classes.container}>
-            <CheckCircleIcon className={classes.successIcon} />
-            <Typography variant="h4" gutterBottom>
-              Đặt hàng thành công!
-            </Typography>
-            <div className={classes.orderDetails}>
-              <Typography variant="h6" gutterBottom>
-                Mã đơn hàng:{' '}
-                <Link
-                  to={`/tracking/${new URLSearchParams(window.location.search).get('vnp_TxnRef')}`}>
-                  {new URLSearchParams(window.location.search).get('vnp_TxnRef')}
-                </Link>
+          data.length > 0 ? (
+            <Container maxWidth="sm" className={classes.container}>
+              <CheckCircleIcon className={classes.successIcon} />
+              <Typography variant="h4" gutterBottom>
+                Đặt hàng thành công!
               </Typography>
-              <Typography variant="body1" paragraph>
-                Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đang được xử lý.
+              <div className={classes.orderDetails}>
+                <Typography variant="h6" gutterBottom>
+                  Mã đơn hàng:{' '}
+                  <Link
+                    to={`/tracking/${new URLSearchParams(window.location.search).get(
+                      'vnp_TxnRef',
+                    )}`}>
+                    {new URLSearchParams(window.location.search).get('vnp_TxnRef')}
+                  </Link>
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đang được xử
+                  lý.
+                </Typography>
+              </div>
+              <Button
+                variant="contained"
+                className={classes.continueShoppingButton}
+                component={Link}
+                to="/products">
+                Tiếp tục mua sắm
+              </Button>
+            </Container>
+          ) : (
+            <Container maxWidth="sm" className={classes.container}>
+              <CheckCircleIcon className={classes.successIcon} />
+              <Typography variant="h4" gutterBottom>
+                Đơn hàng đã được thanh toán!
               </Typography>
-            </div>
-            <Button
-              variant="contained"
-              className={classes.continueShoppingButton}
-              component={Link}
-              to="/products">
-              Tiếp tục mua sắm
-            </Button>
-          </Container>
+              <div className={classes.orderDetails}>
+                <Typography variant="h6" gutterBottom>
+                  Mã đơn hàng:{' '}
+                  <Link
+                    to={`/tracking/${new URLSearchParams(window.location.search).get(
+                      'vnp_TxnRef',
+                    )}`}>
+                    {new URLSearchParams(window.location.search).get('vnp_TxnRef')}
+                  </Link>
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đang được xử
+                  lý.
+                </Typography>
+              </div>
+              <Button
+                variant="contained"
+                className={classes.continueShoppingButton}
+                component={Link}
+                to="/products">
+                Tiếp tục mua sắm
+              </Button>
+            </Container>
+          )
         ) : (
           <Container maxWidth="sm" className={classes.container}>
             <CheckCircleIcon className={classes.errorIcon} />
