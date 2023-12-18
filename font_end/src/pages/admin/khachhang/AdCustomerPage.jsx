@@ -31,6 +31,7 @@ import './AdCustomerPage.css'
 import { TbEyeEdit } from 'react-icons/tb'
 import SearchIcon from '@mui/icons-material/Search'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
+import useDebounce from '../../../services/hook/useDebounce'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 
 export default function AdCustomerPage() {
@@ -50,6 +51,13 @@ export default function AdCustomerPage() {
     fetchData(searchKhachHang)
     getAllKhachHang()
   }, [searchKhachHang])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setSearchKhachHang({ ...searchKhachHang, nameSearch: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (searchKhachHang) => {
     khachHangApi.get(searchKhachHang).then((response) => {
@@ -155,11 +163,13 @@ export default function AdCustomerPage() {
         <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <TextField
+              onChange={(e) => {
+                setInputValue(e.target.value)
+              }}
               sx={{ width: '40%' }}
               className="search-field"
               size="small"
               color="cam"
-              value={searchKhachHang.nameSearch || ''}
               placeholder="Tìm kiếm tên hoặc sđt hoặc email"
               InputProps={{
                 startAdornment: (
@@ -167,9 +177,6 @@ export default function AdCustomerPage() {
                     <SearchIcon color="cam" />
                   </InputAdornment>
                 ),
-              }}
-              onChange={(e) => {
-                setSearchKhachHang({ ...searchKhachHang, nameSearch: e.target.value })
               }}
             />
             <Button

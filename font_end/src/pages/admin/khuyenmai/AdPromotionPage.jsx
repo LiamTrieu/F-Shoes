@@ -38,6 +38,7 @@ import { Stomp } from '@stomp/stompjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { socketUrl } from '../../../services/url'
 import * as ExcelJS from 'exceljs'
+import useDebounce from '../../../services/hook/useDebounce'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 
 var stompClient = null
@@ -149,13 +150,12 @@ export default function AdPromotionPage() {
     })
   }
 
-  const handleInputChange = (e) => {
-    const inputValue = e.target.value
-    setFilter((prevFilter) => ({
-      ...prevFilter,
-      name: inputValue.replace(/^\s+/g, ''), // Remove leading whitespaces
-    }))
-  }
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
@@ -228,11 +228,12 @@ export default function AdPromotionPage() {
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <TextField
                 sx={{ width: '48%' }}
-                value={filter.name}
                 placeholder="Tìm kiếm theo tên đợt giảm giá"
                 className="text-field-css"
                 size="small"
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  setInputValue(e.target.value)
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">

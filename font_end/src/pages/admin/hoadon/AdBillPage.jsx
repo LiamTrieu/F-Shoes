@@ -49,6 +49,7 @@ import sellApi from '../../../api/admin/sell/SellApi'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { MdOutlineDocumentScanner } from 'react-icons/md'
 import returnApi from '../../../api/admin/return/returnApi'
+import useDebounce from '../../../services/hook/useDebounce'
 import Scanner from '../../../layout/Scanner'
 
 var stompClient = null
@@ -91,11 +92,12 @@ export default function AdBillPage() {
     setCurrentPage(newPage)
   }
 
-  const handleInputSearch = (e) => {
-    setInputSearch(e.target.value)
-    const updatedFilter = { ...filter, inputSearch: e.target.value, page: 1 }
-    setFilter(updatedFilter)
-  }
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, inputSearch: inputValue })
+  }, [debouncedValue])
 
   // const handleChangeSelectStatusBill = (event) => {
   //   const updatedFilter = { ...filter, status: event.target.value, page: 1 }
@@ -344,8 +346,9 @@ export default function AdBillPage() {
           spacing={1}
           style={{ marginBottom: '20px' }}>
           <TextField
-            value={inputSearch}
-            onChange={handleInputSearch}
+            onChange={(e) => {
+              setInputValue(e.target.value)
+            }}
             id="hd-input-search"
             sx={{ width: '50%' }}
             className="search-field"

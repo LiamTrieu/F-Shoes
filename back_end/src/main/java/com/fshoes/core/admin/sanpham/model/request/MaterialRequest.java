@@ -12,7 +12,7 @@ public class MaterialRequest {
 
 
     public Material tranMaterial(Material material) {
-        material.setName(this.name);
+        material.setName(this.name.trim());
         return material;
     }
 }

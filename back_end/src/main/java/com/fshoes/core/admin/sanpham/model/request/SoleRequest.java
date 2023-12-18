@@ -16,7 +16,7 @@ public class SoleRequest {
 
 
     public Sole tranSole(Sole sole) {
-        sole.setName(this.name);
+        sole.setName(this.name.trim());
         return sole;
     }
 }
