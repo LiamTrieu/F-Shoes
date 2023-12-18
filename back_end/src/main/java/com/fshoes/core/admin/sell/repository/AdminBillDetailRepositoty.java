@@ -59,4 +59,5 @@ public interface AdminBillDetailRepositoty extends BillDetailRepository {
             """, nativeQuery = true)
     Integer decreaseQuantityBillDetail(String idBill, String idPrDetail);
 
+    List<BillDetail> getBillDetailsByBillId(String idBill);
 }

@@ -365,9 +365,9 @@ export default function AdBillDetail() {
         findMaxValueElement(response.data.data, totalProductsCost)
       })
       .catch((error) => {
-        toast.error('Vui Lòng f5 tải lại trang', {
-          position: toast.POSITION.TOP_CENTER,
-        })
+        // toast.error('Vui Lòng f5 tải lại trang', {
+        //   position: toast.POSITION.TOP_CENTER,
+        // })
       })
   }
 
@@ -602,7 +602,7 @@ export default function AdBillDetail() {
         note: billDetail.note,
         status: 2,
         noteBillHistory: ghiChu,
-        idVoucher: voucherMax.id,
+        // idVoucher: voucherMax.id,
 
         listHdctReq: listHDCT.map((item) => ({
           productDetailId: item.productDetailId,
@@ -669,7 +669,7 @@ export default function AdBillDetail() {
     const updateStatusBillRequest = {
       noteBillHistory: ghiChu,
       status: 3,
-      idVoucher: voucherMax.id,
+      // idVoucher: voucherMax.id,
     }
 
     const handleConfirmDeliver = (id, updateStatusBillRequest) => {
@@ -2113,194 +2113,187 @@ export default function AdBillDetail() {
         )}
 
         {/* Hoá đơn chi tiết */}
-        {listBillDetail.length > 0 && (
+        {listBillDetail.filter((row) => row.status === 0).length > 0 && (
           <Paper
             elevation={3}
             sx={{ mt: 2, mb: 2, paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>
             <div>
-              {billDetail && (
+              {billDetail && listBillDetail.filter((row) => row.status === 0).length > 0 && (
                 <div>
-                  {listBillDetail.length > 0 ? (
-                    <div>
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="flex-start"
-                        spacing={2}>
-                        <h3>Danh sách sản phẩm</h3>
-                        {billDetail &&
-                          (billDetail.status === 1 ||
-                            billDetail.status === 2 ||
-                            billDetail.status === 6) && (
-                            <Button
-                              variant="outlined"
-                              className="them-moi"
-                              color="cam"
-                              style={{ marginRight: '5px' }}
-                              onClick={() => setOpenModalThemSP(true)}>
-                              Thêm sản phẩm
-                            </Button>
-                          )}
-                      </Stack>
-
-                      <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
-                      {loadingListBillDetail ? (
-                        <div>Loading BillDetail...</div>
-                      ) : (
-                        <div>
-                          <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                              <TableContainer
-                                sx={{ maxHeight: 300, marginBottom: 5 }}
-                                className="table-container-custom-scrollbar">
-                                {/* billDetail.stt === 0 */}
-                                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                  <TableBody>
-                                    {listBillDetail
-                                      .filter((row) => row.status === 0)
-                                      .map((row, index) => (
-                                        <TableRow key={row.id}>
-                                          <TableCell align="center">
-                                            <img src={row.productImg} alt="" width={'100px'} />
-                                          </TableCell>
-                                          <TableCell>
-                                            {row.productName} <br></br>
-                                            <span style={{ color: 'red' }}>
-                                              {formatCurrency(row.price)}
-                                            </span>
-                                            {/* {row.productPrice !== row.price ? (
-                                              <>
-                                                <span
-                                                  style={{
-                                                    color: 'grey',
-                                                    textDecoration: 'line-through',
-                                                  }}>
-                                                  {formatCurrency(row.productPrice)}
-                                                </span>{' '}
-                                                <br />
-                                                <span style={{ color: 'red' }}>
-                                                  {formatCurrency(row.price)}
-                                                </span>
-                                              </>
-                                            ) : (
-                                              <span style={{ color: 'red' }}>
-                                                {formatCurrency(row.price)}
-                                              </span>
-                                            )} */}
-                                            <br />
-                                            Size: {row.size}
-                                            <br />x{row.quantity}
-                                          </TableCell>
-                                          <TableCell align="center">
-                                            <Box
-                                              width={'65px'}
-                                              display="flex"
-                                              alignItems="center"
-                                              sx={{
-                                                border: '1px solid gray',
-                                                borderRadius: '20px',
-                                              }}
-                                              p={'3px'}>
-                                              <IconButton
-                                                sx={{ p: 0 }}
-                                                size="small"
-                                                onClick={() => handleDecrementQuantity(row, index)}
-                                                disabled={
-                                                  (billDetail &&
-                                                    billDetail.status !== 6 &&
-                                                    billDetail.status > 2) ||
-                                                  billDetail.status === 0 ||
-                                                  row.quantity - 1 === 0
-                                                }>
-                                                <RemoveIcon fontSize="1px" />
-                                              </IconButton>
-                                              <TextField
-                                                value={row.quantity}
-                                                inputProps={{ min: 1 }}
-                                                size="small"
-                                                sx={{
-                                                  width: '30px',
-                                                  '& input': { p: 0, textAlign: 'center' },
-                                                  '& fieldset': {
-                                                    border: 'none',
-                                                  },
-                                                }}
-                                                onChange={(e) =>
-                                                  handleTextFieldQuantityChange(
-                                                    row,
-                                                    index,
-                                                    e.target.value,
-                                                  )
-                                                }
-                                                onFocus={(e) =>
-                                                  handleTextFieldQuanityFocus(e, index)
-                                                }
-                                                disabled={
-                                                  (billDetail &&
-                                                    billDetail.status !== 6 &&
-                                                    billDetail.status > 2) ||
-                                                  billDetail.status === 0
-                                                }
-                                              />
-
-                                              <IconButton
-                                                sx={{ p: 0 }}
-                                                size="small"
-                                                onClick={() => handleIncrementQuantity(row, index)}
-                                                disabled={
-                                                  (billDetail &&
-                                                    billDetail.status !== 6 &&
-                                                    billDetail.status > 2) ||
-                                                  billDetail.status === 0 ||
-                                                  row.quantity + 1 > 5
-                                                }>
-                                                <AddIcon fontSize="1px" />
-                                              </IconButton>
-                                            </Box>
-                                          </TableCell>
-                                          <TableCell
-                                            align="center"
-                                            style={{ fontWeight: 'bold', color: 'red' }}>
-                                            {row.price !== null
-                                              ? formatCurrency(row.price * row.quantity)
-                                              : 0}
-                                            <br />
-                                          </TableCell>
-                                          <TableCell>
-                                            {billDetail &&
-                                              listBillDetail.length > 1 &&
-                                              billDetail.status !== 0 &&
-                                              billDetail.status < 3 && (
-                                                <Tooltip title="Xoá sản phẩm">
-                                                  <IconButton
-                                                    onClick={() => handleDeleteSPConfirmation(row)}>
-                                                    <CiCircleRemove />
-                                                  </IconButton>
-                                                </Tooltip>
-                                              )}
-                                            {billDetail &&
-                                              listTransaction.length < 1 &&
-                                              listBillDetail.length > 1 &&
-                                              billDetail.status === 3 && (
-                                                <Tooltip title="Hoàn hàng">
-                                                  <IconButton
-                                                    onClick={() => handleReturnProduct(row)}>
-                                                    <TbTruckReturn />
-                                                  </IconButton>
-                                                </Tooltip>
-                                              )}
-                                          </TableCell>
-                                        </TableRow>
-                                      ))}
-                                  </TableBody>
-                                </Table>
-                              </TableContainer>
-                            </Grid>
-                          </Grid>
-                        </div>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    spacing={2}>
+                    <h3>Danh sách sản phẩm</h3>
+                    {billDetail &&
+                      (billDetail.status === 1 ||
+                        billDetail.status === 2 ||
+                        billDetail.status === 6) && (
+                        <Button
+                          variant="outlined"
+                          className="them-moi"
+                          color="cam"
+                          style={{ marginRight: '5px' }}
+                          onClick={() => setOpenModalThemSP(true)}>
+                          Thêm sản phẩm
+                        </Button>
                       )}
+                  </Stack>
+
+                  <Divider style={{ backgroundColor: 'black', height: '1px', marginTop: 10 }} />
+                  {loadingListBillDetail ? (
+                    <div>Loading BillDetail...</div>
+                  ) : (
+                    <div>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <TableContainer
+                            sx={{ maxHeight: 300, marginBottom: 5 }}
+                            className="table-container-custom-scrollbar">
+                            {/* billDetail.stt === 0 */}
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                              <TableBody>
+                                {listBillDetail
+                                  .filter((row) => row.status === 0)
+                                  .map((row, index) => (
+                                    <TableRow key={row.id}>
+                                      <TableCell align="center">
+                                        <img src={row.productImg} alt="" width={'100px'} />
+                                      </TableCell>
+                                      <TableCell>
+                                        {row.productName} <br></br>
+                                        <span style={{ color: 'red' }}>
+                                          {formatCurrency(row.price)}
+                                        </span>
+                                        {/* {row.productPrice !== row.price ? (
+                                        <>
+                                          <span
+                                            style={{
+                                              color: 'grey',
+                                              textDecoration: 'line-through',
+                                            }}>
+                                            {formatCurrency(row.productPrice)}
+                                          </span>{' '}
+                                          <br />
+                                          <span style={{ color: 'red' }}>
+                                            {formatCurrency(row.price)}
+                                          </span>
+                                        </>
+                                      ) : (
+                                        <span style={{ color: 'red' }}>
+                                          {formatCurrency(row.price)}
+                                        </span>
+                                      )} */}
+                                        <br />
+                                        Size: {row.size}
+                                        <br />x{row.quantity}
+                                      </TableCell>
+                                      <TableCell align="center">
+                                        <Box
+                                          width={'65px'}
+                                          display="flex"
+                                          alignItems="center"
+                                          sx={{
+                                            border: '1px solid gray',
+                                            borderRadius: '20px',
+                                          }}
+                                          p={'3px'}>
+                                          <IconButton
+                                            sx={{ p: 0 }}
+                                            size="small"
+                                            onClick={() => handleDecrementQuantity(row, index)}
+                                            disabled={
+                                              (billDetail &&
+                                                billDetail.status !== 6 &&
+                                                billDetail.status > 2) ||
+                                              billDetail.status === 0 ||
+                                              row.quantity - 1 === 0
+                                            }>
+                                            <RemoveIcon fontSize="1px" />
+                                          </IconButton>
+                                          <TextField
+                                            value={row.quantity}
+                                            inputProps={{ min: 1 }}
+                                            size="small"
+                                            sx={{
+                                              width: '30px',
+                                              '& input': { p: 0, textAlign: 'center' },
+                                              '& fieldset': {
+                                                border: 'none',
+                                              },
+                                            }}
+                                            onChange={(e) =>
+                                              handleTextFieldQuantityChange(
+                                                row,
+                                                index,
+                                                e.target.value,
+                                              )
+                                            }
+                                            onFocus={(e) => handleTextFieldQuanityFocus(e, index)}
+                                            disabled={
+                                              (billDetail &&
+                                                billDetail.status !== 6 &&
+                                                billDetail.status > 2) ||
+                                              billDetail.status === 0
+                                            }
+                                          />
+
+                                          <IconButton
+                                            sx={{ p: 0 }}
+                                            size="small"
+                                            onClick={() => handleIncrementQuantity(row, index)}
+                                            disabled={
+                                              (billDetail &&
+                                                billDetail.status !== 6 &&
+                                                billDetail.status > 2) ||
+                                              billDetail.status === 0 ||
+                                              row.quantity + 1 > 5
+                                            }>
+                                            <AddIcon fontSize="1px" />
+                                          </IconButton>
+                                        </Box>
+                                      </TableCell>
+                                      <TableCell
+                                        align="center"
+                                        style={{ fontWeight: 'bold', color: 'red' }}>
+                                        {row.price !== null
+                                          ? formatCurrency(row.price * row.quantity)
+                                          : 0}
+                                        <br />
+                                      </TableCell>
+                                      <TableCell>
+                                        {billDetail &&
+                                          listBillDetail.length > 1 &&
+                                          billDetail.status !== 0 &&
+                                          billDetail.status < 3 && (
+                                            <Tooltip title="Xoá sản phẩm">
+                                              <IconButton
+                                                onClick={() => handleDeleteSPConfirmation(row)}>
+                                                <CiCircleRemove />
+                                              </IconButton>
+                                            </Tooltip>
+                                          )}
+                                        {billDetail &&
+                                          listTransaction.length < 1 &&
+                                          listBillDetail.length > 1 &&
+                                          billDetail.status === 3 && (
+                                            <Tooltip title="Hoàn hàng">
+                                              <IconButton onClick={() => handleReturnProduct(row)}>
+                                                <TbTruckReturn />
+                                              </IconButton>
+                                            </Tooltip>
+                                          )}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </Grid>
+                      </Grid>
                     </div>
-                  ) : null}
+                  )}
                 </div>
               )}
             </div>
@@ -2458,7 +2451,7 @@ export default function AdBillDetail() {
           <div>
             <Grid spacing={2} container>
               <Grid item xs={6}>
-                <Stack sx={{ marginRight: 'auto', width: 300, paddingRight: 1 }}>
+                {/* <Stack sx={{ marginRight: 'auto', width: 300, paddingRight: 1 }}>
                   <div
                     style={{
                       display: 'flex',
@@ -2483,7 +2476,7 @@ export default function AdBillDetail() {
                         : percentInBill + '%'}
                     </span>
                   </div>
-                </Stack>
+                </Stack> */}
               </Grid>
               <Grid item xs={6}>
                 <Stack sx={{ marginLeft: 'auto', width: 300, paddingRight: 5 }}>

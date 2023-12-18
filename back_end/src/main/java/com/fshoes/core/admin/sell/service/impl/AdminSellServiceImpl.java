@@ -1,7 +1,9 @@
 package com.fshoes.core.admin.sell.service.impl;
 
+import com.fshoes.core.admin.hoadon.model.respone.HDProductDetailResponse;
 import com.fshoes.core.admin.hoadon.repository.HDBillHistoryRepository;
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
+import com.fshoes.core.admin.hoadon.repository.HDProductDetailRepository;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
 import com.fshoes.core.admin.sell.model.request.*;
@@ -25,6 +27,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -77,6 +80,9 @@ public class AdminSellServiceImpl implements AdminSellService {
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     private HDBillRepository hdBillRepository;
+
+    @Autowired
+    private HDProductDetailRepository hdPoductDetailRepository;
 
     @Autowired
     private UserLogin userLogin;
@@ -145,8 +151,8 @@ public class AdminSellServiceImpl implements AdminSellService {
     public Boolean addBill(AddBillRequest request, String id) {
         try {
             Bill bill = billRepository.findById(id).orElseThrow(() -> {
-            throw new RestApiException(Message.API_ERROR);
-        });
+                throw new RestApiException(Message.API_ERROR);
+            });
             if (request.getIdVourcher() == null) {
                 bill.setVoucher(null);
             } else {
@@ -198,6 +204,24 @@ public class AdminSellServiceImpl implements AdminSellService {
                 billHistory.setStatusBill(1);
             }
             billHistoryRepository.save(billHistory);
+            // lấy list bill detail theo bill
+            List<BillDetail> billDetails = billDetailRepositoty.getBillDetailsByBillId(bill.getId());
+            billDetails.forEach((billDetail -> {
+                ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
+                HDProductDetailResponse hdProductDetailResponse = hdPoductDetailRepository.getPrdVsKM(productDetail.getId());
+                if (hdProductDetailResponse == null) {
+                    // nếu sản phẩm không có khuyến mại => set lại đơn giá trong bill detail là giá của sp
+                    billDetail.setPrice(productDetail.getPrice());
+                    billDetailRepositoty.save(billDetail);
+                } else {
+                    // nếu có KM: hàm getPrdVsKM(String id) sẽ trả ra id prd, giá trị của KM, giá của sản phẩm
+                    // tính lại tiền được KM và set lại đơn giá cho bill detail
+                    BigDecimal valueKM = (productDetail.getPrice().multiply(BigDecimal.valueOf(hdProductDetailResponse.getValue()))).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                    BigDecimal priceAfterKM = productDetail.getPrice().subtract(valueKM);
+                    billDetail.setPrice(priceAfterKM);
+                    billDetailRepositoty.save(billDetail);
+                }
+            }));
             messagingTemplate.convertAndSend("/topic/bill-update", hdBillRepository.findBill(bill.getId()));
             return true;
         } catch (Exception e) {
@@ -217,13 +241,13 @@ public class AdminSellServiceImpl implements AdminSellService {
                 assert account != null;
                 bill.setCustomer(account);
             }
-            if(request.getAddress() != null){
+            if (request.getAddress() != null) {
                 bill.setAddress(request.getAddress());
             }
-            if(request.getPhoneNumber() != null){
+            if (request.getPhoneNumber() != null) {
                 bill.setPhoneNumber(request.getPhoneNumber());
             }
-            if(request.getFullName() != null){
+            if (request.getFullName() != null) {
                 bill.setFullName(request.getFullName());
             }
             billRepository.save(bill);
