@@ -11,12 +11,23 @@ import com.fshoes.core.client.model.request.ClientCheckoutRequest;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
 import com.fshoes.core.client.service.ClientCheckoutService;
 import com.fshoes.core.common.UserLogin;
-import com.fshoes.entity.*;
+import com.fshoes.entity.Account;
+import com.fshoes.entity.Address;
+import com.fshoes.entity.Bill;
+import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.BillHistory;
+import com.fshoes.entity.ProductDetail;
+import com.fshoes.entity.Transaction;
+import com.fshoes.entity.Voucher;
 import com.fshoes.infrastructure.constant.TypeNotification;
 import com.fshoes.infrastructure.email.Email;
 import com.fshoes.infrastructure.email.EmailSender;
 import com.fshoes.infrastructure.vnpay.VNPayConfig;
-import com.fshoes.repository.*;
+import com.fshoes.repository.AccountRepository;
+import com.fshoes.repository.AddressRepository;
+import com.fshoes.repository.BillHistoryRepository;
+import com.fshoes.repository.BillRepository;
+import com.fshoes.repository.TransactionRepository;
 import com.fshoes.util.DateUtil;
 import com.fshoes.util.MD5Util;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +44,15 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 @Service
 public class ClientCheckoutServiceImpl implements ClientCheckoutService {
@@ -365,6 +384,8 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     notification.setIdRedirect(bill.getId());
                     messagingTemplate.convertAndSend("/topic/thong-bao", notification);
                     return listBillDetails.stream().map(BillDetail::getProductDetail).toList();
+                }else if(bill != null){
+                    return new ArrayList<>();
                 }
             }
         }
