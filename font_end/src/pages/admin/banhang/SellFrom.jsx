@@ -290,7 +290,7 @@ export default function SellFrom({
     setShowModal(true)
   }
   const closeAddProductModal = () => {
-    setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: totalSum })
+    // setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: totalSum })
     setShowModal(false)
   }
   useEffect(() => {
@@ -304,7 +304,6 @@ export default function SellFrom({
         const mess = { appLoad: true }
         stompClient.send(`/topic/app-load/${idBill}`, {}, JSON.stringify(mess))
       }
-
       const conditionMoney = response.data.data.reduce((sum, cart) => {
         if (cart.value) {
           return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
@@ -371,10 +370,8 @@ export default function SellFrom({
       sellApi.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity).then(() => {
         fectchProductBillSell(idBill)
       })
-      return quantity
     } else {
       toast.error('Vượt quá số lượng cho phép')
-      return cart.quantity
     }
   }
 
@@ -1057,7 +1054,7 @@ export default function SellFrom({
           from_district: '3440',
           to_district: detailDiaChi.districtId,
         }
-        if(filtelService.to_district){
+        if (filtelService.to_district) {
           ghnAPI.getServiceId(filtelService).then((response) => {
             const serviceId = response.data.body.serviceId
             const filterTotal = {
@@ -1094,9 +1091,7 @@ export default function SellFrom({
         address: '',
       }
 
-      sellApi.addAddressBill(data, idBill).then(() => {
-        
-      })
+      sellApi.addAddressBill(data, idBill).then(() => {})
     }
   }
 
@@ -1854,13 +1849,15 @@ export default function SellFrom({
           </Modal>
         </Box>
 
-        <ModelSell
-          load={fectchProductBillSell}
-          idBill={idBill}
-          open={showModal}
-          setOPen={closeAddProductModal}
-          totalSum={totalSum}
-        />
+        {showModal && (
+          <ModelSell
+            load={fectchProductBillSell}
+            idBill={idBill}
+            open={showModal}
+            setOPen={closeAddProductModal}
+            totalSum={totalSum}
+          />
+        )}
 
         <Box>
           <Box sx={{ maxHeight: '55vh', overflow: 'auto' }}>

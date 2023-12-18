@@ -19,16 +19,14 @@ const InputQuantity = ({
   const debouncedValue = useDebounce(quantity, 500)
 
   useEffect(() => {
-    setQuantity(cart.quantity)
-  }, [cart.quantity])
-
-  useEffect(() => {
-    const numericValue = Number(quantity)
-    if (!isNaN(numericValue) && numericValue >= 1) {
-      setQuantity(inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue, cart))
-    } else {
-      setQuantity(cart.quantity)
-      toast.error('Số lượng phải lớn hơn 0')
+    if (quantity !== cart.quantity) {
+      const numericValue = Number(quantity)
+      if (!isNaN(numericValue) && numericValue >= 1) {
+        inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue, cart)
+      } else {
+        setQuantity(cart.quantity)
+        toast.error('Số lượng phải lớn hơn 0')
+      }
     }
   }, [debouncedValue])
 
@@ -46,7 +44,6 @@ const InputQuantity = ({
         size="small"
         sx={{ p: 0 }}
         onClick={() => {
-          decreaseQuantityBillDetail(cart.idBillDetail, cart.id, quantity)
           setQuantity(parseInt(quantity) - 1)
         }}
         disabled={quantity <= 1}>
@@ -70,7 +67,6 @@ const InputQuantity = ({
         size="small"
         sx={{ p: 0 }}
         onClick={() => {
-          increaseQuantityBillDetail(cart.idBillDetail, cart.id, quantity)
           setQuantity(parseInt(quantity) + 1)
         }}>
         <AddIcon fontSize="1px" />
