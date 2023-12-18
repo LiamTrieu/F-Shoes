@@ -30,6 +30,7 @@ import { useTheme } from '@emotion/react'
 import SearchIcon from '@mui/icons-material/Search'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import useDebounce from '../../../services/hook/useDebounce'
 import ExcelJS from 'exceljs'
 
 export default function AdCustomerPage() {
@@ -50,6 +51,12 @@ export default function AdCustomerPage() {
     fetchData(searchStaff)
     getAllNhanVien()
   }, [searchStaff])
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setSearchStaff({ ...searchStaff, searchTen: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (searchStaff) => {
     staffApi.get(searchStaff).then((response) => {
@@ -157,7 +164,7 @@ export default function AdCustomerPage() {
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
           <TextField
             onChange={(e) => {
-              setSearchStaff({ ...searchStaff, searchTen: e.target.value })
+              setInputValue(e.target.value)
             }}
             sx={{ width: '28%' }}
             className="search-field"

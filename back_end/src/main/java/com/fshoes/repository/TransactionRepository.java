@@ -17,7 +17,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     @Transactional
     @Modifying
     @Query(value = """
-            DELETE FROM transaction trans 
+            DELETE FROM transaction trans
             WHERE id_bill = :idBill
             """, nativeQuery = true)
     Integer deleteTransactionByIdBill(@Param("idBill") String idBill);
