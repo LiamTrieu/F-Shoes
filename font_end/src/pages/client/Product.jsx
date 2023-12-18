@@ -42,6 +42,7 @@ import { socketUrl } from '../../services/url'
 import { isColorDark } from '../../services/common/isColorDark'
 import { MdKeyboardArrowLeft } from 'react-icons/md'
 import BreadcrumbsCustom from '../../components/BreadcrumbsCustom'
+import useDebounce from '../../services/hook/useDebounce'
 
 const listBreadcrumbs = [{ name: 'Trang chủ', link: '/home' }]
 function AirbnbThumbComponent(props) {
@@ -148,6 +149,13 @@ export default function Product() {
       )
     })
   }, [filter])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, nameProductDetail: inputValue })
+  }, [debouncedValue])
 
   useEffect(() => {
     const socket = new SockJS(socketUrl)
@@ -320,7 +328,9 @@ export default function Product() {
               placeholder="Tìm sản phẩm"
               type="text"
               size="small"
-              onChange={(e) => setFilter({ ...filter, nameProductDetail: e.target.value })}
+              onChange={(e) => {
+                setInputValue(e.target.value)
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -716,7 +726,9 @@ export default function Product() {
                 placeholder="Tìm sản phẩm"
                 type="text"
                 size="small"
-                onChange={(e) => setFilter({ ...filter, nameProductDetail: e.target.value })}
+                onChange={(e) => {
+                  setInputValue(e.target.value)
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">

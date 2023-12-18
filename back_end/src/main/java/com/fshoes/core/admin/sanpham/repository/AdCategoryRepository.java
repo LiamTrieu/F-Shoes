@@ -18,7 +18,7 @@ public interface AdCategoryRepository extends CategoryRepository {
     List<Category> findAllByDeleted(Status status);
 
     @Query(value = """
-            SELECT id, name, deleted, created_at as createdAt
+            SELECT ROW_NUMBER() over (ORDER BY updated_at desc ) as stt, id, name, deleted, created_at as createdAt
             FROM category
             WHERE (:#{#filter.name} IS NULL OR name LIKE %:#{#filter.name}%)
             ORDER BY created_at DESC

@@ -17,7 +17,7 @@ import lombok.*;
 @Table(name = "sole")
 public class Sole extends PrimaryEntity {
 
-    @Column(columnDefinition = EntityProperties.DEFINITION_NAME, unique = true)
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME)
     private String name;
 
     private Status deleted = Status.HOAT_DONG;

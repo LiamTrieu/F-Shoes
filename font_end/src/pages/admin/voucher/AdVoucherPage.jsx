@@ -36,6 +36,7 @@ import { Stomp } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { socketUrl } from '../../../services/url'
+import useDebounce from '../../../services/hook/useDebounce'
 import ExcelJS from 'exceljs'
 
 var stompClient = null
@@ -69,6 +70,16 @@ export default function AdVoucherPage() {
       stompClient.disconnect()
     }
   }, [])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setSearchVoucher({
+      ...searchVoucher,
+      nameSearch: inputValue,
+    })
+  }, [debouncedValue])
 
   const onConnect = () => {
     stompClient.subscribe('/topic/voucherUpdates', (message) => {
@@ -233,12 +244,9 @@ export default function AdVoucherPage() {
               type="text"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setSearchVoucher({
-                  ...searchVoucher,
-                  nameSearch: e.target.value,
-                })
-              }
+              onChange={(e) => {
+                setInputValue(e.target.value)
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

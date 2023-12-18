@@ -36,6 +36,7 @@ import colorApi from '../../../api/admin/sanpham/colorApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
+import useDebounce from '../../../services/hook/useDebounce'
 
 const listBreadcrumbs = [{ name: 'Đợt giảm giá', link: '/admin/promotion' }]
 
@@ -116,6 +117,23 @@ export default function AdPromotionAdd() {
     })
   }, [])
 
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, nameProduct: inputValue })
+  }, [debouncedValue])
+
+  const [inputValue1, setInputValue1] = useState('')
+  const debouncedValue1 = useDebounce(inputValue1, 1000)
+
+  useEffect(() => {
+    setFilterProductDetail({
+      ...filterProductDetail,
+      nameProduct: inputValue1,
+    })
+  }, [debouncedValue1])
+
   const handleRowCheckboxChange = (event, ProductDetailId) => {
     const selectedIndex = selectedRows.indexOf(ProductDetailId)
     let newSelected = []
@@ -131,8 +149,6 @@ export default function AdPromotionAdd() {
 
     setSelectedRows(newSelected)
     setSelectAll(newSelected.length === getProductDetailByProduct.length)
-
-    console.log(newSelected, '==========')
   }
 
   const handleSelectAllChangeProduct = (event) => {
@@ -207,6 +223,7 @@ export default function AdPromotionAdd() {
     timeEnd: '',
     idProductDetail: selectedRows,
   })
+
   const handleInputChange = (e) => {
     setAddPromotionRe({ ...addPromotionRe, [e.target.name]: e.target.value })
   }
@@ -437,7 +454,9 @@ export default function AdPromotionAdd() {
                     label="Tìm tên sản phẩm"
                     variant="outlined"
                     size="small"
-                    onChange={(e) => setFilter({ ...filter, nameProduct: e.target.value })}
+                    onChange={(e) => {
+                      setInputValue(e.target.value)
+                    }}
                   />
                 </div>
                 <Table sx={{ minWidth: '100%' }} aria-label="simple table" className="tableCss">
@@ -541,10 +560,7 @@ export default function AdPromotionAdd() {
                       placeholder="Tên sản phẩm, thể loại, thương hiệu, chất liệu, màu sắc"
                       className="text-field-css"
                       onChange={(e) => {
-                        setFilterProductDetail({
-                          ...filterProductDetail,
-                          nameProduct: e.target.value,
-                        })
+                        setInputValue1(e.target.value)
                       }}
                     />
                   </Box>

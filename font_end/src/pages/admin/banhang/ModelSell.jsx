@@ -33,6 +33,7 @@ import soleApi from '../../../api/admin/sanpham/soleApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
 import { toast } from 'react-toastify'
 import styled from '@emotion/styled'
+import useDebounce from '../../../services/hook/useDebounce'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 
 const styleModalProduct = {
@@ -132,6 +133,13 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
   const handleAddAmount = () => {
     setAddAmount((prevAmount) => prevAmount + 1)
   }
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, nameProductDetail: inputValue })
+  }, [debouncedValue])
 
   const handleRemoveAmount = () => {
     if (addAmount > 1) {
@@ -303,7 +311,7 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
                   variant="outlined"
                   placeholder="Tên sản phẩm"
                   onChange={(e) => {
-                    setFilter({ ...filter, nameProductDetail: e.target.value })
+                    setInputValue(e.target.value)
                   }}
                 />
               </Box>

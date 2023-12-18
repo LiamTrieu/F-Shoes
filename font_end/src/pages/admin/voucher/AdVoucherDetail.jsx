@@ -34,6 +34,7 @@ import '../../../assets/styles/admin.css'
 import './voucher.css'
 import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import useDebounce from '../../../services/hook/useDebounce'
 import SearchIcon from '@mui/icons-material/Search'
 
 const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
@@ -103,6 +104,13 @@ export default function AdVoucherDetail() {
   useEffect(() => {
     setVoucherDetail({ ...voucherDetail, listIdCustomer: selectedCustomerIds })
   }, [voucherDetail, selectedCustomerIds])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFindCustomer({ ...findCustomer, textSearch: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (id) => {
     voucherApi
@@ -680,9 +688,9 @@ export default function AdVoucherDetail() {
               type="text"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setFindCustomer({ ...findCustomer, textSearch: e.target.value, page: 1 })
-              }
+              onChange={(e) => {
+                setInputValue(e.target.value)
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

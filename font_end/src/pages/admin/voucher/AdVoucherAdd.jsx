@@ -33,6 +33,7 @@ import Empty from '../../../components/Empty'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
 import SearchIcon from '@mui/icons-material/Search'
+import useDebounce from '../../../services/hook/useDebounce'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 
 const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
@@ -92,6 +93,13 @@ export default function AdVoucherAdd() {
     haldleAllNameVoucher()
     haldleAllCustomer()
   }, [findCustomer])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFindCustomer({ ...findCustomer, textSearch: inputValue })
+  }, [debouncedValue])
 
   const haldleAllCodeVoucher = () => {
     voucherApi
@@ -618,9 +626,9 @@ export default function AdVoucherAdd() {
               type="text"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setFindCustomer({ ...findCustomer, textSearch: e.target.value, page: 1 })
-              }
+              onChange={(e) => {
+                setInputValue(e.target.value)
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
