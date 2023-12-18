@@ -168,6 +168,7 @@ export default function BillScreen({ navigation }) {
   const handlePress = async () => {
     try {
       const response = await clientApi.getBillOrder(orderCode);
+      console.log(response);
       if (response.status === 200) {
         if (response.data.success) {
           const data = response.data.data;

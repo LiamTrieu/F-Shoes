@@ -212,4 +212,9 @@ public class ProductServiceImpl implements ProductService {
         }).toList();
         return productDetailRepository.saveAll(listUpdate);
     }
+
+    @Override
+    public List<String> filterAdd(String idProduct) {
+        return productDetailRepository.filterAdd(idProduct);
+    }
 }

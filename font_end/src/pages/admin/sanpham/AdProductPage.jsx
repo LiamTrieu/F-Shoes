@@ -145,7 +145,7 @@ export default function AdProductPage() {
   return (
     <div className="san-pham">
       <BreadcrumbsCustom listLink={listBreadcrumbs} />
-      <Container component={Paper} sx={{ py: 2 }}>
+      <Paper sx={{ p: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <TextField
             onChange={(e) => {
@@ -305,7 +305,7 @@ export default function AdProductPage() {
         ) : (
           <Empty />
         )}
-      </Container>
+      </Paper>
     </div>
   )
 }

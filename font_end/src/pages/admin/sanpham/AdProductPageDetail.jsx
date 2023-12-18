@@ -332,7 +332,7 @@ export default function AdProductPageDetail() {
           </IconButton>
         </Tooltip>
       </Stack>
-      <Container component={Paper} sx={{ py: 2 }}>
+      <Paper sx={{ p: 2 }}>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -520,306 +520,298 @@ export default function AdProductPageDetail() {
             </Select>
           </div>
         </Stack>
-      </Container>
+      </Paper>
       <Paper sx={{ py: 2, mt: 2 }}>
-        <Container>
-          <Typography
-            mb={1}
-            textAlign={'center'}
-            fontWeight={'600'}
-            variant="h6"
-            color={'GrayText'}>
-            Danh sách sản phẩm
-            {listUpdate.length > 0 && (
-              <Button
-                onClick={() => {
-                  updateListProduct()
-                }}
-                style={{ float: 'right' }}
-                color="cam"
-                variant="outlined">
-                Cập nhập tất cả
-              </Button>
-            )}
-          </Typography>
-          {listProductDetail.length > 0 ? (
-            <Fragment>
-              <Table className="tableCss">
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center" width={'3%'}>
-                      <input
-                        onClick={() => {
-                          if (listProductDetail.length === listUpdate.length) {
-                            setListUpdate([])
-                          } else {
-                            setListUpdate([...listProductDetail])
-                          }
+        <Typography mb={1} textAlign={'center'} fontWeight={'600'} variant="h6" color={'GrayText'}>
+          Danh sách sản phẩm
+          {listUpdate.length > 0 && (
+            <Button
+              onClick={() => {
+                updateListProduct()
+              }}
+              style={{ float: 'right' }}
+              color="cam"
+              variant="outlined">
+              Cập nhập tất cả
+            </Button>
+          )}
+        </Typography>
+        {listProductDetail.length > 0 ? (
+          <Fragment>
+            <Table className="tableCss">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center" width={'3%'}>
+                    <input
+                      onClick={() => {
+                        if (listProductDetail.length === listUpdate.length) {
+                          setListUpdate([])
+                        } else {
+                          setListUpdate([...listProductDetail])
+                        }
+                      }}
+                      type="checkbox"
+                      checked={listProductDetail.length === listUpdate.length}
+                    />
+                  </TableCell>
+                  <TableCell align="center">Ảnh</TableCell>
+                  <TableCell>Mã</TableCell>
+                  <TableCell>Thương hiệu</TableCell>
+                  <TableCell>Danh mục</TableCell>
+                  <TableCell>Đế giày</TableCell>
+                  <TableCell>Chất liệu</TableCell>
+                  <TableCell>Màu sắc</TableCell>
+                  <TableCell width={'5%'}>Size</TableCell>
+                  <TableCell align="center">Cân nặng</TableCell>
+                  <TableCell align="center">Số lượng</TableCell>
+                  <TableCell align="center" width={'10%'}>
+                    Đơn giá
+                  </TableCell>
+                  <TableCell width={'10%'}>Trạng thái</TableCell>
+                  <TableCell align="center">Thao tác</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {listProductDetail.map((product) => {
+                  return (
+                    <>
+                      <TableRow
+                        style={{
+                          backgroundColor: listUpdate.some((item) => item.id === product.id)
+                            ? 'lightblue'
+                            : 'white',
                         }}
-                        type="checkbox"
-                        checked={listProductDetail.length === listUpdate.length}
-                      />
-                    </TableCell>
-                    <TableCell align="center">Ảnh</TableCell>
-                    <TableCell>Mã</TableCell>
-                    <TableCell>Thương hiệu</TableCell>
-                    <TableCell>Danh mục</TableCell>
-                    <TableCell>Đế giày</TableCell>
-                    <TableCell>Chất liệu</TableCell>
-                    <TableCell>Màu sắc</TableCell>
-                    <TableCell width={'5%'}>Size</TableCell>
-                    <TableCell align="center">Cân nặng</TableCell>
-                    <TableCell align="center">Số lượng</TableCell>
-                    <TableCell align="center" width={'10%'}>
-                      Đơn giá
-                    </TableCell>
-                    <TableCell width={'10%'}>Trạng thái</TableCell>
-                    <TableCell align="center">Thao tác</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {listProductDetail.map((product) => {
-                    return (
-                      <>
-                        <TableRow
-                          style={{
-                            backgroundColor: listUpdate.some((item) => item.id === product.id)
-                              ? 'lightblue'
-                              : 'white',
-                          }}
-                          key={product.id}>
+                        key={product.id}>
+                        <TableCell align="center">
+                          <input
+                            type="checkbox"
+                            checked={listUpdate.some((item) => item.id === product.id)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              const isChecked = e.target.checked
+                              setListUpdate((prevList) => {
+                                if (isChecked) {
+                                  return [...prevList, product]
+                                } else {
+                                  return prevList.filter((item) => item.id !== product.id)
+                                }
+                              })
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Carousel
+                            indicators={false}
+                            sx={{ width: '100%', height: '100%' }}
+                            navButtonsAlwaysInvisible>
+                            {product.image.split(',').map((item, i) => (
+                              <img
+                                width={'50px'}
+                                height={'50px'}
+                                key={'anh' + i}
+                                src={item}
+                                alt="anh"
+                              />
+                            ))}
+                          </Carousel>
+                        </TableCell>
+                        <TableCell sx={{ maxWidth: '0px' }}>{product?.code}</TableCell>
+                        <TableCell>{product?.brand}</TableCell>
+                        <TableCell>{product?.category}</TableCell>
+                        <TableCell>{product?.sole}</TableCell>
+                        <TableCell>{product?.colorName}</TableCell>
+                        <TableCell>{product?.material}</TableCell>
+                        <TableCell>{product?.size}</TableCell>
+                        {listUpdate.some((item) => item.id === product.id) ? (
+                          <>
+                            <TableCell>
+                              <TextField
+                                value={listUpdate.find((item) => item.id === product.id).weight}
+                                onChange={(e) => {
+                                  const updatedList = listUpdate.map((item) => {
+                                    if (item.id === product.id) {
+                                      return { ...item, weight: e.target.value }
+                                    }
+                                    return item
+                                  })
+                                  validate(updatedList)
+                                  setListUpdate(updatedList)
+                                }}
+                                InputProps={{
+                                  style: { paddingRight: '4px' },
+                                  endAdornment: 'g',
+                                }}
+                                inputProps={{ min: 1 }}
+                                size="small"
+                                sx={{
+                                  '& input': {
+                                    p: 0,
+                                    textAlign: 'center',
+                                    fontSize: '14px',
+                                  },
+                                  '& fieldset': {
+                                    fontSize: '14px',
+                                  },
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                value={listUpdate.find((item) => item.id === product.id).amount}
+                                onChange={(e) => {
+                                  const updatedList = listUpdate.map((item) => {
+                                    if (item.id === product.id) {
+                                      return { ...item, amount: e.target.value }
+                                    }
+                                    return item
+                                  })
+                                  setListUpdate(updatedList)
+                                  validate(updatedList)
+                                }}
+                                inputProps={{ min: 1 }}
+                                size="small"
+                                sx={{
+                                  '& input': {
+                                    p: 0,
+                                    textAlign: 'center',
+                                    fontSize: '14px',
+                                  },
+                                  '& fieldset': {
+                                    fontSize: '14px',
+                                  },
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                value={listUpdate.find((item) => item.id === product.id).price}
+                                inputProps={{ min: 1 }}
+                                size="small"
+                                InputProps={{
+                                  style: { paddingRight: '4px' },
+                                  endAdornment: '₫',
+                                }}
+                                onChange={(e) => {
+                                  const updatedList = listUpdate.map((item) => {
+                                    if (item.id === product.id) {
+                                      return { ...item, price: e.target.value }
+                                    }
+                                    return item
+                                  })
+                                  setListUpdate(updatedList)
+                                  validate(updatedList)
+                                }}
+                                sx={{
+                                  '& input': {
+                                    p: 0,
+                                    textAlign: 'center',
+                                    fontSize: '14px',
+                                  },
+                                  '& fieldset': {
+                                    fontSize: '14px',
+                                  },
+                                }}
+                              />
+                            </TableCell>
+                          </>
+                        ) : (
+                          <>
+                            <TableCell align="center">{product.weight}g</TableCell>
+                            <TableCell align="center">{product.amount}</TableCell>
+                            <TableCell align="center">{formatCurrency(product.price)}</TableCell>
+                          </>
+                        )}
+                        <TableCell>
+                          {product.deletedProduct === 0 ? (
+                            <Chip
+                              onClick={() => handleDelete(product.id)}
+                              className={
+                                product.deleted === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'
+                              }
+                              label={product.deleted === 0 ? 'Đang bán' : 'Ngừng bán'}
+                              size="small"
+                            />
+                          ) : (
+                            <Chip label={'Ngừng bán'} size="small" color="default" />
+                          )}
+                        </TableCell>
+                        <Tooltip title="Chỉnh sửa">
                           <TableCell align="center">
-                            <input
-                              type="checkbox"
-                              checked={listUpdate.some((item) => item.id === product.id)}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                const isChecked = e.target.checked
-                                setListUpdate((prevList) => {
-                                  if (isChecked) {
-                                    return [...prevList, product]
-                                  } else {
-                                    return prevList.filter((item) => item.id !== product.id)
-                                  }
-                                })
+                            <TbEyeEdit
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => {
+                                if (!listUpdate.some((item) => item.id === product.id)) {
+                                  handleClickOpen(product.id, product.image.split(','))
+                                }
                               }}
+                              fontSize={'25px'}
+                              color={
+                                listUpdate.some((item) => item.id === product.id)
+                                  ? 'gray'
+                                  : '#FC7C27'
+                              }
                             />
                           </TableCell>
-                          <TableCell align="center">
-                            <Carousel
-                              indicators={false}
-                              sx={{ width: '100%', height: '100%' }}
-                              navButtonsAlwaysInvisible>
-                              {product.image.split(',').map((item, i) => (
-                                <img
-                                  width={'50px'}
-                                  height={'50px'}
-                                  key={'anh' + i}
-                                  src={item}
-                                  alt="anh"
-                                />
-                              ))}
-                            </Carousel>
+                        </Tooltip>
+                      </TableRow>
+                      {listErr.find((err) => err.id === product.id) && (
+                        <TableRow style={{ backgroundColor: 'white' }}>
+                          <TableCell colSpan={7}>
+                            <span style={{ color: 'red' }}>
+                              {listErr.find((err) => err.id === product.id).message}
+                            </span>
                           </TableCell>
-                          <TableCell sx={{ maxWidth: '0px' }}>{product?.code}</TableCell>
-                          <TableCell>{product?.brand}</TableCell>
-                          <TableCell>{product?.category}</TableCell>
-                          <TableCell>{product?.sole}</TableCell>
-                          <TableCell>{product?.colorName}</TableCell>
-                          <TableCell>{product?.material}</TableCell>
-                          <TableCell>{product?.size}</TableCell>
-                          {listUpdate.some((item) => item.id === product.id) ? (
-                            <>
-                              <TableCell>
-                                <TextField
-                                  value={listUpdate.find((item) => item.id === product.id).weight}
-                                  onChange={(e) => {
-                                    const updatedList = listUpdate.map((item) => {
-                                      if (item.id === product.id) {
-                                        return { ...item, weight: e.target.value }
-                                      }
-                                      return item
-                                    })
-                                    validate(updatedList)
-                                    setListUpdate(updatedList)
-                                  }}
-                                  InputProps={{
-                                    style: { paddingRight: '4px' },
-                                    endAdornment: 'g',
-                                  }}
-                                  inputProps={{ min: 1 }}
-                                  size="small"
-                                  sx={{
-                                    '& input': {
-                                      p: 0,
-                                      textAlign: 'center',
-                                      fontSize: '14px',
-                                    },
-                                    '& fieldset': {
-                                      fontSize: '14px',
-                                    },
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={listUpdate.find((item) => item.id === product.id).amount}
-                                  onChange={(e) => {
-                                    const updatedList = listUpdate.map((item) => {
-                                      if (item.id === product.id) {
-                                        return { ...item, amount: e.target.value }
-                                      }
-                                      return item
-                                    })
-                                    setListUpdate(updatedList)
-                                    validate(updatedList)
-                                  }}
-                                  inputProps={{ min: 1 }}
-                                  size="small"
-                                  sx={{
-                                    '& input': {
-                                      p: 0,
-                                      textAlign: 'center',
-                                      fontSize: '14px',
-                                    },
-                                    '& fieldset': {
-                                      fontSize: '14px',
-                                    },
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={listUpdate.find((item) => item.id === product.id).price}
-                                  inputProps={{ min: 1 }}
-                                  size="small"
-                                  InputProps={{
-                                    style: { paddingRight: '4px' },
-                                    endAdornment: '₫',
-                                  }}
-                                  onChange={(e) => {
-                                    const updatedList = listUpdate.map((item) => {
-                                      if (item.id === product.id) {
-                                        return { ...item, price: e.target.value }
-                                      }
-                                      return item
-                                    })
-                                    setListUpdate(updatedList)
-                                    validate(updatedList)
-                                  }}
-                                  sx={{
-                                    '& input': {
-                                      p: 0,
-                                      textAlign: 'center',
-                                      fontSize: '14px',
-                                    },
-                                    '& fieldset': {
-                                      fontSize: '14px',
-                                    },
-                                  }}
-                                />
-                              </TableCell>
-                            </>
-                          ) : (
-                            <>
-                              <TableCell align="center">{product.weight}g</TableCell>
-                              <TableCell align="center">{product.amount}</TableCell>
-                              <TableCell align="center">{formatCurrency(product.price)}</TableCell>
-                            </>
-                          )}
-                          <TableCell>
-                            {product.deletedProduct === 0 ? (
-                              <Chip
-                                onClick={() => handleDelete(product.id)}
-                                className={
-                                  product.deleted === 0 ? 'chip-hoat-dong' : 'chip-khong-hoat-dong'
-                                }
-                                label={product.deleted === 0 ? 'Đang bán' : 'Ngừng bán'}
-                                size="small"
-                              />
-                            ) : (
-                              <Chip label={'Ngừng bán'} size="small" color="default" />
-                            )}
-                          </TableCell>
-                          <Tooltip title="Chỉnh sửa">
-                            <TableCell align="center">
-                              <TbEyeEdit
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => {
-                                  if (!listUpdate.some((item) => item.id === product.id)) {
-                                    handleClickOpen(product.id, product.image.split(','))
-                                  }
-                                }}
-                                fontSize={'25px'}
-                                color={
-                                  listUpdate.some((item) => item.id === product.id)
-                                    ? 'gray'
-                                    : '#FC7C27'
-                                }
-                              />
-                            </TableCell>
-                          </Tooltip>
                         </TableRow>
-                        {listErr.find((err) => err.id === product.id) && (
-                          <TableRow style={{ backgroundColor: 'white' }}>
-                            <TableCell colSpan={7}>
-                              <span style={{ color: 'red' }}>
-                                {listErr.find((err) => err.id === product.id).message}
-                              </span>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-              <Stack
-                mt={2}
-                direction="row"
-                justifyContent="space-between"
-                alignItems="flex-start"
-                spacing={0}>
-                <Typography component="span" variant={'body2'} mt={0.5}>
-                  <Typography
-                    sx={{ display: { xs: 'none', md: 'inline-block' }, marginLeft: '5px' }}>
-                    Xem
-                  </Typography>
-                  <Select
-                    onChange={(e) => {
-                      setFilter({ ...filter, size: e.target.value })
-                    }}
-                    sx={{ height: '25px', mx: 0.5 }}
-                    size="small"
-                    value={filter.size}>
-                    <MenuItem value={1}>1</MenuItem>
-                    <MenuItem value={5}>5</MenuItem>
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={15}>15</MenuItem>
-                    <MenuItem value={20}>20</MenuItem>
-                  </Select>
-                  <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
-                    sản phẩm
-                  </Typography>
+                      )}
+                    </>
+                  )
+                })}
+              </TableBody>
+            </Table>
+            <Stack
+              mt={2}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-start"
+              spacing={0}>
+              <Typography component="span" variant={'body2'} mt={0.5}>
+                <Typography sx={{ display: { xs: 'none', md: 'inline-block' }, marginLeft: '5px' }}>
+                  Xem
                 </Typography>
-                <Pagination
-                  variant="outlined"
-                  color="cam"
-                  count={total}
-                  page={filter.page}
-                  onChange={(e, value) => {
-                    e.preventDefault()
-                    if (filter.page !== value) {
-                      setFilter({ ...filter, page: value })
-                    }
+                <Select
+                  onChange={(e) => {
+                    setFilter({ ...filter, size: e.target.value })
                   }}
-                />
-              </Stack>
-            </Fragment>
-          ) : (
-            <Empty />
-          )}
-        </Container>
+                  sx={{ height: '25px', mx: 0.5 }}
+                  size="small"
+                  value={filter.size}>
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={15}>15</MenuItem>
+                  <MenuItem value={20}>20</MenuItem>
+                </Select>
+                <Typography sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                  sản phẩm
+                </Typography>
+              </Typography>
+              <Pagination
+                variant="outlined"
+                color="cam"
+                count={total}
+                page={filter.page}
+                onChange={(e, value) => {
+                  e.preventDefault()
+                  if (filter.page !== value) {
+                    setFilter({ ...filter, page: value })
+                  }
+                }}
+              />
+            </Stack>
+          </Fragment>
+        ) : (
+          <Empty />
+        )}
       </Paper>
       {open && (
         <AdModalDetailProductDetail

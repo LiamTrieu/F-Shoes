@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface AdProductDetailRepository extends ProductDetailRepository {
@@ -142,4 +144,23 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
     ProductMaxPriceResponse getProductMaxPrice(@Param("id") String id);
 
 
+    @Query(value = """
+            select CONCAT(s.id,ca.id,b.id,c.id,si.id,m.id) from product_detail pd
+            JOIN
+                product p ON p.id = pd.id_product
+            JOIN
+                color c ON c.id = pd.id_color
+            JOIN
+                category ca ON ca.id = pd.id_category
+            JOIN
+                brand b ON b.id = pd.id_brand
+            JOIN
+                sole s ON s.id = pd.id_sole
+            JOIN
+                material m ON m.id = pd.id_material
+            JOIN
+                size si ON si.id = pd.id_size
+            Where p.id = :idProduct
+            """, nativeQuery = true)
+    List<String> filterAdd(String idProduct);
 }

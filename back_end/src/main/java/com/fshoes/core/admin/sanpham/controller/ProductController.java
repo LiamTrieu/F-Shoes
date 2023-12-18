@@ -91,5 +91,8 @@ public class ProductController {
         return new ObjectRespone(productService.updateNameProduct(id, nameProduct));
     }
 
-
+    @GetMapping("/filter/{idProduct}")
+    public List<String> filter(@PathVariable String idProduct) {
+        return productService.filterAdd(idProduct);
+    }
 }

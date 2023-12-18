@@ -15,6 +15,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  createFilterOptions,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
@@ -46,7 +47,7 @@ import { MdOutlineRestore } from 'react-icons/md'
 import { SketchPicker } from 'react-color'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
-
+const filter = createFilterOptions()
 export default function AdProductAdd() {
   const [products, setProducts] = useState([])
   const [productsCheck, setProductsCheck] = useState([])
@@ -217,22 +218,51 @@ export default function AdProductAdd() {
           })
         })
       })
-      setNewProductDetails(
-        preNewProductDetails.map((productDetail) => {
-          const checkExists = newProductDetails.find((pd) => pd.key === productDetail.key)
-          if (checkExists)
+
+      if (newProducts.product.value) {
+        sanPhamApi.filter(newProducts.product.value).then((response) => {
+          if (response.status === 200) {
+            const filerData = response.data ? response.data : []
+            setNewProductDetails(
+              preNewProductDetails
+                .filter((e) => !filerData.includes(e.key))
+                .map((productDetail) => {
+                  const checkExists = newProductDetails.find((pd) => pd.key === productDetail.key)
+                  if (checkExists)
+                    return {
+                      ...checkExists,
+                      product: newProducts.product,
+                      description: newProducts.description,
+                    }
+                  return {
+                    ...productDetail,
+                    product: newProducts.product,
+                    description: newProducts.description,
+                  }
+                }),
+            )
+          } else {
+            toast.warning('Lỗi hệ thống vui lòng thử lại!')
+          }
+        })
+      } else {
+        setNewProductDetails(
+          preNewProductDetails.map((productDetail) => {
+            const checkExists = newProductDetails.find((pd) => pd.key === productDetail.key)
+            if (checkExists)
+              return {
+                ...checkExists,
+                product: newProducts.product,
+                description: newProducts.description,
+              }
             return {
-              ...checkExists,
+              ...productDetail,
               product: newProducts.product,
               description: newProducts.description,
             }
-          return {
-            ...productDetail,
-            product: newProducts.product,
-            description: newProducts.description,
-          }
-        }),
-      )
+          }),
+        )
+      }
     }
   }
 
@@ -856,7 +886,7 @@ export default function AdProductAdd() {
 
   const handleAddCategory = async (newCategory) => {
     try {
-      if (newCategory.name === '') {
+      if (newCategory.name.trim() === '') {
         toast.warning('Tên thể loại không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -894,7 +924,7 @@ export default function AdProductAdd() {
 
   const handleAddBrand = async (newBrand) => {
     try {
-      if (newBrand.name === '') {
+      if (newBrand.name.trim() === '') {
         toast.warning('Tên thương hiệu không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -932,7 +962,7 @@ export default function AdProductAdd() {
 
   const handleAddSole = async (newSole) => {
     try {
-      if (newSole.name === '') {
+      if (newSole.name.trim() === '') {
         toast.warning('Tên đế giày không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -970,7 +1000,7 @@ export default function AdProductAdd() {
 
   const handleAddMaterial = async (newMaterial) => {
     try {
-      if (newMaterial.name === '') {
+      if (newMaterial.name.trim() === '') {
         toast.warning('Tên chất liệu không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1008,14 +1038,14 @@ export default function AdProductAdd() {
 
   const handleAddColor = async (newColor) => {
     try {
-      if (newColor.code === '') {
+      if (newColor.trim().code === '') {
         toast.warning('Mã màu không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
       }
 
-      if (newColor.name === '') {
+      if (newColor.name.trim() === '') {
         toast.warning('Tên màu không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1067,14 +1097,14 @@ export default function AdProductAdd() {
 
   const handleUpdateColor = async (colorDetail, colorPreview) => {
     try {
-      if (colorDetail.code === '') {
+      if (colorDetail.trim().code === '') {
         toast.warning('Mã màu không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
       }
 
-      if (colorDetail.name === '') {
+      if (colorDetail.trim().name === '') {
         toast.warning('Tên màu không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1134,7 +1164,7 @@ export default function AdProductAdd() {
 
   const handleAddSize = async (newSize) => {
     try {
-      if (newSize.size === '') {
+      if (newSize.size.trim() === '') {
         toast.warning('Kích cỡ không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1175,7 +1205,7 @@ export default function AdProductAdd() {
 
   const handleUpdateSize = async (sizeDetail, sizePreview) => {
     try {
-      if (sizeDetail.size === '') {
+      if (sizeDetail.trim().size === '') {
         toast.warning('Kích cỡ không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1320,28 +1350,46 @@ export default function AdProductAdd() {
                 <span style={{ color: 'red' }}>*</span>Danh mục
               </b>
               <Autocomplete
-                noOptionsText={
-                  <Button
-                    size="small"
-                    fullWidth
-                    color="cam"
-                    onClick={() => handleAddCategory(newCategory)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
                 size="small"
                 fullWidth
                 value={newProducts.category}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 onChange={(_, e) => {
-                  genNewProductDetail({ ...newProducts, category: e })
+                  if (e && e.add) {
+                    handleAddCategory(newCategory)
+                  } else {
+                    genNewProductDetail({ ...newProducts, category: e })
+                  }
                 }}
                 className="search-field"
                 id="combo-box-category"
                 options={categorys.map((category) => {
                   return { label: category.name, value: category.id }
                 })}
+                renderOption={(props, option, state) => (
+                  <div
+                    {...props}
+                    style={
+                      option.label.includes('Thêm mới')
+                        ? {
+                            color: '#FC7C27',
+                            fontWeight: 'bold',
+                          }
+                        : {}
+                    }>
+                    {option.label}
+                  </div>
+                )}
+                filterOptions={(options, params) => {
+                  const filtered = filter(options, params)
+                  if (params.inputValue.trim() !== '') {
+                    filtered.push({
+                      add: true,
+                      label: `Thêm mới "${params.inputValue}"`,
+                    })
+                  }
+                  return filtered
+                }}
                 renderInput={(params) => (
                   <TextField
                     color="cam"
@@ -1357,16 +1405,6 @@ export default function AdProductAdd() {
                 <span style={{ color: 'red' }}>*</span>Thương hiệu
               </b>
               <Autocomplete
-                noOptionsText={
-                  <Button
-                    size="small"
-                    fullWidth
-                    color="cam"
-                    onClick={() => handleAddBrand(newBrand)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
                 size="small"
                 fullWidth
                 className="search-field"
@@ -1374,11 +1412,39 @@ export default function AdProductAdd() {
                 value={newProducts.brand}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 onChange={(_, e) => {
-                  genNewProductDetail({ ...newProducts, brand: e })
+                  if (e && e.add) {
+                    handleAddBrand(newBrand)
+                  } else {
+                    genNewProductDetail({ ...newProducts, brand: e })
+                  }
                 }}
                 options={brands.map((brand) => {
                   return { label: brand.name, value: brand.id }
                 })}
+                renderOption={(props, option, state) => (
+                  <div
+                    {...props}
+                    style={
+                      option.label.includes('Thêm mới')
+                        ? {
+                            color: '#FC7C27',
+                            fontWeight: 'bold',
+                          }
+                        : {}
+                    }>
+                    {option.label}
+                  </div>
+                )}
+                filterOptions={(options, params) => {
+                  const filtered = filter(options, params)
+                  if (params.inputValue.trim() !== '') {
+                    filtered.push({
+                      add: true,
+                      label: `Thêm mới "${params.inputValue}"`,
+                    })
+                  }
+                  return filtered
+                }}
                 renderInput={(params) => (
                   <TextField
                     color="cam"
@@ -1396,24 +1462,46 @@ export default function AdProductAdd() {
                 <span style={{ color: 'red' }}>*</span>Đế giày
               </b>
               <Autocomplete
-                noOptionsText={
-                  <Button size="small" fullWidth color="cam" onClick={() => handleAddSole(newSole)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
                 size="small"
                 fullWidth
                 value={newProducts.sole}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 onChange={(_, e) => {
-                  genNewProductDetail({ ...newProducts, sole: e })
+                  if (e && e.add) {
+                    handleAddSole(newSole)
+                  } else {
+                    genNewProductDetail({ ...newProducts, sole: e })
+                  }
                 }}
                 className="search-field"
                 id="combo-box-sole"
                 options={soles.map((sole) => {
                   return { label: sole.name, value: sole.id }
                 })}
+                renderOption={(props, option, state) => (
+                  <div
+                    {...props}
+                    style={
+                      option.label.includes('Thêm mới')
+                        ? {
+                            color: '#FC7C27',
+                            fontWeight: 'bold',
+                          }
+                        : {}
+                    }>
+                    {option.label}
+                  </div>
+                )}
+                filterOptions={(options, params) => {
+                  const filtered = filter(options, params)
+                  if (params.inputValue.trim() !== '') {
+                    filtered.push({
+                      add: true,
+                      label: `Thêm mới "${params.inputValue}"`,
+                    })
+                  }
+                  return filtered
+                }}
                 renderInput={(params) => (
                   <TextField
                     color="cam"
@@ -1429,16 +1517,6 @@ export default function AdProductAdd() {
                 <span style={{ color: 'red' }}>*</span>Chất liệu
               </b>
               <Autocomplete
-                noOptionsText={
-                  <Button
-                    size="small"
-                    fullWidth
-                    color="cam"
-                    onClick={() => handleAddMaterial(newMaterial)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
                 size="small"
                 fullWidth
                 className="search-field"
@@ -1446,11 +1524,39 @@ export default function AdProductAdd() {
                 value={newProducts.material}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 onChange={(_, e) => {
-                  genNewProductDetail({ ...newProducts, material: e })
+                  if (e && e.add) {
+                    handleAddMaterial(newMaterial)
+                  } else {
+                    genNewProductDetail({ ...newProducts, material: e })
+                  }
                 }}
                 options={materials.map((material) => {
                   return { label: material.name, value: material.id }
                 })}
+                renderOption={(props, option, state) => (
+                  <div
+                    {...props}
+                    style={
+                      option.label.includes('Thêm mới')
+                        ? {
+                            color: '#FC7C27',
+                            fontWeight: 'bold',
+                          }
+                        : {}
+                    }>
+                    {option.label}
+                  </div>
+                )}
+                filterOptions={(options, params) => {
+                  const filtered = filter(options, params)
+                  if (params.inputValue.trim() !== '') {
+                    filtered.push({
+                      add: true,
+                      label: `Thêm mới "${params.inputValue}"`,
+                    })
+                  }
+                  return filtered
+                }}
                 renderInput={(params) => (
                   <TextField
                     color="cam"
