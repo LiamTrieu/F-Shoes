@@ -1714,7 +1714,7 @@ export default function SellFrom({
       transactionCode: transactionCode ? transactionCode : null,
       paymentMethod: paymentMethod === '1' ? 1 : 0,
       noteTransaction: noteTransaction ? noteTransaction : null,
-      totalMoney: calculateDesiredValue(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
+      totalMoney: customerAmount.replace(/\D/g, ''),
       percentMoney: percentMoney === 0 ? 0 : percentMoney,
     }
 
@@ -3346,37 +3346,37 @@ export default function SellFrom({
                 </Typography>
               </Stack>
               {totalMoneyPayOrderByIdBill - totalPrice !== 0 && (
+                // <Stack
+                //   sx={{ marginTop: '20px' }}
+                //   direction="row"
+                //   justifyContent="space-between"
+                //   alignItems="center"
+                //   spacing={2}>
+                //   <Typography style={{ fontSize: '20px', fontWeight: 700 }}>Tiền thừa</Typography>
+                //   <Typography style={{ color: 'red', fontWeight: 700 }}>
+                //     {formatCurrency(
+                //       ExcessMoney(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
+                //     )}
+                //   </Typography>
+                // </Stack>
                 <Stack
                   sx={{ marginTop: '20px' }}
                   direction="row"
                   justifyContent="space-between"
                   alignItems="center"
                   spacing={2}>
-                  <Typography style={{ fontSize: '20px', fontWeight: 700 }}>Tiền thừa</Typography>
+                  <Typography style={{ fontSize: '16px', fontWeight: 700 }}>
+                    {totalPrice < totalMoneyPayOrderByIdBill ? 'Tiền thừa:' : 'Tiền thiếu'}
+                  </Typography>
                   <Typography style={{ color: 'red', fontWeight: 700 }}>
                     {formatCurrency(
-                      ExcessMoney(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
-                    )}
+                      totalPrice - totalMoneyPayOrderByIdBill < 0
+                        ? Math.abs(totalPrice - totalMoneyPayOrderByIdBill)
+                        : totalPrice - totalMoneyPayOrderByIdBill,
+                    )}{' '}
                   </Typography>
                 </Stack>
               )}
-              {/* <Stack
-                sx={{ marginTop: '20px' }}
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                spacing={2}>
-                <Typography style={{ fontSize: '16px', fontWeight: 700 }}>
-                  {totalPrice < totalMoneyPayOrderByIdBill ? 'Tiền thừa:' : 'Tiền thiếu'}
-                </Typography>
-                <Typography style={{ color: 'red', fontWeight: 700 }}>
-                  {formatCurrency(
-                    totalPrice - totalMoneyPayOrderByIdBill < 0
-                      ? Math.abs(totalPrice - totalMoneyPayOrderByIdBill)
-                      : totalPrice - totalMoneyPayOrderByIdBill,
-                  )}{' '}
-                </Typography>
-              </Stack> */}
             </Box>
           </Grid2>
         </Grid2>
@@ -3540,17 +3540,34 @@ export default function SellFrom({
                 </TableContainer>
               </div>
               {totalMoneyPayOrderByIdBill - totalPrice !== 0 && (
+                // <Stack
+                //   sx={{ marginTop: '20px' }}
+                //   direction="row"
+                //   justifyContent="space-between"
+                //   alignItems="center"
+                //   spacing={2}>
+                //   <Typography style={{ fontSize: '20px', fontWeight: 700 }}>Tiền thừa</Typography>
+                //   <Typography style={{ color: 'red', fontWeight: 700 }}>
+                //     {formatCurrency(
+                //       ExcessMoney(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
+                //     )}
+                //   </Typography>
+                // </Stack>
                 <Stack
                   sx={{ marginTop: '20px' }}
                   direction="row"
                   justifyContent="space-between"
                   alignItems="center"
                   spacing={2}>
-                  <Typography style={{ fontSize: '20px', fontWeight: 700 }}>Tiền thừa</Typography>
+                  <Typography style={{ fontSize: '16px', fontWeight: 700 }}>
+                    {totalPrice < totalMoneyPayOrderByIdBill ? 'Tiền thừa:' : 'Tiền thiếu'}
+                  </Typography>
                   <Typography style={{ color: 'red', fontWeight: 700 }}>
                     {formatCurrency(
-                      ExcessMoney(customerAmount, totalPrice, totalMoneyPayOrderByIdBill),
-                    )}
+                      totalPrice - totalMoneyPayOrderByIdBill < 0
+                        ? Math.abs(totalPrice - totalMoneyPayOrderByIdBill)
+                        : totalPrice - totalMoneyPayOrderByIdBill,
+                    )}{' '}
                   </Typography>
                 </Stack>
               )}

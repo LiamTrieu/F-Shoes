@@ -40,8 +40,8 @@ public interface HDBillRepository extends BillRepository {
             AND b.status <> 8
             GROUP BY b.id, b.code, c.full_name, c.phone_number, b.address,
             b.total_money, b.money_reduced, b.money_after, b.money_ship,
-            b.type,b.note, b.created_at,b.created_by,b.status
-            ORDER BY b.created_at DESC
+            b.type,b.note, b.created_at,b.created_by,b.status, b.updated_at
+            ORDER BY b.updated_at DESC
             """, nativeQuery = true)
     Page<HDBillResponse> filterBill(
             Pageable pageable,
@@ -86,8 +86,8 @@ public interface HDBillRepository extends BillRepository {
             AND b.status <> 8
             GROUP BY b.id, b.code, c.full_name, c.phone_number, b.address,
             b.total_money, b.money_reduced, b.money_after, b.money_ship,
-            b.type,b.note, b.created_at,b.created_by,b.status
-            ORDER BY b.created_at DESC
+            b.type,b.note, b.created_at,b.created_by,b.status, b.updated_at
+            ORDER BY b.updated_at DESC
             """, nativeQuery = true)
     Page<HDBillResponse> filterBillByStaff(
             Pageable pageable,
@@ -115,8 +115,8 @@ public interface HDBillRepository extends BillRepository {
             WHERE b.id = :id
             GROUP BY b.id, b.code, c.full_name, c.phone_number, b.address,
             b.total_money, b.money_reduced, b.money_after, b.money_ship,
-            b.type,b.note, b.created_at,b.created_by,b.status
-            ORDER BY b.created_at DESC
+            b.type,b.note, b.created_at,b.created_by,b.status, b.updated_at
+            ORDER BY b.updated_at DESC
             """, nativeQuery = true)
     HDBillResponse realTimeBill(String id);
 
@@ -135,8 +135,8 @@ public interface HDBillRepository extends BillRepository {
             AND b.status <> 8
             GROUP BY b.id, b.code, c.full_name, c.phone_number, b.address,
             b.total_money, b.money_reduced, b.money_after, b.money_ship,
-            b.type,b.note, b.created_at,b.created_by,b.status
-            ORDER BY b.created_at DESC
+            b.type,b.note, b.created_at,b.created_by,b.status, b.updated_at
+            ORDER BY b.updated_at DESC
             """, nativeQuery = true)
     HDBillResponse findBill(@Param("idBill") String id);
 
