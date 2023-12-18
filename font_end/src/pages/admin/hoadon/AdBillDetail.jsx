@@ -348,7 +348,34 @@ export default function AdBillDetail() {
   const [percentInBill, setPercentInBill] = useState(null)
   const fetchVoucherByIdBill = (idBill) => {
     hoaDonChiTietApi.getVoucherByIdBill(idBill).then((response) => {
-      setVoucherInBill(response.data.data)
+      const dataVoucher = response.data.data
+      if (dataVoucher === null || dataVoucher === undefined) {
+        setVoucherInBill({
+          id: '',
+          code: '',
+          name: '',
+          value: '',
+          maximumValue: '',
+          type: '',
+          typeValue: '',
+          minimumAmount: '',
+          startDate: '',
+          endDate: '',
+        })
+      } else {
+        setVoucherInBill({
+          id: dataVoucher.id,
+          code: dataVoucher.code,
+          name: dataVoucher.name,
+          value: dataVoucher.value,
+          maximumValue: dataVoucher.maximumValue,
+          type: dataVoucher.type,
+          typeValue: dataVoucher.typeValue,
+          minimumAmount: dataVoucher.minimumAmount,
+          startDate: dayjs(dataVoucher.startDate).format('DD-MM-YYYY HH:mm:ss'),
+          endDate: dayjs(dataVoucher.endDate).format('DD-MM-YYYY HH:mm:ss'),
+        })
+      }
     })
   }
 
@@ -358,24 +385,30 @@ export default function AdBillDetail() {
     })
   }
 
-  const fecthListVoucherByIdCustomer = (adCallVoucherOfSell, totalProductsCost) => {
+  const fecthListVoucherByIdCustomer = (adCallVoucherOfSell, totalProductsCost, voucherInBill) => {
     sellApi
       .getListVoucherByIdCustomer(adCallVoucherOfSell)
       .then((response) => {
-        findMaxValueElement(response.data.data, totalProductsCost)
+        findMaxValueElement(response.data.data, totalProductsCost, voucherInBill)
       })
-      .catch((error) => {
-        // toast.error('Vui Lòng f5 tải lại trang', {
-        //   position: toast.POSITION.TOP_CENTER,
-        // })
+      .catch(() => {
+        toast.error('Vui Lòng f5 tải lại trang', {
+          position: toast.POSITION.TOP_CENTER,
+        })
       })
   }
 
-  const findMaxValueElement = (lstVoucher, totalProductsCost) => {
+  const findMaxValueElement = (lstVoucher, totalProductsCost, voucherInBill) => {
+    console.log('=====', voucherInBill)
+    console.log('=====', lstVoucher)
     const lstVoucherMax =
-      totalProductsCost < voucherInBill.minimumAmount
+      voucherInBill.id === ''
         ? [...lstVoucher]
-        : [...lstVoucher, voucherInBill]
+        : voucherInBill.id !== '' && voucherInBill.minimumAmount > totalProductsCost
+          ? [...lstVoucher]
+          : [...lstVoucher, voucherInBill]
+
+    console.log('=====', lstVoucherMax)
 
     if (lstVoucherMax.length < 1) {
       setVoucherMax({
@@ -393,10 +426,6 @@ export default function AdBillDetail() {
       return null
     }
 
-    console.log('totalProductsCost:', totalProductsCost)
-    console.log('minimumAmount:', voucherInBill.minimumAmount)
-    console.log('lstVoucherMax:', lstVoucherMax)
-
     let maxElement = lstVoucherMax[0]
     lstVoucherMax.forEach((element) => {
       if (element.maximumValue > maxElement.maximumValue) {
@@ -404,6 +433,7 @@ export default function AdBillDetail() {
       }
     })
 
+    console.log('=====', maxElement)
     return handleVoucher(maxElement.id)
   }
 
@@ -411,15 +441,21 @@ export default function AdBillDetail() {
     sellApi
       .getOneVoucherById(idVoucher)
       .then((response) => {
+        console.log('=====', response.data.data)
         setVoucherMax(response.data.data)
       })
-      .catch(() => {})
+      .catch(() => {
+        toast.error('Vui Lòng f5 tải lại trang', {
+          position: toast.POSITION.TOP_CENTER,
+        })
+      })
   }
 
   useEffect(() => {
     fetchVoucherByIdBill(id)
     fetchPercentByIdBill(id)
-    fecthListVoucherByIdCustomer(adCallVoucherOfSell, totalProductsCost)
+    fecthListVoucherByIdCustomer(adCallVoucherOfSell, totalProductsCost, voucherInBill)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, adCallVoucherOfSell, totalProductsCost])
 
   useEffect(() => {
@@ -602,7 +638,7 @@ export default function AdBillDetail() {
         note: billDetail.note,
         status: 2,
         noteBillHistory: ghiChu,
-        // idVoucher: voucherMax.id,
+        idVoucher: voucherMax.id === '' ? null : voucherMax.id,
 
         listHdctReq: listHDCT.map((item) => ({
           productDetailId: item.productDetailId,
@@ -669,7 +705,6 @@ export default function AdBillDetail() {
     const updateStatusBillRequest = {
       noteBillHistory: ghiChu,
       status: 3,
-      // idVoucher: voucherMax.id,
     }
 
     const handleConfirmDeliver = (id, updateStatusBillRequest) => {
@@ -1411,11 +1446,12 @@ export default function AdBillDetail() {
       .getOne(id)
       .then((response) => {
         setBillDetail(response.data.data)
+        console.log('=====', response.data.data)
         setMoneyAfter(response.data.data.moneyAfter)
         setAdCallVoucherOfSell({
           ...adCallVoucherOfSell,
           condition: response.data.data.totalMoney,
-          idCustomer: response.data.data.idCustomer,
+          idCustomer: response.data.data.idCustomer === null ? '' : response.data.data.idCustomer,
         })
         setLoading(false)
       })
@@ -2451,7 +2487,7 @@ export default function AdBillDetail() {
           <div>
             <Grid spacing={2} container>
               <Grid item xs={6}>
-                {/* <Stack sx={{ marginRight: 'auto', width: 300, paddingRight: 1 }}>
+                <Stack sx={{ marginRight: 'auto', width: 300, paddingRight: 1 }}>
                   <div
                     style={{
                       display: 'flex',
@@ -2460,7 +2496,13 @@ export default function AdBillDetail() {
                     }}>
                     Phiếu giảm giá:
                     <span style={{ fontWeight: 'bold' }}>
-                      {voucherMax.code !== '' ? voucherMax.code : ''}
+                      {billDetail && billDetail.status !== 1
+                        ? voucherInBill.id === ''
+                          ? ''
+                          : voucherInBill.code
+                        : voucherMax.id === ''
+                          ? ''
+                          : voucherMax.code}
                     </span>
                   </div>
                   <div
@@ -2471,12 +2513,12 @@ export default function AdBillDetail() {
                     }}>
                     <span>Giảm giá từ cửa hàng:</span>
                     <span style={{ fontWeight: 'bold' }}>
-                      {percentInBill === null || percentInBill === ''
+                      {percentInBill === null || percentInBill === '' || percentInBill === undefined
                         ? 0 + '%'
                         : percentInBill + '%'}
                     </span>
                   </div>
-                </Stack> */}
+                </Stack>
               </Grid>
               <Grid item xs={6}>
                 <Stack sx={{ marginLeft: 'auto', width: 300, paddingRight: 5 }}>

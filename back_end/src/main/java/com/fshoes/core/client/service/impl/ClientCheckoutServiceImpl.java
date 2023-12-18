@@ -2,6 +2,8 @@ package com.fshoes.core.client.service.impl;
 
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.notification.model.NotificationRequest;
+import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
+import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.authentication.service.AuthenticationService;
 import com.fshoes.core.client.model.request.ClientBillDetaillRequest;
@@ -65,6 +67,8 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
     private HDBillRepository hdBillRepository;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private AdCustomerVoucherRepository adCustomerVoucherRepository;
 
     @Autowired
     private UserLogin userLogin;
@@ -78,6 +82,13 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 voucher.setQuantity(voucher.getQuantity() - 1);
                 voucherRepository.save(voucher);
                 newBill.setVoucher(voucher);
+                if (userLogin.getUserLogin().getId() != null) {
+                    Account account = accountRepository.findById(userLogin.getUserLogin().getId()).orElse(null);
+                    AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), account.getId());
+                    if (adCustomerVoucherRespone != null) {
+                        adCustomerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+                    }
+                }
             }
         }
         newBill.setReceivingMethod(1);
@@ -163,7 +174,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         notification.setContent(newBill.getCode());
         notification.setTitle("Có đơn hàng mới ");
         notification.setImage(account.getAvatar());
-        notification.setCreatedAt(Calendar.getInstance().getTimeInMillis()  );
+        notification.setCreatedAt(Calendar.getInstance().getTimeInMillis());
         notification.setType(TypeNotification.HOA_DON);
         notification.setIdRedirect(newBill.getId());
         messagingTemplate.convertAndSend("/topic/thong-bao", notification);
@@ -349,7 +360,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     notification.setContent(bill.getCode());
                     notification.setTitle("Có đơn hàng mới ");
                     notification.setImage(account.getAvatar());
-                    notification.setCreatedAt(Calendar.getInstance().getTimeInMillis()  );
+                    notification.setCreatedAt(Calendar.getInstance().getTimeInMillis());
                     notification.setType(TypeNotification.HOA_DON);
                     notification.setIdRedirect(bill.getId());
                     messagingTemplate.convertAndSend("/topic/thong-bao", notification);
@@ -357,7 +368,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 }
             }
         }
-        if (bill!=null){
+        if (bill != null) {
             List<BillDetail> listBillDetail = billDetailRepository.getBillDetails(bill.getId());
             List<Transaction> listTransaction = transactionRepository.getTransactions(bill.getId());
             List<BillHistory> listBillHistory = billHistoryRepository.getBillHistorys(bill.getId());
