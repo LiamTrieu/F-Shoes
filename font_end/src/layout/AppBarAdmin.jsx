@@ -14,7 +14,7 @@ import {
   MenuItem,
   Tooltip,
 } from '@mui/material'
-import { AiOutlineMenuFold } from 'react-icons/ai'
+import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
 import '../assets/styles/admin.css'
@@ -32,10 +32,10 @@ import dayjs from 'dayjs'
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled'
 import { GetApp, setApp } from '../services/slices/appSlice'
 
-const drawerWidth = '17vw'
 var stompClient = null
 export default function AppBarAdmin({ children }) {
   const [notification, setNotification] = useState([])
+  const [drawerWidth, setDrawerWidth] = useState('17vw')
 
   const navigate = useNavigate()
   const user = useSelector(GetUserAdmin)
@@ -336,13 +336,19 @@ export default function AppBarAdmin({ children }) {
             backdropFilter: 'blur(8px)',
           }}>
           <Toolbar sx={{ paddingLeft: '0px !important' }}>
-            <Box width={drawerWidth}></Box>
+            <Box width={drawerWidth} sx={{ transition: 'width 0.3s ease-in-out' }}></Box>
             <IconButton
+              onClick={() => {
+                setDrawerWidth(drawerWidth === '4vw' ? '17vw' : '4vw')
+              }}
               sx={{
                 color: 'black',
                 transform: `rotate(${true ? 0 : 180}deg)`,
               }}>
-              <Box component={AiOutlineMenuFold} sx={{ fontSize: '25px' }} />
+              <Box
+                component={drawerWidth === '17vw' ? AiOutlineMenuFold : AiOutlineMenuUnfold}
+                sx={{ fontSize: '25px' }}
+              />
             </IconButton>
             <Box flexGrow={1} />
             <NotificationButton />
@@ -423,19 +429,25 @@ export default function AppBarAdmin({ children }) {
             border: 'none',
             width: drawerWidth,
             flexShrink: 0,
-            [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+            transition: 'width 0.3s ease-in-out', // Add a transition property
+            [`& .MuiDrawer-paper`]: {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              transition: 'width 0.3s ease-in-out', // Apply the transition to the paper as well
+            },
           }}>
-          <Box
-            component={'img'}
-            sx={{
-              p: 6,
-              py: 1,
-              transition: 'width 0.5s',
-              height: '100px',
-            }}
-            src={require('../assets/image/logoweb.png')}
-            alt="logo"
-          />
+          <Box width={'100%'} textAlign={'center'} pb={0}>
+            <Box
+              component={'img'}
+              sx={{
+                py: 2,
+                transition: 'width 0.3s',
+                width: drawerWidth === '4vw' ? '100%' : '55%',
+              }}
+              src={require('../assets/image/logoweb.png')}
+              alt="logo"
+            />
+          </Box>
           <Box
             sx={{
               pb: 3,
@@ -447,10 +459,12 @@ export default function AppBarAdmin({ children }) {
                 background: 'rgba(76,78,100,0.4)',
               },
             }}>
-            <AdminMenu />
+            <AdminMenu small={drawerWidth === '17vw'} />
           </Box>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3, maxWidth: '83vw' }}>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, p: 3, maxWidth: drawerWidth === '4vw' ? '96vw' : '83vw' }}>
           <Toolbar />
           {children}
         </Box>

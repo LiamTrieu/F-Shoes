@@ -110,9 +110,15 @@ export default function ReturnOrderBill() {
 
     const returnBill = {
       idBill: bill.id,
-      returnMoney: billDetail.reduce((total, e) => {
-        return total + e.quantityReturn * e.price
-      }, 0),
+      returnMoney:
+        billDetail.reduce((total, e) => {
+          return total + e.quantityReturn * e.price
+        }, 0) <=
+        bill.moneyAfter - bill.moneyShip
+          ? billDetail.reduce((total, e) => {
+              return total + e.quantityReturn * e.price
+            }, 0)
+          : bill.moneyAfter - bill.moneyShip,
       moneyPayment: traKhach,
       listDetail: detail,
     }
@@ -301,7 +307,9 @@ export default function ReturnOrderBill() {
           </Paper>
           <Grid container spacing={2} mt={2}>
             <Grid xs={8} style={{ paddingTop: 0 }}>
-              <Paper className="paper-return" sx={{ mb: 2, p: 1, marginLeft: '30px' }}>
+              <Paper
+                className="paper-return"
+                sx={{ mb: 2, p: 1, marginLeft: '30px', height: '50vh' }}>
                 <h4 style={{ margin: '0' }}>
                   <MdAssignmentReturned fontSize={20} style={{ marginBottom: '-6px' }} />
                   &nbsp; Danh sách sản phẩm trả
@@ -443,7 +451,7 @@ export default function ReturnOrderBill() {
               <Paper
                 sx={{
                   p: 2,
-                  height: '43vh',
+                  height: '50vh',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -476,12 +484,12 @@ export default function ReturnOrderBill() {
                     <BusinessIcon style={{ marginRight: '5px', marginBottom: '-5px' }} />
                     <span>
                       <b>Địa chỉ: </b>
-                      {bill?.address ? bill?.address : ''}
+                      {bill?.address ? bill?.address : 'Tại cửa hàng'}
                     </span>
                   </div>
                 </div>
                 <Grid container>
-                  <Grid xs={6}>Số tiền hoàn trả </Grid>
+                  <Grid xs={6}>Tổng tiền </Grid>
                   <Grid xs={6} sx={{ textAlign: 'right' }}>
                     <b style={{ color: 'red' }}>
                       {billDetail
@@ -492,6 +500,38 @@ export default function ReturnOrderBill() {
                           style: 'currency',
                           currency: 'VND',
                         })}
+                    </b>
+                  </Grid>
+                </Grid>
+                <Grid container>
+                  <Grid xs={6}>Giảm giá </Grid>
+                  <Grid xs={6} sx={{ textAlign: 'right' }}>
+                    <b style={{ color: 'red' }}>
+                      {bill.moneyReduced
+                        ? bill.moneyReduced.toLocaleString('it-IT', {
+                            style: 'currency',
+                            currency: 'VND',
+                          })
+                        : '0 VND'}
+                    </b>
+                  </Grid>
+                </Grid>
+                <Grid container>
+                  <Grid xs={6}>Số tiền hoàn trả </Grid>
+                  <Grid xs={6} sx={{ textAlign: 'right' }}>
+                    <b style={{ color: 'red' }}>
+                      {(billDetail.reduce((total, e) => {
+                        return total + e.quantityReturn * e.price
+                      }, 0) <=
+                      bill.moneyAfter - bill.moneyShip
+                        ? billDetail.reduce((total, e) => {
+                            return total + e.quantityReturn * e.price
+                          }, 0)
+                        : bill.moneyAfter - bill.moneyShip
+                      ).toLocaleString('it-IT', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })}
                     </b>
                   </Grid>
                 </Grid>

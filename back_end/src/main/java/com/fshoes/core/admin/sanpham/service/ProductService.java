@@ -45,4 +45,6 @@ public interface ProductService {
     Product updateNameProduct(String idProduct, String nameProduct);
 
     List<ProductDetail> updateListProduct(List<UpdateListRequest> requests);
+
+    List<String> filterAdd(String idProduct);
 }

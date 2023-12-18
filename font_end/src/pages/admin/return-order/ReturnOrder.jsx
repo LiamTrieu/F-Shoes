@@ -29,7 +29,7 @@ export default function ReturnOrder() {
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
 
   function createReturn(code) {
-    returnApi.getBill({ codeBill: code }).then((result) => {
+    returnApi.getBill({ codeBill: code.trim() }).then((result) => {
       if (result.data.success) {
         navigate('/admin/return-order/bill/' + result.data.data)
         setQrScannerVisible(false)

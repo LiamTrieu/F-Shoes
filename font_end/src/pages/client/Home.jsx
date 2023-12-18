@@ -8,7 +8,11 @@ import CartSellingProduct from '../../layout/client/CartSellingProduct'
 import CartSaleProduct from '../../layout/client/CartSaleProduct'
 import { getStompClient } from '../../services/socket'
 import { IoMdGift } from 'react-icons/io'
+import SockJS from 'sockjs-client'
+import { socketUrl } from '../../services/url'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function Home() {
   const [products, setProducts] = useState([])
   const [sellingProducts, setSellingProducts] = useState([])
@@ -46,17 +50,25 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const subscription = getStompClient().subscribe('/topic/realtime-san-pham-home', (message) => {
+    const socket = new SockJS(socketUrl)
+    stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products])
+
+  function onConnect() {
+    getStompClient().subscribe('/topic/realtime-san-pham-home', (message) => {
       if (message.body) {
         const data = JSON.parse(message.body)
         updateRealTimeProductHome(data)
       }
     })
-    return () => {
-      subscription.unsubscribe()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products])
+  }
 
   function updateRealTimeProductHome(data) {
     const preProduct = [...products]

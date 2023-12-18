@@ -13,7 +13,6 @@ public interface BillReturnRepository extends BillRepository {
             FROM bill b
             WHERE b.code = :code
               AND b.status = 7
-              AND b.id_voucher is null
               AND b.complete_date >= :date
               AND NOT EXISTS (SELECT 1 FROM bill_detail WHERE id_bill = b.id AND status = 2)
             """, nativeQuery = true)
