@@ -35,6 +35,8 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import materialApi from '../../../api/admin/sanpham/materialApi'
 import * as ExcelJS from 'exceljs'
 
+import useDebounce from '../../../services/hook/useDebounce'
+
 const listBreadcrumb = [{ name: 'Quản lý chất liệu' }]
 
 export default function AdMaterialPage() {
@@ -57,6 +59,12 @@ export default function AdMaterialPage() {
     getAllmaterial()
     haldleAllNameMaterial()
   }, [filter])
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (filter) => {
     setIsBackdrop(true)
@@ -334,7 +342,7 @@ export default function AdMaterialPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setFilter({ ...filter, name: e.target.value })
+                setInputValue(e.target.value)
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm chất liệu"

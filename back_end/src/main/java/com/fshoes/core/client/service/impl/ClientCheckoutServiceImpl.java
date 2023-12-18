@@ -266,9 +266,9 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             fields.remove("vnp_SecureHash");
         }
         String signValue = VNPayConfig.hashAllFields(fields);
+        Bill bill = billRepository.findById((String) fields.get("vnp_OrderInfo")).orElse(null);
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                Bill bill = billRepository.findById((String) fields.get("vnp_OrderInfo")).orElse(null);
                 if (bill != null && bill.getStatus() == 8) {
                     bill.setStatus(1);
                     Account account;
@@ -353,10 +353,19 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     notification.setType(TypeNotification.HOA_DON);
                     notification.setIdRedirect(bill.getId());
                     messagingTemplate.convertAndSend("/topic/thong-bao", notification);
-
                     return listBillDetails.stream().map(BillDetail::getProductDetail).toList();
                 }
             }
+        }
+        if (bill!=null){
+            List<BillDetail> listBillDetail = billDetailRepository.getBillDetails(bill.getId());
+            List<Transaction> listTransaction = transactionRepository.getTransactions(bill.getId());
+            List<BillHistory> listBillHistory = billHistoryRepository.getBillHistorys(bill.getId());
+
+            billDetailRepository.deleteAll(listBillDetail);
+            transactionRepository.deleteAll(listTransaction);
+            billHistoryRepository.deleteAll(listBillHistory);
+            billRepository.delete(bill);
         }
         return null;
     }

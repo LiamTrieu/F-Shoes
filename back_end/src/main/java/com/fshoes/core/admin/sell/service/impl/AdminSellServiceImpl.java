@@ -17,6 +17,7 @@ import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
 import com.fshoes.infrastructure.constant.Message;
+import com.fshoes.infrastructure.constant.StatusVoucher;
 import com.fshoes.infrastructure.exception.RestApiException;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.TransactionRepository;
@@ -24,13 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminSellServiceImpl implements AdminSellService {
@@ -86,6 +90,23 @@ public class AdminSellServiceImpl implements AdminSellService {
 
     @Autowired
     private UserLogin userLogin;
+
+    @Scheduled(cron = "0 0 3 * * ?")
+    @Transactional
+    public void cronJobCheckOrder() {
+        List<Bill> listBill = billRepository.getAllBillTaoDonHang();
+        List<String> idBills = listBill.stream().map(Bill::getId).collect(Collectors.toList());
+
+        List<BillDetail> listBillDetail = billDetailRepositoty.getAllBillDetails(idBills);
+        List<Transaction> listTransaction = transactionRepository.getAllTransactions(idBills);
+        List<BillHistory> listBillHistory = billHistoryRepository.getAllBillHistorys(idBills);
+
+        billDetailRepositoty.deleteAll(listBillDetail);
+        transactionRepository.deleteAll(listTransaction);
+        billHistoryRepository.deleteAll(listBillHistory);
+        billRepository.deleteAll(listBill);
+    }
+
 
     @Override
     public PageReponse<GetALlCustomerResponse> getAllCustomer(AdCustomerRequest request) {

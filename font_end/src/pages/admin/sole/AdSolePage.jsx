@@ -34,6 +34,7 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
 import * as ExcelJS from 'exceljs'
+import useDebounce from '../../../services/hook/useDebounce'
 
 const listBreadcrumb = [{ name: 'Quản lý đế giày' }]
 export default function AdSolePage() {
@@ -49,6 +50,13 @@ export default function AdSolePage() {
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
   const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   useEffect(() => {
     fetchData(filter)
@@ -288,7 +296,7 @@ export default function AdSolePage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setFilter({ ...filter, name: e.target.value })
+                setInputValue(e.target.value)
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm đế giày"

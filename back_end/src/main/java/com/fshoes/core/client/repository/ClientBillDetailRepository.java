@@ -104,4 +104,6 @@ public interface ClientBillDetailRepository extends BillDetailRepository {
     BillDetail getBillDetailByBillIdAndProductDetailId(String idBill, String idProductDetail);
 
 
+    @Query(value = "SELECT * FROM bill_detail WHERE id_bill = :id", nativeQuery = true)
+    List<BillDetail> getBillDetails(String id);
 }
