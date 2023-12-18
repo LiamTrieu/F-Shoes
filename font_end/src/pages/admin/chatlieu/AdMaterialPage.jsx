@@ -308,7 +308,7 @@ export default function AdMaterialPage() {
     })
   }
 
-  return (
+  return listMaterial ? (
     <div>
       <Box>
         <Backdrop
@@ -450,9 +450,9 @@ export default function AdMaterialPage() {
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm
                     </TableCell>
-                    <TableCell sx={{ fontWeight: '500' }} align="center">
+                    {/* <TableCell sx={{ fontWeight: '500' }} align="center">
                       Hoạt động
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Chức năng
                     </TableCell>
@@ -468,7 +468,7 @@ export default function AdMaterialPage() {
                       <TableCell align="center">
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {row.deleted === 0 ? (
                           <Chip
                             onClick={() => setDeleted(row.id)}
@@ -484,7 +484,7 @@ export default function AdMaterialPage() {
                             label="Không hoạt động"
                           />
                         )}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
                           <IconButton
@@ -542,5 +542,7 @@ export default function AdMaterialPage() {
         </Container>
       </Box>
     </div>
+  ) : (
+    <div></div>
   )
 }

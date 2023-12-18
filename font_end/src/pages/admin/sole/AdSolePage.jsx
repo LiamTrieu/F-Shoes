@@ -262,7 +262,7 @@ export default function AdSolePage() {
     })
   }
 
-  return (
+  return listSole ? (
     <div>
       <Box>
         <Backdrop
@@ -398,9 +398,9 @@ export default function AdSolePage() {
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm
                     </TableCell>
-                    <TableCell sx={{ fontWeight: '500' }} align="center">
+                    {/* <TableCell sx={{ fontWeight: '500' }} align="center">
                       Hoạt động
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Chức năng
                     </TableCell>
@@ -416,7 +416,7 @@ export default function AdSolePage() {
                       <TableCell align="center">
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {row.deleted === 0 ? (
                           <Chip
                             onClick={() => setDeleted(row.id)}
@@ -432,7 +432,7 @@ export default function AdSolePage() {
                             label="Không hoạt động"
                           />
                         )}
-                      </TableCell>
+                      </TableCell> */}
 
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
@@ -492,5 +492,7 @@ export default function AdSolePage() {
         </Container>
       </Box>
     </div>
+  ) : (
+    <div></div>
   )
 }

@@ -49,6 +49,14 @@ const hoaDonChiTietApi = {
     const url = `/billDetail/isCheckDonGiaVsPricePrd/${id}`
     return axiosAdmin.get(url)
   },
+  getVoucherByIdBill: (idBill) => {
+    const urlGetByIdBillPrdAndPrice = `/billDetail/get/voucher/by/idBill/${idBill}`
+    return axiosAdmin.get(urlGetByIdBillPrdAndPrice)
+  },
+  getPercentByIdBill: (idBill) => {
+    const urlGetByIdBillPrdAndPrice = `/billDetail/get/percent/by/idBill/${idBill}`
+    return axiosAdmin.get(urlGetByIdBillPrdAndPrice)
+  },
 }
 
 export default hoaDonChiTietApi

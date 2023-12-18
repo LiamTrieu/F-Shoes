@@ -299,7 +299,7 @@ export default function AdCategoryPage() {
     })
   }
 
-  return (
+  return listCategory ? (
     <div>
       <Box>
         <Backdrop
@@ -441,9 +441,9 @@ export default function AdCategoryPage() {
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm
                     </TableCell>
-                    <TableCell sx={{ fontWeight: '500' }} align="center">
+                    {/* <TableCell sx={{ fontWeight: '500' }} align="center">
                       Hoạt động
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Chức năng
                     </TableCell>
@@ -459,7 +459,7 @@ export default function AdCategoryPage() {
                       <TableCell align="center">
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {row.deleted === 0 ? (
                           <Chip
                             onClick={() => setDeleted(row.id)}
@@ -475,7 +475,7 @@ export default function AdCategoryPage() {
                             label="Không hoạt động"
                           />
                         )}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
                           <IconButton
@@ -533,5 +533,7 @@ export default function AdCategoryPage() {
         </Container>
       </Box>
     </div>
+  ) : (
+    <div></div>
   )
 }

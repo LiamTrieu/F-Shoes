@@ -45,7 +45,6 @@ import './sell.css'
 import ModelSell from './ModelSell'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
 import DiaChiApi from '../../../api/admin/khachhang/DiaChiApi'
-import voucherApi from '../../../api/admin/voucher/VoucherApi'
 import { toast } from 'react-toastify'
 import Empty from '../../../components/Empty'
 import khachHangApi from '../../../api/admin/khachhang/KhachHangApi'
@@ -307,7 +306,7 @@ export default function SellFrom({
       }
 
       const conditionMoney = response.data.data.reduce((sum, cart) => {
-        if (cart.statusPromotion === 1) {
+        if (cart.value) {
           return sum + calculateDiscountedPrice(cart.price, cart.value) * cart.quantity
         } else {
           return sum + cart.price * cart.quantity
@@ -421,6 +420,18 @@ export default function SellFrom({
 
   const findMaxValueElement = (lstVoucher) => {
     if (lstVoucher.length < 1) {
+      setVoucher({
+        id: '',
+        code: '',
+        name: '',
+        value: '',
+        maximumValue: '',
+        minimumAmount: '',
+        type: '',
+        typeValue: '',
+        startDate: '',
+        endDate: '',
+      })
       return null
     }
 
@@ -1261,7 +1272,7 @@ export default function SellFrom({
   })
 
   const handleVoucher = (idVoucher) => {
-    voucherApi
+    sellApi
       .getOneVoucherById(idVoucher)
       .then((response) => {
         setVoucher(response.data.data)
@@ -1274,7 +1285,7 @@ export default function SellFrom({
   }
 
   const handleVoucherUnqualified = (idVoucher) => {
-    voucherApi
+    sellApi
       .getOneVoucherById(idVoucher)
       .then((response) => {
         setVoucherUnqualified(response.data.data)

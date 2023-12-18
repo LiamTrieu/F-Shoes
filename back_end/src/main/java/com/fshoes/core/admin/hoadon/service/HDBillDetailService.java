@@ -2,8 +2,10 @@ package com.fshoes.core.admin.hoadon.service;
 
 import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
+import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.entity.BillDetail;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface HDBillDetailService {
@@ -31,4 +33,7 @@ public interface HDBillDetailService {
 
     Boolean isCheckDonGiaVsPricePrd(String id);
 
+    AdVoucherRespone getVoucherByIdBill(String idBill);
+
+    BigDecimal getPercentInBill(String idBill);
 }

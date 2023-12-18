@@ -306,7 +306,7 @@ export default function AdBrandPage() {
     })
   }
 
-  return (
+  return listBrand ? (
     <div>
       <Box>
         <Backdrop
@@ -448,9 +448,9 @@ export default function AdBrandPage() {
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm
                     </TableCell>
-                    <TableCell sx={{ fontWeight: '500' }} align="center">
+                    {/* <TableCell sx={{ fontWeight: '500' }} align="center">
                       Hoạt động
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Chức năng
                     </TableCell>
@@ -466,7 +466,7 @@ export default function AdBrandPage() {
                       <TableCell align="center">
                         {dayjs(row.createdAt).format('DD/MM/YYYY')}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {row.deleted === 0 ? (
                           <Chip
                             onClick={() => setDeleted(row.id)}
@@ -482,7 +482,7 @@ export default function AdBrandPage() {
                             label="Không hoạt động"
                           />
                         )}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
                           <IconButton
@@ -540,5 +540,7 @@ export default function AdBrandPage() {
         </Container>
       </Box>
     </div>
+  ) : (
+    <div></div>
   )
 }

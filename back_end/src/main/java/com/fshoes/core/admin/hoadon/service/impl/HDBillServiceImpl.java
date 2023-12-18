@@ -10,6 +10,9 @@ import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.service.HDBillHistoryService;
 import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
+import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
+import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
+import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
 import com.fshoes.core.client.repository.ClientBillHistoryRepository;
 import com.fshoes.core.client.repository.ClientBillRepository;
@@ -87,6 +90,12 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Autowired
     private ClientBillDetailRepository clientBillDetailRepository;
+
+    @Autowired
+    private AdVoucherRepository adVoucherRepository;
+
+    @Autowired
+    private AdCustomerVoucherRepository adCustomerVoucherRepository;
 
     @Override
     public Page<HDBillResponse> filterBill(BillFilterRequest billFilterRequest) {
@@ -228,7 +237,35 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public Bill confirmOrder(String idBill, BillConfirmRequest billConfirmRequest) {
         Bill bill = hdBillRepository.findById(idBill).orElse(null);
+        if (bill != null) {
+            Voucher voucher = adVoucherRepository.findById(bill.getVoucher().getId()).orElse(null);
+            assert voucher != null;
+            voucher.setQuantity(voucher.getQuantity() + 1);
+            adVoucherRepository.save(voucher);
+            if (bill.getCustomer().getId() != null) {
+                Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
+                AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), bill.getCustomer().getId());
+                if (adCustomerVoucherRespone == null) {
+                    CustomerVoucher customerVoucher = new CustomerVoucher();
+                    customerVoucher.setVoucher(voucher);
+                    customerVoucher.setAccount(account);
+                    adCustomerVoucherRepository.save(customerVoucher);
+                }
+            }
+        }
+
+        Voucher voucherNew = adVoucherRepository.findById(billConfirmRequest.getIdVoucher()).orElse(null);
+        assert voucherNew != null;
+        voucherNew.setQuantity(voucherNew.getQuantity() - 1);
+        adVoucherRepository.save(voucherNew);
+        AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucherNew.getId(), bill.getCustomer().getId());
+        if (adCustomerVoucherRespone != null) {
+            adCustomerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+        }
+
+
         if (bill != null && bill.getStatus() == 1) {
+            bill.setVoucher(voucherNew);
             bill.setStatus(2);
             hdBillRepository.save(bill);
             // Lưu lịch sử hóa đơn
@@ -267,6 +304,31 @@ public class HDBillServiceImpl implements HDBillService {
     public Bill updateStatusBill(String idBill, HDBillRequest hdBillRequest) {
         Bill bill = hdBillRepository.findById(idBill).get();
         bill.setStatus(hdBillRequest.getStatus());
+        Voucher voucher = adVoucherRepository.findById(bill.getVoucher().getId()).orElse(null);
+        assert voucher != null;
+        voucher.setQuantity(voucher.getQuantity() + 1);
+        adVoucherRepository.save(voucher);
+        if (bill.getCustomer().getId() != null) {
+            Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
+            AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), bill.getCustomer().getId());
+            if (adCustomerVoucherRespone == null) {
+                CustomerVoucher customerVoucher = new CustomerVoucher();
+                customerVoucher.setVoucher(voucher);
+                customerVoucher.setAccount(account);
+                adCustomerVoucherRepository.save(customerVoucher);
+            }
+        }
+
+
+        Voucher voucherNew = adVoucherRepository.findById(hdBillRequest.getIdVoucher()).orElse(null);
+        assert voucherNew != null;
+        voucherNew.setQuantity(voucherNew.getQuantity() - 1);
+        adVoucherRepository.save(voucherNew);
+        AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucherNew.getId(), bill.getCustomer().getId());
+        if (adCustomerVoucherRespone != null) {
+            adCustomerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+        }
+
         if (hdBillRequest.getStatus() == 3) {
             bill.setShipDate(DateUtil.getCurrentTimeNow());
         } else if (hdBillRequest.getStatus() == 7) {

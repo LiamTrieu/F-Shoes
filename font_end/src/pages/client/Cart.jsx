@@ -536,7 +536,7 @@ export default function Cart() {
               <Typography sx={{ fontSize: '14px' }}>
                 .Phí vận chuyển sẽ được tính ở trang thanh toán.
               </Typography>
-              <Typography sx={{ fontSize: '14px', marginTop: '16px' }}>
+              {/* <Typography sx={{ fontSize: '14px', marginTop: '16px' }}>
                 <TextField
                   sx={{ flex: 1, minWidth: '100px', width: '100%' }}
                   value={voucherCart === null ? 'Phiếu giảm giá' : voucherCart.name}
@@ -562,7 +562,7 @@ export default function Cart() {
                   setGiamGia={setGiamGiaCart}
                   voucherFilter={voucherFilterCart}
                 />
-              </Typography>
+              </Typography> */}
               <Typography sx={{ fontSize: '14px', marginBottom: '20px' }}>
                 .Bạn cũng có thể nhập phiếu giảm giá ở trang thanh toán.
               </Typography>
