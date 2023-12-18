@@ -1,6 +1,7 @@
 package com.fshoes.core.admin.hoadon.repository;
 
 import com.fshoes.core.admin.hoadon.model.respone.HDBillDetailResponse;
+import com.fshoes.core.admin.voucher.model.respone.AdVoucherRespone;
 import com.fshoes.entity.BillDetail;
 import com.fshoes.repository.BillDetailRepository;
 import jakarta.transaction.Transactional;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HDBillDetailRepository extends BillDetailRepository {
@@ -80,4 +82,14 @@ public interface HDBillDetailRepository extends BillDetailRepository {
             WHERE b.id = :idBill
             """, nativeQuery = true)
     BigDecimal getPercentInBill(String idBill);
+
+    @Query(value = """
+            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            v.type, v.type_value as typeValue, v.minimum_amount as minimumAmount, v.quantity,
+            v.start_date as startDate, v.end_date as endDate, v.status
+            from voucher v
+            where v.id =:id
+            """, nativeQuery = true)
+    Optional<AdVoucherRespone> getVoucherById(@Param("id") String id);
 }

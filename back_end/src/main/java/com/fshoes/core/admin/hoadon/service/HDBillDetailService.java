@@ -36,4 +36,6 @@ public interface HDBillDetailService {
     AdVoucherRespone getVoucherByIdBill(String idBill);
 
     BigDecimal getPercentInBill(String idBill);
+
+    AdVoucherRespone getVoucherById(String id);
 }

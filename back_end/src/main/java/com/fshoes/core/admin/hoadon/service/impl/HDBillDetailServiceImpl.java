@@ -509,5 +509,9 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         return hdBillDetailRepository.getPercentInBill(idBill);
     }
 
+    @Override
+    public AdVoucherRespone getVoucherById(String id) {
+        return hdBillDetailRepository.getVoucherById(id).orElse(null);
+    }
 
 }

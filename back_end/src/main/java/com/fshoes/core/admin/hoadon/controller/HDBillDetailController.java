@@ -90,4 +90,9 @@ public class HDBillDetailController {
     public ObjectRespone getPercentByIdBill(@PathVariable("id") String id) {
         return new ObjectRespone(hdBillDetailService.getPercentInBill(id));
     }
+
+    @GetMapping("/view/one/voucher/{idBill}")
+    public ObjectRespone getOneVoucherById(@PathVariable String idBill) {
+        return new ObjectRespone(hdBillDetailService.getVoucherById(idBill));
+    }
 }

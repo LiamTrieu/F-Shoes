@@ -35,7 +35,7 @@ import TableRow from '@mui/material/TableRow'
 import CloseIcon from '@mui/icons-material/Close'
 import Person4Icon from '@mui/icons-material/Person4'
 import AddIcon from '@mui/icons-material/Add'
-import RemoveIcon from '@mui/icons-material/Remove'
+// import RemoveIcon from '@mui/icons-material/Remove'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { LocalShipping } from '@mui/icons-material'
 import sellApi from '../../../api/admin/sell/SellApi'
@@ -126,7 +126,7 @@ export default function SellFrom({
 }) {
   const theme = useTheme()
   const [isShowCustomer, setIsShowCustomer] = useState(false)
-  const [isShowVoucher, setIsShowVoucher] = useState(false)
+  // const [isShowVoucher, setIsShowVoucher] = useState(false)
   const [isShowDiaChi, setIsShowDiaChi] = useState(false)
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false)
   const [selectedRows, setSelectedRows] = useState([])
@@ -164,7 +164,7 @@ export default function SellFrom({
   const [isTextFieldDisabled, setIsTextFieldDisabled] = useState(false)
   const [noteTransaction, setNoteTransaction] = useState('')
 
-  const [errorPercentMoney, setErrorPercentMoney] = useState('')
+  // const [errorPercentMoney, setErrorPercentMoney] = useState('')
 
   const handlePaymentMethodChange = (event) => {
     const selectedPaymentMethod = event.target.value
@@ -411,7 +411,7 @@ export default function SellFrom({
       .then((response) => {
         findMinValueElement(response.data.data)
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error('Vui Lòng f5 tải lại trang', {
           position: toast.POSITION.TOP_CENTER,
         })
@@ -462,10 +462,10 @@ export default function SellFrom({
     return handleVoucherUnqualified(minElement.id)
   }
 
-  const handelOnchangePage = (page) => {
-    setAdCallVoucherOfSell({ ...adCallVoucherOfSell, page: page })
-    fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
-  }
+  // const handelOnchangePage = (page) => {
+  //   setAdCallVoucherOfSell({ ...adCallVoucherOfSell, page: page })
+  //   fecthDataVoucherByIdCustomer(adCallVoucherOfSell)
+  // }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -3030,22 +3030,22 @@ export default function SellFrom({
                     size="small"
                     className="input-voucher-sell"
                     disabled
-                    InputProps={{
-                      endAdornment: (
-                        <Button
-                          variant="contained"
-                          color="cam"
-                          onClick={() => {
-                            setIsShowVoucher(true)
-                            setAdCallVoucherOfSell({
-                              ...adCallVoucherOfSell,
-                              condition: parseFloat(totalSum),
-                            })
-                          }}>
-                          <b>Chọn </b>
-                        </Button>
-                      ),
-                    }}
+                    // InputProps={{
+                    //   endAdornment: (
+                    //     <Button
+                    //       variant="contained"
+                    //       color="cam"
+                    //       onClick={() => {
+                    //         setIsShowVoucher(true)
+                    //         setAdCallVoucherOfSell({
+                    //           ...adCallVoucherOfSell,
+                    //           condition: parseFloat(totalSum),
+                    //         })
+                    //       }}>
+                    //       <b>Chọn </b>
+                    //     </Button>
+                    //   ),
+                    // }}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -3069,7 +3069,7 @@ export default function SellFrom({
                   </span>
                 </Grid>
               </Grid>
-              <Modal
+              {/* <Modal
                 className="modal-voucher"
                 open={isShowVoucher}
                 onClose={() => {
@@ -3281,7 +3281,7 @@ export default function SellFrom({
                     />
                   </Container>
                 </Box>
-              </Modal>
+              </Modal> */}
             </Box>
             <Box sx={{ m: 1, ml: 3, mr: 3 }}>
               {moneyUnqualified > 0 && (
