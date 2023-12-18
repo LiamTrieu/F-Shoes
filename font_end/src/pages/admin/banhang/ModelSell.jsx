@@ -228,7 +228,7 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
         billId: idBill,
         productDetailId: id,
         quantity: addAmount,
-        price: priceToAdd,
+        // price: priceToAdd,
       }
 
       sellApi.addBillDetail(BillDetail, idBill).then(() => {
@@ -588,6 +588,8 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
                             // () => onSubmitAddCartDetail(cart.productDetailId)
                             () => {
                               setIsShowProductDetail(true)
+                              setAddAmount(1)
+                              setErrorQuantity('')
                               hanldeAmountProduct(cart.productDetailId)
                               setSelectedProduct(cart)
                             }
@@ -613,6 +615,8 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
                   <IconButton
                     onClick={() => {
                       setIsShowProductDetail(false)
+                      setAddAmount(1)
+                      setErrorQuantity('')
                     }}
                     aria-label="close"
                     color="error"

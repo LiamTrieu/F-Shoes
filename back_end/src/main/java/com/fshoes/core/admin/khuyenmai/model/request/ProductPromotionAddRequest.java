@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.List;
 
 @Getter
@@ -28,12 +29,18 @@ public class ProductPromotionAddRequest extends PageableRequest {
     private List<String> idProductDetail;
 
     public Promotion newPromotionAddProduct(Promotion promotion) throws ParseException {
+
         promotion.setName(this.name);
         promotion.setTimeStart(DateUtil.parseDateTimeLong(this.timeStart));
         promotion.setTimeEnd(DateUtil.parseDateTimeLong(this.timeEnd));
         promotion.setType(this.type);
         promotion.setValue(this.value);
-        promotion.setStatus(status);
+        if(DateUtil.parseDateTimeLong(this.timeStart) <= Calendar.getInstance().getTimeInMillis()){
+            promotion.setStatus(1);
+        }else {
+            promotion.setStatus(0);
+        }
+
 
         return promotion;
 
