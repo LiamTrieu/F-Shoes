@@ -35,6 +35,8 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import * as ExcelJS from 'exceljs'
 
+import useDebounce from '../../../services/hook/useDebounce'
+
 const listBreadcrumb = [{ name: 'Quản lý thể loại' }]
 export default function AdCategoryPage() {
   const theme = useTheme()
@@ -56,6 +58,12 @@ export default function AdCategoryPage() {
     getAllCategory()
     haldleAllNameCategory()
   }, [filter])
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (filter) => {
     setIsBackdrop(true)
@@ -325,7 +333,7 @@ export default function AdCategoryPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setFilter({ ...filter, name: e.target.value })
+                setInputValue(e.target.value)
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm thể loại"

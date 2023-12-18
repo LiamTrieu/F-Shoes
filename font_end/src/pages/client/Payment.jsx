@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import clientCheckoutApi from '../../api/client/clientCheckoutApi'
 import { Link, useNavigate } from 'react-router-dom'
 import { Container } from '@mui/system'
-import { Button, Typography } from '@mui/material'
+import { Button, Stack, Typography } from '@mui/material'
 import { makeStyles } from '@material-ui/core/styles'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
@@ -32,66 +32,92 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Payment() {
-  const [data, setData] = useState(true)
-  const navigate = useNavigate()
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
-  // useEffect(() => {
-  //   const requestData = {}
-  //   for (const [key, value] of new URLSearchParams(window.location.search)) {
-  //     requestData[key] = value
-  //   }
-  //   dispatch(setLoading(true))
-  //   clientCheckoutApi
-  //     .payment(requestData)
-  //     .then((response) => {
-  //       if (response.data.success) {
-  //         response.data.data.forEach((e) => {
-  //           dispatch(removeCart(e))
-  //         })
-  //         toast.success('Đặt hàng thành công')
-  //         setData(response.data.data)
-  //       } else {
-  //         navigate('/cart')
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error)
-  //     })
-  //     .finally(() => {
-  //       dispatch(setLoading(false))
-  //     })
-  // }, [navigate, dispatch])
+  useEffect(() => {
+    checkPayment()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function checkPayment() {
+    setLoading(true)
+    try {
+      const requestData = {}
+      for (const [key, value] of new URLSearchParams(window.location.search)) {
+        requestData[key] = value
+      }
+      const response = await clientCheckoutApi.payment(requestData)
+      if (response.status === 200) {
+        if (response.data.success) {
+          response.data.data.forEach((e) => {
+            dispatch(removeCart(e))
+          })
+          toast.success('Đặt hàng thành công')
+          setData(response.data.data)
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+    setLoading(false)
+  }
+
   const classes = useStyles()
 
   return (
-    <>
-      {data && (
-        <Container maxWidth="sm" className={classes.container}>
-          <CheckCircleIcon className={classes.successIcon} />
-          <Typography variant="h4" gutterBottom>
-            Đặt hàng thành công!
-          </Typography>
-          <div className={classes.orderDetails}>
-            <Typography variant="h6" gutterBottom>
-              Mã đơn hàng:{' '}
-              <Link
-                to={`/tracking/${new URLSearchParams(window.location.search).get('vnp_TxnRef')}`}>
-                {new URLSearchParams(window.location.search).get('vnp_TxnRef')}
-              </Link>
+    !loading && (
+      <>
+        {data ? (
+          <Container maxWidth="sm" className={classes.container}>
+            <CheckCircleIcon className={classes.successIcon} />
+            <Typography variant="h4" gutterBottom>
+              Đặt hàng thành công!
             </Typography>
-            <Typography variant="body1" paragraph>
-              Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đang được xử lý.
+            <div className={classes.orderDetails}>
+              <Typography variant="h6" gutterBottom>
+                Mã đơn hàng:{' '}
+                <Link
+                  to={`/tracking/${new URLSearchParams(window.location.search).get('vnp_TxnRef')}`}>
+                  {new URLSearchParams(window.location.search).get('vnp_TxnRef')}
+                </Link>
+              </Typography>
+              <Typography variant="body1" paragraph>
+                Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đang được xử lý.
+              </Typography>
+            </div>
+            <Button
+              variant="contained"
+              className={classes.continueShoppingButton}
+              component={Link}
+              to="/products">
+              Tiếp tục mua sắm
+            </Button>
+          </Container>
+        ) : (
+          <Container maxWidth="sm" className={classes.container}>
+            <CheckCircleIcon className={classes.errorIcon} />
+            <Typography variant="h4" gutterBottom>
+              Đặt hàng Thất bại!
             </Typography>
-          </div>
-          <Button
-            variant="contained"
-            className={classes.continueShoppingButton}
-            component={Link}
-            to="/products">
-            Tiếp tục mua sắm
-          </Button>
-        </Container>
-      )}
-    </>
+            <div className={classes.orderDetails}>
+              <Typography variant="h6" gutterBottom>
+                Thanh toán không thành công
+              </Typography>
+              <Typography variant="body1" paragraph>
+                Vui lòng thử lại
+              </Typography>
+            </div>
+            <Button
+              variant="contained"
+              className={classes.continueShoppingButton}
+              component={Link}
+              to="/products">
+              Tiếp tục mua sắm
+            </Button>
+          </Container>
+        )}
+      </>
+    )
   )
 }

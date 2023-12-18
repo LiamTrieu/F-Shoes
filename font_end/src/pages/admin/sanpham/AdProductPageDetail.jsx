@@ -50,6 +50,8 @@ import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../../../services/url'
 
+import useDebounce from '../../../services/hook/useDebounce'
+
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 
 var stompClient = null
@@ -151,6 +153,13 @@ export default function AdProductPageDetail() {
     setListUpdate([])
     fetchData(filter, priceMax)
   }, [filter, priceMax])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   function fetchData(filter, priceMax) {
     sanPhamApi.getProductDetail({ ...filter, priceMax: priceMax }).then((response) => {
@@ -340,7 +349,7 @@ export default function AdProductPageDetail() {
           sx={{ paddingRight: '50px' }}>
           <TextField
             onChange={(e) => {
-              setFilter({ ...filter, name: e.target.value })
+              setInputValue(e.target.value)
             }}
             sx={{ width: '50%' }}
             className="search-field"

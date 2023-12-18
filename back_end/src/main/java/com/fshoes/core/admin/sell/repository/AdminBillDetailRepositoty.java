@@ -60,4 +60,8 @@ public interface AdminBillDetailRepositoty extends BillDetailRepository {
     Integer decreaseQuantityBillDetail(String idBill, String idPrDetail);
 
     List<BillDetail> getBillDetailsByBillId(String idBill);
+
+    @Query(value = "SELECT * FROM bill_detail WHERE id_bill IN :idBills", nativeQuery = true)
+    List<BillDetail> getAllBillDetails(@Param("idBills") List<String> idBills);
+
 }
