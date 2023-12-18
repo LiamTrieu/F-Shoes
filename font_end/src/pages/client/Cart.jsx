@@ -156,6 +156,9 @@ export default function Cart() {
 
     setProductSelect(preProductSelect)
   }
+  const reloadTotalAndSelected = (updatedProductArray) => {
+    setProductSelect(updatedProductArray)
+  }
 
   const getPromotionProductDetails = (id) => {
     clientCartApi.getPromotionByProductDetail(id).then((response) => {
@@ -367,6 +370,7 @@ export default function Cart() {
                                 setVoucherCart(null)
                                 const updatedProduct = product.filter((item) => item.id !== cart.id)
                                 dispatch(setCart(updatedProduct))
+                                reloadTotalAndSelected(updatedProduct)
                               }}>
                               xóa
                             </div>
@@ -446,20 +450,34 @@ export default function Cart() {
                           </Typography>
                         </TableCell>
                         <TableCell align="center">
-                          <div className="quantity-control">
-                            <button onClick={() => onChangeSL(cart, -1)}>-</button>
-                            <input
-                              onChange={(e) => {
-                                let newValue = e.target.value.replace(/\D/, '')
-                                newValue =
-                                  newValue !== '' ? Math.max(1, Math.min(99, Number(newValue))) : 1
-                                dispatch(updateCart({ ...cart, soLuong: newValue }))
-                              }}
-                              value={cart.soLuong}
-                              min="1"
-                            />
-                            <button onClick={() => onChangeSL(cart, 1)}>+</button>
-                          </div>
+                          {promotionByProductDetail.map((item, index) => (
+                            <div className="quantity-control" key={index}>
+                              <button onClick={() => onChangeSL(cart, -1)}>-</button>
+                              <input
+                                onChange={(e) => {
+                                  let newValue = e.target.value.replace(/\D/, '')
+
+                                  // Check if newValue is an empty string or not a number
+                                  if (newValue === '' || isNaN(newValue)) {
+                                    // If empty or not a number, set it to an empty string in the state
+                                    newValue = ''
+                                  } else {
+                                    // If it's a number, ensure it is within the desired range
+                                    newValue = Math.max(1, Math.min(item.amount, Number(newValue)))
+                                  }
+
+                                  dispatch(updateCart({ ...cart, soLuong: newValue }))
+                                }}
+                                value={cart.soLuong}
+                                min="1"
+                              />
+                              <button
+                                disabled={Number(item.amount) === Number(cart.soLuong)}
+                                onClick={() => onChangeSL(cart, 1)}>
+                                +
+                              </button>
+                            </div>
+                          ))}
                         </TableCell>
                         <TableCell align="center">
                           {promotionByProductDetail.map((item, index) => {

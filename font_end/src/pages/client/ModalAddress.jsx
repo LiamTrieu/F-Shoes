@@ -23,7 +23,7 @@ const styleModalAddress = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: { xs: '50vw', md: '45vw' },
-  height: '650px',
+  Height: '650px',
   bgcolor: 'white',
   borderRadius: '10px',
 }
@@ -433,75 +433,83 @@ export default function ModalAddress({
     <div className="client-modal-address">
       <Modal open={open} onClose={handleModalClose}>
         <Box sx={styleModalAddress}>
-          <p style={{ marginLeft: '20px' }} className="hs-user">
-            Địa Chỉ của tôi
-          </p>
-          <hr />
-          <Grid
-            container
-            spacing={2}
-            sx={{ mb: 2, ml: 1, mr: 1, width: '97%', height: '65%' }}
-            className="gird-dcco">
-            {listAddress.map((item, index) => (
-              <React.Fragment key={index}>
-                <Grid item xs={12} md={1}>
-                  <label htmlFor={`address-${index}`}>
-                    <input
-                      type="radio"
-                      style={{ marginTop: '35px' }}
-                      id={`address-${index}`}
-                      name="selectedAddress"
-                      checked={selectedAddress === item.id}
-                      onChange={() => handleRadioChange(item.id)}
-                    />
-                  </label>
-                </Grid>
-                <Grid item xs={12} md={6} style={{ display: 'flex' }}>
-                  <label htmlFor={`address-${index}`}>
-                    <Typography className="title-ac-name">{item.name}</Typography>
-                    <Typography className="title-ac-ps">{item.phoneNumber}</Typography>
-                    <Typography className="title-ac-ps1">{item.specificAddress}</Typography>
-                    {item.type === true ? <span className="mac-dinh-ac">Mặc định</span> : ''}
-                  </label>
-                </Grid>
-                <Grid item xs={12} md={5}>
-                  <div className="btn-adr-ac" style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+          <div>
+            <p style={{ marginLeft: '20px' }} className="hs-user">
+              Địa Chỉ của tôi
+            </p>
+            <hr />
+          </div>
+          <div style={{ overflow: 'auto', top: 0, maxHeight: '400px' }}>
+            <Grid
+              container
+              spacing={2}
+              sx={{ mb: 2, ml: 1, mr: 1, width: '97%', height: '65%' }}
+              className="gird-dcco">
+              {listAddress.map((item, index) => (
+                <React.Fragment key={index}>
+                  <Grid item xs={12} md={1}>
+                    <label htmlFor={`address-${index}`}>
+                      <input
+                        type="radio"
+                        style={{ marginTop: '35px' }}
+                        id={`address-${index}`}
+                        name="selectedAddress"
+                        checked={selectedAddress === item.id}
+                        onChange={() => handleRadioChange(item.id)}
+                      />
+                    </label>
+                  </Grid>
+                  <Grid item xs={12} md={6} style={{ display: 'flex' }}>
+                    <label htmlFor={`address-${index}`}>
+                      <Typography className="title-ac-name">{item.name}</Typography>
+                      <Typography className="title-ac-ps">{item.phoneNumber}</Typography>
+                      <Typography className="title-ac-ps1">{item.specificAddress}</Typography>
+                      {item.type === true ? <span className="mac-dinh-ac">Mặc định</span> : ''}
+                    </label>
+                  </Grid>
+                  <Grid item xs={12} md={5}>
+                    <div
+                      className="btn-adr-ac"
+                      style={{ display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <Button
+                          className="btn-xoa-cn"
+                          onClick={() => {
+                            handleUpdateDC(item)
+                          }}>
+                          Cập nhật
+                        </Button>
+                      </div>
                       <Button
-                        className="btn-xoa-cn"
-                        onClick={() => {
-                          handleUpdateDC(item)
-                        }}>
-                        Cập nhật
+                        disabled={item.type === true}
+                        className="btn-mac-dinh-ad"
+                        onClick={() => handleUpdateType(item.id)}>
+                        Thiết lập mặc định
                       </Button>
                     </div>
-                    <Button
-                      disabled={item.type === true}
-                      className="btn-mac-dinh-ad"
-                      onClick={() => handleUpdateType(item.id)}>
-                      Thiết lập mặc định
-                    </Button>
-                  </div>
-                </Grid>
-                {index < listAddress.length - 1 && (
-                  <Grid item xs={12}>
-                    <Divider sx={{ mt: 2, mb: 2 }} />
                   </Grid>
-                )}
-              </React.Fragment>
-            ))}
+                  {index < listAddress.length - 1 && (
+                    <Grid item xs={12}>
+                      <Divider sx={{ mt: 2, mb: 2 }} />
+                    </Grid>
+                  )}
+                </React.Fragment>
+              ))}
+            </Grid>
+          </div>
+          <div>
             <Button onClick={handleAddAddress} className="btn-adcck" startIcon={<AddIcon />}>
               Thêm địa chỉ
             </Button>
-          </Grid>
-          <hr />
-          <div className="btn-adck">
-            <Button className="btn-xnck" disabled={!selectedAddress} onClick={handleConfirm}>
-              Xác Nhận
-            </Button>
-            <Button className="btn-huyckad" onClick={handleModalClose}>
-              Hủy
-            </Button>
+            <hr />
+            <div style={{ marginBottom: '10px' }}>
+              <Button className="btn-xnck" disabled={!selectedAddress} onClick={handleConfirm}>
+                Xác Nhận
+              </Button>
+              <Button className="btn-huyckad" onClick={handleModalClose}>
+                Hủy
+              </Button>
+            </div>
           </div>
         </Box>
       </Modal>

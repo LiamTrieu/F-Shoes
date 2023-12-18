@@ -207,7 +207,6 @@ export default function AdPromotionAdd() {
     timeEnd: '',
     idProductDetail: selectedRows,
   })
-
   const handleInputChange = (e) => {
     setAddPromotionRe({ ...addPromotionRe, [e.target.name]: e.target.value })
   }

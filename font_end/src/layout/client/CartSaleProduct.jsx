@@ -136,7 +136,8 @@ export default function CartSellingProduct({ products, colmd, collg }) {
                   navigate(`/product/${product.id}`)
                 }
               }}
-              className="cart-product-hover">
+              className="cart-product-hover"
+              sx={{ cursor: 'pointer' }}>
               <Card sx={{ width: '100%', height: '560px' }}>
                 <Box
                   sx={{
