@@ -265,59 +265,59 @@ public class HDBillServiceImpl implements HDBillService {
 
             });
             System.out.println(tongTienHang);
-            if (bill.getVoucher() != null) {
-                Voucher voucher = adVoucherRepository.findById(bill.getVoucher().getId()).orElse(null);
-                assert voucher != null;
-                voucher.setQuantity(voucher.getQuantity() + 1);
-                adVoucherRepository.save(voucher);
-                if (bill.getCustomer() != null) {
-                    Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
-                    AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), account.getId());
-                    if (adCustomerVoucherRespone == null) {
-                        CustomerVoucher customerVoucher = new CustomerVoucher();
-                        customerVoucher.setVoucher(voucher);
-                        customerVoucher.setAccount(account);
-                        adCustomerVoucherRepository.save(customerVoucher);
-                    }
-                }
-            }
+//            if (bill.getVoucher() != null) {
+//                Voucher voucher = adVoucherRepository.findById(bill.getVoucher().getId()).orElse(null);
+//                assert voucher != null;
+//                voucher.setQuantity(voucher.getQuantity() + 1);
+//                adVoucherRepository.save(voucher);
+//                if (bill.getCustomer() != null) {
+//                    Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
+//                    AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), account.getId());
+//                    if (adCustomerVoucherRespone == null) {
+//                        CustomerVoucher customerVoucher = new CustomerVoucher();
+//                        customerVoucher.setVoucher(voucher);
+//                        customerVoucher.setAccount(account);
+//                        adCustomerVoucherRepository.save(customerVoucher);
+//                    }
+//                }
+//            }
 
-            if (billConfirmRequest.getIdVoucher() != null) {
-                Voucher voucherNew = adVoucherRepository.findById(billConfirmRequest.getIdVoucher()).orElse(null);
-                assert voucherNew != null;
-                voucherNew.setQuantity(voucherNew.getQuantity() - 1);
-                adVoucherRepository.save(voucherNew);
-                bill.setVoucher(voucherNew);
-
-                if (voucherNew.getTypeValue() == 1) {
-                    tienDuocGiam = voucherNew.getMaximumValue();
-                } else {
-                    BigDecimal tienGiam = bill.getTotalMoney().multiply(voucherNew.getValue());
-                    if (tienGiam.longValue() > voucherNew.getMaximumValue().longValue()) {
-                        tienDuocGiam = voucherNew.getMaximumValue();
-                    }
-                }
-
-                if (bill.getCustomer() != null) {
-                    Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
-                    AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucherNew.getId(), account.getId());
-                    if (adCustomerVoucherRespone != null) {
-                        adCustomerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
-                    }
-                }
-            } else {
-                bill.setVoucher(null);
-                tienDuocGiam = new BigDecimal(0);
-            }
-            bill.setMoneyReduced(tienDuocGiam);
-            if (tongTienHang.longValue() > 1000000) {
-                bill.setMoneyShip(new BigDecimal(0));
-                bill.setMoneyAfter(tongTienHang.subtract(tienDuocGiam));
-            } else {
-                bill.setMoneyShip(bill.getMoneyShip());
-                bill.setMoneyAfter((tongTienHang.add(billConfirmRequest.getMoneyShip())).subtract(tienDuocGiam));
-            }
-            bill.setMoneyReduced(billConfirmRequest.getMoneyReducer());
+//            if (billConfirmRequest.getIdVoucher() != null) {
+//                Voucher voucherNew = adVoucherRepository.findById(billConfirmRequest.getIdVoucher()).orElse(null);
+//                assert voucherNew != null;
+//                voucherNew.setQuantity(voucherNew.getQuantity() - 1);
+//                adVoucherRepository.save(voucherNew);
+//                bill.setVoucher(voucherNew);
+//
+//                if (voucherNew.getTypeValue() == 1) {
+//                    tienDuocGiam = voucherNew.getMaximumValue();
+//                } else {
+//                    BigDecimal tienGiam = bill.getTotalMoney().multiply(voucherNew.getValue());
+//                    if (tienGiam.longValue() > voucherNew.getMaximumValue().longValue()) {
+//                        tienDuocGiam = voucherNew.getMaximumValue();
+//                    }
+//                }
+//
+//                if (bill.getCustomer() != null) {
+//                    Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
+//                    AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucherNew.getId(), account.getId());
+//                    if (adCustomerVoucherRespone != null) {
+//                        adCustomerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+//                    }
+//                }
+//            } else {
+//                bill.setVoucher(null);
+//                tienDuocGiam = new BigDecimal(0);
+//            }
+//            bill.setMoneyReduced(tienDuocGiam);
+//            if (tongTienHang.longValue() > 1000000) {
+//                bill.setMoneyShip(new BigDecimal(0));
+//                bill.setMoneyAfter(tongTienHang.subtract(tienDuocGiam));
+//            } else {
+//                bill.setMoneyShip(bill.getMoneyShip());
+//                bill.setMoneyAfter((tongTienHang.add(billConfirmRequest.getMoneyShip())).subtract(tienDuocGiam));
+//            }
+//            bill.setMoneyReduced(billConfirmRequest.getMoneyReducer());
             hdBillRepository.save(bill);
 
             messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-page-admin",
@@ -576,6 +576,52 @@ public class HDBillServiceImpl implements HDBillService {
             bill.setMoneyShip(BigDecimal.valueOf(Long.valueOf(phiShip)));
             hdBillRepository.save(bill);
             return true;
+        }
+    }
+
+    @Override
+    public Bill changeMoneyBill(String idBill, HdBillChangeMoneyResquest resquest) {
+       Bill bill = hdBillRepository.findById(idBill).orElse(null);
+        if (bill != null && bill.getStatus() == 1) {
+            if (bill.getVoucher() != null) {
+                Voucher voucher = adVoucherRepository.findById(bill.getVoucher().getId()).orElse(null);
+                assert voucher != null;
+                voucher.setQuantity(voucher.getQuantity() + 1);
+                adVoucherRepository.save(voucher);
+                if (bill.getCustomer() != null && voucher.getType() == 1) {
+                    Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
+                    AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), account.getId());
+                    if (adCustomerVoucherRespone == null) {
+                        CustomerVoucher customerVoucher = new CustomerVoucher();
+                        customerVoucher.setVoucher(voucher);
+                        customerVoucher.setAccount(account);
+                        adCustomerVoucherRepository.save(customerVoucher);
+                    }
+                }
+            }
+
+            if (resquest.getIdVoucher() != null) {
+                Voucher voucherNew = adVoucherRepository.findById(resquest.getIdVoucher()).orElse(null);
+                assert voucherNew != null;
+                voucherNew.setQuantity(voucherNew.getQuantity() - 1);
+                adVoucherRepository.save(voucherNew);
+                bill.setVoucher(voucherNew);
+                if (bill.getCustomer() != null && voucherNew.getType() == 1) {
+                    Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
+                    AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucherNew.getId(), account.getId());
+                    if (adCustomerVoucherRespone != null) {
+                        adCustomerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+                    }
+                }
+            } else {
+                bill.setVoucher(null);
+            }
+            bill.setMoneyReduced(resquest.getMoneyReducer());
+            bill.setMoneyAfter(resquest.getMoneyAfter());
+            hdBillRepository.save(bill);
+            return bill;
+        } else {
+            return null;
         }
     }
 

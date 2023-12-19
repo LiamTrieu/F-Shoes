@@ -56,6 +56,10 @@ const hoaDonApi = {
     const url = `/bill/capNhatPhiShip/${idBill}?phiShip=${phiShip}`
     return axiosAdmin.put(url)
   },
+  changeMoneyBill: (idBill, request) => {
+    const url = `bill/change-money-bill/${idBill}`
+    return axiosAdmin.put(url, request)
+  },
 }
 
 export default hoaDonApi
