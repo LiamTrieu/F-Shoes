@@ -45,6 +45,7 @@ import { formatCurrency } from '../../../services/common/formatCurrency '
 import { FaRegStar, FaStar } from 'react-icons/fa'
 import { MdOutlineRestore } from 'react-icons/md'
 import { SketchPicker } from 'react-color'
+import { kytu } from '../../../services/constants/check'
 
 const listBreadcrumbs = [{ name: 'Sản phẩm', link: '/admin/product' }]
 const filter = createFilterOptions()
@@ -817,39 +818,64 @@ export default function AdProductAdd() {
     setListErr((prevErrors) => prevErrors.filter((error) => error.key !== key))
   }
 
+  const [err, setErr] = useState(null)
+
+  function checkProductName(name) {
+    const specialCharactersRegex = /[!@#$%^&*(),.?":{}|<>]/
+    if (name.trim().length > 0) {
+      if (name.trim().length < 100) {
+        if (!specialCharactersRegex.test(name)) {
+          setErr(null)
+          return true
+        } else {
+          setErr('Tên sản phẩm không được chứa ký tự đặc biệt')
+          return false
+        }
+      } else {
+        setErr('Tên sản phẩm nhỏ hơn 100 ký tự')
+        return false
+      }
+    } else {
+      setErr('Tên sản phẩm không được để trống')
+      return false
+    }
+  }
+
   const saveProductDetail = () => {
     try {
-      const title = 'Xác nhận thêm sản phẩm?'
-      const text = ''
-      if (validate()) {
-        confirmSatus(title, text).then((result) => {
-          if (result.isConfirmed) {
-            const newProductAdd = newProductDetails.map((product) => {
-              return {
-                idSole: product.sole.value,
-                idBrand: product.brand.value,
-                idCategory: product.category.value,
-                idMaterial: product.material.value,
-                idSize: product.size.value,
-                idColor: product.color.value,
-                nameProduct: product.product.label,
-                idProduct: product.product.value,
-                price: product.price,
-                amount: product.amount,
-                weight: product.weight,
-                description: product.description,
-                listImage: product.images,
-              }
-            })
-            sanPhamApi
-              .addProuct(newProductAdd)
-              .then()
-              .finally(() => {
-                toast.success('Thêm sản phẩm thành công')
-                navigator('/admin/product')
+      if (checkProductName(newProductDetails[0].product.label)) {
+        const title = 'Xác nhận thêm sản phẩm?'
+        const text = ''
+        if (validate()) {
+          confirmSatus(title, text).then((result) => {
+            if (result.isConfirmed) {
+              const newProductAdd = newProductDetails.map((product) => {
+                return {
+                  idSole: product.sole.value,
+                  idBrand: product.brand.value,
+                  idCategory: product.category.value,
+                  idMaterial: product.material.value,
+                  idSize: product.size.value,
+                  idColor: product.color.value,
+                  nameProduct: product.product.label,
+                  idProduct: product.product.value,
+                  price: product.price,
+                  amount: product.amount,
+                  weight: product.weight,
+                  description: product.description,
+                  listImage: product.images,
+                }
               })
-          }
-        })
+              sanPhamApi
+                .addProuct(newProductAdd)
+                .then()
+                .finally(() => {
+                  toast.success('Thêm sản phẩm thành công')
+                  navigator('/admin/product')
+                })
+            }
+          })
+        }
       }
     } catch (error) {
       console.error(error)
@@ -892,13 +918,26 @@ export default function AdProductAdd() {
         })
         return
       }
+      if (newCategory.name.trim().length > 100) {
+        toast.warning('Tên thể loại nhỏ hơn 100 ký tự', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
 
       const response = await categoryApi.getAllNameCategory()
       if (response.data && Array.isArray(response.data.data)) {
         const listNameCategory = response.data.data
+        response.data.data.map((m) => listNameCategory.push(m.toLowerCase()))
 
-        if (listNameCategory.includes(newCategory.name)) {
+        if (listNameCategory.includes(newSole.name.trim().toLowerCase())) {
           toast.warning('Tên thể loại đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+        if (kytu.test(newCategory.name.trim())) {
+          toast.warning('Tên thể loại không được chứa ký tự đặc biệt', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
@@ -930,13 +969,27 @@ export default function AdProductAdd() {
         })
         return
       }
+      if (newBrand.name.trim().length > 100) {
+        toast.warning('Tên thương hiệu nhỏ hơn 100 ký tự', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
 
       const response = await bradApi.getAllNameBrand()
       if (response.data && Array.isArray(response.data.data)) {
         const listNameBrand = response.data.data
+        response.data.data.map((m) => listNameBrand.push(m.toLowerCase()))
 
-        if (listNameBrand.includes(newBrand.name)) {
+        if (listNameBrand.includes(newBrand.name.trim().toLowerCase())) {
           toast.warning('Tên thương hiệu đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        if (kytu.test(newBrand.name.trim())) {
+          toast.warning('Tên thương hiệu không được chứa ký tự đặc biệt', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
@@ -969,18 +1022,33 @@ export default function AdProductAdd() {
         return
       }
 
+      if (newSole.name.trim().length > 100) {
+        toast.warning('Tên đế giày nhỏ hơn 100 ký tự', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
       const response = await soleApi.getAllNameSole()
       if (response.data && Array.isArray(response.data.data)) {
         const listNameSole = response.data.data
+        response.data.data.map((m) => listNameSole.push(m.toLowerCase()))
 
-        if (listNameSole.includes(newSole.name)) {
+        if (listNameSole.includes(newSole.name.trim().toLowerCase())) {
           toast.warning('Tên đế giày đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
         }
 
-        await soleApi.addSole(newSole).then((respone) =>
+        if (kytu.test(newSole.name.trim())) {
+          toast.warning('Tên đế giày không được chứa ký tự đặc biệt', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        await soleApi.addSole({ ...newSole, name: newSole.name.trim() }).then((respone) =>
           setNewProducts({
             ...newProducts,
             sole: { label: respone.data.data.name, value: respone.data.data.id },
@@ -1006,12 +1074,25 @@ export default function AdProductAdd() {
         })
         return
       }
+      if (newMaterial.name.trim().length > 100) {
+        toast.warning('Tên chất liệu nhỏ hơn 100 ký tự', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+      if (kytu.test(newMaterial.name.trim())) {
+        toast.warning('Tên chất liệu không được chứa ký tự đặc biệt', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
 
       const response = await materialApi.getAllNameMaterial()
       if (response.data && Array.isArray(response.data.data)) {
         const listNameMaterial = response.data.data
+        response.data.data.map((m) => listNameMaterial.push(m.toLowerCase()))
 
-        if (listNameMaterial.includes(newMaterial.name)) {
+        if (listNameMaterial.includes(newMaterial.name.trim().toLowerCase())) {
           toast.warning('Tên chất liệu đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
@@ -1038,7 +1119,7 @@ export default function AdProductAdd() {
 
   const handleAddColor = async (newColor) => {
     try {
-      if (newColor.trim().code === '') {
+      if (newColor.code.trim() === '') {
         toast.warning('Mã màu không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1047,6 +1128,18 @@ export default function AdProductAdd() {
 
       if (newColor.name.trim() === '') {
         toast.warning('Tên màu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+      if (colorDetail.name.trim().length > 100) {
+        toast.warning('Tên màu nhỏ hơn 100 ký tự', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+      if (kytu.test(newColor.name.trim())) {
+        toast.warning('Tên màu không được chứa ký tự đặc biệt', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
@@ -1072,14 +1165,14 @@ export default function AdProductAdd() {
           return
         }
 
-        if (listNameColor.includes(newColor.name.toLowerCase())) {
+        if (listNameColor.includes(newColor.name.trim().toLowerCase())) {
           toast.warning('Tên màu đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
         }
 
-        await colorApi.addColor(newColor)
+        await colorApi.addColor({ ...newColor, name: newColor.name.trim() })
         toast.success('Thêm màu sắc thành công', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1097,15 +1190,21 @@ export default function AdProductAdd() {
 
   const handleUpdateColor = async (colorDetail, colorPreview) => {
     try {
-      if (colorDetail.trim().code === '') {
+      if (colorDetail.code.trim() === '') {
         toast.warning('Mã màu không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
       }
 
-      if (colorDetail.trim().name === '') {
+      if (colorDetail.name.trim() === '') {
         toast.warning('Tên màu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+      if (colorDetail.name.trim().length > 100) {
+        toast.warning('Tên màu nhỏ hơn 100 ký tự', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
@@ -1136,15 +1235,21 @@ export default function AdProductAdd() {
 
         if (
           colorPreview.name !== colorDetail.name &&
-          listNameColor.includes(colorDetail.name.toLowerCase())
+          listNameColor.includes(colorDetail.name.trim().toLowerCase())
         ) {
           toast.warning('Tên màu đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
         }
+        if (kytu.test(newColor.name.trim())) {
+          toast.warning('Tên màu không được chứa ký tự đặc biệt', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
 
-        const dataUpdate = { code: colorDetail.code, name: colorDetail.name }
+        const dataUpdate = { code: colorDetail.code, name: colorDetail.name.trim() }
 
         await colorApi.updateColor(colorDetail.id, dataUpdate)
         toast.success('Cập nhật màu sắc thành công', {
@@ -1155,6 +1260,7 @@ export default function AdProductAdd() {
       setOpenModalUpdateColor(false)
       setOpenModalColor(true)
     } catch (error) {
+      console.error(error)
       toast.error('Cập nhật màu sắc thất bại', {
         position: toast.POSITION.TOP_RIGHT,
       })
@@ -1172,9 +1278,17 @@ export default function AdProductAdd() {
       }
 
       if (isNaN(newSize.size) === true) {
-        toast.warning('Tên kích cỡ phải là số', {
+        toast.warning('Kích cỡ phải là số', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        return
+      }
+
+      if (parseInt(newSize.size) < 10 || parseInt(newSize.size) > 60) {
+        toast.warning('Kích cỡ phải lớn hơn 10 và nhỏ hơn 60', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
       }
 
       const response = await sizeApi.getAllNameSize()
@@ -1197,6 +1311,7 @@ export default function AdProductAdd() {
       setOpenModalAddSize(false)
       setOpenModalSize(true)
     } catch (error) {
+      console.error(error)
       toast.error('Thêm kích cỡ thất bại', {
         position: toast.POSITION.TOP_RIGHT,
       })
@@ -1205,7 +1320,7 @@ export default function AdProductAdd() {
 
   const handleUpdateSize = async (sizeDetail, sizePreview) => {
     try {
-      if (sizeDetail.trim().size === '') {
+      if (sizeDetail.size.trim() === '') {
         toast.warning('Kích cỡ không được trống', {
           position: toast.POSITION.TOP_RIGHT,
         })
@@ -1213,9 +1328,17 @@ export default function AdProductAdd() {
       }
 
       if (isNaN(sizeDetail.size) === true) {
-        toast.warning('Tên kích cỡ phải là số', {
+        toast.warning('Kích cỡ phải là số', {
           position: toast.POSITION.TOP_RIGHT,
         })
+        return
+      }
+
+      if (parseInt(newSize.size) < 10 || parseInt(newSize.size) > 60) {
+        toast.warning('Kích cỡ phải lớn hơn 10 và nhỏ hơn 60', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
       }
 
       const response = await sizeApi.getAllNameSize()
@@ -1331,11 +1454,26 @@ export default function AdProductAdd() {
               })}
               renderInput={(params) => (
                 <TextField
+                  error={Boolean(err)}
+                  helperText={err}
                   onChange={(e) => {
-                    genNewProductDetail({
-                      ...newProducts,
-                      product: { label: e.target.value, value: '' },
-                    })
+                    checkProductName(e.target.value)
+                    const foundProduct = products.find(
+                      (product) =>
+                        product.name.toLowerCase() === e.target.value.toLowerCase().trim(),
+                    )
+
+                    if (foundProduct) {
+                      genNewProductDetail({
+                        ...newProducts,
+                        product: { label: foundProduct.name, value: foundProduct.id },
+                      })
+                    } else {
+                      genNewProductDetail({
+                        ...newProducts,
+                        product: { label: e.target.value, value: '' },
+                      })
+                    }
                   }}
                   color="cam"
                   {...params}

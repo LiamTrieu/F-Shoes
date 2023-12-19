@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 public interface AdSizeRepository extends SizeRepository {
-    List<Size> findAllByDeleted(Status status);
+    List<Size> findAllByDeletedOrderBySizeAsc(Status status);
 
     @Query(value = """
             SELECT id, size, deleted, created_at as createdAt

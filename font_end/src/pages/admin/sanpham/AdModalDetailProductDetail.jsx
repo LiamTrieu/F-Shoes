@@ -350,6 +350,7 @@ export default function AdModalDetailProductDetail({
             toast.success('Cập nhập sản phẩm thành công')
             setOpen(false)
             fetchData(filter, priceMax)
+
           })
         }
       })

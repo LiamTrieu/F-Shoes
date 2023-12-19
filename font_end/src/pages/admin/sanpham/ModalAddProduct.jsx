@@ -15,26 +15,50 @@ export default function ModalAddProduct({
   setProduct,
 }) {
   const [err, setErr] = useState(null)
-  const handleUpdateNameProduct = (id, nameProduct) => {
+  
+  const handleUpdateNameProduct = async (id, nameProduct) => {
+    const specialCharactersRegex = /[!@#$%^&*(),.?":{}|<>]/
+
     if (nameProduct.trim().length > 0) {
-      sanPhamApi
-        .updateNameProduct(id, nameProduct.trim())
-        .then(() => {
-          toast.success('cập nhật thành công', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          setProduct({ ...dataProduct, name: nameProduct })
-        })
-        .catch(() => {
-          toast.error('cập nhật thất bại', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-        })
-      setOpen(false)
+      if (nameProduct.trim().length < 100) {
+        if (!specialCharactersRegex.test(nameProduct)) {
+          try {
+            const listNameResponse = await sanPhamApi.getAllName()
+            const listName = listNameResponse.data.map((name) => name.toLowerCase())
+            const updatedNameLower = nameProduct.trim().toLowerCase()
+            if (!listName.includes(updatedNameLower)) {
+              const response = await sanPhamApi.updateNameProduct(id, nameProduct.trim())
+              if (response.data.success) {
+                toast.success('Cập nhật thành công', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+                setProduct({ ...dataProduct, name: nameProduct })
+              } else {
+                toast.error('Cập nhật thất bại', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+              }
+              setOpen(false)
+            } else {
+              setErr('Tên sản phẩm đã tồn tại')
+            }
+          } catch (error) {
+            toast.error('Cập nhật thất bại', {
+              position: toast.POSITION.TOP_RIGHT,
+            })
+            console.error(error)
+          }
+        } else {
+          setErr('Tên sản phẩm không được chứa ký tự đặc biệt')
+        }
+      } else {
+        setErr('Tên sản phẩm nhỏ hơn 100 ký tự')
+      }
     } else {
       setErr('Tên sản phẩm không được để trống')
     }
   }
+
   return (
     <DialogAddUpdate
       open={open}

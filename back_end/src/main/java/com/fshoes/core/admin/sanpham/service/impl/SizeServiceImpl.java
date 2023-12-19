@@ -28,7 +28,7 @@ public class SizeServiceImpl implements SizeService {
 
     @Override
     public List<Size> getListSize() {
-        return sizeRepository.findAllByDeleted(Status.HOAT_DONG);
+        return sizeRepository.findAllByDeletedOrderBySizeAsc(Status.HOAT_DONG);
     }
 
     @Override

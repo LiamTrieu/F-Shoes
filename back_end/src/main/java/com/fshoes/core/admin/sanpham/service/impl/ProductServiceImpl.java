@@ -195,7 +195,6 @@ public class ProductServiceImpl implements ProductService {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -216,5 +215,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<String> filterAdd(String idProduct) {
         return productDetailRepository.filterAdd(idProduct);
+    }
+
+    @Override
+    public List<String> getAllName() {
+        return productRepository.getAllName();
     }
 }

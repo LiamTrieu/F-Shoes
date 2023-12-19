@@ -29,14 +29,18 @@ export default function ReturnOrder() {
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
 
   function createReturn(code) {
-    returnApi.getBill({ codeBill: code.trim() }).then((result) => {
-      if (result.data.success) {
-        navigate('/admin/return-order/bill/' + result.data.data)
-        setQrScannerVisible(false)
-      } else {
-        toast.warning('Hóa đơn không tồn tại, hoặc không đủ điều kiện!')
-      }
-    })
+    if (code && code.trim().length <= 0) {
+      returnApi.getBill({ codeBill: code.trim() }).then((result) => {
+        if (result.data.success) {
+          navigate('/admin/return-order/bill/' + result.data.data)
+          setQrScannerVisible(false)
+        } else {
+          toast.warning('Hóa đơn không tồn tại, hoặc không đủ điều kiện!')
+        }
+      })
+    } else {
+      toast.warning('Mã hóa đơn không được để trống!')
+    }
   }
 
   return (
