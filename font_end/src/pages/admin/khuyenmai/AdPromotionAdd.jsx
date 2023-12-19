@@ -104,11 +104,9 @@ export default function AdPromotionAdd() {
     const selectedIds = event.target.checked
       ? getProductDetailByProduct.map((row) => row.productDetail)
       : []
-    setSelectedRowsProduct(selectedIds)
+    // setSelectedRowsProduct(selectedIds)
     setSelectedRows(selectedIds)
     setSelectAll(event.target.checked)
-
-    console.log(selectedIds, '==========')
   }
 
   useEffect(() => {

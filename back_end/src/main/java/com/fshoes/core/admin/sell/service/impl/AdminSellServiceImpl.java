@@ -250,6 +250,25 @@ public class AdminSellServiceImpl implements AdminSellService {
             }
             billHistoryRepository.save(billHistory);
             // lấy list bill detail theo bill
+            //lay ra dá trấnc theo id bill
+            List<Transaction> listTransaction = transactionRepository.getTransactions(bill.getId());
+            if (listTransaction!=null){
+                BigDecimal totalKhach = listTransaction.stream()
+                        .map(Transaction::getTotalMoney)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                if (totalKhach.longValue() > bill.getMoneyAfter().longValue()){
+                    Transaction newTran = new Transaction();
+                    newTran.setTotalMoney(totalKhach);
+                    newTran.setStatus(0);
+                    newTran.setBill(bill);
+                    newTran.setType(1);
+                    newTran.setNote("Trả tiền thừa khách hàng");
+                    newTran.setPaymentMethod(0);
+                    newTran.setAccount(userLogin.getUserLogin());
+                    transactionRepository.save(newTran);
+                }
+            }
+
             List<BillDetail> billDetails = billDetailRepositoty.getBillDetailsByBillId(bill.getId());
             billDetails.forEach((billDetail -> {
                 ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();

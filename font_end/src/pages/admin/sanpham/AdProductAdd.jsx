@@ -930,7 +930,7 @@ export default function AdProductAdd() {
         const listNameCategory = response.data.data
         response.data.data.map((m) => listNameCategory.push(m.toLowerCase()))
 
-        if (listNameCategory.includes(newSole.name.trim().toLowerCase())) {
+        if (listNameCategory.includes(newCategory.name.trim().toLowerCase())) {
           toast.warning('Tên thể loại đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
@@ -1284,8 +1284,8 @@ export default function AdProductAdd() {
         return
       }
 
-      if (parseInt(newSize.size) < 10 || parseInt(newSize.size) > 60) {
-        toast.warning('Kích cỡ phải lớn hơn 10 và nhỏ hơn 60', {
+      if (parseInt(newSize.size) < 7 || parseInt(newSize.size) > 60) {
+        toast.warning('Kích cỡ phải lớn hơn 7 và nhỏ hơn 60', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return

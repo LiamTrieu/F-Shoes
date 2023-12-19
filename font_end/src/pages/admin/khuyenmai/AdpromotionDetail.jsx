@@ -768,7 +768,11 @@ export default function AdPromotionDetail() {
                         <TableCell>
                           <Checkbox
                             key={row.productDetailCB}
-                            checked={selectedRows.indexOf(row.productDetailCB) !== -1}
+                            checked={
+                              selectAll
+                                ? selectedRows.indexOf(row.productDetail) !== -1
+                                : selectedRows.indexOf(row.productDetailCB) !== -1
+                            }
                             onChange={(event) =>
                               handleRowCheckboxChange(event, row.productDetailCB)
                             }
