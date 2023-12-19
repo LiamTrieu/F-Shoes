@@ -449,12 +449,22 @@ export default function SellFrom({
     }
 
     let minElement = lstVoucher[0]
-
-    lstVoucher.forEach((element) => {
-      if (element.minimumAmount < minElement.minimumAmount) {
-        minElement = element
-      }
-    })
+    if (voucher.id === '') {
+      lstVoucher.forEach((element) => {
+        if (element.minimumAmount < minElement.minimumAmount) {
+          minElement = element
+        }
+      })
+    } else {
+      lstVoucher.forEach((element) => {
+        if (
+          element.minimumAmount < minElement.minimumAmount &&
+          element.maximumValue > voucher.maximumValue
+        ) {
+          minElement = element
+        }
+      })
+    }
 
     return handleVoucherUnqualified(minElement.id)
   }
@@ -1409,7 +1419,7 @@ export default function SellFrom({
         : '',
       note: khachHang.note ? khachHang.note : '',
       moneyShip: giaoHang ? shipTotal : 0,
-      moneyReduce: totalMoneyReduce ? totalMoneyReduce : '',
+      moneyReduce: totalMoneyVoucher ? totalMoneyVoucher : '',
       totalMoney: totalPriceCart ? totalPriceCart : '',
       moneyAfter: totalPrice ? totalPrice : '',
       type: giaoHang === true ? 1 : 0,
@@ -1529,20 +1539,27 @@ export default function SellFrom({
   const moneyVoucher =
     voucher.typeValue === 0 ? (voucher.value * totalPriceCart) / 100 : voucher.value
   const totalMoneyReduce = moneyVoucher > voucher.maximumValue ? voucher.maximumValue : moneyVoucher
+  const totalMoneyVoucher = totalMoneyReduce > totalSum ? totalSum : totalMoneyReduce // giảm gia
   const moneyPercent =
     percentMoney < 0 || percentMoney > 100
       ? 0
       : ((totalPriceCart + ShipingFree - totalMoneyReduce) * percentMoney) / 100
-  const totalPrice =
-    totalPriceCart < totalMoneyReduce
-      ? 0
-      : totalPriceCart + Number(ShipingFree) - totalMoneyReduce - moneyPercent
+  const totalPrice = totalPriceCart + Number(ShipingFree) - totalMoneyVoucher - moneyPercent
 
   const moneyUnqualified =
-    voucherUnqualified.minimumAmount > voucher.minimumAmount ||
+    voucherUnqualified.minimumAmount > voucher.minimumAmount &&
     voucherUnqualified.maximumValue > voucher.maximumValue
       ? Number(voucherUnqualified.minimumAmount) - Number(totalSum)
       : 0
+
+  // const moneyVoucherUnqualified =
+  //   voucherUnqualified.typeValue === 0
+  //     ? (voucherUnqualified.value * totalSum) / 100
+  //     : voucherUnqualified.value
+  // const moneyReducerUnqualified =
+  //   moneyVoucherUnqualified > voucherUnqualified.maximumValue
+  //     ? voucherUnqualified.maximumValue
+  //     : moneyVoucherUnqualified
 
   const [qrScannerVisible, setQrScannerVisible] = useState(false)
   const handleOpenQRScanner = () => {
@@ -3283,10 +3300,14 @@ export default function SellFrom({
               </Modal> */}
             </Box>
             <Box sx={{ m: 1, ml: 3, mr: 3 }}>
-              {moneyUnqualified > 0 && (
+              {totalSum > 0 && moneyUnqualified > 0 && (
                 <Typography className="notification-add-voucher">
-                  Mua thêm {formatPrice(moneyUnqualified)} để được giảm tối đa{' '}
-                  {formatPrice(voucherUnqualified.maximumValue)}
+                  Mua thêm {formatPrice(moneyUnqualified)} để được giảm{' '}
+                  {voucherUnqualified.typeValue === 0
+                    ? voucherUnqualified.value +
+                      '% tối đa ' +
+                      formatPrice(voucherUnqualified.maximumValue)
+                    : formatPrice(voucherUnqualified.value)}
                 </Typography>
               )}
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
@@ -3296,7 +3317,7 @@ export default function SellFrom({
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Phí vận chuyển</Typography>
                 <TextField
-                  value={giaoHang ? formatPrice(shipTotal) : '0 VNĐ '}
+                  value={giaoHang ? formatPrice(shipTotal) : '0 VND '}
                   onChange={handleChangeShip}
                   variant="standard"
                   sx={{ width: '100px' }}
@@ -3309,7 +3330,7 @@ export default function SellFrom({
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>Giảm giá</Typography>
-                <Typography>{formatCurrency(totalMoneyReduce)}</Typography>
+                <Typography>{formatCurrency(totalMoneyVoucher)}</Typography>
               </Stack>
               <Stack sx={{ my: '29px' }} direction={'row'} justifyContent={'space-between'}>
                 <Typography>
