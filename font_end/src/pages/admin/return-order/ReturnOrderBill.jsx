@@ -44,6 +44,7 @@ export default function ReturnOrderBill() {
         if (res.data.success) {
           setBill(res.data.data)
         } else {
+          toast.warning('Hóa đơn không tồn tại, hoặc không đủ điều kiện!')
           navigate(-1)
         }
       },
@@ -516,7 +517,7 @@ export default function ReturnOrderBill() {
                     </b>
                   </Grid>
                 </Grid>
-                {bill?.percentMoney !== 0 && (
+                {bill?.percentMoney && bill?.percentMoney !== 0 && (
                   <Grid container>
                     <Grid xs={6}>Giảm giá cửa hàng</Grid>
                     <Grid xs={6} sx={{ textAlign: 'right' }}>

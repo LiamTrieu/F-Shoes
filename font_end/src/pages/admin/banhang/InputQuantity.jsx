@@ -20,6 +20,18 @@ const InputQuantity = ({
   const debouncedValue = useDebounce(quantity, 500)
 
   useEffect(() => {
+    if (parseInt(cart.quantity) !== parseInt(quantity)) {
+      setQuantity(cart.quantity)
+    }
+  }, [cart.quantity])
+
+  useEffect(() => {
+    if (parseInt(cart.quantity) !== parseInt(quantity)) {
+      setQuantity(cart.quantity)
+    }
+  }, [cart.quantity])
+
+  useEffect(() => {
     if (quantity !== cart.quantity) {
       check(quantity)
     }
