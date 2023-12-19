@@ -54,7 +54,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      image i ON pd.id = i.id_product_detail
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
-                WHERE p.deleted = 0 AND pd.deleted = 0 AND (:#{#request.id} is null or pd.id = :#{#request.id})
+                WHERE p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0 AND (:#{#request.id} is null or pd.id = :#{#request.id})
                 AND (:#{#request.category} IS NULL OR ca.id IN (:#{#request.category}))
                 AND (:#{#request.color} IS NULL  OR c.id IN (:#{#request.color}))
                 AND (:#{#request.material} IS NULL  OR m.id IN (:#{#request.material}))
@@ -109,7 +109,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      material m ON m.id = pd.id_material
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
-                WHERE p.deleted = 0 AND pd.deleted = 0
+                WHERE p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                 AND (:#{#request.id} is null or pd.id = :#{#request.id})
                 AND (:#{#request.minPrice} IS NULl OR pd.price >= :#{#request.minPrice})
                 AND (:#{#request.maxPrice} IS NULl OR pd.price <= :#{#request.maxPrice})
@@ -170,7 +170,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      image i ON pd.id = i.id_product_detail
                         join bill_detail bd on bd.id_product_detail = pd.id and bd.status = 0
                         join bill bi on bd.id_bill = bi.id and bi.status = 7
-                WHERE p.deleted = 0 AND pd.deleted = 0
+                WHERE p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                 GROUP BY pd.id
                 ORDER BY amount DESC
             """, nativeQuery = true)
@@ -216,7 +216,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      material m ON m.id = pd.id_material
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
-                WHERE p.deleted = 0 AND pd.deleted = 0
+                WHERE p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                 GROUP BY pd.id,pr.time_end
                 having value > 50
                 ORDER BY value DESC
@@ -262,7 +262,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      material m ON m.id = pd.id_material
                          LEFT JOIN
                      image i ON pd.id = i.id_product_detail
-                WHERE p.deleted = 0 AND pd.deleted = 0
+                WHERE p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                 GROUP BY pd.id
                 ORDER BY pd.created_at DESC
             """, nativeQuery = true)
@@ -309,7 +309,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
                 WHERE pd.id = :id 
-                AND p.deleted = 0 AND pd.deleted = 0
+                AND p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                 GROUP BY pd.id
             """, nativeQuery = true)
     ClientProductResponse updateRealTime(String id);
@@ -355,7 +355,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
                 WHERE (:#{#id} is null or pd.id = :#{#id})
-                AND p.deleted = 0 AND pd.deleted = 0
+                AND p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                 GROUP BY pd.id_product,
                 pd.id_color,
                 pd.id_material,
@@ -441,7 +441,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                  AND pd.id_brand = :#{#request.idBrand}
                  AND pd.id_sole = :#{#request.idSole}
                  AND pd.id_material = :#{#request.idMaterial}
-                 AND p.deleted = 0 AND pd.deleted = 0
+                 AND p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                  ORDER BY si.size
             """, nativeQuery = true)
     List<ClientProductDetailResponse> getAllSize(ClientProductDetailRequest request);
@@ -488,7 +488,8 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                 AND pd.id_sole = :#{#request.idSole}
                 AND pd.id_material = :#{#request.idMaterial}
                 AND p.deleted = 0
-                AND pd.deleted = 0
+                AND pd.deleted = 0 
+                AND pd.amount > 0
             GROUP BY
                 c.id;
             """, nativeQuery = true)
@@ -500,7 +501,7 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
     @Query(value = """
             SELECT min(pd.price) as minPrice, max(pd.price) as maxPrice
             FROM product_detail pd
-                 WHERE pd.deleted = 0
+                 WHERE pd.deleted = 0 AND pd.amount > 0
             """, nativeQuery = true)
     ClientMinMaxPrice getMinMaxPriceProductClient();
 }

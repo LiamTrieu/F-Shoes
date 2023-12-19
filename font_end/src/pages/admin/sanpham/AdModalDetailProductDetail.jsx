@@ -9,6 +9,7 @@ import {
   Stack,
   TextField,
   Typography,
+  createFilterOptions,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
@@ -31,7 +32,8 @@ import { formatCurrency } from '../../../services/common/formatCurrency '
 import { SketchPicker } from 'react-color'
 
 import { spButton } from '../sanpham/sanPhamStyle'
-
+import { kytu } from '../../../services/constants/check'
+const filterPr = createFilterOptions()
 export default function AdModalDetailProductDetail({
   productDetail,
   open,
@@ -350,7 +352,6 @@ export default function AdModalDetailProductDetail({
             toast.success('Cập nhập sản phẩm thành công')
             setOpen(false)
             fetchData(filter, priceMax)
-
           })
         }
       })
@@ -392,8 +393,14 @@ export default function AdModalDetailProductDetail({
 
   const handleAddCategory = async (newCategory) => {
     try {
-      if (newCategory.name === '') {
+      if (newCategory.name.trim() === '') {
         toast.warning('Tên thể loại không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+      if (newCategory.name.trim().length > 100) {
+        toast.warning('Tên thể loại nhỏ hơn 100 ký tự', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
@@ -402,9 +409,16 @@ export default function AdModalDetailProductDetail({
       const response = await categoryApi.getAllNameCategory()
       if (response.data && Array.isArray(response.data.data)) {
         const listNameCategory = response.data.data
+        response.data.data.map((m) => listNameCategory.push(m.toLowerCase()))
 
-        if (listNameCategory.includes(newCategory.name)) {
+        if (listNameCategory.includes(newCategory.name.trim().toLowerCase())) {
           toast.warning('Tên thể loại đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+        if (kytu.test(newCategory.name.trim())) {
+          toast.warning('Tên thể loại không được chứa ký tự đặc biệt', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
@@ -430,8 +444,14 @@ export default function AdModalDetailProductDetail({
 
   const handleAddBrand = async (newBrand) => {
     try {
-      if (newBrand.name === '') {
+      if (newBrand.name.trim() === '') {
         toast.warning('Tên thương hiệu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+      if (newBrand.name.trim().length > 100) {
+        toast.warning('Tên thương hiệu nhỏ hơn 100 ký tự', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
@@ -440,9 +460,17 @@ export default function AdModalDetailProductDetail({
       const response = await bradApi.getAllNameBrand()
       if (response.data && Array.isArray(response.data.data)) {
         const listNameBrand = response.data.data
+        response.data.data.map((m) => listNameBrand.push(m.toLowerCase()))
 
-        if (listNameBrand.includes(newBrand.name)) {
+        if (listNameBrand.includes(newBrand.name.trim().toLowerCase())) {
           toast.warning('Tên thương hiệu đã tồn tại', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        if (kytu.test(newBrand.name.trim())) {
+          toast.warning('Tên thương hiệu không được chứa ký tự đặc biệt', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
@@ -468,8 +496,15 @@ export default function AdModalDetailProductDetail({
 
   const handleAddSole = async (newSole) => {
     try {
-      if (newSole.name === '') {
+      if (newSole.name.trim() === '') {
         toast.warning('Tên đế giày không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+
+      if (newSole.name.trim().length > 100) {
+        toast.warning('Tên đế giày nhỏ hơn 100 ký tự', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
@@ -478,15 +513,23 @@ export default function AdModalDetailProductDetail({
       const response = await soleApi.getAllNameSole()
       if (response.data && Array.isArray(response.data.data)) {
         const listNameSole = response.data.data
+        response.data.data.map((m) => listNameSole.push(m.toLowerCase()))
 
-        if (listNameSole.includes(newSole.name)) {
+        if (listNameSole.includes(newSole.name.trim().toLowerCase())) {
           toast.warning('Tên đế giày đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
           return
         }
 
-        await soleApi.addSole(newSole).then((respone) =>
+        if (kytu.test(newSole.name.trim())) {
+          toast.warning('Tên đế giày không được chứa ký tự đặc biệt', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          return
+        }
+
+        await soleApi.addSole({ ...newSole, name: newSole.name.trim() }).then((respone) =>
           setPreProductDetail({
             ...preProductDetail,
             sole: { label: respone.data.data.name, value: respone.data.data.id },
@@ -506,8 +549,20 @@ export default function AdModalDetailProductDetail({
 
   const handleAddMaterial = async (newMaterial) => {
     try {
-      if (newMaterial.name === '') {
+      if (newMaterial.name.trim() === '') {
         toast.warning('Tên chất liệu không được trống', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+      if (newMaterial.name.trim().length > 100) {
+        toast.warning('Tên chất liệu nhỏ hơn 100 ký tự', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
+      }
+      if (kytu.test(newMaterial.name.trim())) {
+        toast.warning('Tên chất liệu không được chứa ký tự đặc biệt', {
           position: toast.POSITION.TOP_RIGHT,
         })
         return
@@ -516,8 +571,9 @@ export default function AdModalDetailProductDetail({
       const response = await materialApi.getAllNameMaterial()
       if (response.data && Array.isArray(response.data.data)) {
         const listNameMaterial = response.data.data
+        response.data.data.map((m) => listNameMaterial.push(m.toLowerCase()))
 
-        if (listNameMaterial.includes(newMaterial.name)) {
+        if (listNameMaterial.includes(newMaterial.name.trim().toLowerCase())) {
           toast.warning('Tên chất liệu đã tồn tại', {
             position: toast.POSITION.TOP_RIGHT,
           })
@@ -555,6 +611,12 @@ export default function AdModalDetailProductDetail({
         toast.warning('Tên kích cỡ phải là số', {
           position: toast.POSITION.TOP_RIGHT,
         })
+      }
+      if (parseInt(newSize.size) < 7 || parseInt(newSize.size) > 60) {
+        toast.warning('Kích cỡ phải lớn hơn 7 và nhỏ hơn 60', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        return
       }
 
       const response = await sizeApi.getAllNameSize()
@@ -672,29 +734,46 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Danh mục
               </b>
               <Autocomplete
-                noOptionsText={
-                  <Button
-                    size="small"
-                    fullWidth
-                    color="cam"
-                    onClick={() => handleAddCategory(newCategory)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
                 size="small"
                 fullWidth
                 value={preProductDetail.category}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 onChange={(_, e) => {
-                  validate({ ...preProductDetail, category: e })
-                  setPreProductDetail({ ...preProductDetail, category: e })
+                  if (e && e.add) {
+                    handleAddCategory(newCategory)
+                  } else {
+                    setPreProductDetail({ ...preProductDetail, category: e })
+                  }
                 }}
                 className="search-field"
                 id="combo-box-category"
                 options={categorys.map((category) => {
                   return { label: category.name, value: category.id }
                 })}
+                renderOption={(props, option, state) => (
+                  <div
+                    {...props}
+                    style={
+                      option.label.includes('Thêm mới')
+                        ? {
+                            color: '#FC7C27',
+                            fontWeight: 'bold',
+                          }
+                        : {}
+                    }>
+                    {option.label}
+                  </div>
+                )}
+                filterOptions={(options, params) => {
+                  const filtered = filterPr(options, params)
+                  if (params.inputValue.trim() !== '') {
+                    filtered.push({
+                      add: true,
+                      label: `Thêm mới "${params.inputValue}"`,
+                    })
+                  }
+                  return filtered
+                }}
                 renderInput={(params) => (
                   <TextField
                     color="cam"
@@ -711,35 +790,52 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Thương hiệu
               </b>
               <Autocomplete
-                noOptionsText={
-                  <Button
-                    size="small"
-                    fullWidth
-                    color="cam"
-                    onClick={() => handleAddBrand(newBrand)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
                 size="small"
                 fullWidth
-                className="search-field"
-                id="combo-box-brand"
                 value={preProductDetail.brand}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 onChange={(_, e) => {
-                  validate({ ...preProductDetail, brand: e })
-                  setPreProductDetail({ ...preProductDetail, brand: e })
+                  if (e && e.add) {
+                    handleAddBrand(newBrand)
+                  } else {
+                    setPreProductDetail({ ...preProductDetail, brand: e })
+                  }
                 }}
+                className="search-field"
+                id="combo-box-brand"
                 options={brands.map((brand) => {
                   return { label: brand.name, value: brand.id }
                 })}
+                renderOption={(props, option, state) => (
+                  <div
+                    {...props}
+                    style={
+                      option.label.includes('Thêm mới')
+                        ? {
+                            color: '#FC7C27',
+                            fontWeight: 'bold',
+                          }
+                        : {}
+                    }>
+                    {option.label}
+                  </div>
+                )}
+                filterOptions={(options, params) => {
+                  const filtered = filterPr(options, params)
+                  if (params.inputValue.trim() !== '') {
+                    filtered.push({
+                      add: true,
+                      label: `Thêm mới "${params.inputValue}"`,
+                    })
+                  }
+                  return filtered
+                }}
                 renderInput={(params) => (
                   <TextField
                     color="cam"
                     onChange={(e) => setNewBrand({ name: e.target.value })}
                     {...params}
-                    placeholder={'Chọn thương hiệu'}
+                    placeholder={'Chọn danh mục'}
                   />
                 )}
               />
@@ -752,31 +848,52 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Đế giày
               </b>
               <Autocomplete
-                noOptionsText={
-                  <Button size="small" fullWidth color="cam" onClick={() => handleAddSole(newSole)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
                 size="small"
                 fullWidth
                 value={preProductDetail.sole}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 onChange={(_, e) => {
-                  validate({ ...preProductDetail, sole: e })
-                  setPreProductDetail({ ...preProductDetail, sole: e })
+                  if (e && e.add) {
+                    handleAddSole(newSole)
+                  } else {
+                    setPreProductDetail({ ...preProductDetail, sole: e })
+                  }
                 }}
                 className="search-field"
                 id="combo-box-sole"
                 options={soles.map((sole) => {
                   return { label: sole.name, value: sole.id }
                 })}
+                renderOption={(props, option, state) => (
+                  <div
+                    {...props}
+                    style={
+                      option.label.includes('Thêm mới')
+                        ? {
+                            color: '#FC7C27',
+                            fontWeight: 'bold',
+                          }
+                        : {}
+                    }>
+                    {option.label}
+                  </div>
+                )}
+                filterOptions={(options, params) => {
+                  const filtered = filterPr(options, params)
+                  if (params.inputValue.trim() !== '') {
+                    filtered.push({
+                      add: true,
+                      label: `Thêm mới "${params.inputValue}"`,
+                    })
+                  }
+                  return filtered
+                }}
                 renderInput={(params) => (
                   <TextField
                     color="cam"
                     onChange={(e) => setNewSole({ name: e.target.value })}
                     {...params}
-                    placeholder={'Chọn đế giày'}
+                    placeholder={'Chọn danh mục'}
                   />
                 )}
               />
@@ -787,35 +904,52 @@ export default function AdModalDetailProductDetail({
                 <span style={{ color: 'red' }}>*</span>Chất liệu
               </b>
               <Autocomplete
-                noOptionsText={
-                  <Button
-                    size="small"
-                    fullWidth
-                    color="cam"
-                    onClick={() => handleAddMaterial(newMaterial)}>
-                    <PlaylistAddIcon />
-                    Thêm mới
-                  </Button>
-                }
                 size="small"
                 fullWidth
-                className="search-field"
-                id="combo-box-material"
                 value={preProductDetail.material}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 onChange={(_, e) => {
-                  validate({ ...preProductDetail, material: e })
-                  setPreProductDetail({ ...preProductDetail, material: e })
+                  if (e && e.add) {
+                    handleAddMaterial(newMaterial)
+                  } else {
+                    setPreProductDetail({ ...preProductDetail, material: e })
+                  }
                 }}
+                className="search-field"
+                id="combo-box-material"
                 options={materials.map((material) => {
                   return { label: material.name, value: material.id }
                 })}
+                renderOption={(props, option, state) => (
+                  <div
+                    {...props}
+                    style={
+                      option.label.includes('Thêm mới')
+                        ? {
+                            color: '#FC7C27',
+                            fontWeight: 'bold',
+                          }
+                        : {}
+                    }>
+                    {option.label}
+                  </div>
+                )}
+                filterOptions={(options, params) => {
+                  const filtered = filterPr(options, params)
+                  if (params.inputValue.trim() !== '') {
+                    filtered.push({
+                      add: true,
+                      label: `Thêm mới "${params.inputValue}"`,
+                    })
+                  }
+                  return filtered
+                }}
                 renderInput={(params) => (
                   <TextField
                     color="cam"
                     onChange={(e) => setNewMaterial({ name: e.target.value })}
                     {...params}
-                    placeholder={'Chọn chất liệu'}
+                    placeholder={'Chọn danh mục'}
                   />
                 )}
               />

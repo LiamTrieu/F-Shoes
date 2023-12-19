@@ -163,7 +163,7 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
                          AND (:#{#req.maxPrice} IS NULL OR pd.price <= :#{#req.maxPrice}) 
                          AND (:#{#req.codeProductDetail} IS NULL OR pd.code = :#{#req.codeProductDetail}) 
                          AND (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) 
-                         AND p.deleted = 0 AND pd.deleted = 0
+                         AND p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                               GROUP BY pd.id, pr.status, pd.code, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand, pd.id_size
             """, nativeQuery = true)
     List<GetAllProductResponse> getAllProduct(@Param("req") FilterProductDetailRequest req);
