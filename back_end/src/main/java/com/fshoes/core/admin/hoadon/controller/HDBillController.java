@@ -81,7 +81,8 @@ public class HDBillController {
 
     @PostMapping("/print-bill/{id}")
     public ObjectRespone inHoaDon(@PathVariable("id") String id) {
-        return new ObjectRespone(hdBillService.xuatHoaDon(id));
+        File file = hdBillService.xuatHoaDon(id);
+        return new ObjectRespone(file);
     }
 
     @PutMapping("/return-stt/{id}")

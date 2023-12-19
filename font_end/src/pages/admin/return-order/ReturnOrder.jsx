@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Box, Button, InputAdornment, Modal, Paper, Stack, TextField } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import { FaCalendarPlus } from 'react-icons/fa'
 import { MdOutlineDocumentScanner } from 'react-icons/md'
 import returnApi from '../../../api/admin/return/returnApi'
 import { useNavigate } from 'react-router-dom'
@@ -30,14 +29,19 @@ export default function ReturnOrder() {
 
   function createReturn(code) {
     if (code && code.trim().length > 0) {
-      returnApi.getBill({ codeBill: code.trim() }).then((result) => {
-        if (result.data.success) {
-          navigate('/admin/return-order/bill/' + result.data.data)
-          setQrScannerVisible(false)
-        } else {
-          toast.warning('Hóa đơn không tồn tại, hoặc không đủ điều kiện!')
-        }
-      })
+      returnApi
+        .getBill({ codeBill: code.trim() })
+        .then((result) => {
+          if (result.data.success) {
+            navigate('/admin/return-order/bill/' + result.data.data)
+            setQrScannerVisible(false)
+          } else {
+            toast.warning('Hóa đơn không tồn tại, hoặc không đủ điều kiện!')
+          }
+        })
+        .catch(() => {
+          toast.warning('Mã hóa đơn không hợp lệ!')
+        })
     } else {
       toast.warning('Mã hóa đơn không được để trống!')
     }
@@ -86,8 +90,8 @@ export default function ReturnOrder() {
             variant="contained"
             className="them-moi"
             sx={{ ml: 2, mr: 2 }}>
-            <FaCalendarPlus style={{ marginRight: '5px', fontSize: '17px' }} />
-            Tạo
+            <SearchIcon style={{ marginRight: '5px', fontSize: '20px' }} />
+            Tìm kiếm
           </Button>
 
           <Button

@@ -9,6 +9,7 @@ import com.fshoes.core.admin.returns.repository.BillReturnRepository;
 import com.fshoes.core.admin.returns.service.ReturnService;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.*;
+import com.fshoes.infrastructure.constant.StatusBillDetail;
 import com.fshoes.infrastructure.exception.RestApiException;
 import com.fshoes.repository.BillHistoryRepository;
 import com.fshoes.repository.ProductDetailRepository;
@@ -49,7 +50,12 @@ public class ReturnServiceImpl implements ReturnService {
 
     @Override
     public Bill getBillId(String id) {
-        return billRepository.findById(id).orElse(null);
+        Long currentDate = Calendar.getInstance().getTimeInMillis();
+        Calendar sevenDaysAgo = Calendar.getInstance();
+        sevenDaysAgo.setTimeInMillis(currentDate);
+        sevenDaysAgo.add(Calendar.DAY_OF_YEAR, -7);
+        Long sevenDaysAgoTimestamp = sevenDaysAgo.getTimeInMillis();
+        return billRepository.findBillId(id, sevenDaysAgoTimestamp, StatusBillDetail.TRA_HANG).orElse(null);
     }
 
     @Override

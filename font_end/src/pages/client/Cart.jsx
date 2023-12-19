@@ -396,7 +396,14 @@ export default function Cart() {
 
                         <TableCell>
                           <div style={{ position: 'relative', display: 'inline-block' }}>
-                            <img src={cart.image[0]} alt={cart.name} width={70} />
+                            <img
+                              src={cart.image[0]}
+                              alt={cart.name}
+                              width={70}
+                              onClick={() => {
+                                navigate('/product/' + cart.id)
+                              }}
+                            />
                             <div
                               className="delete-product-cart"
                               onClick={() => {
