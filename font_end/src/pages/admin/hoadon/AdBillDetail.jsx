@@ -44,6 +44,7 @@ import lichSuHoaDonApi from '../../../api/admin/hoadon/lichSuHoaDonApi'
 import hoaDonChiTietApi from '../../../api/admin/hoadon/hoaDonChiTiet'
 import BillHistoryDialog from './AdDialogOrderTimeLine'
 import { getStatusStyle } from './getStatusStyle'
+import { setLoading as setLoad } from '../../../services/slices/loadingSlice'
 
 import Empty from '../../../components/Empty'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
@@ -58,7 +59,7 @@ import { socketUrl, url } from '../../../services/url'
 import axios from 'axios'
 import { IoReturnUpBack } from 'react-icons/io5'
 import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { GetUserAdmin } from '../../../services/slices/userAdminSlice'
 import printJS from 'print-js'
 import dayjs from 'dayjs'
@@ -67,6 +68,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { TbTruckReturn } from 'react-icons/tb'
 import { IoIosAdd } from 'react-icons/io'
 import sellApi from '../../../api/admin/sell/SellApi'
+import ghnAPI from '../../../api/admin/ghn/ghnApi'
 
 const listHis = [{ link: '/admin/bill', name: 'Quản lý đơn hàng' }]
 
@@ -84,6 +86,7 @@ export default function AdBillDetail() {
   const [loadingListBillDetail, setLoadingListBillDetail] = useState(true)
   const [openDialog, setOpenDialog] = useState(false)
   const [moneyAfter, setMoneyAfter] = useState(0)
+  const [tienShip, setTienShip] = useState(0)
   const [openModalConfirm, setOpenModalConfirm] = useState(false)
   const [openModalConfirmDelive, setOpenModalConfirmDelive] = useState(false)
   const [openModalConfirmPayment, setOpenModalConfirmPayment] = useState(false)
@@ -142,6 +145,7 @@ export default function AdBillDetail() {
           const updatedRow = { ...row, quantity: row.quantity + 1 }
           updatedList[index] = updatedRow
           setListBillDetail(updatedList)
+          tinhLaiShip(updatedList)
           incrementQuantity(row.id)
           if (billDetail.moneyReduced != null) {
             const newMoneyAfter =
@@ -205,6 +209,7 @@ export default function AdBillDetail() {
       const updatedRow = { ...row, quantity: row.quantity - 1 }
       updatedList[index] = updatedRow
       setListBillDetail(updatedList)
+      tinhLaiShip(updatedList)
       decrementQuantity(row.id)
       if (billDetail.moneyReduced != null) {
         const newMoneyAfter =
@@ -242,6 +247,7 @@ export default function AdBillDetail() {
       i === index ? { ...item, quantity: parseInt(soLuong, 10) || 0 } : item,
     )
     setListBillDetail(updatedList)
+    tinhLaiShip(updatedList)
     changeQuantity(row.id, soLuong)
     if (billDetail.moneyReduced != null) {
       const newMoneyAfter =
@@ -279,8 +285,17 @@ export default function AdBillDetail() {
       }
     }
   }
+  const capNhatTienShip = (idBill, phiShip) => {
+    hoaDonApi.capNhatPhiShip(idBill, phiShip)
+  }
+  useEffect(() => {
+    if (billDetail !== null && billDetail !== undefined) {
+      capNhatTienShip(billDetail.id, tienShip)
+    }
+  }, [tienShip, billDetail])
 
   useEffect(() => {
+    loadTinh()
     if (!billDetail) {
       getOneBill(id)
       getBillHistoryByIdBill(id)
@@ -399,16 +414,12 @@ export default function AdBillDetail() {
   }
 
   const findMaxValueElement = (lstVoucher, totalProductsCost, voucherInBill) => {
-    console.log('=====', voucherInBill)
-    console.log('=====', lstVoucher)
     const lstVoucherMax =
       voucherInBill.id === ''
         ? [...lstVoucher]
         : voucherInBill.id !== '' && voucherInBill.minimumAmount > totalProductsCost
           ? [...lstVoucher]
           : [...lstVoucher, voucherInBill]
-
-    console.log('=====', lstVoucherMax)
 
     if (lstVoucherMax.length < 1) {
       setVoucherMax({
@@ -432,8 +443,6 @@ export default function AdBillDetail() {
         maxElement = element
       }
     })
-
-    console.log('=====', maxElement)
     return handleVoucher(maxElement.id)
   }
 
@@ -441,7 +450,6 @@ export default function AdBillDetail() {
     sellApi
       .getOneVoucherById(idVoucher)
       .then((response) => {
-        console.log('=====', response.data.data)
         setVoucherMax(response.data.data)
       })
       .catch(() => {
@@ -523,10 +531,41 @@ export default function AdBillDetail() {
   //     setListBillDetail(data)
   //   }
   // }
+  // const isCheckThanhToan = (lstBillDetail, lstTrans) => {
+  //   var tongTien = 0
+  //   var tonhTienThanhToan
+  //   lstBillDetail
+  //     .filter((item) => item.status !== 1)
+  //     .map((item) => {
+  //       tongTien = tongTien + item.price
+  //     })
+  //   lstTrans
+  //     .filter((item) => item.status === 0)
+  //     .map((item) => {
+  //       tongTien = tongTien + item.price
+  //     })
+  // }
+
+  const checkTongTransTT = (lstTransTT, billDetail) => {
+    var tongTT = lstTransTT
+      .filter((item) => item.type === 0)
+      .reduce((acc, item) => acc + item.totalMoney, 0)
+
+    if (billDetail != null && billDetail.moneyAfter === tongTT) {
+      return true
+    } else {
+      return false
+    }
+  }
 
   const genBtnHandleBill = (billDetail, listTransaction) => {
     if (listTransaction.length > 0) {
-      if (billDetail.status > 3 && billDetail.status < 7 && billDetail.status !== 0) {
+      if (
+        billDetail.status > 3 &&
+        billDetail.status < 7 &&
+        billDetail.status !== 0 &&
+        checkTongTransTT === true
+      ) {
         return (
           <Button
             variant="outlined"
@@ -629,6 +668,12 @@ export default function AdBillDetail() {
 
   function ModalConfirmBill({ open, setOpen, billDetail, listHDCT }) {
     const [ghiChu, setGhiChu] = useState('')
+    var moneyShip = tienShip
+    if (totalProductsCost >= 1000000) {
+      moneyShip = 0
+    } else {
+      moneyShip = tienShip
+    }
 
     const handleConfirmOrder = () => {
       const updatedBillConfirmRequest = {
@@ -639,6 +684,7 @@ export default function AdBillDetail() {
         status: 2,
         noteBillHistory: ghiChu,
         idVoucher: voucherMax.id === '' ? null : voucherMax.id,
+        moneyShip: moneyShip,
 
         listHdctReq: listHDCT.map((item) => ({
           productDetailId: item.productDetailId,
@@ -1446,8 +1492,8 @@ export default function AdBillDetail() {
       .getOne(id)
       .then((response) => {
         setBillDetail(response.data.data)
-        console.log('=====', response.data.data)
         setMoneyAfter(response.data.data.moneyAfter)
+        setTienShip(response.data.data.moneyShip)
         setAdCallVoucherOfSell({
           ...adCallVoucherOfSell,
           condition: response.data.data.totalMoney,
@@ -1467,12 +1513,35 @@ export default function AdBillDetail() {
       .getByIdBill(id)
       .then((response) => {
         setListTransaction(response.data.data)
+        console.log(response.data.data)
         setLoadinTransaction(false)
       })
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get orderTimeline: ', error)
         setLoadinTransaction(false)
       })
+  }
+
+  const [tinh, setTinh] = useState([])
+  const [huyen, setHuyen] = useState([])
+  const [xa, setXa] = useState([])
+
+  const loadTinh = () => {
+    ghnAPI.getProvince().then((response) => {
+      setTinh(response.data)
+    })
+  }
+
+  async function loadHuyen(idProvince) {
+    const response = await ghnAPI.getDistrict(idProvince)
+    setHuyen(response.data)
+    return response.data
+  }
+
+  async function loadXa(idDistrict) {
+    const response = await ghnAPI.getWard(idDistrict)
+    setXa(response.data)
+    return response.data
   }
 
   const getBillDetailByIdBill = (id) => {
@@ -1482,12 +1551,80 @@ export default function AdBillDetail() {
       .then((response) => {
         setListBillDetail(response.data.data)
         setLoadingListBillDetail(false)
+        if (billDetail !== null && billDetail !== undefined) {
+          tinhLaiShip(response.data.data)
+        }
       })
       .catch((error) => {
         console.error('Lỗi khi gửi yêu cầu API get bill detail by bill ', error)
         setLoadingListBillDetail(false)
       })
   }
+  const dispatch = useDispatch()
+
+  const tinhLaiShip = (listBillDetail) => {
+    dispatch(setLoad(true))
+    if (billDetail !== null && billDetail !== undefined) {
+      ghnAPI.getProvince().then((response) => {
+        const addressParts = billDetail.address.split(', ')
+        if (addressParts.length === 4) {
+          const [specificAddress, wardLabel, districtLabel, provinceLabel] = addressParts
+
+          const selectTinh =
+            response.data.find((item) => item.provinceName === provinceLabel) || null
+
+          if (selectTinh) {
+            ;(async () => {
+              const huyenData = await loadHuyen(selectTinh.provinceID)
+              const selectHuyen =
+                huyenData.find((item) => item.districtName.includes(districtLabel)) || null
+
+              if (selectHuyen) {
+                ;(async () => {
+                  const xaData = await loadXa(selectHuyen.districtID)
+                  const selectXa = xaData.find((item) => item.wardName.includes(wardLabel)) || null
+                  const filtelService = {
+                    shop_id: '3911708',
+                    from_district: '3440',
+                    to_district: selectHuyen.districtID,
+                  }
+
+                  ghnAPI.getServiceId(filtelService).then((response) => {
+                    const serviceId = response.data.body.serviceId
+
+                    const totalWeight = listBillDetail
+                      .filter((item) => item.status !== 1)
+                      .reduce(
+                        (acc, item) => acc + parseInt(item.weight) * parseInt(item.quantity),
+                        0,
+                      )
+                    const filterTotal = {
+                      from_district_id: '3440',
+                      service_id: serviceId,
+                      to_district_id: selectHuyen.districtID,
+                      to_ward_code: selectXa.wardCode,
+                      weight: totalWeight,
+                      insurance_value: '10000',
+                    }
+                    console.log(totalWeight)
+                    ghnAPI.getTotal(filterTotal).then((response) => {
+                      setTienShip(response.data.body.total)
+                      console.log(response.data.body.total)
+                    })
+                  })
+                })()
+              }
+            })()
+          }
+        }
+      })
+    }
+    dispatch(setLoad(false))
+  }
+
+  //
+
+  //
 
   const decrementQuantity = (idBillDetail) => {
     hoaDonChiTietApi.decrementQuantity(idBillDetail).catch((error) => {
@@ -1611,10 +1748,28 @@ export default function AdBillDetail() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [pdfContent, setPdfContent] = useState('')
+  const [detailDiaChi, setDetailDiaChi] = useState({})
 
   const handleOpenModal = (pdfContent) => {
     setPdfContent(pdfContent)
     setModalOpen(true)
+  }
+  const handleTypingMoneyShip = (newValueMoneyShip) => {
+    if (isNaN(newValueMoneyShip)) {
+      toast.error('Phí vận chuyển không hợp lệ', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    } else if (newValueMoneyShip < 0) {
+      toast.error('Phí vận chuyển không hợp lệ', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    } else if (newValueMoneyShip > 1000000) {
+      toast.error('Phí vận chuyển tối đa là 1.000.000 VNĐ', {
+        position: toast.POSITION.TOP_RIGHT,
+      })
+    } else {
+      setTienShip(newValueMoneyShip)
+    }
   }
 
   const handleCloseModal = () => {
@@ -1761,6 +1916,8 @@ export default function AdBillDetail() {
             setOPen={setopenModalUpdateAdd}
             billDetail={billDetail}
             listBillDetail={listBillDetail}
+            setDetailDiaChi={setDetailDiaChi}
+            detailDiaChi={detailDiaChi}
           />
         )}
         <Modal
@@ -2163,6 +2320,7 @@ export default function AdBillDetail() {
                     spacing={2}>
                     <h3>Danh sách sản phẩm</h3>
                     {billDetail &&
+                      listTransaction.filter((item) => item.type === 0).length === 0 &&
                       (billDetail.status === 1 ||
                         billDetail.status === 2 ||
                         billDetail.status === 6) && (
@@ -2241,8 +2399,9 @@ export default function AdBillDetail() {
                                             onClick={() => handleDecrementQuantity(row, index)}
                                             disabled={
                                               (billDetail &&
-                                                billDetail.status !== 6 &&
-                                                billDetail.status > 2) ||
+                                                listTransaction.filter((item) => item.type === 0)
+                                                  .length > 0) ||
+                                              (billDetail.status !== 6 && billDetail.status > 2) ||
                                               billDetail.status === 0 ||
                                               row.quantity - 1 === 0
                                             }>
@@ -2269,8 +2428,9 @@ export default function AdBillDetail() {
                                             onFocus={(e) => handleTextFieldQuanityFocus(e, index)}
                                             disabled={
                                               (billDetail &&
-                                                billDetail.status !== 6 &&
-                                                billDetail.status > 2) ||
+                                                listTransaction.filter((item) => item.type === 0)
+                                                  .length > 0) ||
+                                              (billDetail.status !== 6 && billDetail.status > 2) ||
                                               billDetail.status === 0
                                             }
                                           />
@@ -2281,8 +2441,9 @@ export default function AdBillDetail() {
                                             onClick={() => handleIncrementQuantity(row, index)}
                                             disabled={
                                               (billDetail &&
-                                                billDetail.status !== 6 &&
-                                                billDetail.status > 2) ||
+                                                listTransaction.filter((item) => item.type === 0)
+                                                  .length > 0) ||
+                                              (billDetail.status !== 6 && billDetail.status > 2) ||
                                               billDetail.status === 0 ||
                                               row.quantity + 1 > 5
                                             }>
@@ -2544,20 +2705,33 @@ export default function AdBillDetail() {
                         : formatCurrency(0)}
                     </span>
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      marginBottom: '10px',
-                    }}>
-                    <span>Phí vận chuyển:</span>
-                    <span style={{ fontWeight: 'bold' }}>
-                      {billDetail && billDetail.moneyShip
-                        ? formatCurrency(billDetail.moneyShip)
-                        : formatCurrency(0)}
-                    </span>
-                  </div>
-                  <Divider style={{ backgroundColor: 'black', height: '2px' }} />
+                  <Stack direction={'row'} justifyContent={'space-between'}>
+                    <div>Phí vận chuyển: </div>
+                    {billDetail && totalProductsCost >= 1000000 ? (
+                      <div>0 VND</div>
+                    ) : (
+                      <>
+                        <TextField
+                          size="small"
+                          fullWidth
+                          value={tienShip}
+                          onChange={(e) => handleTypingMoneyShip(e.target.value)}
+                        />
+                        {/* <span>
+                          {billDetail && billDetail.moneyShip
+                            ? formatCurrency(billDetail.moneyShip)
+                            : formatCurrency(0)}
+                        </span> */}
+                      </>
+                    )}
+                  </Stack>
+                  {totalProductsCost >= 1000000 && (
+                    <i style={{ fontSize: '9' }}>
+                      Miễn phí vận chuyển với đơn hàng có tổng tiền trên 1.000.000 VNĐ
+                    </i>
+                  )}
+
+                  <Divider style={{ backgroundColor: 'black', height: '2px', marginTop: 5 }} />
                   <div
                     style={{
                       display: 'flex',

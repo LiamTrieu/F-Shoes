@@ -99,4 +99,9 @@ public class HDBillController {
         return new ObjectRespone(hdBillService.themNhanVienTiepNhan(idBill, idAcc));
     }
 
+    @PutMapping("/capNhatPhiShip/{idBill}")
+    public ObjectRespone capNhatPhiShip(@PathVariable("idBill") String idBill, @RequestParam String phiShip) {
+        return new ObjectRespone(hdBillService.capNhatPhiShip(idBill, phiShip));
+    }
+
 }
