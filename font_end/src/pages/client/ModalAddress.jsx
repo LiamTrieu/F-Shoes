@@ -322,8 +322,8 @@ export default function ModalAddress({
     const newErrors = {}
     let check = 0
 
-    if (!diaChi.name) {
-      newErrors.fullName = 'Vui lòng nhập Họ và Tên.'
+    if (!diaChi.name.trim()) {
+      newErrors.fullName = 'Vui lòng nhập tên người nhận.'
       check++
     } else if (diaChi.name.length > 100) {
       newErrors.fullName = 'Họ và Tên không được quá 100 kí tự.'
@@ -473,6 +473,7 @@ export default function ModalAddress({
                       style={{ display: 'flex', flexDirection: 'column' }}>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <Button
+                          disabled={selectedAddress === item.id ? true : false}
                           className="btn-xoa-cn"
                           onClick={() => {
                             handleUpdateDC(item)

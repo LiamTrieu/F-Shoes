@@ -300,6 +300,7 @@ export default function SellFrom({
   const fectchProductBillSell = (id) => {
     sellApi.getProductDetailBill(id).then((response) => {
       setListProductDetailBill(response.data.data)
+
       if (stompClient !== null && stompClient.connected) {
         const mess = { appLoad: true }
         stompClient.send(`/topic/app-load/${idBill}`, {}, JSON.stringify(mess))
@@ -311,6 +312,12 @@ export default function SellFrom({
           return sum + cart.price * cart.quantity
         }
       }, 0)
+      if (Number(conditionMoney) >= 1000000) {
+        setShipTotal(0)
+      } else {
+        tinhLaiShip(response.data.data)
+      }
+
       setAdCallVoucherOfSell({
         ...adCallVoucherOfSell,
         condition: parseFloat(conditionMoney),
@@ -330,6 +337,33 @@ export default function SellFrom({
   }
   const handleOnChangePage = (page) => {
     setInitPage(page)
+  }
+
+  const tinhLaiShip = (listPrBill) => {
+    const filtelService = {
+      shop_id: '3911708',
+      from_district: '3440',
+      to_district: detailDiaChi.districtId,
+    }
+    if (detailDiaChi.districtId && listPrBill.length > 0) {
+      ghnAPI.getServiceId(filtelService).then((response) => {
+        const serviceId = response.data.body.serviceId
+        const totalWeight = listPrBill
+          .filter((item) => item.status !== 1)
+          .reduce((acc, item) => acc + parseInt(item.weight) * parseInt(item.quantity), 0)
+        const filterTotal = {
+          from_district_id: '3440',
+          service_id: serviceId,
+          to_district_id: detailDiaChi.districtId,
+          to_ward_code: detailDiaChi.wardId,
+          weight: totalWeight,
+          insurance_value: '10000',
+        }
+        ghnAPI.getTotal(filterTotal).then((response) => {
+          setShipTotal(response.data.body.total)
+        })
+      })
+    }
   }
 
   const rollBackQuantityProductDetail = (idBill, idPrDetail) => {
