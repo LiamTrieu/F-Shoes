@@ -232,7 +232,10 @@ export default function AdMaterialPage() {
       setIsBackdrop(false)
     }
   }
-
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
   const chageName = (e) => {
     if (openAdd) setMaterial({ ...material, name: e.target.value })
     else setMaterialUpdate({ ...materialUpdate, name: e.target.value })
@@ -344,7 +347,13 @@ export default function AdMaterialPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setInputValue(e.target.value)
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm chất liệu"

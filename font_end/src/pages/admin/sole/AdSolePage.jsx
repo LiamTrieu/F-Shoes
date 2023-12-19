@@ -202,6 +202,10 @@ export default function AdSolePage() {
     if (openAdd) setSole({ ...sole, name: e.target.value })
     else setSoleUpdate({ ...soleUpdate, name: e.target.value })
   }
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
 
   // const setDeleted = (id) => {
   //   const title = 'Xác nhận thay đổi hoạt động?'
@@ -309,7 +313,13 @@ export default function AdSolePage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setInputValue(e.target.value)
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm đế giày"
