@@ -41,4 +41,5 @@ public class HDBillRequest {
 
     private Long desiredReceiptDate;
 
+    private BigDecimal moneyReducer;
 }

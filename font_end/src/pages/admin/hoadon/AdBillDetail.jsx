@@ -101,6 +101,8 @@ export default function AdBillDetail() {
 
   const [openModalUpdateAdd, setopenModalUpdateAdd] = useState(false)
 
+  const [checkPreBill, setCheckPreBill] = useState(false)
+
   const totalProductsCost = listBillDetail
     .filter((row) => row.status === 0)
     .reduce((total, row) => {
@@ -160,6 +162,7 @@ export default function AdBillDetail() {
             )
             setMoneyAfter(newMoneyAfter)
             setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
+            setCheckPreBill(true)
           } else {
             const newMoneyAfter = updatedList.reduce(
               (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
@@ -171,6 +174,7 @@ export default function AdBillDetail() {
             )
             setMoneyAfter(newMoneyAfter)
             setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
+            setCheckPreBill(true)
           }
         }
       }
@@ -223,6 +227,7 @@ export default function AdBillDetail() {
         )
         setMoneyAfter(newMoneyAfter)
         setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
+        setCheckPreBill(true)
       } else {
         const newMoneyAfter = updatedList.reduce(
           (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
@@ -234,6 +239,7 @@ export default function AdBillDetail() {
         )
         setMoneyAfter(newMoneyAfter)
         setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
+        setCheckPreBill(true)
       }
     }
   }
@@ -261,6 +267,7 @@ export default function AdBillDetail() {
       )
       setMoneyAfter(newMoneyAfter)
       setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
+      setCheckPreBill(true)
     } else {
       const newMoneyAfter = updatedList.reduce(
         (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
@@ -272,6 +279,7 @@ export default function AdBillDetail() {
       )
       setMoneyAfter(newMoneyAfter)
       setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
+      setCheckPreBill(true)
     }
   }
 
@@ -282,6 +290,11 @@ export default function AdBillDetail() {
           i === index ? { ...item, quantity: 1 } : item,
         )
         setListBillDetail(updatedList)
+        const conditionMoney = updatedList.reduce(
+          (totalMoney, item) => totalMoney + item.quantity * item.price,
+          0,
+        )
+        setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
       }
     }
   }
@@ -451,21 +464,54 @@ export default function AdBillDetail() {
       .getOneVoucherById(idVoucher)
       .then((response) => {
         setVoucherMax(response.data.data)
+        setCheckPreBill(false)
       })
       .catch(() => {
         toast.error('Vui Lòng f5 tải lại trang', {
           position: toast.POSITION.TOP_CENTER,
         })
+        setCheckPreBill(false)
       })
   }
 
   useEffect(() => {
     fetchVoucherByIdBill(id)
     fetchPercentByIdBill(id)
-    fecthListVoucherByIdCustomer(adCallVoucherOfSell, totalProductsCost, voucherInBill)
+    if (checkPreBill === true) {
+      fecthListVoucherByIdCustomer(adCallVoucherOfSell, totalProductsCost, voucherInBill)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, adCallVoucherOfSell, totalProductsCost])
+  }, [id, adCallVoucherOfSell, totalProductsCost, checkPreBill])
 
+  const moneyVoucherInBill =
+    voucherInBill.id === ''
+      ? 0
+      : voucherInBill.typeValue === 0
+        ? (totalProductsCost * voucherInBill.value) / 100
+        : voucherInBill.value
+
+  const moneyVoucherMax =
+    voucherMax.id === ''
+      ? 0
+      : voucherMax.typeValue === 0
+        ? (totalProductsCost * voucherMax.value) / 100
+        : voucherMax.value
+
+  const totalMoneyVoucherInBill =
+    moneyVoucherInBill > totalProductsCost ? totalProductsCost : moneyVoucherInBill
+  const totalMoneyVoucherMax =
+    moneyVoucherMax > totalProductsCost ? totalProductsCost : moneyVoucherMax
+
+  const totalMoneyReducerVoucher =
+    totalMoneyVoucherMax === 0
+      ? totalMoneyVoucherInBill
+      : billDetail && billDetail.status !== 1
+        ? totalMoneyVoucherInBill
+        : totalMoneyVoucherMax
+
+  const totalMoneyShip = totalProductsCost > 999999 ? 0 : tienShip
+  const totalMoneyAfter =
+    Number(totalProductsCost) - Number(totalMoneyReducerVoucher) + Number(totalMoneyShip)
   useEffect(() => {
     const socket = new SockJS(socketUrl)
     stompClient = Stomp.over(socket)
@@ -685,6 +731,7 @@ export default function AdBillDetail() {
         noteBillHistory: ghiChu,
         idVoucher: voucherMax.id === '' ? null : voucherMax.id,
         moneyShip: moneyShip,
+        moneyReducer: totalMoneyReducerVoucher,
 
         listHdctReq: listHDCT.map((item) => ({
           productDetailId: item.productDetailId,
@@ -1513,7 +1560,6 @@ export default function AdBillDetail() {
       .getByIdBill(id)
       .then((response) => {
         setListTransaction(response.data.data)
-        console.log(response.data.data)
         setLoadinTransaction(false)
       })
       .catch((error) => {
@@ -1606,10 +1652,8 @@ export default function AdBillDetail() {
                       weight: totalWeight,
                       insurance_value: '10000',
                     }
-                    console.log(totalWeight)
                     ghnAPI.getTotal(filterTotal).then((response) => {
                       setTienShip(response.data.body.total)
-                      console.log(response.data.body.total)
                     })
                   })
                 })()
@@ -1658,6 +1702,7 @@ export default function AdBillDetail() {
           position: toast.POSITION.TOP_RIGHT,
         })
         setIsUpdateBill(true)
+        setCheckPreBill(true)
       })
       .catch(() => {
         toast.error('Đã sảy ra lỗi', {
@@ -1768,7 +1813,7 @@ export default function AdBillDetail() {
         position: toast.POSITION.TOP_RIGHT,
       })
     } else {
-      setTienShip(newValueMoneyShip)
+      setTienShip(Number(newValueMoneyShip))
     }
   }
 
@@ -1907,6 +1952,7 @@ export default function AdBillDetail() {
             setOPen={setOpenModalThemSP}
             billDetail={billDetail ? billDetail : null}
             idBill={billDetail ? billDetail.id : null}
+            setCheckPreBill={setCheckPreBill}
           />
         )}
         {openModalUpdateAdd && (
@@ -2662,7 +2708,9 @@ export default function AdBillDetail() {
                           ? ''
                           : voucherInBill.code
                         : voucherMax.id === ''
-                          ? ''
+                          ? voucherInBill.id === ''
+                            ? ''
+                            : voucherInBill.code
                           : voucherMax.code}
                     </span>
                   </div>
@@ -2700,9 +2748,7 @@ export default function AdBillDetail() {
                     }}>
                     <span>Giảm giá:</span>
                     <span style={{ fontWeight: 'bold' }}>
-                      {billDetail && billDetail.moneyReduced
-                        ? formatCurrency(billDetail.moneyReduced)
-                        : formatCurrency(0)}
+                      {formatCurrency(totalMoneyReducerVoucher)}
                     </span>
                   </div>
                   <Stack direction={'row'} justifyContent={'space-between'}>
@@ -2740,7 +2786,7 @@ export default function AdBillDetail() {
                     }}>
                     <span style={{ fontWeight: 'bold' }}>Tổng tiền:</span>
                     <span style={{ fontWeight: 'bold', color: 'red' }}>
-                      {formatCurrency(moneyAfter)}
+                      {formatCurrency(totalMoneyAfter)}
                     </span>
                   </div>
                 </Stack>

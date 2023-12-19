@@ -317,6 +317,7 @@ public class HDBillServiceImpl implements HDBillService {
                 bill.setMoneyShip(bill.getMoneyShip());
                 bill.setMoneyAfter((tongTienHang.add(billConfirmRequest.getMoneyShip())).subtract(tienDuocGiam));
             }
+            bill.setMoneyReduced(billConfirmRequest.getMoneyReducer());
             hdBillRepository.save(bill);
 
             messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-page-admin",
