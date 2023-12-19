@@ -259,7 +259,9 @@ export default function AdVoucherDetail() {
       } else if (!Number.isInteger(parseInt(voucherDetail.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherDetail.value < 1) {
-        errors.value = 'giá trị tối thiểu 1 VNĐ'
+        errors.value = 'giá trị tối thiểu 1 ₫'
+      } else if (voucherDetail.value > 50000000) {
+        errors.value = 'giá trị tối thiểu tối đa  50,000,000 ₫'
       }
     }
 
@@ -268,7 +270,9 @@ export default function AdVoucherDetail() {
     } else if (!Number.isInteger(parseInt(voucherDetail.maximumValue))) {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
     } else if (voucherDetail.maximumValue < 1) {
-      errors.maximumValue = 'giá trị tối đa tối thiểu 1 (vnđ)'
+      errors.maximumValue = 'giá trị tối đa tối thiểu 1 ₫'
+    } else if (voucherDetail.maximumValue > 50000000) {
+      errors.maximumValue = 'giá trị tối đa tối đa 50,000,000 ₫'
     }
 
     if (voucherDetail.quantity === null) {
@@ -284,7 +288,9 @@ export default function AdVoucherDetail() {
     } else if (!Number.isInteger(parseInt(voucherDetail.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
     } else if (voucherDetail.minimumAmount < 0) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
+      errors.minimumAmount = 'Điều kiện tối thiểu 0 ₫'
+    } else if (voucherDetail.minimumAmount > 50000000) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 50,000,000 ₫'
     }
 
     if (voucherDetail.startDate.trim() === '') {
