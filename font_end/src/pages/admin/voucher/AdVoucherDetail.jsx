@@ -287,8 +287,8 @@ export default function AdVoucherDetail() {
       errors.minimumAmount = 'Điều kiện không được để trống'
     } else if (!Number.isInteger(parseInt(voucherDetail.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
-    } else if (voucherDetail.minimumAmount < 0) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 0 ₫'
+    } else if (voucherDetail.minimumAmount < 1) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 1 ₫'
     } else if (voucherDetail.minimumAmount > 50000000) {
       errors.minimumAmount = 'Điều kiện tối thiểu 50,000,000 ₫'
     }
