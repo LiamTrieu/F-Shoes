@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Chip,
-  Container,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -124,11 +123,6 @@ export default function AdProductPageDetail() {
   const [listErr, setListErr] = useState([])
 
   useEffect(() => {
-    document.title = 'Admin - Sản phẩm chi tiết'
-    sanPhamApi.getNameProduct(id).then((result) => {
-      setProduct(result.data.data)
-      setPriceMax(result.data.data.price)
-    })
     categoryApi.findAll().then((response) => {
       setListCategory(response.data.data)
     })
@@ -149,6 +143,13 @@ export default function AdProductPageDetail() {
     })
   }, [id])
 
+  function fetchDataProduct(id) {
+    sanPhamApi.getNameProduct(id).then((result) => {
+      setProduct(result.data.data)
+      setPriceMax(result.data.data.price)
+    })
+  }
+
   useEffect(() => {
     setListUpdate([])
     fetchData(filter, priceMax)
@@ -162,6 +163,7 @@ export default function AdProductPageDetail() {
   }, [debouncedValue])
 
   function fetchData(filter, priceMax) {
+    fetchDataProduct(id)
     sanPhamApi.getProductDetail({ ...filter, priceMax: priceMax }).then((response) => {
       setListProductDetail(response.data.data.data)
       setTotal(response.data.data.totalPages)
@@ -249,6 +251,7 @@ export default function AdProductPageDetail() {
             toast.success('Cập nhập thành công')
             setListUpdate([])
             fetchData(filter, priceMax)
+            fetchDataProduct(id)
           })
       }
     })

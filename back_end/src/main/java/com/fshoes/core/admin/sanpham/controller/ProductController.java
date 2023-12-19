@@ -95,4 +95,9 @@ public class ProductController {
     public List<String> filter(@PathVariable String idProduct) {
         return productService.filterAdd(idProduct);
     }
+
+    @GetMapping("/getAllName")
+    public List<String> getAllName() {
+        return productService.getAllName();
+    }
 }

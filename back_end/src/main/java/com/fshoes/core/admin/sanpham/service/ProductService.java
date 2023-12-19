@@ -47,4 +47,6 @@ public interface ProductService {
     List<ProductDetail> updateListProduct(List<UpdateListRequest> requests);
 
     List<String> filterAdd(String idProduct);
+
+    List<String> getAllName();
 }

@@ -37,6 +37,10 @@ const sanPhamApi = {
     const url = `/product/name-by-id/${id}`
     return axiosAdmin.get(url)
   },
+  getAllName: () => {
+    const url = `/product/getAllName`
+    return axiosAdmin.get(url)
+  },
 
   getImageProduct: (id) => {
     const url = `/product/image-product/${id}`

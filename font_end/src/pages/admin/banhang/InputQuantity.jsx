@@ -6,6 +6,7 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
 import useDebounce from '../../../services/hook/useDebounce'
 import { toast } from 'react-toastify'
+import checkStartApi from '../../../api/checkStartApi'
 
 const InputQuantity = ({
   cart,
@@ -20,15 +21,26 @@ const InputQuantity = ({
 
   useEffect(() => {
     if (quantity !== cart.quantity) {
-      const numericValue = Number(quantity)
-      if (!isNaN(numericValue) && numericValue >= 1) {
+      check(quantity)
+    }
+  }, [debouncedValue])
+
+  async function check(quantity) {
+    const numericValue = Number(quantity)
+    const numericValue2 = Number(cart.quantity)
+    if (!isNaN(numericValue) && numericValue >= 1) {
+      const res = await checkStartApi.checkQuantiy(cart.id, numericValue - numericValue2)
+      if (res.data) {
         inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue, cart)
       } else {
         setQuantity(cart.quantity)
-        toast.error('Số lượng phải lớn hơn 0')
+        toast.error('Số lượng quá số lượng sản phẩm')
       }
+    } else {
+      setQuantity(cart.quantity)
+      toast.error('Số lượng phải lớn hơn 0')
     }
-  }, [debouncedValue])
+  }
 
   return (
     <Box

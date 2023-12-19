@@ -35,4 +35,11 @@ public interface AdProductRepository extends ProductRepository {
                 group by p.name, p.deleted,p.id
             """, nativeQuery = true)
     List<ProductResponse> getListProduct();
+
+
+    @Query(value = """
+            select p.name
+                from product p
+            """, nativeQuery = true)
+    List<String> getAllName();
 }
