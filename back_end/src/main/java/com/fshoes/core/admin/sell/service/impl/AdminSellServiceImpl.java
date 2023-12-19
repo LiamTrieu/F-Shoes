@@ -252,7 +252,7 @@ public class AdminSellServiceImpl implements AdminSellService {
             // lấy list bill detail theo bill
             //lay ra dá trấnc theo id bill
             List<Transaction> listTransaction = transactionRepository.getTransactions(bill.getId());
-            if (listTransaction!=null){
+            if (!listTransaction.isEmpty()){
                 BigDecimal totalKhach = listTransaction.stream()
                         .map(Transaction::getTotalMoney)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -263,7 +263,7 @@ public class AdminSellServiceImpl implements AdminSellService {
                     newTran.setBill(bill);
                     newTran.setType(1);
                     newTran.setNote("Trả tiền thừa khách hàng");
-                    newTran.setPaymentMethod(0);
+                    newTran.setPaymentMethod(1);
                     newTran.setAccount(userLogin.getUserLogin());
                     transactionRepository.save(newTran);
                 }
