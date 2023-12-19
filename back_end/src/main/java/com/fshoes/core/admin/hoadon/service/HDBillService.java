@@ -45,5 +45,7 @@ public interface HDBillService {
 
     File xuatHoaDonGiaoHang(String idBill);
 
+    Boolean capNhatPhiShip(String idBill, String phiShip);
+
 
 }

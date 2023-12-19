@@ -237,7 +237,34 @@ public class HDBillServiceImpl implements HDBillService {
     @Override
     public Bill confirmOrder(String idBill, BillConfirmRequest billConfirmRequest) {
         Bill bill = hdBillRepository.findById(idBill).orElse(null);
-        if (bill != null) {
+
+        // nếu bill status là chờ xác nhận thì mới xác nhận:
+        if (bill != null && bill.getStatus() == 1) {
+            bill.setStatus(2);
+
+            hdBillRepository.save(bill);
+            // Lưu lịch sử hóa đơn
+            HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder().note(billConfirmRequest.getNoteBillHistory()).idStaff(userLogin.getUserLogin().getId()).bill(bill).build();
+            BillHistory billHistory = hdBillHistoryService.save(hdBillHistoryRequest);
+
+            //lấy bill detail
+            List<BillDetail> billDetails = hdBillDetailRepository.getBillDetailByBillId(idBill);
+            BigDecimal tongTienHang = billDetails.stream()
+                    .filter(item -> item.getStatus() != 1)
+                    .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            //trừ số lượng sp + kiểm tra tổng tiền > 1tr => set moneyShip = 0
+            BigDecimal tienDuocGiam = new BigDecimal(0);
+            billDetails.forEach(billDetail -> {
+                ProductDetail productDetail = billDetail.getProductDetail();
+                productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
+                productDetailRepository.save(productDetail);
+                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-admin-corfim-bill",
+                        clientProductDetailRepository.updateRealTime(productDetail.getId()));
+
+            });
+            System.out.println(tongTienHang);
             if (bill.getVoucher() != null) {
                 Voucher voucher = adVoucherRepository.findById(bill.getVoucher().getId()).orElse(null);
                 assert voucher != null;
@@ -261,6 +288,16 @@ public class HDBillServiceImpl implements HDBillService {
                 voucherNew.setQuantity(voucherNew.getQuantity() - 1);
                 adVoucherRepository.save(voucherNew);
                 bill.setVoucher(voucherNew);
+
+                if (voucherNew.getTypeValue() == 1) {
+                    tienDuocGiam = voucherNew.getMaximumValue();
+                } else {
+                    BigDecimal tienGiam = bill.getTotalMoney().multiply(voucherNew.getValue());
+                    if (tienGiam.longValue() > voucherNew.getMaximumValue().longValue()) {
+                        tienDuocGiam = voucherNew.getMaximumValue();
+                    }
+                }
+
                 if (bill.getCustomer() != null) {
                     Account account = accountRepository.findById(bill.getCustomer().getId()).orElse(null);
                     AdCustomerVoucherRespone adCustomerVoucherRespone = adVoucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucherNew.getId(), account.getId());
@@ -270,25 +307,17 @@ public class HDBillServiceImpl implements HDBillService {
                 }
             } else {
                 bill.setVoucher(null);
+                tienDuocGiam = new BigDecimal(0);
             }
-        }
-
-        if (bill != null && bill.getStatus() == 1) {
-            bill.setStatus(2);
+            bill.setMoneyReduced(tienDuocGiam);
+            if (tongTienHang.longValue() > 1000000) {
+                bill.setMoneyShip(new BigDecimal(0));
+                bill.setMoneyAfter(tongTienHang.subtract(tienDuocGiam));
+            } else {
+                bill.setMoneyShip(bill.getMoneyShip());
+                bill.setMoneyAfter((tongTienHang.add(billConfirmRequest.getMoneyShip())).subtract(tienDuocGiam));
+            }
             hdBillRepository.save(bill);
-            // Lưu lịch sử hóa đơn
-            HDBillHistoryRequest hdBillHistoryRequest = HDBillHistoryRequest.builder().note(billConfirmRequest.getNoteBillHistory()).idStaff(userLogin.getUserLogin().getId()).bill(bill).build();
-            BillHistory billHistory = hdBillHistoryService.save(hdBillHistoryRequest);
-
-            //trừ số lượng sp
-            List<BillDetail> billDetails = hdBillDetailRepository.getBillDetailByBillId(idBill);
-            billDetails.forEach(billDetail -> {
-                ProductDetail productDetail = billDetail.getProductDetail();
-                productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
-                productDetailRepository.save(productDetail);
-                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-admin-corfim-bill",
-                        clientProductDetailRepository.updateRealTime(productDetail.getId()));
-            });
 
             messagingTemplate.convertAndSend("/topic/real-time-xac-nhan-bill-page-admin",
                     hdBillRepository.realTimeBill(bill.getId()));
@@ -533,6 +562,20 @@ public class HDBillServiceImpl implements HDBillService {
                 () -> new RestApiException(Message.API_ERROR));
         List<BillDetail> lstBillDetail = hdBillDetailRepository.getBillDetailByBillId(idBill);
         return genHoaDon.genHoaDonGiaoHang(bill, lstBillDetail, billHistory, account);
+    }
+
+    @Override
+    public Boolean capNhatPhiShip(String idBill, String phiShip) {
+        Bill bill = hdBillRepository.findById(idBill).get();
+        if (bill.getTotalMoney().longValue() > 1000000) {
+            bill.setMoneyShip(new BigDecimal(0));
+            hdBillRepository.save(bill);
+            return true;
+        } else {
+            bill.setMoneyShip(BigDecimal.valueOf(Long.valueOf(phiShip)));
+            hdBillRepository.save(bill);
+            return true;
+        }
     }
 
 

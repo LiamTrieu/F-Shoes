@@ -222,6 +222,11 @@ public class HDBillDetailServiceImpl implements HDBillDetailService {
         if (bill.getMoneyReduced() != null) {
             tienCanThanhToan = totalAmount.subtract(bill.getMoneyReduced());
         }
+//        if (totalAmount.longValue() > 1000000) {
+//            bill.setMoneyShip(new BigDecimal(0));
+//        }else{
+//            bill
+//        }
         if (bill.getMoneyShip() != null) {
             tienCanThanhToan = totalAmount.add(bill.getMoneyShip());
         }
