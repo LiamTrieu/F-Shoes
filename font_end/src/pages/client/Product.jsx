@@ -661,6 +661,7 @@ export default function Product() {
     setSelectMaterial([])
     setSelectSole([])
     setSelectSize([])
+    setInputValue('')
   }
 
   return (
@@ -725,6 +726,7 @@ export default function Product() {
                 className="stack-input-filter"
                 placeholder="Tìm sản phẩm"
                 type="text"
+                value={inputValue}
                 size="small"
                 onChange={(e) => {
                   setInputValue(e.target.value)

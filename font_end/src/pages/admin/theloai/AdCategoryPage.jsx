@@ -88,6 +88,7 @@ export default function AdCategoryPage() {
     })
   }
 
+
   const haldleAllNameCategory = () => {
     categoryApi
       .getAllNameCategory()
@@ -107,7 +108,6 @@ export default function AdCategoryPage() {
     const errors = {
       name: '',
     }
-    console.log(allNameCategory)
     if (category.name.trim() === '') {
       errors.name = 'Không được để trống tên thể loại'
     } else if (category.name.length > 100) {
@@ -132,6 +132,11 @@ export default function AdCategoryPage() {
     return listCategory.some(
       (category) => category.name === categoryName && category.id !== currentId,
     )
+  }
+
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
   }
 
   const handleValidateUpdate = () => {
@@ -335,7 +340,13 @@ export default function AdCategoryPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setInputValue(e.target.value)
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm thể loại"

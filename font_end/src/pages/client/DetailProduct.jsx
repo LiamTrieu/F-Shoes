@@ -55,6 +55,7 @@ export default function DetailProduct() {
   const [products, setProducts] = useState([])
   const [sizes, setSizes] = useState([])
   const [colors, setColors] = useState([])
+  const [showMaxQuantityError, setShowMaxQuantityError] = useState(false)
   const { id } = useParams()
 
   const [openModalCart, setOpenModalCart] = React.useState(false)
@@ -245,7 +246,7 @@ export default function DetailProduct() {
     if (
       isNaN(parseInt(soLuong.toString().trim())) ||
       soLuong <= 0 ||
-      soLuong >= parseInt(product.amount)
+      soLuong > parseInt(product.amount)
     ) {
       toast.warning('Số lượng không hợp lệ')
     } else {
@@ -265,17 +266,43 @@ export default function DetailProduct() {
   const handleQuantityChange = (e) => {
     const inputValue = e.target.value
     const numericValue = inputValue.replace(/[^0-9]/g, '')
-    if (numericValue !== '' && !isNaN(parseInt(numericValue)) && parseInt(numericValue) > 0) {
-      setSoluong(parseInt(numericValue))
+
+    if (numericValue === '') {
+      // Nếu giá trị là chuỗi rỗng, xóa hết (đặt giá trị là '')
+      setSoluong('')
+      setShowMaxQuantityError(false)
     } else {
+      const parsedValue = parseInt(numericValue)
+      if (!isNaN(parsedValue) && parsedValue > 0) {
+        const limitedQuantity = Math.min(parsedValue, parseInt(product.amount))
+        setSoluong(limitedQuantity)
+        setShowMaxQuantityError(limitedQuantity !== parsedValue)
+      } else {
+        // Nếu giá trị không hợp lệ, giữ nguyên giá trị hiện tại
+        setShowMaxQuantityError(false)
+      }
+    }
+  }
+
+  const handleBlur = () => {
+    // Khi ô nhập mất focus và giá trị rỗng, đặt thành 1
+    if (soLuong === '') {
       setSoluong(1)
+      setShowMaxQuantityError(false)
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && soLuong === '') {
+      setSoluong(1)
+      setShowMaxQuantityError(false)
     }
   }
   const checkOut = () => {
     if (
       isNaN(parseInt(soLuong.toString().trim())) ||
       soLuong <= 0 ||
-      soLuong >= parseInt(product.amount)
+      soLuong > parseInt(product.amount)
     ) {
       toast.warning('Số lượng không hợp lệ')
     } else {
@@ -519,6 +546,8 @@ export default function DetailProduct() {
                   </IconButton>
                   <TextField
                     onChange={handleQuantityChange}
+                    onBlur={handleBlur}
+                    onKeyPress={handleKeyPress}
                     value={soLuong}
                     inputProps={{ min: 1 }}
                     size="small"
@@ -540,6 +569,11 @@ export default function DetailProduct() {
                   </IconButton>
                 </Box>
               </Box>
+              {showMaxQuantityError && (
+                <Typography sx={{ float: 'left', ml: '2px', color: 'red', fontSize: '12px' }}>
+                  Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này
+                </Typography>
+              )}
             </Box>
             <ThemeProvider theme={ColorCustom}>
               <Button
