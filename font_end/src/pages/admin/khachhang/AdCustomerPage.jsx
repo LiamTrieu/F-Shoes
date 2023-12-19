@@ -70,6 +70,11 @@ export default function AdCustomerPage() {
     })
   }
 
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
   const getAllKhachHang = () => {
     khachHangApi.getAll().then((response) => {
       setListKhachHangEx(response.data)
@@ -164,7 +169,13 @@ export default function AdCustomerPage() {
           <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <TextField
               onChange={(e) => {
-                setInputValue(e.target.value)
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               sx={{ width: '40%' }}
               className="search-field"
