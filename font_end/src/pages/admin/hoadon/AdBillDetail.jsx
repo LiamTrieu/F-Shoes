@@ -87,6 +87,7 @@ export default function AdBillDetail() {
   const [openDialog, setOpenDialog] = useState(false)
   const [moneyAfter, setMoneyAfter] = useState(0)
   const [tienShip, setTienShip] = useState(0)
+  const [tienShip2, setTienShip2] = useState(0)
   const [openModalConfirm, setOpenModalConfirm] = useState(false)
   const [openModalConfirmDelive, setOpenModalConfirmDelive] = useState(false)
   const [openModalConfirmPayment, setOpenModalConfirmPayment] = useState(false)
@@ -102,6 +103,7 @@ export default function AdBillDetail() {
   const [openModalUpdateAdd, setopenModalUpdateAdd] = useState(false)
 
   const [checkPreBill, setCheckPreBill] = useState(false)
+  const [checkMoney, setCheckMoney] = useState(true)
 
   const totalProductsCost = listBillDetail
     .filter((row) => row.status === 0)
@@ -131,6 +133,20 @@ export default function AdBillDetail() {
   useEffect(() => {
     checkBillExist(id)
   }, [id])
+
+  useEffect(() => {
+    if (!checkMoney && tienShip !== tienShip2) {
+      setTienShip2(tienShip)
+      const data = {
+        idVoucher: voucherMax.id === '' ? '' : voucherMax.id,
+        moneyReducer: totalMoneyReducerVoucher,
+        moneyAfter: totalMoneyAfter,
+      }
+      hoaDonApi.changeMoneyBill(id, data).then(() => {
+        fetchVoucherByIdBill(id)
+      })
+    }
+  }, [checkMoney, tienShip, tienShip2])
 
   const handleIncrementQuantity = (row, index) => {
     hoaDonChiTietApi.isCheckDonGiaVsPricePrd(row.id).then((response) => {
@@ -449,7 +465,6 @@ export default function AdBillDetail() {
       })
       return null
     }
-
     let maxElement = lstVoucherMax[0]
     lstVoucherMax.forEach((element) => {
       if (element.maximumValue > maxElement.maximumValue) {
@@ -459,19 +474,21 @@ export default function AdBillDetail() {
     return handleVoucher(maxElement.id)
   }
 
-  const handleVoucher = (idVoucher) => {
-    sellApi
-      .getOneVoucherById(idVoucher)
-      .then((response) => {
+  const handleVoucher = async (idVoucher) => {
+    try {
+      setCheckMoney(true)
+      const response = await sellApi.getOneVoucherById(idVoucher)
+      if (response.status === 200) {
         setVoucherMax(response.data.data)
         setCheckPreBill(false)
+        setCheckMoney(false)
+      }
+    } catch (error) {
+      toast.error('Vui Lòng f5 tải lại trang', {
+        position: toast.POSITION.TOP_CENTER,
       })
-      .catch(() => {
-        toast.error('Vui Lòng f5 tải lại trang', {
-          position: toast.POSITION.TOP_CENTER,
-        })
-        setCheckPreBill(false)
-      })
+      setCheckPreBill(false)
+    }
   }
 
   useEffect(() => {
@@ -1673,12 +1690,14 @@ export default function AdBillDetail() {
   const decrementQuantity = (idBillDetail) => {
     hoaDonChiTietApi.decrementQuantity(idBillDetail).catch((error) => {
       console.error('NO ok', error)
+      setCheckPreBill(true)
     })
   }
 
   const incrementQuantity = (idBillDetail) => {
     hoaDonChiTietApi.incrementQuantity(idBillDetail).catch((error) => {
       console.error('NO ok', error)
+      setCheckPreBill(true)
     })
   }
 
@@ -1686,10 +1705,12 @@ export default function AdBillDetail() {
     if (!isNaN(quantity) && quantity > 0) {
       hoaDonChiTietApi.changeQuantity(idBillDetail, quantity).catch((error) => {
         console.error('NO ok', error)
+        setCheckPreBill(true)
       })
     } else {
       hoaDonChiTietApi.changeQuantity(idBillDetail, 1).catch((error) => {
         console.error('NO ok', error)
+        setCheckPreBill(true)
       })
     }
   }

@@ -1,11 +1,6 @@
 package com.fshoes.core.admin.hoadon.service;
 
-import com.fshoes.core.admin.hoadon.model.request.BillConfirmRequest;
-import com.fshoes.core.admin.hoadon.model.request.BillFilterRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDBillDetailRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDBillRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDConfirmPaymentRequest;
-import com.fshoes.core.admin.hoadon.model.request.HDNhanVienSearchRequest;
+import com.fshoes.core.admin.hoadon.model.request.*;
 import com.fshoes.core.admin.hoadon.model.respone.HDBillResponse;
 import com.fshoes.core.admin.hoadon.model.respone.HDNhanVienResponse;
 import com.fshoes.entity.Bill;
@@ -47,5 +42,6 @@ public interface HDBillService {
 
     Boolean capNhatPhiShip(String idBill, String phiShip);
 
+    Bill changeMoneyBill(String idBill, HdBillChangeMoneyResquest resquest);
 
 }
