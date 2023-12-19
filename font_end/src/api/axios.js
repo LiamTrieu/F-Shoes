@@ -16,6 +16,13 @@ export const axiosApi = axios.create({
   },
 })
 
+export const axiosApiGhn = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: {
+    'content-type': 'application/json',
+  },
+})
+
 axiosApi.interceptors.request.use(
   (config) => {
     store.dispatch(setLoading(true))

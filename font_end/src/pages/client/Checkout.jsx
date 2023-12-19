@@ -37,6 +37,7 @@ import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import clientCartApi from '../../api/client/clientCartApi'
 import { socketUrl } from '../../services/url'
+import checkStartApi from '../../api/checkStartApi'
 
 var stompClient = null
 export default function Checkout() {
@@ -372,6 +373,24 @@ export default function Checkout() {
       setErrors(newErrors)
       return
     }
+    if (arrData) {
+      let allProductsAvailable = true
+
+      for (const e of arrData) {
+        const check = (await checkStartApi.checkQuantiy(e.id, e.soLuong)).data
+
+        if (!check) {
+          allProductsAvailable = false
+          break
+        }
+      }
+
+      if (!allProductsAvailable) {
+        navigate('/cart')
+        toast.warning('Có sản phẩm đã hết hàng, vui lòng chọn lại!')
+        return
+      }
+    }
 
     const title = 'Xác nhận đặt hàng?'
     confirmSatus(title, '').then((result) => {
@@ -405,6 +424,7 @@ export default function Checkout() {
           typePayment: selectedValue,
           email: userLogin ? userLogin.email : request.email,
         }
+
         if (selectedValue === '0') {
           dispatch(setLoading(true))
           clientCheckoutApi

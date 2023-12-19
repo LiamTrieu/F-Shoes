@@ -516,6 +516,14 @@ export default function ReturnOrderBill() {
                     </b>
                   </Grid>
                 </Grid>
+                {bill?.percentMoney !== 0 && (
+                  <Grid container>
+                    <Grid xs={6}>Giảm giá cửa hàng</Grid>
+                    <Grid xs={6} sx={{ textAlign: 'right' }}>
+                      <b style={{ color: 'red' }}>{bill.percentMoney + '%'}</b>
+                    </Grid>
+                  </Grid>
+                )}
                 <Grid container>
                   <Grid xs={6}>Số tiền hoàn trả </Grid>
                   <Grid xs={6} sx={{ textAlign: 'right' }}>

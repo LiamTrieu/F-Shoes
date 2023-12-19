@@ -35,6 +35,7 @@ import { toast } from 'react-toastify'
 import styled from '@emotion/styled'
 import useDebounce from '../../../services/hook/useDebounce'
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import checkStartApi from '../../../api/checkStartApi'
 
 const styleModalProduct = {
   position: 'absolute',
@@ -204,7 +205,7 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
     fecthData(filter)
   }, [filter])
 
-  const onSubmitAddBillDetail = (id, idBill) => {
+  const onSubmitAddBillDetail = async (id, idBill) => {
     let priceToAdd = selectedProduct.price
     if (selectedProduct.value && selectedProduct.statusPromotion === 1) {
       priceToAdd = (selectedProduct.price * (100 - selectedProduct.value)) / 100
@@ -227,7 +228,8 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
       return
     }
 
-    if (addAmount > getAmountProduct.amount) {
+    const check = await checkStartApi.checkQuantiy(id, addAmount)
+    if (!check.data) {
       setErrorQuantity('Số lượng không còn đủ')
       return
     } else {
