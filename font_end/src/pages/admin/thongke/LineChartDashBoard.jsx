@@ -20,6 +20,7 @@ export default function LineChartDashBoard(props) {
     'rgba(0, 255, 0, 0.7)', // Lime Green
     'rgba(0, 191, 255, 0.7)', // Sky Blue
     'rgba(0, 128, 0, 0.7)', // Green
+    'rgba(148, 0, 211, 0.7)', // Violet
   ]
 
   const data = {
