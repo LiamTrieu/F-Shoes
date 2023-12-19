@@ -833,6 +833,7 @@ export default function AdProductPageDetail() {
           fetchData={fetchData}
           filter={filter}
           priceMax={priceMax}
+          idProduct={id}
         />
       )}
     </div>

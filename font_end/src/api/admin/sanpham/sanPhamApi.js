@@ -66,5 +66,9 @@ const sanPhamApi = {
     const url = `/product/filter/${idProduct}`
     return axiosAdmin.get(url)
   },
+  filterUpadte: (request) => {
+    const url = `/product/filterUpdate`
+    return axiosAdmin.post(url, request)
+  },
 }
 export default sanPhamApi
