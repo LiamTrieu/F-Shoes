@@ -206,6 +206,7 @@ export default function AdVoucherAdd() {
     if (voucherAdd.typeValue === 0) {
       if (voucherAdd.value === null) {
         setVoucherAdd({ ...voucherAdd, value: 0 })
+        errors.value = 'giá trị tối thiểu 1%'
       } else if (!Number.isInteger(parseInt(voucherAdd.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherAdd.value < 1) {
@@ -216,6 +217,7 @@ export default function AdVoucherAdd() {
     } else {
       if (voucherAdd.value === null) {
         setVoucherAdd({ ...voucherAdd, value: 0 })
+        errors.value = 'giá trị tối thiểu 1 ₫'
       } else if (!Number.isInteger(parseInt(voucherAdd.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherAdd.value < 1) {
@@ -227,6 +229,7 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.maximumValue === null) {
       setVoucherAdd({ ...voucherAdd, maximumValue: 0 })
+      errors.maximumValue = 'giá trị tối đa tối thiểu 1 ₫'
     } else if (!Number.isInteger(parseInt(voucherAdd.maximumValue))) {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
     } else if (voucherAdd.maximumValue < 1) {
@@ -239,6 +242,7 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.quantity === null) {
       setVoucherAdd({ ...voucherAdd, quantity: 0 })
+      errors.quantity = 'Số lượng tối thiểu 1'
     } else if (!Number.isInteger(parseInt(voucherAdd.quantity))) {
       errors.quantity = 'Số lượng chỉ được nhập số nguyên'
     } else if (voucherAdd.quantity < 1) {
@@ -247,10 +251,11 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.minimumAmount === null) {
       setVoucherAdd({ ...voucherAdd, minimumAmount: 0 })
+      errors.minimumAmount = 'Điều kiện tối thiểu 1 ₫'
     } else if (!Number.isInteger(parseInt(voucherAdd.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
-    } else if (voucherAdd.minimumAmount < 0) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 0 ₫'
+    } else if (voucherAdd.minimumAmount < 1) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 1 ₫'
     } else if (voucherAdd.minimumAmount > 50000000) {
       errors.minimumAmount = 'Điều kiện tối thiểu tối đa 50,000,000 ₫'
     }
