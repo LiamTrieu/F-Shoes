@@ -316,42 +316,42 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                 </span>
               </Typography>
 
-              <Link to="/checkout">
-                <div
-                  style={{
-                    width: '300px',
-                    height: '40px',
-                    backgroundColor: '#333',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '15px',
-                  }}
-                  onClick={async () => {
-                    if (productCart) {
-                      let allProductsAvailable = true
+              {/* <Link to="/checkout"> */}
+              <div
+                style={{
+                  width: '300px',
+                  height: '40px',
+                  backgroundColor: '#333',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '15px',
+                }}
+                onClick={async () => {
+                  if (productCart) {
+                    let allProductsAvailable = true
 
-                      for (const e of productCart) {
-                        const check = (await checkStartApi.checkQuantiy(e.id, e.soLuong)).data
+                    for (const e of productCart) {
+                      const check = (await checkStartApi.checkQuantiy(e.id, e.soLuong)).data
 
-                        if (!check) {
-                          allProductsAvailable = false
-                          break
-                        }
-                      }
-
-                      if (allProductsAvailable) {
-                        dispatch(setCheckout(productCart))
-                        navigate('/checkout')
-                      } else {
-                        toast.warning('Có sản phẩm đã hết hàng, vui lòng load lại trang!')
+                      if (!check) {
+                        allProductsAvailable = false
+                        break
                       }
                     }
-                  }}>
-                  TIẾN HÀNH THANH TOÁN
-                </div>
-              </Link>
+
+                    if (allProductsAvailable) {
+                      dispatch(setCheckout(productCart))
+                      navigate('/checkout')
+                    } else {
+                      toast.warning('Có sản phẩm đã hết hàng, vui lòng load lại trang!')
+                    }
+                  }
+                }}>
+                TIẾN HÀNH THANH TOÁN
+              </div>
+              {/* </Link> */}
             </div>
           </Stack>
         </Box>
