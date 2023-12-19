@@ -41,6 +41,7 @@ export default function AdModalDetailProductDetail({
   fetchData,
   filter,
   priceMax,
+  idProduct,
 }) {
   const [categorys, setCategorys] = useState([])
   const [err, setErr] = useState({
@@ -328,7 +329,8 @@ export default function AdModalDetailProductDetail({
   }
 
   function onSubmit() {
-    const title = 'Xác nhận cập nhập sản phẩm?'
+    console.log(preProductDetail)
+    const title = 'Xác nhận cập nhật sản phẩm?'
     const text = ''
 
     if (validate({ ...preProductDetail, image: imageSelect })) {
@@ -348,11 +350,36 @@ export default function AdModalDetailProductDetail({
             description: preProductDetail.description,
             listImage: imageSelect,
           }
-          sanPhamApi.updateProduct(newProductDetail).finally(() => {
-            toast.success('Cập nhập sản phẩm thành công')
-            setOpen(false)
-            fetchData(filter, priceMax)
-          })
+
+          const request = {
+            id: preProductDetail.id,
+            idSole: preProductDetail.sole.value,
+            idBrand: preProductDetail.brand.value,
+            idCategory: preProductDetail.category.value,
+            idMaterial: preProductDetail.material.value,
+            idSize: preProductDetail.size.value,
+            idColor: preProductDetail.color.value,
+            idProduct: idProduct,
+          }
+
+          sanPhamApi
+            .filterUpadte(request)
+            .then((response) => {
+              if (response.status === 200) {
+                if (response.data) {
+                  toast.error('sản phẩm đã tồn tại trong hệ thống')
+                } else {
+                  sanPhamApi.updateProduct(newProductDetail).finally(() => {
+                    toast.success('Cập nhật sản phẩm thành công')
+                    setOpen(false)
+                    fetchData(filter, priceMax)
+                  })
+                }
+              }
+            })
+            .catch(() => {
+              toast.warning('Cập nhật sản phẩm thất bại')
+            })
         }
       })
     }
