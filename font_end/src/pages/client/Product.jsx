@@ -742,7 +742,7 @@ export default function Product() {
               <Typography className="stack-typography-portfolio" component="span" variant={'body2'}>
                 <Typography
                   onClick={toggleMenuBar}
-                  sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                  sx={{ display: { xs: 'none', md: 'inline-block' }, cursor: 'pointer' }}>
                   {showMenuBar ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
                   {showMenuBar ? <FilterAltIcon /> : <FilterAltOffIcon />}
                 </Typography>

@@ -105,6 +105,11 @@ export default function AdVoucherDetail() {
     setVoucherDetail({ ...voucherDetail, listIdCustomer: selectedCustomerIds })
   }, [voucherDetail, selectedCustomerIds])
 
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
   const [inputValue, setInputValue] = useState('')
   const debouncedValue = useDebounce(inputValue, 1000)
 
@@ -694,8 +699,17 @@ export default function AdVoucherDetail() {
               type="text"
               size="small"
               fullWidth
+              // onChange={(e) => {
+              //   setInputValue(e.target.value)
+              // }}
               onChange={(e) => {
-                setInputValue(e.target.value)
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               InputProps={{
                 startAdornment: (

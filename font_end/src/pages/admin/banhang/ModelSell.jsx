@@ -135,6 +135,11 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
     setAddAmount((prevAmount) => prevAmount + 1)
   }
 
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
   const [inputValue, setInputValue] = useState('')
   const debouncedValue = useDebounce(inputValue, 1000)
 
@@ -306,14 +311,23 @@ export default function ModelSell({ open, setOPen, idBill, load, totalSum }) {
               <Box>
                 <TextField
                   sx={{
-                    width: '160%',
+                    width: '230%',
                     '.MuiInputBase-input': { py: '7.5px' },
                   }}
                   size="small"
                   variant="outlined"
-                  placeholder="Tên sản phẩm"
+                  placeholder="Tìm theo tên sản phẩm ,mã và thuộc tính sản phẩm"
+                  // onChange={(e) => {
+                  //   setInputValue(e.target.value)
+                  // }}
                   onChange={(e) => {
-                    setInputValue(e.target.value)
+                    const valueNhap = e.target.value
+                    if (validateSearchInput(valueNhap)) {
+                      setInputValue(valueNhap)
+                    } else {
+                      setInputValue('')
+                      toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                    }
                   }}
                 />
               </Box>

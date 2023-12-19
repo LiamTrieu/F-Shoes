@@ -228,6 +228,11 @@ export default function AdPromotionAdd() {
 
   const promotionNames = getPromotion.map((promotion) => promotion.name)
 
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
   const validate = () => {
     const timeStart = dayjs(addPromotionRe.timeStart, 'DD/MM/YYYY')
     const timeEnd = dayjs(addPromotionRe.timeEnd, 'DD/MM/YYYY')
@@ -262,7 +267,7 @@ export default function AdPromotionAdd() {
       errors.value = 'Vui lòng nhập giá trị'
     } else if (!Number.isInteger(Number(addPromotionRe.value))) {
       errors.value = 'Giá trị phải là số nguyên'
-    } else if (Number(addPromotionRe.value) < 0 || Number(addPromotionRe.value) > 100) {
+    } else if (Number(addPromotionRe.value) <= 0 || Number(addPromotionRe.value) > 100) {
       errors.value = 'Giá trị phải lớn hơn 0% và nhở hơn 100%'
     }
     if (addPromotionRe.timeStart === '') {
@@ -326,6 +331,14 @@ export default function AdPromotionAdd() {
         position: toast.POSITION.TOP_RIGHT,
       })
     }
+  }
+  const handleTodayClick = () => {
+    const currentDateTime = new Date()
+    setAddPromotionRe({
+      ...addPromotionRe,
+      timeStart: dayjs(currentDateTime).format('DD-MM-YYYY HH:mm:ss'),
+    })
+    settimeStart('')
   }
 
   return (
@@ -398,6 +411,18 @@ export default function AdPromotionAdd() {
                         })
                         settimeStart('')
                       }}
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear', 'today'],
+                          onClick: (action) => {
+                            if (action === 'clear') {
+                              setAddPromotionRe({ ...addPromotionRe, timeStart: '' })
+                            } else if (action === 'today') {
+                              handleTodayClick()
+                            }
+                          },
+                        },
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -424,6 +449,12 @@ export default function AdPromotionAdd() {
                           timeEnd: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                         })
                         setTimeend('')
+                      }}
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear'],
+                          onClick: () => setAddPromotionRe({ ...addPromotionRe, timeEnd: '' }),
+                        },
                       }}
                     />
                   </DemoContainer>
@@ -452,8 +483,17 @@ export default function AdPromotionAdd() {
                     label="Tìm tên sản phẩm"
                     variant="outlined"
                     size="small"
+                    // onChange={(e) => {
+                    //   setInputValue(e.target.value)
+                    // }}
                     onChange={(e) => {
-                      setInputValue(e.target.value)
+                      const valueNhap = e.target.value
+                      if (validateSearchInput(valueNhap)) {
+                        setInputValue(valueNhap)
+                      } else {
+                        setInputValue('')
+                        toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                      }
                     }}
                   />
                 </div>
@@ -557,8 +597,17 @@ export default function AdPromotionAdd() {
                       variant="outlined"
                       placeholder="Tên sản phẩm, thể loại, thương hiệu, chất liệu, màu sắc"
                       className="text-field-css"
+                      // onChange={(e) => {
+                      //   setInputValue1(e.target.value)
+                      // }}
                       onChange={(e) => {
-                        setInputValue1(e.target.value)
+                        const valueNhap = e.target.value
+                        if (validateSearchInput(valueNhap)) {
+                          setInputValue1(valueNhap)
+                        } else {
+                          setInputValue('')
+                          toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                        }
                       }}
                     />
                   </Box>

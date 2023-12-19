@@ -91,6 +91,10 @@ export default function AdBillPage() {
     setFilter(updatedFilter)
     setCurrentPage(newPage)
   }
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
 
   const [inputValue, setInputValue] = useState('')
   const debouncedValue = useDebounce(inputValue, 1000)
@@ -346,8 +350,17 @@ export default function AdBillPage() {
           spacing={1}
           style={{ marginBottom: '20px' }}>
           <TextField
+            // onChange={(e) => {
+            //   setInputValue(e.target.value)
+            // }}
             onChange={(e) => {
-              setInputValue(e.target.value)
+              const valueNhap = e.target.value
+              if (validateSearchInput(valueNhap)) {
+                setInputValue(valueNhap)
+              } else {
+                setInputValue('')
+                toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+              }
             }}
             id="hd-input-search"
             sx={{ width: '50%' }}

@@ -309,7 +309,6 @@ public interface ClientProductDetailRepository extends ProductDetailRepository {
                      LEFT JOIN product_promotion pp ON pd.id = pp.id_product_detail
                          LEFT JOIN promotion pr ON pr.id = pp.id_promotion
                 WHERE pd.id = :id 
-                AND p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                 GROUP BY pd.id
             """, nativeQuery = true)
     ClientProductResponse updateRealTime(String id);
