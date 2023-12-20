@@ -35,6 +35,7 @@ import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../../../services/url'
 import confirmSatus from '../../../components/comfirmSwal'
+import checkStartApi from '../../../api/checkStartApi'
 const styleAdBillModalThemSP = {
   position: 'absolute',
   top: '50%',
@@ -142,50 +143,61 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load, setChec
       setAddAmount(1)
     }
   }
-  const saveBillDetail = (idBill, selectedProduct) => {
-    var price = 0
-    if (selectedProduct.value != null) {
-      price = (
-        selectedProduct.price -
-        (selectedProduct.price * selectedProduct.value) / 100
-      ).toFixed(0)
-    } else {
-      price = selectedProduct.price
-    }
-    const billDetailReq = {
-      productDetailId: selectedProduct.productDetailId,
-      idBill: idBill,
-      quantity: addAmount,
-      price: price,
-      status: 0,
-    }
-    if (billDetailReq.quantity > 5) {
-      toast.error('Vượt quá số lượng cho phép', {
-        position: toast.POSITION.TOP_CENTER,
-      })
-      return
-    } else if (billDetailReq.quantity <= 0) {
-      toast.error('Vui lòng kiểm tra lại số lượng', {
-        position: toast.POSITION.TOP_CENTER,
-      })
-      return
-    } else {
-      hoaDonChiTietApi
-        .saveBillDetail(billDetailReq)
-        .then((response) => {
-          toast.success('Đã thêm sản phẩm', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          load(true)
-          setIsProductDetailModalOpen(false)
-        })
-        .catch((error) => {
-          toast.error('Đã xảy ra lỗi', {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-          console.error('Lỗi khi gửi yêu cầu APIsaveBillDetail: ', error)
-        })
-      return
+  const saveBillDetail = async (idBill, selectedProduct) => {
+    try {
+      const res = await checkStartApi.checkQuantiy(selectedProduct.id, addAmount)
+      if (res.status === 200) {
+        if (res.data) {
+          var price = 0
+          if (selectedProduct.value != null) {
+            price = (
+              selectedProduct.price -
+              (selectedProduct.price * selectedProduct.value) / 100
+            ).toFixed(0)
+          } else {
+            price = selectedProduct.price
+          }
+          const billDetailReq = {
+            productDetailId: selectedProduct.productDetailId,
+            idBill: idBill,
+            quantity: addAmount,
+            price: price,
+            status: 0,
+          }
+          if (billDetailReq.quantity > 5) {
+            toast.error('Vượt quá số lượng cho phép', {
+              position: toast.POSITION.TOP_CENTER,
+            })
+            return
+          } else if (billDetailReq.quantity <= 0) {
+            toast.error('Vui lòng kiểm tra lại số lượng', {
+              position: toast.POSITION.TOP_CENTER,
+            })
+            return
+          } else {
+            hoaDonChiTietApi
+              .saveBillDetail(billDetailReq)
+              .then((response) => {
+                toast.success('Đã thêm sản phẩm', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+                load(true)
+                setIsProductDetailModalOpen(false)
+              })
+              .catch((error) => {
+                toast.error('Đã xảy ra lỗi', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+                console.error('Lỗi khi gửi yêu cầu APIsaveBillDetail: ', error)
+              })
+            return
+          }
+        } else {
+          toast.error('Số lượng sản phẩm không đủ, vui lòng kiểm tra lại')
+        }
+      }
+    } catch (error) {
+      toast.error('Có lỗi vui lòng kiểm tra lại')
     }
   }
   const confirmAddProduct = (idBill, selectedProduct) => {
