@@ -297,8 +297,7 @@ export default function AdVoucherPage() {
                 ampm={false}
                 slotProps={{
                   actionBar: {
-                    actions: ['clear'],
-                    onClick: () => setSearchVoucher({ ...searchVoucher, startDateSearch: '' }),
+                    actions: ['clear', 'today'],
                   },
                 }}
                 label="Từ ngày"
@@ -318,8 +317,7 @@ export default function AdVoucherPage() {
                 ampm={false}
                 slotProps={{
                   actionBar: {
-                    actions: ['clear'],
-                    onClick: () => setSearchVoucher({ ...searchVoucher, endDateSearch: '' }),
+                    actions: ['clear', 'today'],
                   },
                 }}
                 label="Đến ngày"

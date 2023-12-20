@@ -46,5 +46,5 @@ public class AddBillRequest {
 
     private Integer receivingMethod;
 
-    private BigDecimal percentMoney;
+    private Integer percentMoney;
 }

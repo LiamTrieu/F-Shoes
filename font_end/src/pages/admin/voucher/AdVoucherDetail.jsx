@@ -623,8 +623,7 @@ export default function AdVoucherDetail() {
                   // minDateTime={dayjs()}
                   slotProps={{
                     actionBar: {
-                      actions: ['clear'],
-                      onClick: () => setVoucherDetail({ ...voucherDetail, startDate: '' }),
+                      actions: ['clear', 'today'],
                     },
                   }}
                   label="Từ ngày"
@@ -651,8 +650,7 @@ export default function AdVoucherDetail() {
                   // minDateTime={dayjs()}
                   slotProps={{
                     actionBar: {
-                      actions: ['clear'],
-                      onClick: () => setVoucherDetail({ ...voucherDetail, endDate: '' }),
+                      actions: ['clear', 'today'],
                     },
                   }}
                   label="Đến ngày"

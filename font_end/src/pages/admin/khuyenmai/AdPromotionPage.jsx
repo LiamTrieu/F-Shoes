@@ -305,8 +305,7 @@ export default function AdPromotionPage() {
                     }
                     slotProps={{
                       actionBar: {
-                        actions: ['clear'],
-                        onClick: () => setFilter({ ...filter, timeStart: '' }),
+                        actions: ['clear', 'today'],
                       },
                     }}
                     label="Ngày bắt đầu"
@@ -326,8 +325,7 @@ export default function AdPromotionPage() {
                     }
                     slotProps={{
                       actionBar: {
-                        actions: ['clear'],
-                        onClick: () => setFilter({ ...filter, timeEnd: '' }),
+                        actions: ['clear', 'today'],
                       },
                     }}
                     label="Ngày kết thúc"
