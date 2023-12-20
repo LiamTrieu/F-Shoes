@@ -1,17 +1,17 @@
-import { axiosApiGhn } from '../../axios'
+import { axiosApiThongBao } from '../../axios'
 
 const notificationApi = {
   save: (request) => {
     const url = `/notification/save`
-    return axiosApiGhn.post(url, request)
+    return axiosApiThongBao.post(url, request)
   },
   read: (id) => {
     const url = `/notification/read/${id}`
-    return axiosApiGhn.put(url)
+    return axiosApiThongBao.put(url)
   },
   getAll: () => {
     const url = `/notification`
-    return axiosApiGhn.get(url)
+    return axiosApiThongBao.get(url)
   },
 }
 export default notificationApi

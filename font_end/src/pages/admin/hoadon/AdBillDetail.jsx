@@ -69,6 +69,7 @@ import { TbTruckReturn } from 'react-icons/tb'
 import { IoIosAdd } from 'react-icons/io'
 import sellApi from '../../../api/admin/sell/SellApi'
 import ghnAPI from '../../../api/admin/ghn/ghnApi'
+import checkStartApi from '../../../api/checkStartApi'
 
 const listHis = [{ link: '/admin/bill', name: 'Quản lý đơn hàng' }]
 
@@ -148,53 +149,65 @@ export default function AdBillDetail() {
     }
   }, [checkMoney, tienShip, tienShip2])
 
-  const handleIncrementQuantity = (row, index) => {
-    hoaDonChiTietApi.isCheckDonGiaVsPricePrd(row.id).then((response) => {
-      if (response.data.data === false) {
-        confirmSatus(
-          'Đơn giá sản phẩm đã thay đổi',
-          'Vui lòng chọn "Thêm sản phẩm" để biết thêm thông tin chi tiết!',
-        )
-      } else {
-        if (row.quantity >= 0) {
-          const updatedList = listBillDetail.map((item, i) =>
-            i === index ? { ...item, quantity: item.quantity + 1 } : item,
-          )
-          const updatedRow = { ...row, quantity: row.quantity + 1 }
-          updatedList[index] = updatedRow
-          setListBillDetail(updatedList)
-          tinhLaiShip(updatedList)
-          incrementQuantity(row.id)
-          if (billDetail.moneyReduced != null) {
-            const newMoneyAfter =
-              updatedList.reduce(
-                (totalMoney, item) =>
-                  billDetail.moneyShip + totalMoney + item.quantity * item.price,
-                0,
-              ) - billDetail.moneyReduced
-            const conditionMoney = updatedList.reduce(
-              (totalMoney, item) => totalMoney + item.quantity * item.price,
-              0,
-            )
-            setMoneyAfter(newMoneyAfter)
-            setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
-            setCheckPreBill(true)
-          } else {
-            const newMoneyAfter = updatedList.reduce(
-              (totalMoney, item) => billDetail.moneyShip + totalMoney + item.quantity * item.price,
-              0,
-            )
-            const conditionMoney = updatedList.reduce(
-              (totalMoney, item) => totalMoney + item.quantity * item.price,
-              0,
-            )
-            setMoneyAfter(newMoneyAfter)
-            setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
-            setCheckPreBill(true)
-          }
+  const handleIncrementQuantity = async (row, index) => {
+    try {
+      const res = await checkStartApi.checkQuantiy(row.productDetailId, 1)
+      if (res.status === 200) {
+        if (res.data) {
+          hoaDonChiTietApi.isCheckDonGiaVsPricePrd(row.id).then((response) => {
+            if (response.data.data === false) {
+              confirmSatus(
+                'Đơn giá sản phẩm đã thay đổi',
+                'Vui lòng chọn "Thêm sản phẩm" để biết thêm thông tin chi tiết!',
+              )
+            } else {
+              if (row.quantity >= 0) {
+                const updatedList = listBillDetail.map((item, i) =>
+                  i === index ? { ...item, quantity: item.quantity + 1 } : item,
+                )
+                const updatedRow = { ...row, quantity: row.quantity + 1 }
+                updatedList[index] = updatedRow
+                setListBillDetail(updatedList)
+                tinhLaiShip(updatedList)
+                incrementQuantity(row.id)
+                if (billDetail.moneyReduced != null) {
+                  const newMoneyAfter =
+                    updatedList.reduce(
+                      (totalMoney, item) =>
+                        billDetail.moneyShip + totalMoney + item.quantity * item.price,
+                      0,
+                    ) - billDetail.moneyReduced
+                  const conditionMoney = updatedList.reduce(
+                    (totalMoney, item) => totalMoney + item.quantity * item.price,
+                    0,
+                  )
+                  setMoneyAfter(newMoneyAfter)
+                  setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
+                  setCheckPreBill(true)
+                } else {
+                  const newMoneyAfter = updatedList.reduce(
+                    (totalMoney, item) =>
+                      billDetail.moneyShip + totalMoney + item.quantity * item.price,
+                    0,
+                  )
+                  const conditionMoney = updatedList.reduce(
+                    (totalMoney, item) => totalMoney + item.quantity * item.price,
+                    0,
+                  )
+                  setMoneyAfter(newMoneyAfter)
+                  setAdCallVoucherOfSell({ ...adCallVoucherOfSell, condition: conditionMoney })
+                  setCheckPreBill(true)
+                }
+              }
+            }
+          })
+        } else {
+          toast.error('Số lượng sản phẩm không đủ, vui lòng kiểm tra lại')
         }
       }
-    })
+    } catch (error) {
+      toast.error('Không thể tăng sản phẩm')
+    }
 
     // if (row.quantity >= 0) {
     //   const updatedList = listBillDetail.map((item, i) =>
@@ -622,25 +635,23 @@ export default function AdBillDetail() {
   }
 
   const genBtnHandleBill = (billDetail, listTransaction) => {
-    if (listTransaction.length > 0) {
-      if (
-        billDetail.status > 3 &&
-        billDetail.status < 7 &&
-        billDetail.status !== 0 &&
-        checkTongTransTT === true
-      ) {
-        return (
-          <Button
-            variant="outlined"
-            className="them-moi"
-            color="cam"
-            style={{ marginRight: '5px' }}
-            onClick={() => setOpenModalConfirmComplete(true)}
-            sx={{ minWidth: '30px' }}>
-            Hoàn thành
-          </Button>
-        )
-      }
+    if (
+      listTransaction.filter((item) => item.type === 0).length > 0 &&
+      billDetail.status > 3 &&
+      billDetail.status < 7 &&
+      billDetail.status !== 0
+    ) {
+      return (
+        <Button
+          variant="outlined"
+          className="them-moi"
+          color="cam"
+          style={{ marginRight: '5px' }}
+          onClick={() => setOpenModalConfirmComplete(true)}
+          sx={{ minWidth: '30px' }}>
+          Hoàn thành
+        </Button>
+      )
     }
     //billDetail.type: giao hàng
     if (billDetail.receivingMethod === 1) {
@@ -728,6 +739,13 @@ export default function AdBillDetail() {
       }
     }
   }
+  // const checkSoLuongPrd = (lstBillDetail) => {
+  //   lstBillDetail.map((item) =>{
+  //     if(!checkStartApi.checkQuantiy(item.productDetailId, item.quantity)){
+
+  //     }
+  //   })
+  // }
 
   function ModalConfirmBill({ open, setOpen, billDetail, listHDCT }) {
     const [ghiChu, setGhiChu] = useState('')
@@ -758,20 +776,25 @@ export default function AdBillDetail() {
           status: 0,
         })),
       }
+
       confirmSatus('Xác nhận ', 'Xác nhận hoá đơn?').then((result) => {
         if (result.isConfirmed) {
           hoaDonApi
             .confirmBill(billDetail.id, updatedBillConfirmRequest)
             .then((response) => {
-              // toast.success('Đã xác nhận hoá đơn', {
-              //   position: toast.POSITION.TOP_RIGHT,
-              // })
-              confirmPrintBillGiaoHang(billDetail.id)
-              setIsUpdateBill(true)
-              setOpen(false)
+              if (response.status === 200) {
+                // toast.success('Đã xác nhận hoá đơn', {
+                //   position: toast.POSITION.TOP_RIGHT,
+                // })
+                confirmPrintBillGiaoHang(billDetail.id)
+                setIsUpdateBill(true)
+                setOpen(false)
+              } else {
+                setOpenModalConfirm(false)
+              }
             })
             .catch((error) => {
-              toast.error('Đã xảy ra lỗi', {
+              toast.error('Có sản phẩm hết hàng, vui lòng kiểm tra lại', {
                 position: toast.POSITION.TOP_RIGHT,
               })
               console.error('Lỗi xác nhận đơn hàng', error)
@@ -1186,25 +1209,33 @@ export default function AdBillDetail() {
       noteBillHistory: ghiChu,
     }
     const handleConfirmReturnStt = (id, hdBillReq) => {
-      confirmSatus('Xác nhận ', 'Xác nhận quay lại?').then((result) => {
-        if (result.isConfirmed) {
-          hoaDonApi
-            .returnStt(id, hdBillReq)
-            .then((response) => {
-              toast.success('Đã thay đổi trạng thái', {
-                position: toast.POSITION.TOP_RIGHT,
+      if (ghiChu.trim().length >= 50) {
+        confirmSatus('Xác nhận ', 'Xác nhận quay lại?').then((result) => {
+          if (result.isConfirmed) {
+            hoaDonApi
+              .returnStt(id, hdBillReq)
+              .then((response) => {
+                if (response.status === 200) {
+                  toast.success('Đã thay đổi trạng thái', {
+                    position: toast.POSITION.TOP_RIGHT,
+                  })
+                  setIsUpdateBill(true)
+                  setOpen(false)
+                }
               })
-              setIsUpdateBill(true)
-              setOpen(false)
-            })
-            .catch((error) => {
-              toast.error('Đã xảy ra lỗi', {
-                position: toast.POSITION.TOP_RIGHT,
+              .catch((error) => {
+                toast.error('Đã xảy ra lỗi', {
+                  position: toast.POSITION.TOP_RIGHT,
+                })
+                console.error('Lỗi khi gửi yêu cầu API return status bill: ', error)
               })
-              console.error('Lỗi khi gửi yêu cầu API return status bill: ', error)
-            })
-        }
-      })
+          }
+        })
+      } else {
+        toast.error('Vui lòng nhập ghi chú tối thiểu 50 ký tự', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      }
     }
     return (
       <DialogAddUpdate
@@ -2175,27 +2206,30 @@ export default function AdBillDetail() {
               justifyContent: 'flex-end',
             }}>
             <div style={{ flexShrink: 0 }}>
-              {billDetail && billDetail.status > 1 && billDetail.status <= 7 && (
-                <Button
-                  variant="outlined"
-                  className="them-moi"
-                  color="cam"
-                  style={{
-                    marginLeft: 'auto',
-                    marginRight: '5px',
-                    alignSelf: 'flex-end',
-                    cursor: billDetail && billDetail.status === 1 ? 'not-allowed' : 'pointer',
-                    opacity: billDetail && billDetail.status === 1 ? 0.5 : 1,
-                  }}
-                  onClick={() => {
-                    if (!(billDetail && billDetail.status === 1)) {
-                      setOpenModalReturnStt(true)
-                    }
-                  }}>
-                  <IoReturnUpBack style={{ fontSize: '20px' }} />
-                  Quay lại trạng thái trước
-                </Button>
-              )}
+              {billDetail &&
+                billDetail.status > 1 &&
+                billDetail.receivingMethod === 1 &&
+                billDetail.status <= 7 && (
+                  <Button
+                    variant="outlined"
+                    className="them-moi"
+                    color="cam"
+                    style={{
+                      marginLeft: 'auto',
+                      marginRight: '5px',
+                      alignSelf: 'flex-end',
+                      cursor: billDetail && billDetail.status === 1 ? 'not-allowed' : 'pointer',
+                      opacity: billDetail && billDetail.status === 1 ? 0.5 : 1,
+                    }}
+                    onClick={() => {
+                      if (!(billDetail && billDetail.status === 1)) {
+                        setOpenModalReturnStt(true)
+                      }
+                    }}>
+                    <IoReturnUpBack style={{ fontSize: '20px' }} />
+                    Quay lại trạng thái trước
+                  </Button>
+                )}
             </div>
 
             <div style={{ flexShrink: 0 }}>
@@ -2350,16 +2384,18 @@ export default function AdBillDetail() {
               alignItems="flex-start"
               spacing={2}>
               <h3>Lịch sửa thanh toán</h3>
-              {billDetail?.status > 0 && billDetail?.status < 7 && (
-                <Button
-                  onClick={() => setOpenModalConfirmPayment(true)}
-                  variant="outlined"
-                  className="them-moi"
-                  color="cam"
-                  style={{ marginRight: '5px' }}>
-                  Xác nhận thanh toán
-                </Button>
-              )}
+              {billDetail?.status > 3 &&
+                billDetail?.status < 7 &&
+                listTransaction.filter((item) => item.type === 0).length === 0 && (
+                  <Button
+                    onClick={() => setOpenModalConfirmPayment(true)}
+                    variant="outlined"
+                    className="them-moi"
+                    color="cam"
+                    style={{ marginRight: '5px' }}>
+                    Xác nhận thanh toán
+                  </Button>
+                )}
             </Stack>
             {listTransaction.length > 0 ? (
               <>
@@ -2783,6 +2819,10 @@ export default function AdBillDetail() {
                           fullWidth
                           value={tienShip}
                           onChange={(e) => handleTypingMoneyShip(e.target.value)}
+                          disabled={
+                            (billDetail && billDetail.status > 2) ||
+                            (billDetail && billDetail.status <= 0)
+                          }
                         />
                         {/* <span>
                           {billDetail && billDetail.moneyShip
