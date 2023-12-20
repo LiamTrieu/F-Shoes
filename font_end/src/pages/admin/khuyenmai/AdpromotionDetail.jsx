@@ -473,8 +473,7 @@ export default function AdPromotionDetail() {
                       }}
                       slotProps={{
                         actionBar: {
-                          actions: ['clear'],
-                          onClick: () => setUpdatePromotion({ ...updatePromotion, timeEnd: '' }),
+                          actions: ['clear', 'today'],
                         },
                       }}
                     />

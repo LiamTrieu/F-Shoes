@@ -413,7 +413,7 @@ export default function AdBillPage() {
                     onChange={handleStartDateChange}
                     slotProps={{
                       actionBar: {
-                        actions: ['clear'],
+                        actions: ['clear', 'today'],
                       },
                     }}
                     style={{
@@ -431,7 +431,7 @@ export default function AdBillPage() {
                     onChange={handleEndDateChange}
                     slotProps={{
                       actionBar: {
-                        actions: ['clear'],
+                        actions: ['clear', 'today'],
                       },
                     }}
                     style={{

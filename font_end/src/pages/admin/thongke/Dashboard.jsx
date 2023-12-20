@@ -583,8 +583,7 @@ export default function Dashboard() {
                 }
                 slotProps={{
                   actionBar: {
-                    actions: ['clear'],
-                    onClick: () => setFilterInCustom({ ...filterInCustom, startDate: null }),
+                    actions: ['clear', 'today'],
                   },
                 }}
                 label="Từ ngày"
@@ -605,8 +604,7 @@ export default function Dashboard() {
                 }
                 slotProps={{
                   actionBar: {
-                    actions: ['clear'],
-                    onClick: () => setFilterInCustom({ ...filterInCustom, endDate: null }),
+                    actions: ['clear', 'today'],
                   },
                 }}
                 label="Đến ngày"

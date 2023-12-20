@@ -168,7 +168,7 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
     List<String> filterAdd(String idProduct);
 
     @Query(value = """
-           SELECT pd 
+           SELECT pd.id
            from product_detail pd
             JOIN
                 product p ON p.id = pd.id_product
@@ -184,14 +184,14 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
                 material m ON m.id = pd.id_material
             JOIN
                 size si ON si.id = pd.id_size
-            Where p.id = :#{#resquest.idProduct}
-            AND c.id = :#{#resquest.idColor}
-            AND ca.id = :#{#resquest.idCategory}
-            AND b.id = :#{#resquest.idBrand}
-            AND s.id = :#{#resquest.idSole}
-            AND m.id = :#{#resquest.idMaterial}
-            AND si.id = :#{#resquest.idSize}
-            AND pd.id <> :#{#resquest.id}
+            Where p.id = :#{#request.idProduct}
+            AND c.id = :#{#request.idColor}
+            AND ca.id = :#{#request.idCategory}
+            AND b.id = :#{#request.idBrand}
+            AND s.id = :#{#request.idSole}
+            AND m.id = :#{#request.idMaterial}
+            AND si.id = :#{#request.idSize}
+            AND pd.id <> :#{#request.id}
     """, nativeQuery = true)
-    Optional<ProductDetail> filterUpdate(FilterUpdateResquest resquest);
+    String filterUpdate(FilterUpdateResquest request);
 }

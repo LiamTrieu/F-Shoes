@@ -328,60 +328,57 @@ export default function AdModalDetailProductDetail({
     return check
   }
 
-  function onSubmit() {
-    console.log(preProductDetail)
-    const title = 'Xác nhận cập nhật sản phẩm?'
-    const text = ''
+  async function onSubmit() {
+    try {
+      const title = 'Xác nhận cập nhật sản phẩm?'
+      const text = ''
+      const request = {
+        id: preProductDetail.id,
+        idSole: preProductDetail.sole.value,
+        idBrand: preProductDetail.brand.value,
+        idCategory: preProductDetail.category.value,
+        idMaterial: preProductDetail.material.value,
+        idSize: preProductDetail.size.value,
+        idColor: preProductDetail.color.value,
+        idProduct: idProduct,
+      }
 
-    if (validate({ ...preProductDetail, image: imageSelect })) {
-      confirmSatus(title, text).then((result) => {
-        if (result.isConfirmed) {
-          const newProductDetail = {
-            id: preProductDetail.id,
-            idSole: preProductDetail.sole.value,
-            idBrand: preProductDetail.brand.value,
-            idCategory: preProductDetail.category.value,
-            idMaterial: preProductDetail.material.value,
-            idSize: preProductDetail.size.value,
-            idColor: preProductDetail.color.value,
-            price: preProductDetail.price,
-            amount: preProductDetail.amount,
-            weight: preProductDetail.weight,
-            description: preProductDetail.description,
-            listImage: imageSelect,
-          }
-
-          const request = {
-            id: preProductDetail.id,
-            idSole: preProductDetail.sole.value,
-            idBrand: preProductDetail.brand.value,
-            idCategory: preProductDetail.category.value,
-            idMaterial: preProductDetail.material.value,
-            idSize: preProductDetail.size.value,
-            idColor: preProductDetail.color.value,
-            idProduct: idProduct,
-          }
-
-          sanPhamApi
-            .filterUpadte(request)
-            .then((response) => {
-              if (response.status === 200) {
-                if (response.data) {
-                  toast.error('sản phẩm đã tồn tại trong hệ thống')
-                } else {
-                  sanPhamApi.updateProduct(newProductDetail).finally(() => {
-                    toast.success('Cập nhật sản phẩm thành công')
-                    setOpen(false)
-                    fetchData(filter, priceMax)
-                  })
-                }
-              }
-            })
-            .catch(() => {
-              toast.warning('Cập nhật sản phẩm thất bại')
-            })
+      const response = await sanPhamApi.filterUpadte(request)
+      if (response.status === 200) {
+        if (response.data) {
+          toast.error('sản phẩm đã tồn tại trong hệ thống')
+          return
         }
-      })
+      }
+
+      if (validate({ ...preProductDetail, image: imageSelect })) {
+        confirmSatus(title, text).then((result) => {
+          if (result.isConfirmed) {
+            const newProductDetail = {
+              id: preProductDetail.id,
+              idSole: preProductDetail.sole.value,
+              idBrand: preProductDetail.brand.value,
+              idCategory: preProductDetail.category.value,
+              idMaterial: preProductDetail.material.value,
+              idSize: preProductDetail.size.value,
+              idColor: preProductDetail.color.value,
+              price: preProductDetail.price,
+              amount: preProductDetail.amount,
+              weight: preProductDetail.weight,
+              description: preProductDetail.description,
+              listImage: imageSelect,
+            }
+            sanPhamApi.updateProduct(newProductDetail).finally(() => {
+              toast.success('Cập nhật sản phẩm thành công')
+              setOpen(false)
+              fetchData(filter, priceMax)
+            })
+          }
+        })
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('Cập nhật sản phẩm thất bại!')
     }
   }
 

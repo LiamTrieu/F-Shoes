@@ -103,7 +103,7 @@ public class ProductController {
     }
 
     @PostMapping("/filterUpdate")
-    public Boolean filterUpdate(@RequestBody FilterUpdateResquest resquest) {
-        return adProductDetailRepository.filterUpdate(resquest).orElse(null) == null;
+    public Boolean filterUpdate(@RequestBody FilterUpdateResquest request) {
+        return adProductDetailRepository.filterUpdate(request) != null;
     }
 }
