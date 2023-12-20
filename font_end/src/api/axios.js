@@ -2,6 +2,7 @@ import axios from 'axios'
 import { setLoading } from '../services/slices/loadingSlice'
 import store from '../services/store'
 import { getCookie, removeCookie } from '../services/cookie'
+import { toast } from 'react-toastify'
 
 const axiosAdmin = axios.create({
   baseURL: process.env.REACT_APP_API_ADMIN_URL,
@@ -115,7 +116,7 @@ axiosAdminHoaDon.interceptors.response.use(
       window.location.href = '/not-authorization'
     }
     if (error.response && error.response.status === 400) {
-      console.error(error.response.data.message)
+      // toast.error(error.response.data.message)
     }
   },
 )
