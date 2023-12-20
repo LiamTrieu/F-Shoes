@@ -11,7 +11,7 @@ public class BrandRequest {
     private String name;
 
     public Brand tranBrand(Brand brand) {
-        brand.setName(this.name);
+        brand.setName(this.name.trim());
         return brand;
     }
 }

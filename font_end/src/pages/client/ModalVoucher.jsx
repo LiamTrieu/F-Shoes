@@ -81,12 +81,12 @@ export default function ModalVoucher({
 
   function calculateProductTotalPayment(cart, promotionByProductDetail) {
     const isDiscounted = promotionByProductDetail.some(
-      (item) => item.idProductDetail === cart.id && item.id,
+      (item) => item.idProductDetail === cart.id && item.value,
     )
 
     if (isDiscounted) {
       const discountedPrice = promotionByProductDetail
-        .filter((item) => item.idProductDetail === cart.id && item.id)
+        .filter((item) => item.idProductDetail === cart.id && item.value)
         .map((item) => cart.soLuong * calculateDiscountedPrice(cart.gia, item.value))
         .reduce((total, price) => total + price, 0)
       return discountedPrice
@@ -101,17 +101,18 @@ export default function ModalVoucher({
         position: toast.POSITION.TOP_CENTER,
       })
     } else {
-      const totalMoney = arrData.reduce(
-        (tong, e) => tong + calculateProductTotalPayment(e, promotionByProductDetail),
-        0,
-      )
+      const totalMoney = arrData.reduce((total, cart) => {
+        const productTotal = calculateProductTotalPayment(cart, promotionByProductDetail) || 0
+        return total + productTotal
+      }, 0)
       const totalVoucher = dataVoucher
         ? dataVoucher.typeValue === 0
           ? (totalMoney * dataVoucher.value) / 100
           : dataVoucher.value
         : 0
       dataVoucher != null ? setVoucher(dataVoucher) : setVoucher(null)
-      setGiamGia(totalVoucher > dataVoucher.maximumValue ? dataVoucher.maximumValue : totalVoucher)
+      const totalMoneyVoucher = totalVoucher > totalMoney ? totalMoney : totalVoucher
+      setGiamGia(totalMoneyVoucher)
       setCodeVoucher('')
       setOpen(false)
     }

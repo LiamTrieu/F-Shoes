@@ -81,4 +81,18 @@ public class HDBillDetailController {
         return new ObjectRespone(hdBillDetailServic.getPrdVsMaxKMValue(id));
     }
 
+    @GetMapping("/get/voucher/by/idBill/{id}")
+    public ObjectRespone getVoucherByIdBill(@PathVariable("id") String id) {
+        return new ObjectRespone(hdBillDetailService.getVoucherByIdBill(id));
+    }
+
+    @GetMapping("/get/percent/by/idBill/{id}")
+    public ObjectRespone getPercentByIdBill(@PathVariable("id") String id) {
+        return new ObjectRespone(hdBillDetailService.getPercentInBill(id));
+    }
+
+    @GetMapping("/view/one/voucher/{idBill}")
+    public ObjectRespone getOneVoucherById(@PathVariable String idBill) {
+        return new ObjectRespone(hdBillDetailService.getVoucherById(idBill));
+    }
 }

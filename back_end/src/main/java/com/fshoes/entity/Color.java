@@ -20,7 +20,7 @@ public class Color extends PrimaryEntity {
     @Column(length = 20, unique = true)
     private String code;
 
-    @Column(columnDefinition = EntityProperties.DEFINITION_NAME, unique = true)
+    @Column(columnDefinition = EntityProperties.DEFINITION_NAME)
     private String name;
 
     private Status deleted = Status.HOAT_DONG;

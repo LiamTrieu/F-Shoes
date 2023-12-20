@@ -425,8 +425,8 @@ export default function ClientModalThemSP({ open, setOPen, idBill, load }) {
                                   cart.value >= 1 && cart.value <= 50
                                     ? '#66CC00'
                                     : cart.value >= 51 && cart.value <= 80
-                                    ? '#FF9900'
-                                    : '#FF0000',
+                                      ? '#FF9900'
+                                      : '#FF0000',
                                 color: 'white',
                                 padding: '6px 5px',
                                 borderRadius: '0 0 0 10px',
@@ -454,24 +454,24 @@ export default function ClientModalThemSP({ open, setOPen, idBill, load }) {
                         }}>
                         <p style={{ color: 'red', margin: '5px 0' }}>
                           {/* <b>{cart.price}.000&#8363;</b> */}
-                          {cart.promotion ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
+                          {cart.value ? ( // Kiểm tra xem sản phẩm có khuyến mãi không
                             <div>
                               <div className="promotion-price">{`${formatCurrency(
                                 cart.price,
-                              )}`}</div>
+                              )}`}</div>{' '}
                               {/* Hiển thị giá gốc */}
                               <div>
                                 <span style={{ color: 'red', fontWeight: 'bold' }}>
                                   {`${formatCurrency(
                                     calculateDiscountedPrice(cart.price, cart.value),
                                   )}`}
-                                </span>
+                                </span>{' '}
                                 {/* Hiển thị giá sau khuyến mãi */}
                               </div>
                             </div>
                           ) : (
                             // Nếu không có khuyến mãi, chỉ hiển thị giá gốc
-                            <span>hihii</span>
+                            <span>{`${formatCurrency(cart.price)}`}</span>
                           )}
                         </p>
                       </TableCell>
@@ -480,7 +480,10 @@ export default function ClientModalThemSP({ open, setOPen, idBill, load }) {
                           variant="outlined"
                           color="info"
                           size="small"
-                          onClick={() => handleProductSelect(cart)}>
+                          onClick={() => {
+                            handleProductSelect(cart)
+                            setAddAmount(1)
+                          }}>
                           Chọn
                         </Button>
                       </TableCell>

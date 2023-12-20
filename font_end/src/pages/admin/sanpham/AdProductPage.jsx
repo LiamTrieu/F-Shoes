@@ -34,6 +34,7 @@ import confirmSatus from '../../../components/comfirmSwal'
 import { toast } from 'react-toastify'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import ExcelJS from 'exceljs'
+import useDebounce from '../../../services/hook/useDebounce'
 
 export default function AdProductPage() {
   const [listProduct, setListProduct] = useState([])
@@ -50,6 +51,13 @@ export default function AdProductPage() {
     fetchData(filter)
     getAllSanPham()
   }, [filter])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   function fetchData(filter) {
     sanPhamApi.get(filter).then((response) => {
@@ -145,11 +153,11 @@ export default function AdProductPage() {
   return (
     <div className="san-pham">
       <BreadcrumbsCustom listLink={listBreadcrumbs} />
-      <Container component={Paper} sx={{ py: 2 }}>
+      <Paper sx={{ p: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <TextField
             onChange={(e) => {
-              setFilter({ ...filter, name: e.target.value })
+              setInputValue(e.target.value)
             }}
             sx={{ width: '50%' }}
             className="search-field"
@@ -305,7 +313,7 @@ export default function AdProductPage() {
         ) : (
           <Empty />
         )}
-      </Container>
+      </Paper>
     </div>
   )
 }

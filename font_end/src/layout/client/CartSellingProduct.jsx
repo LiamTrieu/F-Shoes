@@ -109,7 +109,7 @@ export default function CartSellingProduct({ products, colmd, collg }) {
   console.log(arrMap, '==========')
   return (
     <>
-      <Grid container rowSpacing={1} columnSpacing={3}>
+      <Grid container rowSpacing={1} columnSpacing={3} sx={{ cursor: 'pointer' }}>
         {arrMap.map((product, i) => {
           const discountValue = product.value || 0
 
@@ -138,7 +138,7 @@ export default function CartSellingProduct({ products, colmd, collg }) {
                 }
               }}
               className="cart-product-hover">
-              <Card sx={{ width: '100%', height: '520px' }}>
+              <Card sx={{ width: '100%', height: '550px' }}>
                 <Box
                   sx={{
                     position: 'relative',

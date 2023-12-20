@@ -5,19 +5,19 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Collapse from '@mui/material/Collapse'
 import { Box } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AiOutlineDashboard } from 'react-icons/ai'
 import { RiBillLine } from 'react-icons/ri'
 import { CiMoneyBill } from 'react-icons/ci'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
-import { MdOutlineAssignmentReturn, MdOutlinePolicy } from 'react-icons/md'
+import { MdOutlineAssignmentReturn } from 'react-icons/md'
 import { IoChevronForwardOutline } from 'react-icons/io5'
 import { FiUsers } from 'react-icons/fi'
 import { TbShoe } from 'react-icons/tb'
 import { useSelector } from 'react-redux'
 import { GetUserAdmin } from '../services/slices/userAdminSlice'
 
-export default function AdminMenu() {
+export default function AdminMenu({ small }) {
   const [isMenuProduct, setIsMenuProduct] = useState(
     localStorage.getItem('admin-menu-product') === 'true' ? true : false,
   )
@@ -27,18 +27,31 @@ export default function AdminMenu() {
   const [isMenuGiamGia, setIsMenuGiamGia] = useState(
     localStorage.getItem('admin-menu-giamGia') === 'true' ? true : false,
   )
+  const navigate = useNavigate()
 
   const handleClickOpenMenuProduct = () => {
-    localStorage.setItem('admin-menu-product', !isMenuProduct)
-    setIsMenuProduct(!isMenuProduct)
+    if (small) {
+      localStorage.setItem('admin-menu-product', !isMenuProduct)
+      setIsMenuProduct(!isMenuProduct)
+    } else {
+      navigate('/admin/product')
+    }
   }
   const handleClickOpenMenuAccount = () => {
-    localStorage.setItem('admin-menu-account', !isMenuAccount)
-    setIsMenuAccount(!isMenuAccount)
+    if (small) {
+      localStorage.setItem('admin-menu-account', !isMenuAccount)
+      setIsMenuAccount(!isMenuAccount)
+    } else {
+      navigate('/admin/customer')
+    }
   }
   const handleClickOpenMenuGiamGia = () => {
-    localStorage.setItem('admin-menu-giamGia', !isMenuGiamGia)
-    setIsMenuGiamGia(!isMenuGiamGia)
+    if (small) {
+      localStorage.setItem('admin-menu-giamGia', !isMenuGiamGia)
+      setIsMenuGiamGia(!isMenuGiamGia)
+    } else {
+      navigate('/admin/voucher')
+    }
   }
 
   useEffect(() => {
@@ -51,47 +64,55 @@ export default function AdminMenu() {
     <List component="nav" aria-labelledby="nested-list-subheader" className="admin-menu">
       <Box>
         {user?.role === 1 && (
-          <ListItemButton className="mt-3" component={Link} to="/admin/dashboard">
-            <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+          <ListItemButton className="mt-1" component={Link} to="/admin/dashboard">
+            <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
               <Box component={AiOutlineDashboard} sx={{ fontSize: '25px' }} />
             </ListItemIcon>
-            <ListItemText
-              sx={{ m: 0, p: 0 }}
-              primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-              primary="Thống kê"
-            />
+            {small && (
+              <ListItemText
+                sx={{ m: 0, p: 0 }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                primary="Thống kê"
+              />
+            )}
           </ListItemButton>
         )}
         <ListItemButton className="mt-3" component={Link} to="/admin/sell">
-          <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+          <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
             <Box component={CiMoneyBill} sx={{ fontSize: '25px' }} />
           </ListItemIcon>
-          <ListItemText
-            sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-            primary="Bán hàng tại quầy"
-          />
-        </ListItemButton>
-        <ListItemButton className="mt-3" component={Link} to="/admin/bill">
-          <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
-            <Box component={RiBillLine} sx={{ fontSize: '25px' }} />
-          </ListItemIcon>
-          <ListItemText
-            sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-            primary="Quản lý đơn hàng"
-          />
-        </ListItemButton>
-        <>
-          <ListItemButton className="mt-3" sx={{ mb: 0 }} onClick={handleClickOpenMenuProduct}>
-            <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
-              <Box component={TbShoe} sx={{ fontSize: '25px' }} />
-            </ListItemIcon>
+          {small && (
             <ListItemText
               sx={{ m: 0, p: 0 }}
               primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-              primary="Quản lý sản phẩm"
+              primary="Bán hàng tại quầy"
             />
+          )}
+        </ListItemButton>
+        <ListItemButton className="mt-3" component={Link} to="/admin/bill">
+          <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
+            <Box component={RiBillLine} sx={{ fontSize: '25px' }} />
+          </ListItemIcon>
+          {small && (
+            <ListItemText
+              sx={{ m: 0, p: 0 }}
+              primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+              primary="Quản lý đơn hàng"
+            />
+          )}
+        </ListItemButton>
+        <>
+          <ListItemButton className="mt-3" sx={{ mb: 0 }} onClick={handleClickOpenMenuProduct}>
+            <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
+              <Box component={TbShoe} sx={{ fontSize: '25px' }} />
+            </ListItemIcon>
+            {small && (
+              <ListItemText
+                sx={{ m: 0, p: 0 }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                primary="Quản lý sản phẩm"
+              />
+            )}
             <Box
               component={IoChevronForwardOutline}
               sx={{
@@ -100,71 +121,85 @@ export default function AdminMenu() {
               }}
             />
           </ListItemButton>
-          <Collapse in={isMenuProduct} timeout={300}>
+          <Collapse in={isMenuProduct && small} timeout={300}>
             <List component="div" disablePadding>
               <ListItemButton component={Link} to="/admin/product">
-                <ListItemText
-                  sx={{ m: 0, p: 0 }}
-                  primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                  primary="&nbsp;	&bull; &nbsp; &nbsp; Sản phẩm"
-                />
+                {small && (
+                  <ListItemText
+                    sx={{ m: 0, p: 0 }}
+                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                    primary="&nbsp;	&bull; &nbsp; &nbsp; Sản phẩm"
+                  />
+                )}
               </ListItemButton>
 
               <ListItemButton component={Link} to="/admin/sole">
-                <ListItemText
-                  sx={{ m: 0, p: 0 }}
-                  primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                  primary="&nbsp;	&bull; &nbsp; &nbsp; Đế giày"
-                />
+                {small && (
+                  <ListItemText
+                    sx={{ m: 0, p: 0 }}
+                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                    primary="&nbsp;	&bull; &nbsp; &nbsp; Đế giày"
+                  />
+                )}
               </ListItemButton>
 
               <ListItemButton component={Link} to="/admin/category">
-                <ListItemText
-                  sx={{ m: 0, p: 0 }}
-                  primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                  primary="&nbsp;	&bull; &nbsp; &nbsp; Loại giày"
-                />
+                {small && (
+                  <ListItemText
+                    sx={{ m: 0, p: 0 }}
+                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                    primary="&nbsp;	&bull; &nbsp; &nbsp; Loại giày"
+                  />
+                )}
               </ListItemButton>
               <ListItemButton component={Link} to="/admin/material">
-                <ListItemText
-                  sx={{ m: 0, p: 0 }}
-                  primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                  primary="&nbsp;	&bull; &nbsp; &nbsp; Chất liệu"
-                />
+                {small && (
+                  <ListItemText
+                    sx={{ m: 0, p: 0 }}
+                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                    primary="&nbsp;	&bull; &nbsp; &nbsp; Chất liệu"
+                  />
+                )}
               </ListItemButton>
 
               <ListItemButton component={Link} to="/admin/brand">
-                <ListItemText
-                  sx={{ m: 0, p: 0 }}
-                  primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                  primary="&nbsp;	&bull; &nbsp; &nbsp; Thương hiệu"
-                />
+                {small && (
+                  <ListItemText
+                    sx={{ m: 0, p: 0 }}
+                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                    primary="&nbsp;	&bull; &nbsp; &nbsp; Thương hiệu"
+                  />
+                )}
               </ListItemButton>
             </List>
           </Collapse>
         </>
 
         <ListItemButton className="mt-3" component={Link} to="/admin/return-order">
-          <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+          <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
             <Box component={MdOutlineAssignmentReturn} sx={{ fontSize: '25px' }} />
           </ListItemIcon>
-          <ListItemText
-            sx={{ m: 0, p: 0 }}
-            primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-            primary="Trả hàng"
-          />
+          {small && (
+            <ListItemText
+              sx={{ m: 0, p: 0 }}
+              primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+              primary="Trả hàng"
+            />
+          )}
         </ListItemButton>
         {user?.role === 1 && (
           <>
             <ListItemButton className="mt-3" sx={{ mb: 0 }} onClick={handleClickOpenMenuGiamGia}>
-              <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+              <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
                 <Box component={LiaMoneyCheckAltSolid} sx={{ fontSize: '25px' }} />
               </ListItemIcon>
-              <ListItemText
-                sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                primary="Giảm giá"
-              />
+              {small && (
+                <ListItemText
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                  primary="Giảm giá"
+                />
+              )}
               <Box
                 component={IoChevronForwardOutline}
                 sx={{
@@ -173,21 +208,25 @@ export default function AdminMenu() {
                 }}
               />
             </ListItemButton>
-            <Collapse in={isMenuGiamGia} timeout={300}>
+            <Collapse in={isMenuGiamGia && small} timeout={300}>
               <List component="div" disablePadding>
                 <ListItemButton className="mt-3" component={Link} to="/admin/voucher">
-                  <ListItemText
-                    sx={{ m: 0, p: 0 }}
-                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                    primary="&nbsp;	&bull; &nbsp; &nbsp; Phiếu giảm giá"
-                  />
+                  {small && (
+                    <ListItemText
+                      sx={{ m: 0, p: 0 }}
+                      primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                      primary="&nbsp;	&bull; &nbsp; &nbsp; Phiếu giảm giá"
+                    />
+                  )}
                 </ListItemButton>
                 <ListItemButton className="mt-3" component={Link} to="/admin/promotion">
-                  <ListItemText
-                    sx={{ m: 0, p: 0 }}
-                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                    primary="&nbsp;	&bull; &nbsp; &nbsp; Đợt giảm giá"
-                  />
+                  {small && (
+                    <ListItemText
+                      sx={{ m: 0, p: 0 }}
+                      primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                      primary="&nbsp;	&bull; &nbsp; &nbsp; Đợt giảm giá"
+                    />
+                  )}
                 </ListItemButton>
               </List>
             </Collapse>
@@ -197,14 +236,16 @@ export default function AdminMenu() {
         {user?.role === 1 ? (
           <>
             <ListItemButton className="mt-3" sx={{ mb: 0 }} onClick={handleClickOpenMenuAccount}>
-              <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+              <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
                 <Box component={FiUsers} sx={{ fontSize: '25px' }} />
               </ListItemIcon>
-              <ListItemText
-                sx={{ m: 0, p: 0 }}
-                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                primary="Tài khoản"
-              />
+              {small && (
+                <ListItemText
+                  sx={{ m: 0, p: 0 }}
+                  primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                  primary="Tài khoản"
+                />
+              )}
               <Box
                 component={IoChevronForwardOutline}
                 sx={{
@@ -213,47 +254,53 @@ export default function AdminMenu() {
                 }}
               />
             </ListItemButton>
-            <Collapse in={isMenuAccount} timeout={300}>
+            <Collapse in={isMenuAccount && small} timeout={300}>
               <List component="div" disablePadding>
                 <ListItemButton component={Link} to="/admin/staff">
-                  <ListItemText
-                    sx={{ m: 0, p: 0 }}
-                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                    primary="&nbsp;	&bull; &nbsp; &nbsp; Nhân viên"
-                  />
+                  {small && (
+                    <ListItemText
+                      sx={{ m: 0, p: 0 }}
+                      primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                      primary="&nbsp;	&bull; &nbsp; &nbsp; Nhân viên"
+                    />
+                  )}
                 </ListItemButton>
                 <ListItemButton sx={{ pb: 0 }} component={Link} to="/admin/customer">
-                  <ListItemText
-                    sx={{ m: 0, p: 0 }}
-                    primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-                    primary="&nbsp;	&bull; &nbsp; &nbsp; Khách hàng"
-                  />
+                  {small && (
+                    <ListItemText
+                      sx={{ m: 0, p: 0 }}
+                      primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                      primary="&nbsp;	&bull; &nbsp; &nbsp; Khách hàng"
+                    />
+                  )}
                 </ListItemButton>
               </List>
             </Collapse>
           </>
         ) : (
           <ListItemButton className="mt-3" sx={{ mb: 0 }} component={Link} to="/admin/customer">
-            <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+            <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
               <Box component={FiUsers} sx={{ fontSize: '25px' }} />
             </ListItemIcon>
-            <ListItemText
-              sx={{ m: 0, p: 0 }}
-              primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
-              primary="Khách hàng"
-            />
+            {small && (
+              <ListItemText
+                sx={{ m: 0, p: 0 }}
+                primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
+                primary="Khách hàng"
+              />
+            )}
           </ListItemButton>
         )}
       </Box>
       {/* <ListItemButton className="mt-3" component={Link} to="/admin/return-policy">
-        <ListItemIcon sx={{ minWidth: '40px', color: 'black' }}>
+        <ListItemIcon sx={{ minWidth: '35px', color: 'black' }}>
           <Box component={MdOutlinePolicy} sx={{ fontSize: '25px' }} />
         </ListItemIcon>
-        <ListItemText
+        {small&&<ListItemText
           sx={{ m: 0, p: 0 }}
           primaryTypographyProps={{ color: 'black', fontWeight: '500 !important' }}
           primary="Chính sách đổi trả"
-        />
+        />}
       </ListItemButton> */}
     </List>
   )

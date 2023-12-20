@@ -2,7 +2,6 @@ import {
   Backdrop,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Container,
   IconButton,
@@ -34,6 +33,7 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
 import * as ExcelJS from 'exceljs'
+import useDebounce from '../../../services/hook/useDebounce'
 
 const listBreadcrumb = [{ name: 'Quản lý đế giày' }]
 export default function AdSolePage() {
@@ -48,7 +48,14 @@ export default function AdSolePage() {
   const [listSoleEx, setListSoleEx] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
-  const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
+  const [totalPages, setTotalPages] = useState(0)
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   useEffect(() => {
     fetchData(filter)
@@ -63,7 +70,12 @@ export default function AdSolePage() {
       .then((response) => {
         const res = response.data
         setListSole(res.data.content)
-        setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
+        setTotalPages(res.data.totalPages)
+        if (filter.page > res.data.totalPages) {
+          if (res.data.totalPages > 0) {
+            setFilter({ ...filter, page: res.data.totalPages })
+          }
+        }
       })
       .catch((error) => {})
     setIsBackdrop(false)
@@ -89,6 +101,7 @@ export default function AdSolePage() {
   }
 
   const addSole = () => {
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     if (!sole.name) {
       setErrorSole('Tên không được để trống.')
       return
@@ -99,6 +112,10 @@ export default function AdSolePage() {
     }
     if (allNameSole.includes(sole.name)) {
       setErrorSole('Tên đã tồn tại, vui lòng chọn tên khác.')
+      return
+    }
+    if (specialCharsRegex.test(sole.name)) {
+      setErrorSole('Tên không được chứa kí tự đặc biệt.')
       return
     }
     setIsBackdrop(true)
@@ -138,6 +155,7 @@ export default function AdSolePage() {
     return listSole.some((sole) => sole.name === soleName && sole.id !== currentId)
   }
   const updateSole = () => {
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     if (!soleUpdate.name) {
       setErrorSole('Tên không được để trống.')
       return
@@ -146,6 +164,9 @@ export default function AdSolePage() {
       return
     } else if (isSoleNameDuplicate(soleUpdate.name, soleUpdate.id)) {
       setErrorSole('Tên đế giày đã tồn tại')
+      return
+    } else if (specialCharsRegex.test(soleUpdate.name)) {
+      setErrorSole('Tên không được chứa kí tự đặc biệt.')
       return
     }
     setIsBackdrop(true)
@@ -181,31 +202,35 @@ export default function AdSolePage() {
     if (openAdd) setSole({ ...sole, name: e.target.value })
     else setSoleUpdate({ ...soleUpdate, name: e.target.value })
   }
-
-  const setDeleted = (id) => {
-    const title = 'Xác nhận thay đổi hoạt động?'
-    const text = 'Thay đổi hoạt động của đế giày'
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        soleApi
-          .swapSole(id)
-          .then((res) => {
-            if (res.data.success) {
-              setIsBackdrop(false)
-              toast.success('Thay đổi trạng thái thành công', {
-                position: toast.POSITION.TOP_RIGHT,
-              })
-              fetchData(filter)
-            }
-          })
-          .catch(() => {
-            toast.error('Thay đổi trạng thái thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          })
-      }
-    })
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
   }
+
+  // const setDeleted = (id) => {
+  //   const title = 'Xác nhận thay đổi hoạt động?'
+  //   const text = 'Thay đổi hoạt động của đế giày'
+  //   confirmSatus(title, text, theme).then((result) => {
+  //     if (result.isConfirmed) {
+  //       soleApi
+  //         .swapSole(id)
+  //         .then((res) => {
+  //           if (res.data.success) {
+  //             setIsBackdrop(false)
+  //             toast.success('Thay đổi trạng thái thành công', {
+  //               position: toast.POSITION.TOP_RIGHT,
+  //             })
+  //             fetchData(filter)
+  //           }
+  //         })
+  //         .catch(() => {
+  //           toast.error('Thay đổi trạng thái thất bại', {
+  //             position: toast.POSITION.TOP_RIGHT,
+  //           })
+  //         })
+  //     }
+  //   })
+  // }
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
     const worksheet = workbook.addWorksheet('SoleData')
@@ -262,7 +287,7 @@ export default function AdSolePage() {
     })
   }
 
-  return (
+  return listSole ? (
     <div>
       <Box>
         <Backdrop
@@ -288,7 +313,13 @@ export default function AdSolePage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setFilter({ ...filter, name: e.target.value })
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm đế giày"
@@ -398,9 +429,9 @@ export default function AdSolePage() {
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm
                     </TableCell>
-                    <TableCell sx={{ fontWeight: '500' }} align="center">
+                    {/* <TableCell sx={{ fontWeight: '500' }} align="center">
                       Hoạt động
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Chức năng
                     </TableCell>
@@ -411,12 +442,12 @@ export default function AdSolePage() {
                     <TableRow
                       key={row.id}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align="center">{index + 1}</TableCell>
+                      <TableCell align="center">{row.stt}</TableCell>
                       <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {row.deleted === 0 ? (
                           <Chip
                             onClick={() => setDeleted(row.id)}
@@ -432,7 +463,7 @@ export default function AdSolePage() {
                             label="Không hoạt động"
                           />
                         )}
-                      </TableCell>
+                      </TableCell> */}
 
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
@@ -477,12 +508,12 @@ export default function AdSolePage() {
                 </Typography>
 
                 <Pagination
-                  page={pageRespone.currentPage + 1}
+                  page={filter.page}
                   onChange={(e, value) => {
                     e.preventDefault()
                     setFilter({ ...filter, page: value })
                   }}
-                  count={pageRespone.totalPages}
+                  count={totalPages}
                   color="cam"
                   variant="outlined"
                 />
@@ -492,5 +523,7 @@ export default function AdSolePage() {
         </Container>
       </Box>
     </div>
+  ) : (
+    <div></div>
   )
 }

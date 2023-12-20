@@ -2,7 +2,6 @@ import {
   Backdrop,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Container,
   IconButton,
@@ -35,6 +34,8 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import materialApi from '../../../api/admin/sanpham/materialApi'
 import * as ExcelJS from 'exceljs'
 
+import useDebounce from '../../../services/hook/useDebounce'
+
 const listBreadcrumb = [{ name: 'Quản lý chất liệu' }]
 
 export default function AdMaterialPage() {
@@ -50,13 +51,19 @@ export default function AdMaterialPage() {
   const [listMaterialEx, setListMaterialEx] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
-  const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
+  const [totalPages, setTotalPages] = useState(0)
 
   useEffect(() => {
     fetchData(filter)
     getAllmaterial()
     haldleAllNameMaterial()
   }, [filter])
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (filter) => {
     setIsBackdrop(true)
@@ -65,7 +72,12 @@ export default function AdMaterialPage() {
       .then((response) => {
         const res = response.data
         setListMaterial(res.data.content)
-        setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
+        setTotalPages(res.data.totalPages)
+        if (filter.page > res.data.totalPages) {
+          if (res.data.totalPages > 0) {
+            setFilter({ ...filter, page: res.data.totalPages })
+          }
+        }
       })
       .catch((error) => {})
     setIsBackdrop(false)
@@ -92,6 +104,7 @@ export default function AdMaterialPage() {
 
   const handleValidateAdd = () => {
     let check = 0
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     const errors = {
       name: '',
     }
@@ -101,7 +114,9 @@ export default function AdMaterialPage() {
     } else if (material.name.length > 100) {
       errors.name = 'Tên chất liệu không được dài hơn 100 ký tự'
     } else if (allNameMaterial.includes(material.name)) {
-      errors.name = 'Tên đế giày đã tồn tại'
+      errors.name = 'Tên chất liệu đã tồn tại'
+    } else if (specialCharsRegex.test(material.name)) {
+      errors.name = 'Tên chất liệu chứa kí tự đặc biệt'
     }
 
     for (const key in errors) {
@@ -123,6 +138,7 @@ export default function AdMaterialPage() {
 
   const handleValidateUpdate = () => {
     let check = 0
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     const errors = {
       nameUpdate: '',
     }
@@ -133,6 +149,8 @@ export default function AdMaterialPage() {
       errors.nameUpdate = 'Tên chất liệu không được dài hơn 100 ký tự'
     } else if (isMatirialNameDuplicate(materialUpdate.name, materialUpdate.id)) {
       errors.nameUpdate = 'Tên chất liệu đã tồn tại'
+    } else if (specialCharsRegex.test(materialUpdate.name)) {
+      errors.nameUpdate = 'Tên chất liệu chứa kí tự đặc biệt'
     }
 
     for (const key in errors) {
@@ -177,10 +195,6 @@ export default function AdMaterialPage() {
         }
       })
       setIsBackdrop(false)
-    } else {
-      toast.error('Thêm chất liệu thất bại, hãy nhập đủ dữ liệu', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
     }
   }
 
@@ -216,41 +230,40 @@ export default function AdMaterialPage() {
         }
       })
       setIsBackdrop(false)
-    } else {
-      toast.error('Cập nhập chất liệu thất bại, hãy nhập đủ dữ diệu', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
     }
   }
-
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
   const chageName = (e) => {
     if (openAdd) setMaterial({ ...material, name: e.target.value })
     else setMaterialUpdate({ ...materialUpdate, name: e.target.value })
   }
-  const setDeleted = (id) => {
-    const title = 'Xác nhận thay đổi hoạt động?'
-    const text = 'Ẩn hoạt động sẽ làm ẩn chất liệu khỏi nơi khác'
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        materialApi
-          .swapMaterial(id)
-          .then((res) => {
-            if (res.data.success) {
-              setIsBackdrop(false)
-              toast.success('Thay đổi trạng thái hoạt động thành công', {
-                position: toast.POSITION.TOP_RIGHT,
-              })
-              fetchData(filter)
-            }
-          })
-          .catch(() => {
-            toast.error('Thay đổi trạng thái hoạt động thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-          })
-      }
-    })
-  }
+  // const setDeleted = (id) => {
+  //   const title = 'Xác nhận thay đổi hoạt động?'
+  //   const text = 'Ẩn hoạt động sẽ làm ẩn chất liệu khỏi nơi khác'
+  //   confirmSatus(title, text, theme).then((result) => {
+  //     if (result.isConfirmed) {
+  //       materialApi
+  //         .swapMaterial(id)
+  //         .then((res) => {
+  //           if (res.data.success) {
+  //             setIsBackdrop(false)
+  //             toast.success('Thay đổi trạng thái hoạt động thành công', {
+  //               position: toast.POSITION.TOP_RIGHT,
+  //             })
+  //             fetchData(filter)
+  //           }
+  //         })
+  //         .catch(() => {
+  //           toast.error('Thay đổi trạng thái hoạt động thất bại', {
+  //             position: toast.POSITION.TOP_RIGHT,
+  //           })
+  //         })
+  //     }
+  //   })
+  // }
 
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
@@ -308,7 +321,7 @@ export default function AdMaterialPage() {
     })
   }
 
-  return (
+  return listMaterial ? (
     <div>
       <Box>
         <Backdrop
@@ -334,7 +347,13 @@ export default function AdMaterialPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setFilter({ ...filter, name: e.target.value })
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm chất liệu"
@@ -450,9 +469,9 @@ export default function AdMaterialPage() {
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm
                     </TableCell>
-                    <TableCell sx={{ fontWeight: '500' }} align="center">
+                    {/* <TableCell sx={{ fontWeight: '500' }} align="center">
                       Hoạt động
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Chức năng
                     </TableCell>
@@ -463,12 +482,12 @@ export default function AdMaterialPage() {
                     <TableRow
                       key={row.id}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align="center">{index + 1}</TableCell>
+                      <TableCell align="center">{row.stt}</TableCell>
                       <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {row.deleted === 0 ? (
                           <Chip
                             onClick={() => setDeleted(row.id)}
@@ -484,7 +503,7 @@ export default function AdMaterialPage() {
                             label="Không hoạt động"
                           />
                         )}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
                           <IconButton
@@ -527,8 +546,8 @@ export default function AdMaterialPage() {
                   </Typography>
                 </Typography>
                 <Pagination
-                  count={pageRespone.totalPages}
-                  page={pageRespone.currentPage + 1}
+                  count={totalPages}
+                  page={filter.page}
                   onChange={(e, value) => {
                     e.preventDefault()
                     setFilter({ ...filter, page: value })
@@ -542,5 +561,7 @@ export default function AdMaterialPage() {
         </Container>
       </Box>
     </div>
+  ) : (
+    <div></div>
   )
 }

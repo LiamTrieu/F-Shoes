@@ -2,7 +2,6 @@ import {
   Backdrop,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Container,
   IconButton,
@@ -35,6 +34,8 @@ import DialogAddUpdate from '../../../components/DialogAddUpdate'
 import bradApi from '../../../api/admin/sanpham/bradApi'
 import * as ExcelJS from 'exceljs'
 
+import useDebounce from '../../../services/hook/useDebounce'
+
 const listBreadcrumb = [{ name: 'Quản lý thương hiệu' }]
 
 export default function AdBrandPage() {
@@ -50,13 +51,20 @@ export default function AdBrandPage() {
   const [listBrandEx, setListBrandEx] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
-  const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
+  const [totalPages, setTotalPages] = useState(0)
 
   useEffect(() => {
     fetchData(filter)
     getAllBrand()
     haldleAllNameBrand()
   }, [filter])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (filter) => {
     setIsBackdrop(true)
@@ -65,7 +73,12 @@ export default function AdBrandPage() {
       .then((response) => {
         const res = response.data
         setListBrand(res.data.content)
-        setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
+        setTotalPages(res.data.totalPages)
+        if (filter.page > res.data.totalPages) {
+          if (res.data.totalPages > 0) {
+            setFilter({ ...filter, page: res.data.totalPages })
+          }
+        }
       })
       .catch((error) => {})
     setIsBackdrop(false)
@@ -92,6 +105,7 @@ export default function AdBrandPage() {
 
   const handleValidateAdd = () => {
     let check = 0
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     const errors = {
       name: '',
     }
@@ -102,6 +116,8 @@ export default function AdBrandPage() {
       errors.name = 'Tên thương hiệu không được dài hơn 100 ký tự'
     } else if (allNameBrand.includes(brand.name)) {
       errors.name = 'Tên thương hiệu đã tồn tại'
+    } else if (specialCharsRegex.test(brand.name)) {
+      errors.name = 'Tên thương hiệu chứa kí tự đặc biệt'
     }
 
     for (const key in errors) {
@@ -121,6 +137,7 @@ export default function AdBrandPage() {
 
   const handleValidateUpdate = () => {
     let check = 0
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     const errors = {
       nameUpdate: '',
     }
@@ -131,6 +148,8 @@ export default function AdBrandPage() {
       errors.nameUpdate = 'Tên thương hiệu không được dài hơn 100 ký tự'
     } else if (isBrandNameDuplicate(brandUpdate.name, brandUpdate.id)) {
       errors.nameUpdate = 'Tên thương hiệu đã tồn tại'
+    } else if (specialCharsRegex.test(brandUpdate.name)) {
+      errors.nameUpdate = 'Tên thương hiệu chứa kí tự đặc biệt.'
     }
 
     for (const key in errors) {
@@ -142,6 +161,11 @@ export default function AdBrandPage() {
     setErrorBrandUpdate(errors.nameUpdate)
 
     return check
+  }
+
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
   }
 
   const addBrand = () => {
@@ -175,10 +199,6 @@ export default function AdBrandPage() {
         }
       })
       setIsBackdrop(false)
-    } else {
-      toast.error('Thêm thương hiệu thất bại, hãy nhập đủ dữ liệu', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
     }
   }
   const updateBrand = () => {
@@ -211,10 +231,6 @@ export default function AdBrandPage() {
         }
       })
       setIsBackdrop(false)
-    } else {
-      toast.error('Cập nhập thương hiệu thất bại, hãy nhập đủ dữ diệu', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
     }
   }
 
@@ -223,32 +239,32 @@ export default function AdBrandPage() {
     else setBrandUpdate({ ...brandUpdate, name: e.target.value })
   }
 
-  const setDeleted = (id) => {
-    const title = 'Xác nhận thay đổi hoạt động?'
-    const text = 'Ẩn hoạt động sẽ làm ẩn thương hiệu khỏi nơi khác'
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        bradApi
-          .swapBrand(id)
-          .then((res) => {
-            if (res.data.success) {
-              setIsBackdrop(false)
-              toast.success('Thay đổi trạng thái hoạt động thành công', {
-                position: toast.POSITION.TOP_RIGHT,
-              })
-              fetchData(filter)
-            }
-          })
-          .catch(() => {
-            setIsBackdrop(false)
-            toast.error('Thay đổi trạng thái hoạt động thất bại', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          })
-      }
-    })
-  }
+  // const setDeleted = (id) => {
+  //   const title = 'Xác nhận thay đổi hoạt động?'
+  //   const text = 'Ẩn hoạt động sẽ làm ẩn thương hiệu khỏi nơi khác'
+  //   confirmSatus(title, text, theme).then((result) => {
+  //     if (result.isConfirmed) {
+  //       bradApi
+  //         .swapBrand(id)
+  //         .then((res) => {
+  //           if (res.data.success) {
+  //             setIsBackdrop(false)
+  //             toast.success('Thay đổi trạng thái hoạt động thành công', {
+  //               position: toast.POSITION.TOP_RIGHT,
+  //             })
+  //             fetchData(filter)
+  //           }
+  //         })
+  //         .catch(() => {
+  //           setIsBackdrop(false)
+  //           toast.error('Thay đổi trạng thái hoạt động thất bại', {
+  //             position: toast.POSITION.TOP_RIGHT,
+  //           })
+  //           fetchData(filter)
+  //         })
+  //     }
+  //   })
+  // }
 
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
@@ -306,7 +322,7 @@ export default function AdBrandPage() {
     })
   }
 
-  return (
+  return listBrand ? (
     <div>
       <Box>
         <Backdrop
@@ -332,7 +348,13 @@ export default function AdBrandPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setFilter({ ...filter, name: e.target.value })
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm thương hiệu"
@@ -448,9 +470,9 @@ export default function AdBrandPage() {
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Ngày thêm
                     </TableCell>
-                    <TableCell sx={{ fontWeight: '500' }} align="center">
+                    {/* <TableCell sx={{ fontWeight: '500' }} align="center">
                       Hoạt động
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ fontWeight: '500' }} align="center">
                       Chức năng
                     </TableCell>
@@ -461,12 +483,12 @@ export default function AdBrandPage() {
                     <TableRow
                       key={row.id}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align="center">{index + 1}</TableCell>
+                      <TableCell align="center">{row.stt}</TableCell>
                       <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">
                         {dayjs(row.createdAt).format('DD/MM/YYYY')}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {row.deleted === 0 ? (
                           <Chip
                             onClick={() => setDeleted(row.id)}
@@ -482,7 +504,7 @@ export default function AdBrandPage() {
                             label="Không hoạt động"
                           />
                         )}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">
                         <Tooltip title="Chỉnh sửa">
                           <IconButton
@@ -525,8 +547,8 @@ export default function AdBrandPage() {
                   </Typography>
                 </Typography>
                 <Pagination
-                  count={pageRespone.totalPages}
-                  page={pageRespone.currentPage + 1}
+                  count={totalPages}
+                  page={filter.page}
                   onChange={(e, value) => {
                     e.preventDefault()
                     setFilter({ ...filter, page: value })
@@ -540,5 +562,7 @@ export default function AdBrandPage() {
         </Container>
       </Box>
     </div>
+  ) : (
+    <div></div>
   )
 }

@@ -8,7 +8,11 @@ import CartSellingProduct from '../../layout/client/CartSellingProduct'
 import CartSaleProduct from '../../layout/client/CartSaleProduct'
 import { getStompClient } from '../../services/socket'
 import { IoMdGift } from 'react-icons/io'
+import SockJS from 'sockjs-client'
+import { socketUrl } from '../../services/url'
+import { Stomp } from '@stomp/stompjs'
 
+var stompClient = null
 export default function Home() {
   const [products, setProducts] = useState([])
   const [sellingProducts, setSellingProducts] = useState([])
@@ -46,17 +50,25 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const subscription = getStompClient().subscribe('/topic/realtime-san-pham-home', (message) => {
+    const socket = new SockJS(socketUrl)
+    stompClient = Stomp.over(socket)
+    stompClient.debug = () => {}
+    stompClient.connect({}, onConnect)
+
+    return () => {
+      stompClient.disconnect()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products])
+
+  function onConnect() {
+    getStompClient().subscribe('/topic/realtime-san-pham-home', (message) => {
       if (message.body) {
         const data = JSON.parse(message.body)
         updateRealTimeProductHome(data)
       }
     })
-    return () => {
-      subscription.unsubscribe()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products])
+  }
 
   function updateRealTimeProductHome(data) {
     const preProduct = [...products]
@@ -246,13 +258,7 @@ export default function Home() {
                 collg={3}
               />
             </Box>
-            <Typography className="title-banner">NIKE ZOOM TRI</Typography>
-            <Typography className="title-banner-child">
-              Light and responsive. Build for your workout and beyond
-            </Typography>
-            <div className="btn-div-product">
-              <Button className="btn-product">Shop Apparel</Button>
-            </div>
+
             <Typography className="text-just-in">Just In</Typography>
             <Box>
               <Grid container spacing={2}>
@@ -274,17 +280,16 @@ export default function Home() {
                 </Grid>
               </Grid>
             </Box>
-            <Typography className="title-banner">MEN'S SPORT</Typography>
-            <Typography className="title-banner-child">
-              Light and responsive. Build for your workout and beyond
-            </Typography>
-            <div className="btn-div-product">
-              <Button className="btn-product">Shop Apparel</Button>
-            </div>
           </Container>
           <div className="product-home" style={{ margin: '0px 20px' }}>
             <Box className="new-product">
-              <Button className="product">Hàng mới về</Button>
+              <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+                <Typography className="name-sale">
+                  <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} /> Hàng
+                  mới về
+                  <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} />{' '}
+                </Typography>
+              </Stack>
               <div className="cart-product-home" style={{ marginTop: '10px' }}>
                 <CartProductHome products={products} colsm={6} colmd={4} collg={3} />
               </div>
@@ -303,7 +308,13 @@ export default function Home() {
               </Grid>
             </Box>
             <Box className="new-product">
-              <Button className="product">SẢN PHẨM BÁN CHẠY</Button>
+              <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+                <Typography className="name-sale">
+                  <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} /> Sản
+                  phẩm bán chạy
+                  <Divider sx={{ width: '100%', height: '2px', backgroundColor: 'orange' }} />{' '}
+                </Typography>
+              </Stack>
               <CartSellingProduct products={sellingProducts} colmd={6} collg={3} />
             </Box>
             <Container maxWidth="xl">

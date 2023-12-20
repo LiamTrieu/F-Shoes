@@ -30,6 +30,7 @@ import { useTheme } from '@emotion/react'
 import SearchIcon from '@mui/icons-material/Search'
 import { AiOutlinePlusSquare } from 'react-icons/ai'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
+import useDebounce from '../../../services/hook/useDebounce'
 import ExcelJS from 'exceljs'
 
 export default function AdCustomerPage() {
@@ -50,6 +51,18 @@ export default function AdCustomerPage() {
     fetchData(searchStaff)
     getAllNhanVien()
   }, [searchStaff])
+
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setSearchStaff({ ...searchStaff, searchTen: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (searchStaff) => {
     staffApi.get(searchStaff).then((response) => {
@@ -156,8 +169,17 @@ export default function AdCustomerPage() {
       <Paper elevation={3} sx={{ mb: 2, padding: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
           <TextField
+            // onChange={(e) => {
+            //   setInputValue(e.target.value)
+            // }}
             onChange={(e) => {
-              setSearchStaff({ ...searchStaff, searchTen: e.target.value })
+              const valueNhap = e.target.value
+              if (validateSearchInput(valueNhap)) {
+                setInputValue(valueNhap)
+              } else {
+                setInputValue('')
+                toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+              }
             }}
             sx={{ width: '28%' }}
             className="search-field"

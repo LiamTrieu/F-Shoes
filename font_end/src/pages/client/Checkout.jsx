@@ -37,6 +37,7 @@ import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import clientCartApi from '../../api/client/clientCartApi'
 import { socketUrl } from '../../services/url'
+import checkStartApi from '../../api/checkStartApi'
 
 var stompClient = null
 export default function Checkout() {
@@ -372,6 +373,24 @@ export default function Checkout() {
       setErrors(newErrors)
       return
     }
+    if (arrData) {
+      let allProductsAvailable = true
+
+      for (const e of arrData) {
+        const check = (await checkStartApi.checkQuantiy(e.id, e.soLuong)).data
+
+        if (!check) {
+          allProductsAvailable = false
+          break
+        }
+      }
+
+      if (!allProductsAvailable) {
+        navigate('/cart')
+        toast.warning('Có sản phẩm đã hết hàng, vui lòng chọn lại!')
+        return
+      }
+    }
 
     const title = 'Xác nhận đặt hàng?'
     confirmSatus(title, '').then((result) => {
@@ -405,6 +424,7 @@ export default function Checkout() {
           typePayment: selectedValue,
           email: userLogin ? userLogin.email : request.email,
         }
+
         if (selectedValue === '0') {
           dispatch(setLoading(true))
           clientCheckoutApi
@@ -528,7 +548,7 @@ export default function Checkout() {
           <Typography
             color="inherit"
             component={Link}
-            to="/home"
+            to="/cart"
             sx={{
               color: 'black',
               textDecoration: 'none',
@@ -971,7 +991,13 @@ export default function Checkout() {
                           return total + productTotal
                         }, 0) -
                           giamGia +
-                          phiShip,
+                          (arrData.reduce((total, cart) => {
+                            const productTotal =
+                              calculateProductTotalPayment(cart, promotionByProductDetail) || 0
+                            return total + productTotal
+                          }, 0) > 1000000
+                            ? 0
+                            : phiShip),
                       )}
                     </b>
                   </Typography>

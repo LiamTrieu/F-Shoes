@@ -51,6 +51,8 @@ export default function ModalAdBillUpdateAddress({
   billDetail,
   listBillDetail,
   load,
+  setDetailDiaChi,
+  detailDiaChi,
 }) {
   const [giaoHang, setGiaoHang] = useState()
   const [selectedTinh, setSelectedTinh] = useState(null)
@@ -413,7 +415,6 @@ export default function ModalAdBillUpdateAddress({
       })
   }
 
-  const [detailDiaChi, setDetailDiaChi] = useState({})
   const [xaName, setXaName] = useState('')
   const [huyenName, setHuyenName] = useState('')
   const [tinhName, setTinhName] = useState('')

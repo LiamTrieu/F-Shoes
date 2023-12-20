@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.List;
 
 @Getter
@@ -37,6 +38,17 @@ public class AdVoucherRequest {
 
     private List<String> listIdCustomer;
 
+    Integer setDataStatus(String startDate, String endDate, Integer status) throws ParseException {
+        Long dateNow = Calendar.getInstance().getTimeInMillis();
+        Long startDateNew = DateUtil.parseDateTimeLong(startDate);
+        Long endDateNew = DateUtil.parseDateTimeLong(endDate);
+        if (startDateNew <= dateNow && endDateNew > dateNow) {
+            return 1;
+        } else {
+            return status;
+        }
+    }
+
     public Voucher newVoucher(Voucher voucher) throws ParseException {
         voucher.setCode(this.getCode());
         voucher.setName(this.getName());
@@ -48,7 +60,7 @@ public class AdVoucherRequest {
         voucher.setQuantity(this.getQuantity());
         voucher.setStartDate(DateUtil.parseDateTimeLong(this.getStartDate()));
         voucher.setEndDate(DateUtil.parseDateTimeLong(this.getEndDate()));
-        voucher.setStatus(this.getStatus());
+        voucher.setStatus(setDataStatus(this.getStartDate(), this.getEndDate(), this.getStatus()));
         return voucher;
     }
 }

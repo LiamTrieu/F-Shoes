@@ -38,6 +38,7 @@ import { Stomp } from '@stomp/stompjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { socketUrl } from '../../../services/url'
 import * as ExcelJS from 'exceljs'
+import useDebounce from '../../../services/hook/useDebounce'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 
 var stompClient = null
@@ -96,18 +97,18 @@ export default function AdPromotionPage() {
 
   const handleDelete = (id) => {
     if (listKhuyenMai?.status === 2) {
-      toast.success('Khuyến mại đã kết thúc', {
+      toast.success('Đợt giảm giá đã kết thúc', {
         position: toast.POSITION.TOP_RIGHT,
       })
     } else {
-      const title = 'Bạn có muốn kết thúc khuyến mại không ?'
+      const title = 'Bạn có muốn kết thúc đợt giảm giá không ?'
       const text = ''
 
       confirmSatus(title, text, theme).then((result) => {
         if (result.isConfirmed) {
           khuyenMaiApi.deletePromotion(id).then(() => {
             fecthData(filter)
-            toast.success('Khuyến mại đã kết thúc', {
+            toast.success('Đợt giảm giá đã kết thúc', {
               position: toast.POSITION.TOP_RIGHT,
             })
           })
@@ -133,6 +134,13 @@ export default function AdPromotionPage() {
 
       setListKhuyenMai(response.data.data)
       setTotalPages(response.data.totalPages)
+      if (filter.page > response.data.totalPages)
+        if (response.data.totalPages > 0) {
+          setFilter({
+            ...filter,
+            page: response.data.totalPages,
+          })
+        }
     })
   }
 
@@ -141,14 +149,17 @@ export default function AdPromotionPage() {
       setListKhuyenMaiEx(response.data.data)
     })
   }
-
-  const handleInputChange = (e) => {
-    const inputValue = e.target.value
-    setFilter((prevFilter) => ({
-      ...prevFilter,
-      name: inputValue.replace(/^\s+/g, ''), // Remove leading whitespaces
-    }))
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
   }
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
@@ -221,11 +232,18 @@ export default function AdPromotionPage() {
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <TextField
                 sx={{ width: '48%' }}
-                value={filter.name}
-                placeholder="Tìm kiếm theo tên khuyến mại"
+                placeholder="Tìm kiếm theo tên đợt giảm giá"
                 className="text-field-css"
                 size="small"
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const valueNhap = e.target.value
+                  if (validateSearchInput(valueNhap)) {
+                    setInputValue(valueNhap)
+                  } else {
+                    setInputValue('')
+                    toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                  }
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -287,8 +305,7 @@ export default function AdPromotionPage() {
                     }
                     slotProps={{
                       actionBar: {
-                        actions: ['clear'],
-                        onClick: () => setFilter({ ...filter, timeStart: '' }),
+                        actions: ['clear', 'today'],
                       },
                     }}
                     label="Ngày bắt đầu"
@@ -308,8 +325,7 @@ export default function AdPromotionPage() {
                     }
                     slotProps={{
                       actionBar: {
-                        actions: ['clear'],
-                        onClick: () => setFilter({ ...filter, timeEnd: '' }),
+                        actions: ['clear', 'today'],
                       },
                     }}
                     label="Ngày kết thúc"
@@ -360,7 +376,7 @@ export default function AdPromotionPage() {
                   STT
                 </TableCell>
                 <TableCell align="left" width={'20%'}>
-                  Tên Khuyến Mại
+                  Tên Đợt giảm giá
                 </TableCell>
                 <TableCell align="center" width={'6%'}>
                   Giá trị
@@ -421,7 +437,7 @@ export default function AdPromotionPage() {
                   </TableCell>
                   <TableCell>
                     <Link to={`/admin/promotion/get-one/${promotion.id}`}>
-                      <Tooltip title="Xem chi tiết khuyến mại">
+                      <Tooltip title="Xem chi tiết đợt giảm giá">
                         <IconButton sx={{ marginLeft: '30px' }} color="cam">
                           <TbEyeEdit />
                         </IconButton>

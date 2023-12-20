@@ -5,6 +5,7 @@ import com.fshoes.core.admin.notification.model.NotificationRequest;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.UserLogin;
 import com.fshoes.entity.Notification;
+import com.fshoes.infrastructure.constant.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,8 @@ public class NotificationController {
         try {
             Notification notification = notificationRepository
                     .findById(id).get();
+            notification.setStatus(Status.NGUNG_HOAT_DONG);
+            notificationRepository.save(notification);
             return new ObjectRespone(new NotificationRequest(
                     notification.getId(),
                     notification.getCreatedAt(),

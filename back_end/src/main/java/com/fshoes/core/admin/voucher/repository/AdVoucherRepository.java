@@ -226,4 +226,15 @@ public interface AdVoucherRepository extends VoucherRepository {
              gender, created_at as createdAt, status from account WHERE role = 2 AND status = 0
             """, nativeQuery = true)
     List<KhachHangRespone> getAllCustomer();
+
+    @Query(value = """
+            select row_number()  OVER(ORDER BY v.created_at DESC) as stt,
+            v.id, v.code, v.name, v.value, v.maximum_value as maximumValue,
+            v.type, v.type_value as typeValue, v.minimum_amount as minimumAmount, v.quantity,
+            v.start_date as startDate, v.end_date as endDate, v.status
+            from voucher v
+            join bill b on b.id_voucher = v.id
+            where b.id = :id
+            """, nativeQuery = true)
+    Optional<AdVoucherRespone> getVoucherByIdBill(@Param("id") String id);
 }

@@ -2,6 +2,7 @@ package com.fshoes.core.admin.hoadon.repository;
 
 import com.fshoes.core.admin.hoadon.model.respone.HDBillHistoryResponse;
 import com.fshoes.entity.Bill;
+import com.fshoes.entity.BillDetail;
 import com.fshoes.entity.BillHistory;
 import com.fshoes.infrastructure.constant.StatusBill;
 import com.fshoes.repository.BillHistoryRepository;
@@ -43,4 +44,6 @@ public interface HDBillHistoryRepository extends BillHistoryRepository {
 
     Optional<BillHistory> findDistinctFirstByBillOrderByCreatedAtDesc(Bill bill);
 
+    @Query(value = "SELECT * FROM bill_history WHERE id_bill IN :idBills", nativeQuery = true)
+    List<BillHistory> getAllBillHistorys(@Param("idBills") List<String> idBills);
 }

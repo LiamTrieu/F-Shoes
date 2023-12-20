@@ -2,6 +2,8 @@ package com.fshoes.core.client.service.impl;
 
 import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.notification.model.NotificationRequest;
+import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
+import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.authentication.service.AuthenticationService;
 import com.fshoes.core.client.model.request.ClientBillDetaillRequest;
@@ -9,12 +11,23 @@ import com.fshoes.core.client.model.request.ClientCheckoutRequest;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
 import com.fshoes.core.client.service.ClientCheckoutService;
 import com.fshoes.core.common.UserLogin;
-import com.fshoes.entity.*;
+import com.fshoes.entity.Account;
+import com.fshoes.entity.Address;
+import com.fshoes.entity.Bill;
+import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.BillHistory;
+import com.fshoes.entity.ProductDetail;
+import com.fshoes.entity.Transaction;
+import com.fshoes.entity.Voucher;
 import com.fshoes.infrastructure.constant.TypeNotification;
 import com.fshoes.infrastructure.email.Email;
 import com.fshoes.infrastructure.email.EmailSender;
 import com.fshoes.infrastructure.vnpay.VNPayConfig;
-import com.fshoes.repository.*;
+import com.fshoes.repository.AccountRepository;
+import com.fshoes.repository.AddressRepository;
+import com.fshoes.repository.BillHistoryRepository;
+import com.fshoes.repository.BillRepository;
+import com.fshoes.repository.TransactionRepository;
 import com.fshoes.util.DateUtil;
 import com.fshoes.util.MD5Util;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +44,15 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 @Service
 public class ClientCheckoutServiceImpl implements ClientCheckoutService {
@@ -65,6 +86,8 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
     private HDBillRepository hdBillRepository;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private AdCustomerVoucherRepository adCustomerVoucherRepository;
 
     @Autowired
     private UserLogin userLogin;
@@ -78,6 +101,13 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                 voucher.setQuantity(voucher.getQuantity() - 1);
                 voucherRepository.save(voucher);
                 newBill.setVoucher(voucher);
+                if (userLogin.getUserLogin().getId() != null) {
+                    Account account = accountRepository.findById(userLogin.getUserLogin().getId()).orElse(null);
+                    AdCustomerVoucherRespone adCustomerVoucherRespone = voucherRepository.getOneCustomerVoucherByIdVoucherAndIdCustomer(voucher.getId(), account.getId());
+                    if (adCustomerVoucherRespone != null) {
+                        adCustomerVoucherRepository.deleteById(adCustomerVoucherRespone.getId());
+                    }
+                }
             }
         }
         newBill.setReceivingMethod(1);
@@ -163,7 +193,7 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
         notification.setContent(newBill.getCode());
         notification.setTitle("Có đơn hàng mới ");
         notification.setImage(account.getAvatar());
-        notification.setCreatedAt(Calendar.getInstance().getTimeInMillis()  );
+        notification.setCreatedAt(Calendar.getInstance().getTimeInMillis());
         notification.setType(TypeNotification.HOA_DON);
         notification.setIdRedirect(newBill.getId());
         messagingTemplate.convertAndSend("/topic/thong-bao", notification);
@@ -266,9 +296,9 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
             fields.remove("vnp_SecureHash");
         }
         String signValue = VNPayConfig.hashAllFields(fields);
+        Bill bill = billRepository.findById((String) fields.get("vnp_OrderInfo")).orElse(null);
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                Bill bill = billRepository.findById((String) fields.get("vnp_OrderInfo")).orElse(null);
                 if (bill != null && bill.getStatus() == 8) {
                     bill.setStatus(1);
                     Account account;
@@ -349,14 +379,25 @@ public class ClientCheckoutServiceImpl implements ClientCheckoutService {
                     notification.setContent(bill.getCode());
                     notification.setTitle("Có đơn hàng mới ");
                     notification.setImage(account.getAvatar());
-                    notification.setCreatedAt(Calendar.getInstance().getTimeInMillis()  );
+                    notification.setCreatedAt(Calendar.getInstance().getTimeInMillis());
                     notification.setType(TypeNotification.HOA_DON);
                     notification.setIdRedirect(bill.getId());
                     messagingTemplate.convertAndSend("/topic/thong-bao", notification);
-
                     return listBillDetails.stream().map(BillDetail::getProductDetail).toList();
+                }else if(bill != null){
+                    return new ArrayList<>();
                 }
             }
+        }
+        if (bill != null) {
+            List<BillDetail> listBillDetail = billDetailRepository.getBillDetails(bill.getId());
+            List<Transaction> listTransaction = transactionRepository.getTransactions(bill.getId());
+            List<BillHistory> listBillHistory = billHistoryRepository.getBillHistorys(bill.getId());
+
+            billDetailRepository.deleteAll(listBillDetail);
+            transactionRepository.deleteAll(listTransaction);
+            billHistoryRepository.deleteAll(listBillHistory);
+            billRepository.delete(bill);
         }
         return null;
     }

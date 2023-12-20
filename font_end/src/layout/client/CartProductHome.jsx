@@ -111,7 +111,7 @@ export default function CartProductHome({ products, colmd, collg }) {
 
   return (
     <>
-      <Grid container rowSpacing={1} columnSpacing={3}>
+      <Grid container rowSpacing={1} columnSpacing={3} sx={{ cursor: 'pointer' }}>
         {arrMap.map((product, i) => {
           const discountValue = product.value || 0
 
@@ -143,7 +143,7 @@ export default function CartProductHome({ products, colmd, collg }) {
               <Card
                 sx={{
                   width: '25%',
-                  height: '550px',
+                  height: '570px',
                   textDecoration: 'none',
                   borderRadius: '10px',
                 }}

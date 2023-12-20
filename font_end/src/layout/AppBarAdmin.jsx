@@ -14,7 +14,7 @@ import {
   MenuItem,
   Tooltip,
 } from '@mui/material'
-import { AiOutlineMenuFold } from 'react-icons/ai'
+import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import ThemeAdmin from '../services/theme/ThemeAdmin'
 import '../assets/styles/admin.css'
@@ -31,11 +31,12 @@ import { socketUrl } from '../services/url'
 import dayjs from 'dayjs'
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled'
 import { GetApp, setApp } from '../services/slices/appSlice'
+import notificationApi from '../api/admin/notification/notificationApi'
 
-const drawerWidth = '17vw'
 var stompClient = null
 export default function AppBarAdmin({ children }) {
   const [notification, setNotification] = useState([])
+  const [drawerWidth, setDrawerWidth] = useState('17vw')
 
   const navigate = useNavigate()
   const user = useSelector(GetUserAdmin)
@@ -55,7 +56,19 @@ export default function AppBarAdmin({ children }) {
     }
   }
 
+  async function fetchNotification() {
+    try {
+      const response = await notificationApi.getAll()
+      if (response.status === 200 && response.data.success) {
+        setNotification(response.data.data)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   useEffect(() => {
+    fetchNotification()
     stompClient = Stomp.over(() => new SockJS(socketUrl))
     stompClient.connect({}, onConnect)
     stompClient.onclose = () => {
@@ -77,8 +90,15 @@ export default function AppBarAdmin({ children }) {
     handleDisconnectAction()
   })
 
-  function getNotification(data) {
-    setNotification([data, ...notification])
+  async function getNotification(data) {
+    try {
+      const response = await notificationApi.save(data)
+      if (response.status === 200) {
+        fetchNotification()
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const NotificationButton = () => {
@@ -93,13 +113,17 @@ export default function AppBarAdmin({ children }) {
       setAnchorEl(null)
     }
 
-    const xemThongBao = (id, type, index) => {
-      setAnchorEl(null)
-      if (type === 'HOA_DON') {
-        navigate('/admin/bill-detail/' + id)
-        const preNotification = [...notification]
-        preNotification[index] = { ...preNotification[index], status: 'KHONG_HOAT_DONG' }
-        setNotification(preNotification)
+    //viet api update status notify
+    const xemThongBao = async (notification) => {
+      try {
+        const response = await notificationApi.read(notification.id)
+        if (response.status === 200) {
+          fetchNotification()
+          setAnchorEl(null)
+          navigate('/admin/bill-detail/' + notification.idRedirect)
+        }
+      } catch (error) {
+        console.error(error)
       }
     }
 
@@ -137,141 +161,143 @@ export default function AppBarAdmin({ children }) {
             onClose={handleClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
-            {notification.map((notification, index) => (
-              <>
-                <MenuItem
-                  key={index}
-                  onClick={() => {
-                    xemThongBao(notification.idRedirect, notification.type, index)
-                  }}
-                  sx={{
-                    margin: '3px',
-                    borderRadius: '5px',
-                    backgroundColor: 'white',
-                  }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      maxWidth: '300px',
-                      width: '300px',
-                      height: '70px',
+            {notification
+              .sort((a, b) => b.createdAt - a.createdAt)
+              .map((notification, index) => (
+                <>
+                  <MenuItem
+                    key={index}
+                    onClick={() => {
+                      xemThongBao(notification, index)
+                    }}
+                    sx={{
+                      margin: '3px',
+                      borderRadius: '5px',
+                      backgroundColor: 'white',
                     }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={3}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            width: '70px',
-                            height: '70px',
-                            borderRadius: '50%',
-                          }}>
-                          <img
-                            src={
-                              notification.image
-                                ? notification.image
-                                : 'https://res.cloudinary.com/dioxktgsm/image/upload/v1701498532/zl87yxsvlm2luo5rjnyl.png'
-                            }
-                            alt=""
-                            width="60px"
-                            height="60px"
-                            style={{
-                              borderRadius: '50%',
-                            }}
-                          />
-                        </div>{' '}
-                      </Grid>
-                      <Grid item xs={8}>
-                        <div
-                          style={{
-                            flexDirection: 'column',
-                            wordWrap: 'break-word',
-                            marginLeft: '5px',
-                          }}>
-                          {notification.status === 'HOAT_DONG' ? (
-                            <span>
-                              <b>{notification.title}</b>
-                              <p style={{ margin: 0 }}>{notification.content} </p>
-                            </span>
-                          ) : (
-                            <span style={{ color: 'gray' }}>
-                              <b>{notification.title}</b>
-                              <p style={{ margin: 0 }}>{notification.content} </p>
-                            </span>
-                          )}
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        maxWidth: '300px',
+                        width: '300px',
+                        height: '70px',
+                      }}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={3}>
                           <div
                             style={{
                               display: 'flex',
+                              justifyContent: 'center',
                               alignItems: 'center',
+                              width: '70px',
+                              height: '70px',
+                              borderRadius: '50%',
+                            }}>
+                            <img
+                              src={
+                                notification.image
+                                  ? notification.image
+                                  : 'https://res.cloudinary.com/dioxktgsm/image/upload/v1701498532/zl87yxsvlm2luo5rjnyl.png'
+                              }
+                              alt=""
+                              width="60px"
+                              height="60px"
+                              style={{
+                                borderRadius: '50%',
+                              }}
+                            />
+                          </div>{' '}
+                        </Grid>
+                        <Grid item xs={8}>
+                          <div
+                            style={{
+                              flexDirection: 'column',
+                              wordWrap: 'break-word',
+                              marginLeft: '5px',
                             }}>
                             {notification.status === 'HOAT_DONG' ? (
-                              <AccessTimeFilledIcon
-                                sx={{
-                                  width: '17px',
-                                  color: '#FC7C27',
-                                  marginRight: '5px',
-                                }}
-                              />
-                            ) : (
-                              <AccessTimeFilledIcon
-                                sx={{
-                                  width: '17px',
-                                  color: 'gray',
-                                  marginRight: '5px',
-                                }}
-                              />
-                            )}
-                            {notification.status === 'HOAT_DONG' ? (
-                              <span style={{ color: '#FC7C27' }}>
-                                {dayjs(notification.createdAt).fromNow()}
+                              <span>
+                                <b>{notification.title}</b>
+                                <p style={{ margin: 0 }}>{notification.content} </p>
                               </span>
                             ) : (
                               <span style={{ color: 'gray' }}>
-                                {dayjs(notification.createdAt).fromNow()}
+                                <b>{notification.title}</b>
+                                <p style={{ margin: 0 }}>{notification.content} </p>
                               </span>
                             )}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}>
+                              {notification.status === 'HOAT_DONG' ? (
+                                <AccessTimeFilledIcon
+                                  sx={{
+                                    width: '17px',
+                                    color: '#FC7C27',
+                                    marginRight: '5px',
+                                  }}
+                                />
+                              ) : (
+                                <AccessTimeFilledIcon
+                                  sx={{
+                                    width: '17px',
+                                    color: 'gray',
+                                    marginRight: '5px',
+                                  }}
+                                />
+                              )}
+                              {notification.status === 'HOAT_DONG' ? (
+                                <span style={{ color: '#FC7C27' }}>
+                                  {dayjs(notification.createdAt).fromNow()}
+                                </span>
+                              ) : (
+                                <span style={{ color: 'gray' }}>
+                                  {dayjs(notification.createdAt).fromNow()}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
+                        </Grid>
+                        <Grid item xs={1}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              width: '15px',
+                              height: '70px',
+                            }}>
+                            {notification.status === 'HOAT_DONG' ? (
+                              <div
+                                style={{
+                                  height: '15px',
+                                  width: '15px',
+                                  backgroundColor: '#FC7C27',
+                                  borderRadius: '50%',
+                                }}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  height: '15px',
+                                  width: '15px',
+                                  backgroundColor: 'gray',
+                                  borderRadius: '50%',
+                                }}
+                              />
+                            )}
+                          </div>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={1}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            width: '15px',
-                            height: '70px',
-                          }}>
-                          {notification.status === 'HOAT_DONG' ? (
-                            <div
-                              style={{
-                                height: '15px',
-                                width: '15px',
-                                backgroundColor: '#FC7C27',
-                                borderRadius: '50%',
-                              }}
-                            />
-                          ) : (
-                            <div
-                              style={{
-                                height: '15px',
-                                width: '15px',
-                                backgroundColor: 'gray',
-                                borderRadius: '50%',
-                              }}
-                            />
-                          )}
-                        </div>
-                      </Grid>
-                    </Grid>
-                  </div>
-                </MenuItem>
-                {index < notification.length && <hr style={{ padding: 0, margin: 0 }} />}
-              </>
-            ))}
+                    </div>
+                  </MenuItem>
+                  {index < notification.length && <hr style={{ padding: 0, margin: 0 }} />}
+                </>
+              ))}
           </Menu>
         )}
       </div>
@@ -336,13 +362,19 @@ export default function AppBarAdmin({ children }) {
             backdropFilter: 'blur(8px)',
           }}>
           <Toolbar sx={{ paddingLeft: '0px !important' }}>
-            <Box width={drawerWidth}></Box>
+            <Box width={drawerWidth} sx={{ transition: 'width 0.3s ease-in-out' }}></Box>
             <IconButton
+              onClick={() => {
+                setDrawerWidth(drawerWidth === '4vw' ? '17vw' : '4vw')
+              }}
               sx={{
                 color: 'black',
                 transform: `rotate(${true ? 0 : 180}deg)`,
               }}>
-              <Box component={AiOutlineMenuFold} sx={{ fontSize: '25px' }} />
+              <Box
+                component={drawerWidth === '17vw' ? AiOutlineMenuFold : AiOutlineMenuUnfold}
+                sx={{ fontSize: '25px' }}
+              />
             </IconButton>
             <Box flexGrow={1} />
             <NotificationButton />
@@ -423,19 +455,25 @@ export default function AppBarAdmin({ children }) {
             border: 'none',
             width: drawerWidth,
             flexShrink: 0,
-            [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+            transition: 'width 0.3s ease-in-out', // Add a transition property
+            [`& .MuiDrawer-paper`]: {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              transition: 'width 0.3s ease-in-out', // Apply the transition to the paper as well
+            },
           }}>
-          <Box
-            component={'img'}
-            sx={{
-              p: 6,
-              py: 1,
-              transition: 'width 0.5s',
-              height: '100px',
-            }}
-            src={require('../assets/image/logoweb.png')}
-            alt="logo"
-          />
+          <Box width={'100%'} textAlign={'center'} pb={0}>
+            <Box
+              component={'img'}
+              sx={{
+                py: 2,
+                transition: 'width 0.3s',
+                width: drawerWidth === '4vw' ? '100%' : '55%',
+              }}
+              src={require('../assets/image/logoweb.png')}
+              alt="logo"
+            />
+          </Box>
           <Box
             sx={{
               pb: 3,
@@ -447,10 +485,12 @@ export default function AppBarAdmin({ children }) {
                 background: 'rgba(76,78,100,0.4)',
               },
             }}>
-            <AdminMenu />
+            <AdminMenu small={drawerWidth === '17vw'} />
           </Box>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3, maxWidth: '83vw' }}>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, p: 3, maxWidth: drawerWidth === '4vw' ? '96vw' : '83vw' }}>
           <Toolbar />
           {children}
         </Box>

@@ -30,13 +30,14 @@ public interface ProductPromotionAddRepository extends ProductRepository {
     @Query(value = """
             select  p.id, p.name
                 from product p
+                where  (:#{#req.nameProduct} IS NULL OR p.name like %:#{#req.nameProduct}%) 
                order by p.created_at desc
                 """, nativeQuery = true)
     Page<AddProductPromotionResponse> getAllProduct(@Param("req") ProductPromotionSearch req, Pageable pageable);
 
     @Query(value = """
-            SELECT MAX(cate.name) AS category, MAX(b.name) AS brand, (p.name) ,  MAX(pp.id) as productPromotion,
-            GROUP_CONCAT(DISTINCT pd.id ORDER BY pd.id ) AS productDetail  , MAX(p.id) ,GROUP_CONCAT(DISTINCT i.url) as url,
+            SELECT MAX(cate.name) AS category, MAX(b.name) AS brand, (p.name) ,  MAX(pp.id) as productPromotion, MAX(cate.id) AS idCate,
+          MAX(pd.id)  AS productDetailCB ,   GROUP_CONCAT(DISTINCT pd.id ORDER BY pd.id ) AS productDetail  , MAX(p.id) ,GROUP_CONCAT(DISTINCT i.url) as url,
             MAX(sl.name) as sole , MAX(c.name) as color, MAX(m.name) as material, MAX(pr.status) as statusPromotion,
              GROUP_CONCAT(DISTINCT si.size ORDER BY si.size) AS size 
             FROM product_detail pd 

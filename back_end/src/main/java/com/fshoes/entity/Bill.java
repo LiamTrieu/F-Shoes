@@ -60,7 +60,7 @@ public class Bill extends PrimaryEntity {
 
     private Integer receivingMethod; //receivingMethod nếu mua tại quầy set là 0 còn giao hàng là 1 nhé
 
-    private BigDecimal percentMoney;
+    private Integer percentMoney;
 
     @Column(length = EntityProperties.LENGTH_EMAIL)
     private String email;

@@ -33,7 +33,7 @@ public class ColorServiceImpl implements ColorService {
 
     @Override
     public List<Color> getListColor() {
-        return colorRepository.findAllByDeleted(Status.HOAT_DONG);
+        return colorRepository.findAllByDeletedOrderByCreatedAtAsc(Status.HOAT_DONG);
     }
 
     @Override

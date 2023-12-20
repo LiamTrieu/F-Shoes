@@ -33,6 +33,7 @@ export default function Init({ children }) {
         const response = await clientApi.check();
         const urlSocket = url + "/shoes-websocket-endpoint";
         stompClient = Stomp.over(() => new SockJS(urlSocket));
+        stompClient.reconnect_delay = 5000;
         stompClient.connect({}, () => {
           stompClient.subscribe(`/topic/app-online/${idApp}`, (message) => {
             const data = JSON.parse(message.body);
@@ -51,7 +52,6 @@ export default function Init({ children }) {
             }
             dispatch(setOrder(data.idOrder));
           });
-
           stompClient.subscribe(`/topic/app-comfirm/${idApp}`, (message) => {
             const data = JSON.parse(message.body);
             setModalData(data);

@@ -191,7 +191,7 @@ export default function OrderAdmin() {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                    Đơn hàng {index + 1}
+                    Đơn hàng {index + 1} - {Bill.code}
                     <Badge
                       badgeContent={soLuong.find((e) => e.idBill === Bill.id)?.quantity}
                       color="error"
