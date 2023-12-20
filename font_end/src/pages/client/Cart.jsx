@@ -315,6 +315,10 @@ export default function Cart() {
 
       return total + itemTotal
     }, 0) - giamGiaCart
+
+  useEffect(() => {
+    check()
+  }, [product])
   return (
     <div className="cart">
       <Container maxWidth="xl">
@@ -340,6 +344,7 @@ export default function Cart() {
                       {' '}
                       <Checkbox
                         size="small"
+                        disabled={listCheck.some((cartId) => listCheck.includes(cartId))}
                         checked={selectAll}
                         onClick={(e) => {
                           checkAll(e.target.checked)
@@ -395,7 +400,12 @@ export default function Cart() {
                         </TableCell>
 
                         <TableCell>
-                          <div style={{ position: 'relative', display: 'inline-block' }}>
+                          <div
+                            style={{
+                              position: 'relative',
+                              display: 'inline-block',
+                              cursor: 'pointer',
+                            }}>
                             <img
                               src={cart.image[0]}
                               alt={cart.name}
@@ -503,7 +513,11 @@ export default function Cart() {
                               value={cart.soLuong}
                               min="1"
                             />
-                            <button onClick={() => onChangeSL(cart, 1)}>+</button>
+                            <button
+                              disabled={listCheck.includes(cart.id)}
+                              onClick={() => onChangeSL(cart, 1)}>
+                              +
+                            </button>
                           </div>
                         </TableCell>
                         <TableCell align="center">
