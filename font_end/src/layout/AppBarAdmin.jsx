@@ -327,6 +327,7 @@ export default function AppBarAdmin({ children }) {
     stompClient.subscribe('/topic/thong-bao', (message) => {
       if (message.body) {
         const data = JSON.parse(message.body)
+        console.log(data)
         setAnchorEl(true)
         getNotification(data)
       }

@@ -1218,7 +1218,7 @@ export default function AdModalDetailProductDetail({
             </div>
             <div style={{ width: '100%' }}>
               <b>
-                <span style={{ color: 'red' }}></span>Số lượng sản phẩm lỗi
+                <span style={{ color: 'red' }}></span>Sản phẩm hoàn trả
               </b>
               <TextField
                 size="small"
