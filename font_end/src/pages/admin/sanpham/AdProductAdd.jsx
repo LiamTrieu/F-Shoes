@@ -1695,9 +1695,7 @@ export default function AdProductAdd() {
             </div>
           </Stack>
           <div className="mt-3 mb-3">
-            <b>
-              <span style={{ color: 'red' }}>*</span>Mô tả sản phẩm
-            </b>
+            <b>Mô tả sản phẩm</b>
             <Stack spacing={1}>
               <TextField
                 color="cam"
