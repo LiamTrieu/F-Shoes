@@ -33,6 +33,7 @@ import Empty from '../../../components/Empty'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
 import SearchIcon from '@mui/icons-material/Search'
+import useDebounce from '../../../services/hook/useDebounce'
 import { formatCurrency } from '../../../services/common/formatCurrency '
 
 const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
@@ -92,6 +93,18 @@ export default function AdVoucherAdd() {
     haldleAllNameVoucher()
     haldleAllCustomer()
   }, [findCustomer])
+
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFindCustomer({ ...findCustomer, textSearch: inputValue })
+  }, [debouncedValue])
 
   const haldleAllCodeVoucher = () => {
     voucherApi
@@ -198,6 +211,7 @@ export default function AdVoucherAdd() {
     if (voucherAdd.typeValue === 0) {
       if (voucherAdd.value === null) {
         setVoucherAdd({ ...voucherAdd, value: 0 })
+        errors.value = 'giá trị tối thiểu 1%'
       } else if (!Number.isInteger(parseInt(voucherAdd.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherAdd.value < 1) {
@@ -208,25 +222,32 @@ export default function AdVoucherAdd() {
     } else {
       if (voucherAdd.value === null) {
         setVoucherAdd({ ...voucherAdd, value: 0 })
+        errors.value = 'giá trị tối thiểu 1 ₫'
       } else if (!Number.isInteger(parseInt(voucherAdd.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherAdd.value < 1) {
-        errors.value = 'giá trị tối thiểu 1 VNĐ'
+        errors.value = 'giá trị tối thiểu 1 ₫'
+      } else if (voucherAdd.value > 50000000) {
+        errors.value = 'giá trị tối đa 50,000,000 ₫'
       }
     }
 
     if (voucherAdd.maximumValue === null) {
       setVoucherAdd({ ...voucherAdd, maximumValue: 0 })
+      errors.maximumValue = 'giá trị tối đa tối thiểu 1 ₫'
     } else if (!Number.isInteger(parseInt(voucherAdd.maximumValue))) {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
     } else if (voucherAdd.maximumValue < 1) {
-      errors.maximumValue = 'giá trị tối đa tối thiểu 1 (vnđ)'
+      errors.maximumValue = 'giá trị tối đa tối thiểu 1 ₫'
+    } else if (voucherAdd.maximumValue > 50000000) {
+      errors.maximumValue = 'giá trị tối đa tối đa 50,000,000 ₫'
     } else if (voucherAdd.typeValue === 1 && voucherAdd.maximumValue !== voucherAdd.value) {
       errors.maximumValue = 'giá trị tối đa phải bằng giá trị'
     }
 
     if (voucherAdd.quantity === null) {
       setVoucherAdd({ ...voucherAdd, quantity: 0 })
+      errors.quantity = 'Số lượng tối thiểu 1'
     } else if (!Number.isInteger(parseInt(voucherAdd.quantity))) {
       errors.quantity = 'Số lượng chỉ được nhập số nguyên'
     } else if (voucherAdd.quantity < 1) {
@@ -235,10 +256,13 @@ export default function AdVoucherAdd() {
 
     if (voucherAdd.minimumAmount === null) {
       setVoucherAdd({ ...voucherAdd, minimumAmount: 0 })
+      errors.minimumAmount = 'Điều kiện tối thiểu 1 ₫'
     } else if (!Number.isInteger(parseInt(voucherAdd.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
-    } else if (voucherAdd.minimumAmount < 0) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
+    } else if (voucherAdd.minimumAmount < 1) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 1 ₫'
+    } else if (voucherAdd.minimumAmount > 50000000) {
+      errors.minimumAmount = 'Điều kiện tối thiểu tối đa 50,000,000 ₫'
     }
 
     if (voucherAdd.startDate.trim() === '') {
@@ -543,8 +567,7 @@ export default function AdVoucherAdd() {
                   minDateTime={dayjs()}
                   slotProps={{
                     actionBar: {
-                      actions: ['clear'],
-                      onClick: () => setVoucherAdd({ ...voucherAdd, startDate: '' }),
+                      actions: ['clear', 'today'],
                     },
                   }}
                   label="Từ ngày"
@@ -570,8 +593,7 @@ export default function AdVoucherAdd() {
                   minDateTime={dayjs()}
                   slotProps={{
                     actionBar: {
-                      actions: ['clear'],
-                      onClick: () => setVoucherAdd({ ...voucherAdd, endDate: '' }),
+                      actions: ['clear', 'today'],
                     },
                   }}
                   label="Đến ngày"
@@ -618,9 +640,18 @@ export default function AdVoucherAdd() {
               type="text"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setFindCustomer({ ...findCustomer, textSearch: e.target.value, page: 1 })
-              }
+              // onChange={(e) => {
+              //   setInputValue(e.target.value)
+              // }}
+              onChange={(e) => {
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

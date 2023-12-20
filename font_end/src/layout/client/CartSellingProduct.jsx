@@ -109,7 +109,7 @@ export default function CartSellingProduct({ products, colmd, collg }) {
   console.log(arrMap, '==========')
   return (
     <>
-      <Grid container rowSpacing={1} columnSpacing={3}>
+      <Grid container rowSpacing={1} columnSpacing={3} sx={{ cursor: 'pointer' }}>
         {arrMap.map((product, i) => {
           const discountValue = product.value || 0
 

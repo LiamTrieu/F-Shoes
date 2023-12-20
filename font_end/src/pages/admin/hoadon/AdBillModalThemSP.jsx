@@ -57,7 +57,7 @@ const styleAdBillModalThemSPDetail = {
 }
 
 var stompClient = null
-export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
+export default function AdBillModalThemSP({ open, setOPen, idBill, load, setCheckPreBill }) {
   const [listBrand, setListBrand] = useState([])
   const [listMaterial, setListMaterial] = useState([])
   const [listColor, setListColor] = useState([])
@@ -217,10 +217,12 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
               ).then((result) => {
                 if (result.isConfirmed) {
                   saveBillDetail(idBill, selectedProduct)
+                  setCheckPreBill(true)
                 }
               })
             } else {
               saveBillDetail(idBill, selectedProduct)
+              setCheckPreBill(true)
             }
           })
         } else {
@@ -232,6 +234,7 @@ export default function AdBillModalThemSP({ open, setOPen, idBill, load }) {
             return
           } else {
             saveBillDetail(idBill, selectedProduct)
+            setCheckPreBill(true)
           }
         }
       })

@@ -583,8 +583,7 @@ export default function Dashboard() {
                 }
                 slotProps={{
                   actionBar: {
-                    actions: ['clear'],
-                    onClick: () => setFilterInCustom({ ...filterInCustom, startDate: null }),
+                    actions: ['clear', 'today'],
                   },
                 }}
                 label="Từ ngày"
@@ -605,8 +604,7 @@ export default function Dashboard() {
                 }
                 slotProps={{
                   actionBar: {
-                    actions: ['clear'],
-                    onClick: () => setFilterInCustom({ ...filterInCustom, endDate: null }),
+                    actions: ['clear', 'today'],
                   },
                 }}
                 label="Đến ngày"
@@ -874,7 +872,7 @@ export default function Dashboard() {
                 {formatCurrency(doanhThu.doanhSoNgay)}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkDoanhThuNgay === null ? (
+                {tkDoanhThuNgay === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDoanhThuNgay > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -882,7 +880,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkDoanhThuNgay > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkDoanhThuNgay !== null ? Math.abs(tkDoanhThuNgay) + '%' : ''}
+                  {tkDoanhThuNgay !== 0 ? Math.abs(tkDoanhThuNgay) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -895,7 +893,7 @@ export default function Dashboard() {
                 {formatCurrency(doanhThu.doanhSoTuanNay)}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkDoanhThuTuan === null ? (
+                {tkDoanhThuTuan === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDoanhThuTuan > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -903,7 +901,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkDoanhThuTuan > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkDoanhThuTuan !== null ? Math.abs(tkDoanhThuTuan) + '%' : ''}
+                  {tkDoanhThuTuan !== 0 ? Math.abs(tkDoanhThuTuan) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -916,7 +914,7 @@ export default function Dashboard() {
                 {formatCurrency(doanhThu.doanhSoThangNay)}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkDoanhThuThang === null ? (
+                {tkDoanhThuThang === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDoanhThuThang > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -924,7 +922,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkDoanhThuThang > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkDoanhThuThang !== null ? Math.abs(tkDoanhThuThang) + '%' : ''}
+                  {tkDoanhThuThang !== 0 ? Math.abs(tkDoanhThuThang) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -937,7 +935,7 @@ export default function Dashboard() {
                 {formatCurrency(doanhThu.doanhSoNamNay)}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkDoanhThuNam === null ? (
+                {tkDoanhThuNam === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDoanhThuNam > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -945,7 +943,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkDoanhThuNam > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkDoanhThuNam !== null ? Math.abs(tkDoanhThuNam) + '%' : ''}
+                  {tkDoanhThuNam !== 0 ? Math.abs(tkDoanhThuNam) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -958,7 +956,7 @@ export default function Dashboard() {
                 {doanhThu.soDonHangNgay}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkDonHangNgay === null ? (
+                {tkDonHangNgay === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDonHangNgay > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -966,7 +964,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkDonHangNgay > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkDonHangNgay !== null ? Math.abs(tkDonHangNgay) + '%' : ''}
+                  {tkDonHangNgay !== 0 ? Math.abs(tkDonHangNgay) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -979,7 +977,7 @@ export default function Dashboard() {
                 {doanhThu.soDonHangTuanNay}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkDonHangTuan === null ? (
+                {tkDonHangTuan === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDonHangTuan > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -987,7 +985,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkDonHangTuan > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkDonHangTuan !== null ? Math.abs(tkDonHangTuan) + '%' : ''}
+                  {tkDonHangTuan !== 0 ? Math.abs(tkDonHangTuan) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -1000,7 +998,7 @@ export default function Dashboard() {
                 {doanhThu.soDonHangThangNay}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkDonHangThang === null ? (
+                {tkDonHangThang === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDonHangThang > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -1008,7 +1006,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkDonHangThang > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkDonHangThang !== null ? Math.abs(tkDonHangThang) + '%' : ''}
+                  {tkDonHangThang !== 0 ? Math.abs(tkDonHangThang) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -1021,7 +1019,7 @@ export default function Dashboard() {
                 {doanhThu.soDonHangNamNay}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkDonHangNam === null ? (
+                {tkDonHangNam === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkDonHangNam > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -1029,7 +1027,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkDonHangNam > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkDonHangNam !== null ? Math.abs(tkDonHangNam) + '%' : ''}
+                  {tkDonHangNam !== 0 ? Math.abs(tkDonHangNam) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -1042,7 +1040,7 @@ export default function Dashboard() {
                 {doanhThu.soLuongSanPhamNgay}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkSanPhamNgay === null ? (
+                {tkSanPhamNgay === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkSanPhamNgay > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -1050,7 +1048,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkSanPhamNgay > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkSanPhamNgay !== null ? Math.abs(tkSanPhamNgay) + '%' : ''}
+                  {tkSanPhamNgay !== 0 ? Math.abs(tkSanPhamNgay) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -1063,7 +1061,7 @@ export default function Dashboard() {
                 {doanhThu.soLuongSanPhamTuanNay}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkSanPhamTuan === null ? (
+                {tkSanPhamTuan === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkSanPhamTuan > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -1071,7 +1069,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkSanPhamTuan > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkSanPhamTuan !== null ? Math.abs(tkSanPhamTuan) + '%' : ''}
+                  {tkSanPhamTuan !== 0 ? Math.abs(tkSanPhamTuan) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -1084,7 +1082,7 @@ export default function Dashboard() {
                 {doanhThu.soLuongSanPhamThangNay}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkSanPhamThang === null ? (
+                {tkSanPhamThang === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkSanPhamThang > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -1092,7 +1090,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkSanPhamThang > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkSanPhamThang !== null ? Math.abs(tkSanPhamThang) + '%' : ''}
+                  {tkSanPhamThang !== 0 ? Math.abs(tkSanPhamThang) + '%' : ''}
                 </span>
               </Grid>
             </Grid>
@@ -1105,7 +1103,7 @@ export default function Dashboard() {
                 {doanhThu.soLuongSanPhamNamNay}
               </Grid>
               <Grid item xs={4} className="grid-tang-truong-data">
-                {tkSanPhamNam === null ? (
+                {tkSanPhamNam === 0 ? (
                   <span style={{ color: 'white' }}>---</span>
                 ) : tkSanPhamNam > 0 ? (
                   <TrendingUpIcon className="icon-up-css" />
@@ -1113,7 +1111,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className="icon-down-css" />
                 )}
                 <span style={{ color: tkSanPhamNam > 0 ? '#00ff00' : '#ff0000' }}>
-                  {tkSanPhamNam !== null ? Math.abs(tkSanPhamNam) + '%' : ''}
+                  {tkSanPhamNam !== 0 ? Math.abs(tkSanPhamNam) + '%' : ''}
                 </span>
               </Grid>
             </Grid>

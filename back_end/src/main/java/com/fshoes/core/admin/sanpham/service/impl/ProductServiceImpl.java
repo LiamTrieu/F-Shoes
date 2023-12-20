@@ -12,6 +12,7 @@ import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
 import com.fshoes.core.admin.sanpham.repository.AdProductRepository;
 import com.fshoes.core.admin.sanpham.service.ProductService;
 import com.fshoes.core.admin.sell.repository.AdminSellGetProductRepository;
+import com.fshoes.core.client.model.response.ClientProductResponse;
 import com.fshoes.core.client.repository.ClientBillDetailRepository;
 import com.fshoes.core.client.repository.ClientProductDetailRepository;
 import com.fshoes.core.common.PageReponse;
@@ -107,7 +108,7 @@ public class ProductServiceImpl implements ProductService {
         for (ProductDetail productDetail : productDetailRepository.saveAll(newProductDetail)) {
             for (ProductDetailRequest prdReq : request) {
                 if (Objects.equals(prdReq.getIdColor(), productDetail.getColor().getId()) &&
-                    Objects.equals(prdReq.getIdSize(), productDetail.getSize().getId())) {
+                        Objects.equals(prdReq.getIdSize(), productDetail.getSize().getId())) {
                     newImages.addAll(prdReq.getListImage().stream().map(img -> {
                         Image image = new Image();
                         image.setUrl(img);
@@ -158,18 +159,19 @@ public class ProductServiceImpl implements ProductService {
                 .forEach(index -> images.get(index).setUrl(request.getListImage().get(index)));
         imageRepository.saveAll(images);
         productDetailRepository.save(request.tranDetail(productDetail));
+        ClientProductResponse response = clientProductDetailRepository.updateRealTime(productDetail.getId());
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-client",
-                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                response);
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail",
-                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                response);
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-home",
-                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                response);
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-modal-add-to-card",
-                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                response);
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-cart",
-                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                response);
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-checkout",
-                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                response);
         messagingTemplate.convertAndSend("/topic/realtime-san-pham-modal-add-admin",
                 adminSellGetProductRepository.realTimeProductModalAddAdmin(productDetail.getId()));
     }
@@ -195,7 +197,6 @@ public class ProductServiceImpl implements ProductService {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -210,11 +211,34 @@ public class ProductServiceImpl implements ProductService {
             productDetail.setWeight(req.getWeight());
             return productDetail;
         }).toList();
+
+        for (ProductDetail detail : listUpdate) {
+            ClientProductResponse response = clientProductDetailRepository.updateRealTime(detail.getId());
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-client",
+                    response);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail",
+                    response);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-home",
+                    response);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-modal-add-to-card",
+                    response);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-cart",
+                    response);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-checkout",
+                    response);
+            messagingTemplate.convertAndSend("/topic/realtime-san-pham-modal-add-admin",
+                    adminSellGetProductRepository.realTimeProductModalAddAdmin(detail.getId()));
+        }
         return productDetailRepository.saveAll(listUpdate);
     }
 
     @Override
     public List<String> filterAdd(String idProduct) {
         return productDetailRepository.filterAdd(idProduct);
+    }
+
+    @Override
+    public List<String> getAllName() {
+        return productRepository.getAllName();
     }
 }

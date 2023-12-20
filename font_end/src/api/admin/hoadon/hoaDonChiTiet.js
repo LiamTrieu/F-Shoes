@@ -1,65 +1,65 @@
-import axiosAdmin from '../../axios'
+import { axiosAdminHoaDon } from '../../axios'
 
 const hoaDonChiTietApi = {
   getByIdBillAndStt: (idBill, status) => {
     const urlGetByIdBill = `/billDetail/get-by-idBill-and-status/${idBill}`
-    return axiosAdmin.get(urlGetByIdBill, { params: { status } })
+    return axiosAdminHoaDon.get(urlGetByIdBill, { params: { status } })
   },
   getByIdBill: (idBill) => {
     const urlGetByIdBill = `/billDetail/get-by-idBill/${idBill}`
-    return axiosAdmin.get(urlGetByIdBill)
+    return axiosAdminHoaDon.get(urlGetByIdBill)
   },
   decrementQuantity: (idBillDetail) => {
     const url = `/billDetail/decrementQuantity/${idBillDetail}`
-    return axiosAdmin.put(url)
+    return axiosAdminHoaDon.put(url)
   },
   incrementQuantity: (idBillDetail) => {
     const url = `/billDetail/incrementQuantity/${idBillDetail}`
-    return axiosAdmin.put(url)
+    return axiosAdminHoaDon.put(url)
   },
   changeQuantity: (idBillDetail, quantity) => {
     const url = `/billDetail/changeQuantity/${idBillDetail}`
-    return axiosAdmin.put(url, quantity)
+    return axiosAdminHoaDon.put(url, quantity)
   },
   saveBillDetail: (billDetailReq) => {
     const url = `/billDetail/save`
-    return axiosAdmin.post(url, billDetailReq)
+    return axiosAdminHoaDon.post(url, billDetailReq)
   },
   delete: (id) => {
     const url = `/billDetail/delete/${id}`
-    return axiosAdmin.put(url)
+    return axiosAdminHoaDon.put(url)
   },
   returnProduct: (idBillDetail, hdBillDetailReq) => {
     const url = `/billDetail/return-product/${idBillDetail}`
-    return axiosAdmin.put(url, hdBillDetailReq)
+    return axiosAdminHoaDon.put(url, hdBillDetailReq)
   },
   getByIdBillAndIdPrd: (idBill, idPrd) => {
     const urlGetByIdBill = `/billDetail/get-by-billAndProductDetail`
-    return axiosAdmin.get(urlGetByIdBill, { params: { idBill, idPrd } })
+    return axiosAdminHoaDon.get(urlGetByIdBill, { params: { idBill, idPrd } })
   },
   getByIdBillAndIdPrdAndPrice: (idBill, idPrd, price) => {
     const urlGetByIdBillPrdAndPrice = `/billDetail/get-by-billAndProductDetailAndPrice`
-    return axiosAdmin.get(urlGetByIdBillPrdAndPrice, { params: { idBill, idPrd, price } })
+    return axiosAdminHoaDon.get(urlGetByIdBillPrdAndPrice, { params: { idBill, idPrd, price } })
   },
   // isCheckDonGiaVsPricePrd: (id) => {
   //   const url = `/billDetail/getHDPrdRes/${id}`
-  //   return axiosAdmin.get(url)
+  //   return axiosAdminHoaDon.get(url)
   // },
   isCheckDonGiaVsPricePrd: (id) => {
     const url = `/billDetail/isCheckDonGiaVsPricePrd/${id}`
-    return axiosAdmin.get(url)
+    return axiosAdminHoaDon.get(url)
   },
   getVoucherByIdBill: (idBill) => {
     const urlGetByIdBillPrdAndPrice = `/billDetail/get/voucher/by/idBill/${idBill}`
-    return axiosAdmin.get(urlGetByIdBillPrdAndPrice)
+    return axiosAdminHoaDon.get(urlGetByIdBillPrdAndPrice)
   },
   getPercentByIdBill: (idBill) => {
     const urlGetByIdBillPrdAndPrice = `/billDetail/get/percent/by/idBill/${idBill}`
-    return axiosAdmin.get(urlGetByIdBillPrdAndPrice)
+    return axiosAdminHoaDon.get(urlGetByIdBillPrdAndPrice)
   },
   getOneVoucherById: (idVoucher) => {
     const urlOneVoucherById = `/billDetail/view/one/voucher/${idVoucher}`
-    return axiosAdmin.get(urlOneVoucherById)
+    return axiosAdminHoaDon.get(urlOneVoucherById)
   },
 }
 

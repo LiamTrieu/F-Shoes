@@ -1,9 +1,7 @@
 package com.fshoes.core.admin.sanpham.controller;
 
-import com.fshoes.core.admin.sanpham.model.request.PrdDetailFilterRequest;
-import com.fshoes.core.admin.sanpham.model.request.ProductDetailRequest;
-import com.fshoes.core.admin.sanpham.model.request.ProductFilterRequest;
-import com.fshoes.core.admin.sanpham.model.request.UpdateListRequest;
+import com.fshoes.core.admin.sanpham.model.request.*;
+import com.fshoes.core.admin.sanpham.repository.AdProductDetailRepository;
 import com.fshoes.core.admin.sanpham.service.ProductService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
@@ -19,6 +17,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private AdProductDetailRepository adProductDetailRepository;
 
     @GetMapping
     public ObjectRespone getAllProducts(ProductFilterRequest filter) {
@@ -94,5 +95,15 @@ public class ProductController {
     @GetMapping("/filter/{idProduct}")
     public List<String> filter(@PathVariable String idProduct) {
         return productService.filterAdd(idProduct);
+    }
+
+    @GetMapping("/getAllName")
+    public List<String> getAllName() {
+        return productService.getAllName();
+    }
+
+    @PostMapping("/filterUpdate")
+    public Boolean filterUpdate(@RequestBody FilterUpdateResquest request) {
+        return adProductDetailRepository.filterUpdate(request) != null;
     }
 }

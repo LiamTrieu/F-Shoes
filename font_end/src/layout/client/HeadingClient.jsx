@@ -289,9 +289,27 @@ export default function HeadingClient() {
           justifyContent: 'center',
           height: '30px',
         }}>
-        <Typography sx={{ fontSize: '15px', color: 'white', fontWeight: 700 }}>
+        <Typography
+          sx={{
+            fontSize: '15px',
+            color: 'white',
+            fontWeight: 700,
+            animation: 'slideText 10s linear infinite alternate', // Added 'alternate'
+          }}>
           Chào mừng bạn đến với shop giày thể thao F-SHOES
         </Typography>
+        <style>
+          {`
+          @keyframes slideText {
+            0% {
+              transform: translateX(100%);
+            }
+            100% {
+              transform: translateX(-100%);
+            }
+          }
+        `}
+        </style>
       </div>
       <Container
         maxWidth="xl"

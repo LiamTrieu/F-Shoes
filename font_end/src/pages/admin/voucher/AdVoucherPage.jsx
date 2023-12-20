@@ -36,6 +36,7 @@ import { Stomp } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { socketUrl } from '../../../services/url'
+import useDebounce from '../../../services/hook/useDebounce'
 import ExcelJS from 'exceljs'
 
 var stompClient = null
@@ -69,6 +70,21 @@ export default function AdVoucherPage() {
       stompClient.disconnect()
     }
   }, [])
+
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setSearchVoucher({
+      ...searchVoucher,
+      nameSearch: inputValue,
+    })
+  }, [debouncedValue])
 
   const onConnect = () => {
     stompClient.subscribe('/topic/voucherUpdates', (message) => {
@@ -233,12 +249,18 @@ export default function AdVoucherPage() {
               type="text"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setSearchVoucher({
-                  ...searchVoucher,
-                  nameSearch: e.target.value,
-                })
-              }
+              // onChange={(e) => {
+              //   setInputValue(e.target.value)
+              // }}
+              onChange={(e) => {
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -275,8 +297,7 @@ export default function AdVoucherPage() {
                 ampm={false}
                 slotProps={{
                   actionBar: {
-                    actions: ['clear'],
-                    onClick: () => setSearchVoucher({ ...searchVoucher, startDateSearch: '' }),
+                    actions: ['clear', 'today'],
                   },
                 }}
                 label="Từ ngày"
@@ -296,8 +317,7 @@ export default function AdVoucherPage() {
                 ampm={false}
                 slotProps={{
                   actionBar: {
-                    actions: ['clear'],
-                    onClick: () => setSearchVoucher({ ...searchVoucher, endDateSearch: '' }),
+                    actions: ['clear', 'today'],
                   },
                 }}
                 label="Đến ngày"

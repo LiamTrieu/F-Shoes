@@ -2,7 +2,6 @@ import {
   Backdrop,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Container,
   IconButton,
@@ -51,7 +50,7 @@ export default function AdCategoryPage() {
   const [listCategoryEx, setListCategoryEx] = useState([])
   const [isBackdrop, setIsBackdrop] = useState(true)
   const [filter, setFilter] = useState({ page: 1, size: 5, name: '' })
-  const [pageRespone, setPageRespone] = useState({ currentPage: 1, totalPages: 0 })
+  const [totalPages, setTotalPages] = useState(0)
 
   useEffect(() => {
     fetchData(filter)
@@ -72,7 +71,12 @@ export default function AdCategoryPage() {
       .then((response) => {
         const res = response.data
         setListCategory(res.data.content)
-        setPageRespone({ currentPage: res.data.currentPage, totalPages: res.data.totalPages })
+        setTotalPages(res.data.totalPages)
+        if (filter.page > res.data.totalPages) {
+          if (res.data.totalPages > 0) {
+            setFilter({ ...filter, page: res.data.totalPages })
+          }
+        }
       })
       .catch((error) => {})
     setIsBackdrop(false)
@@ -83,6 +87,7 @@ export default function AdCategoryPage() {
       setListCategoryEx(res.data.data)
     })
   }
+
 
   const haldleAllNameCategory = () => {
     categoryApi
@@ -99,16 +104,18 @@ export default function AdCategoryPage() {
 
   const handleValidateAdd = () => {
     let check = 0
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     const errors = {
       name: '',
     }
-
     if (category.name.trim() === '') {
       errors.name = 'Không được để trống tên thể loại'
     } else if (category.name.length > 100) {
       errors.name = 'Tên thể loại không được dài hơn 100 ký tự'
     } else if (allNameCategory.includes(category.name)) {
       errors.name = 'Tên thể loại đã tồn tại'
+    } else if (specialCharsRegex.test(category.name)) {
+      errors.name = 'Tên thể loại chứa kí tự đặc biệt.'
     }
 
     for (const key in errors) {
@@ -127,8 +134,14 @@ export default function AdCategoryPage() {
     )
   }
 
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
   const handleValidateUpdate = () => {
     let check = 0
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     const errors = {
       nameUpdate: '',
     }
@@ -139,6 +152,8 @@ export default function AdCategoryPage() {
       errors.nameUpdate = 'Tên thể loại không được dài hơn 100 ký tự'
     } else if (isCategoryNameDuplicate(categoryUpdate.name, categoryUpdate.id)) {
       errors.nameUpdate = 'Tên thể loại đã tồn tại'
+    } else if (specialCharsRegex.test(categoryUpdate.name)) {
+      errors.nameUpdate = 'Tên thể loại chứa kí tự đặc biệt.'
     }
 
     for (const key in errors) {
@@ -183,10 +198,6 @@ export default function AdCategoryPage() {
         }
       })
       setIsBackdrop(false)
-    } else {
-      toast.error('Thêm thể loại thất bại, hãy nhập đủ dữ liệu', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
     }
   }
   const updateProduct = () => {
@@ -221,10 +232,6 @@ export default function AdCategoryPage() {
         }
       })
       setIsBackdrop(false)
-    } else {
-      toast.error('Cập nhập thể loại thất bại, hãy nhập đủ dữ diệu', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
     }
   }
 
@@ -233,23 +240,23 @@ export default function AdCategoryPage() {
     else setCategoryUpdate({ ...categoryUpdate, name: e.target.value })
   }
 
-  const setDeleted = (id) => {
-    const title = 'Xác nhận thay đổi hoạt động?'
-    const text = 'Ẩn hoạt động sẽ làm ẩn thể loại khỏi nơi khác'
-    confirmSatus(title, text, theme).then((result) => {
-      if (result.isConfirmed) {
-        categoryApi.swapCategory(id).then((res) => {
-          if (res.data.success) {
-            setIsBackdrop(false)
-            toast.success('Đã bật trạng thái hoạt động', {
-              position: toast.POSITION.TOP_RIGHT,
-            })
-            fetchData(filter)
-          }
-        })
-      }
-    })
-  }
+  // const setDeleted = (id) => {
+  //   const title = 'Xác nhận thay đổi hoạt động?'
+  //   const text = 'Ẩn hoạt động sẽ làm ẩn thể loại khỏi nơi khác'
+  //   confirmSatus(title, text, theme).then((result) => {
+  //     if (result.isConfirmed) {
+  //       categoryApi.swapCategory(id).then((res) => {
+  //         if (res.data.success) {
+  //           setIsBackdrop(false)
+  //           toast.success('Đã bật trạng thái hoạt động', {
+  //             position: toast.POSITION.TOP_RIGHT,
+  //           })
+  //           fetchData(filter)
+  //         }
+  //       })
+  //     }
+  //   })
+  // }
 
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
@@ -333,7 +340,13 @@ export default function AdCategoryPage() {
               }}
               sx={{ mr: 0.5, width: '50%' }}
               onChange={(e) => {
-                setInputValue(e.target.value)
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
               }}
               inputProps={{ style: { height: '20px' } }}
               placeholder="Tìm thể loại"
@@ -462,7 +475,7 @@ export default function AdCategoryPage() {
                     <TableRow
                       key={row.id}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align="center">{index + 1}</TableCell>
+                      <TableCell align="center">{row.stt}</TableCell>
                       <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">
                         {dayjs(row.createAt).format('DD/MM/YYYY')}
@@ -526,8 +539,8 @@ export default function AdCategoryPage() {
                   </Typography>
                 </Typography>
                 <Pagination
-                  count={pageRespone.totalPages}
-                  page={pageRespone.currentPage + 1}
+                  count={totalPages}
+                  page={filter.page}
                   onChange={(e, value) => {
                     e.preventDefault()
                     setFilter({ ...filter, page: value })

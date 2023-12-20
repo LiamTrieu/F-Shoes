@@ -15,12 +15,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { GetCart, removeCart, setCart, updateCart } from '../../services/slices/cartSlice'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import ReplyIcon from '@mui/icons-material/Reply'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { setCheckout } from '../../services/slices/checkoutSlice'
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import clientCartApi from '../../api/client/clientCartApi'
 import { socketUrl } from '../../services/url'
+import checkStartApi from '../../api/checkStartApi'
+import { toast } from 'react-toastify'
 
 const styleModalCart = {
   position: 'absolute',
@@ -52,6 +54,7 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
     const discountedPrice = originalPrice - discountAmount
     return discountedPrice
   }
+  const navigate = useNavigate()
 
   const onChangeSL = (cart, num) => {
     const soluong = cart.soLuong + num
@@ -313,24 +316,42 @@ export default function ModalAddProductToCart({ openModal, handleCloseModal, pro
                 </span>
               </Typography>
 
-              <Link to="/checkout">
-                <div
-                  style={{
-                    width: '300px',
-                    height: '40px',
-                    backgroundColor: '#333',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '15px',
-                  }}
-                  onClick={() => {
-                    dispatch(setCheckout(productCart))
-                  }}>
-                  TIẾN HÀNH THANH TOÁN
-                </div>
-              </Link>
+              {/* <Link to="/checkout"> */}
+              <div
+                style={{
+                  width: '300px',
+                  height: '40px',
+                  backgroundColor: '#333',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '15px',
+                }}
+                onClick={async () => {
+                  if (productCart) {
+                    let allProductsAvailable = true
+
+                    for (const e of productCart) {
+                      const check = (await checkStartApi.checkQuantiy(e.id, e.soLuong)).data
+
+                      if (!check) {
+                        allProductsAvailable = false
+                        break
+                      }
+                    }
+
+                    if (allProductsAvailable) {
+                      dispatch(setCheckout(productCart))
+                      navigate('/checkout')
+                    } else {
+                      toast.warning('Có sản phẩm đã hết hàng, vui lòng load lại trang!')
+                    }
+                  }
+                }}>
+                TIẾN HÀNH THANH TOÁN
+              </div>
+              {/* </Link> */}
             </div>
           </Stack>
         </Box>

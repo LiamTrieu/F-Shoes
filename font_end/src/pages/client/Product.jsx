@@ -42,6 +42,7 @@ import { socketUrl } from '../../services/url'
 import { isColorDark } from '../../services/common/isColorDark'
 import { MdKeyboardArrowLeft } from 'react-icons/md'
 import BreadcrumbsCustom from '../../components/BreadcrumbsCustom'
+import useDebounce from '../../services/hook/useDebounce'
 
 const listBreadcrumbs = [{ name: 'Trang chủ', link: '/home' }]
 function AirbnbThumbComponent(props) {
@@ -148,6 +149,13 @@ export default function Product() {
       )
     })
   }, [filter])
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, nameProductDetail: inputValue })
+  }, [debouncedValue])
 
   useEffect(() => {
     const socket = new SockJS(socketUrl)
@@ -320,7 +328,9 @@ export default function Product() {
               placeholder="Tìm sản phẩm"
               type="text"
               size="small"
-              onChange={(e) => setFilter({ ...filter, nameProductDetail: e.target.value })}
+              onChange={(e) => {
+                setInputValue(e.target.value)
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -651,6 +661,7 @@ export default function Product() {
     setSelectMaterial([])
     setSelectSole([])
     setSelectSize([])
+    setInputValue('')
   }
 
   return (
@@ -715,8 +726,11 @@ export default function Product() {
                 className="stack-input-filter"
                 placeholder="Tìm sản phẩm"
                 type="text"
+                value={inputValue}
                 size="small"
-                onChange={(e) => setFilter({ ...filter, nameProductDetail: e.target.value })}
+                onChange={(e) => {
+                  setInputValue(e.target.value)
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -728,7 +742,7 @@ export default function Product() {
               <Typography className="stack-typography-portfolio" component="span" variant={'body2'}>
                 <Typography
                   onClick={toggleMenuBar}
-                  sx={{ display: { xs: 'none', md: 'inline-block' } }}>
+                  sx={{ display: { xs: 'none', md: 'inline-block' }, cursor: 'pointer' }}>
                   {showMenuBar ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
                   {showMenuBar ? <FilterAltIcon /> : <FilterAltOffIcon />}
                 </Typography>

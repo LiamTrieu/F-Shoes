@@ -161,9 +161,15 @@ public interface AdminProductDetailRepository extends ProductDetailRepository {
                          AND (:#{#req.sole} IS NULL OR s.id = :#{#req.sole}) 
                          AND (:#{#req.minPrice} IS NULL OR pd.price >= :#{#req.minPrice}) 
                          AND (:#{#req.maxPrice} IS NULL OR pd.price <= :#{#req.maxPrice}) 
-                         AND (:#{#req.codeProductDetail} IS NULL OR pd.code = :#{#req.codeProductDetail}) 
-                         AND (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) 
-                         AND p.deleted = 0 AND pd.deleted = 0
+                         AND ( (:#{#req.nameProductDetail} IS NULL OR p.name like %:#{#req.nameProductDetail}%) 
+                          or (:#{#req.nameProductDetail} IS NULL OR pd.code like %:#{#req.nameProductDetail}%) 
+                OR (:#{#req.nameProductDetail} IS NULL OR cate.name like %:#{#req.nameProductDetail}%) 
+                OR (:#{#req.nameProductDetail} IS NULL OR c.name like %:#{#req.nameProductDetail}%) 
+                OR (:#{#req.nameProductDetail} IS NULL OR m.name like %:#{#req.nameProductDetail}%) 
+                OR (:#{#req.nameProductDetail} IS NULL OR si.size like %:#{#req.nameProductDetail}%) 
+                OR (:#{#req.nameProductDetail} IS NULL OR b.name like %:#{#req.nameProductDetail}%)
+                OR (:#{#req.nameProductDetail} IS NULL OR s.name like %:#{#req.nameProductDetail}%)) 
+                         AND p.deleted = 0 AND pd.deleted = 0 AND pd.amount > 0
                               GROUP BY pd.id, pr.status, pd.code, pd.id_product, pd.id_color, pd.id_material, pd.id_sole, pd.id_category, pd.id_brand, pd.id_size
             """, nativeQuery = true)
     List<GetAllProductResponse> getAllProduct(@Param("req") FilterProductDetailRequest req);

@@ -6,21 +6,45 @@ import com.fshoes.core.admin.hoadon.repository.HDBillRepository;
 import com.fshoes.core.admin.hoadon.repository.HDProductDetailRepository;
 import com.fshoes.core.admin.khachhang.repository.KhachHangRepository;
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
-import com.fshoes.core.admin.sell.model.request.*;
-import com.fshoes.core.admin.sell.model.response.*;
-import com.fshoes.core.admin.sell.repository.*;
+import com.fshoes.core.admin.sell.model.request.AdAddressBillRequest;
+import com.fshoes.core.admin.sell.model.request.AdCustomerRequest;
+import com.fshoes.core.admin.sell.model.request.AddBillRequest;
+import com.fshoes.core.admin.sell.model.request.CreateBillRequest;
+import com.fshoes.core.admin.sell.model.request.FilterProductDetailRequest;
+import com.fshoes.core.admin.sell.model.response.AdminMinMaxPrice;
+import com.fshoes.core.admin.sell.model.response.CartDetailResponse;
+import com.fshoes.core.admin.sell.model.response.GetALlCustomerResponse;
+import com.fshoes.core.admin.sell.model.response.GetAllProductResponse;
+import com.fshoes.core.admin.sell.model.response.GetAmountProductResponse;
+import com.fshoes.core.admin.sell.model.response.GetColorResponse;
+import com.fshoes.core.admin.sell.model.response.GetProductDetailBillSellResponse;
+import com.fshoes.core.admin.sell.model.response.GetSizeResponse;
+import com.fshoes.core.admin.sell.model.response.PayOrderResponse;
+import com.fshoes.core.admin.sell.repository.AdminBillDetailRepositoty;
+import com.fshoes.core.admin.sell.repository.AdminBillRepository;
+import com.fshoes.core.admin.sell.repository.AdminCreateCartRepository;
+import com.fshoes.core.admin.sell.repository.AdminProductDetailRepository;
+import com.fshoes.core.admin.sell.repository.AdminSellGetCustomerRepository;
+import com.fshoes.core.admin.sell.repository.AdminSellGetProductRepository;
+import com.fshoes.core.admin.sell.repository.AdminTransactionRepository;
 import com.fshoes.core.admin.sell.service.AdminSellService;
 import com.fshoes.core.admin.voucher.model.respone.AdCustomerVoucherRespone;
 import com.fshoes.core.admin.voucher.repository.AdCustomerVoucherRepository;
 import com.fshoes.core.admin.voucher.repository.AdVoucherRepository;
 import com.fshoes.core.common.PageReponse;
 import com.fshoes.core.common.UserLogin;
-import com.fshoes.entity.*;
+import com.fshoes.entity.Account;
+import com.fshoes.entity.Bill;
+import com.fshoes.entity.BillDetail;
+import com.fshoes.entity.BillHistory;
+import com.fshoes.entity.ProductDetail;
+import com.fshoes.entity.Transaction;
+import com.fshoes.entity.Voucher;
 import com.fshoes.infrastructure.constant.Message;
-import com.fshoes.infrastructure.constant.StatusVoucher;
 import com.fshoes.infrastructure.exception.RestApiException;
 import com.fshoes.repository.ProductDetailRepository;
 import com.fshoes.repository.TransactionRepository;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -226,6 +250,25 @@ public class AdminSellServiceImpl implements AdminSellService {
             }
             billHistoryRepository.save(billHistory);
             // lấy list bill detail theo bill
+            //lay ra dá trấnc theo id bill
+            List<Transaction> listTransaction = transactionRepository.getTransactions(bill.getId());
+            if (!listTransaction.isEmpty()){
+                BigDecimal totalKhach = listTransaction.stream()
+                        .map(Transaction::getTotalMoney)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                if (totalKhach.longValue() > bill.getMoneyAfter().longValue()){
+                    Transaction newTran = new Transaction();
+                    newTran.setTotalMoney(totalKhach);
+                    newTran.setStatus(0);
+                    newTran.setBill(bill);
+                    newTran.setType(1);
+                    newTran.setNote("Trả tiền thừa khách hàng");
+                    newTran.setPaymentMethod(1);
+                    newTran.setAccount(userLogin.getUserLogin());
+                    transactionRepository.save(newTran);
+                }
+            }
+
             List<BillDetail> billDetails = billDetailRepositoty.getBillDetailsByBillId(bill.getId());
             billDetails.forEach((billDetail -> {
                 ProductDetail productDetail = productDetailRepository.findById(billDetail.getProductDetail().getId()).get();
@@ -477,16 +520,17 @@ public class AdminSellServiceImpl implements AdminSellService {
     }
 
     @Override
+    @Synchronized
     public Boolean inputQuantityBillDetail(String idBillDetail, String idProDetail, Integer quantity) {
         Optional<BillDetail> optionalBillDetail = billDetailRepositoty.findById(idBillDetail);
-        if (optionalBillDetail.isPresent()) {
-            BillDetail billDetail1 = optionalBillDetail.get();
-            billDetail1.setQuantity(quantity);
-            billDetailRepositoty.save(billDetail1);
-            Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idProDetail);
-            if (optionalProductDetail.isPresent()) {
+        Optional<ProductDetail> optionalProductDetail = productDetailRepository.findById(idProDetail);
+        if (optionalProductDetail.isPresent()) {
+            if (optionalBillDetail.isPresent()) {
                 ProductDetail productDetail = optionalProductDetail.get();
-                productDetail.setAmount(productDetail.getAmount() - quantity);
+                BillDetail billDetail1 = optionalBillDetail.get();
+                productDetail.setAmount(productDetail.getAmount() + billDetail1.getQuantity() - quantity);
+                billDetail1.setQuantity(quantity);
+                billDetailRepositoty.save(billDetail1);
                 productDetailRepository.save(productDetail);
             } else {
                 return false;

@@ -60,4 +60,9 @@ public class AppController {
     public ObjectRespone addProductSell(@RequestBody CreateBillRequest request, @PathVariable String id) {
         return new ObjectRespone(getSell.addBillDetail(request, id));
     }
+
+    @PutMapping("/input-quantity-bill-detail")
+    public ObjectRespone inputQuantityBillDetail(@RequestParam("idBillDetail") String idBillDetail, @RequestParam("idPrDetail") String idPrDetail, @RequestParam("quantity") Integer quantity) {
+        return new ObjectRespone(getSell.inputQuantityBillDetail(idBillDetail, idPrDetail, quantity));
+    }
 }

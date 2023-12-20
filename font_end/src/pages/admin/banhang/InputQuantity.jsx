@@ -6,6 +6,7 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
 import useDebounce from '../../../services/hook/useDebounce'
 import { toast } from 'react-toastify'
+import checkStartApi from '../../../api/checkStartApi'
 
 const InputQuantity = ({
   cart,
@@ -19,18 +20,39 @@ const InputQuantity = ({
   const debouncedValue = useDebounce(quantity, 500)
 
   useEffect(() => {
-    setQuantity(cart.quantity)
+    if (parseInt(cart.quantity) !== parseInt(quantity)) {
+      setQuantity(cart.quantity)
+    }
   }, [cart.quantity])
 
   useEffect(() => {
+    if (parseInt(cart.quantity) !== parseInt(quantity)) {
+      setQuantity(cart.quantity)
+    }
+  }, [cart.quantity])
+
+  useEffect(() => {
+    if (quantity !== cart.quantity) {
+      check(quantity)
+    }
+  }, [debouncedValue])
+
+  async function check(quantity) {
     const numericValue = Number(quantity)
+    const numericValue2 = Number(cart.quantity)
     if (!isNaN(numericValue) && numericValue >= 1) {
-      setQuantity(inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue, cart))
+      const res = await checkStartApi.checkQuantiy(cart.id, numericValue - numericValue2)
+      if (res.data) {
+        inputQuantityBillDetail(cart.idBillDetail, cart.id, numericValue, cart)
+      } else {
+        setQuantity(cart.quantity)
+        toast.error('Số lượng quá số lượng sản phẩm')
+      }
     } else {
       setQuantity(cart.quantity)
       toast.error('Số lượng phải lớn hơn 0')
     }
-  }, [debouncedValue])
+  }
 
   return (
     <Box
@@ -46,7 +68,6 @@ const InputQuantity = ({
         size="small"
         sx={{ p: 0 }}
         onClick={() => {
-          decreaseQuantityBillDetail(cart.idBillDetail, cart.id, quantity)
           setQuantity(parseInt(quantity) - 1)
         }}
         disabled={quantity <= 1}>
@@ -70,7 +91,6 @@ const InputQuantity = ({
         size="small"
         sx={{ p: 0 }}
         onClick={() => {
-          increaseQuantityBillDetail(cart.idBillDetail, cart.id, quantity)
           setQuantity(parseInt(quantity) + 1)
         }}>
         <AddIcon fontSize="1px" />

@@ -1,8 +1,10 @@
 package com.fshoes.core.admin.sanpham.repository;
 
 import com.fshoes.core.admin.sanpham.model.request.PrdDetailFilterRequest;
+import com.fshoes.core.admin.sanpham.model.request.FilterUpdateResquest;
 import com.fshoes.core.admin.sanpham.model.respone.ProductDetailResponse;
 import com.fshoes.core.admin.sanpham.model.respone.ProductMaxPriceResponse;
+import com.fshoes.entity.ProductDetail;
 import com.fshoes.repository.ProductDetailRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -163,4 +166,32 @@ public interface AdProductDetailRepository extends ProductDetailRepository {
             Where p.id = :idProduct
             """, nativeQuery = true)
     List<String> filterAdd(String idProduct);
+
+    @Query(value = """
+           SELECT pd.id
+           from product_detail pd
+            JOIN
+                product p ON p.id = pd.id_product
+            JOIN
+                color c ON c.id = pd.id_color
+            JOIN
+                category ca ON ca.id = pd.id_category
+            JOIN
+                brand b ON b.id = pd.id_brand
+            JOIN
+                sole s ON s.id = pd.id_sole
+            JOIN
+                material m ON m.id = pd.id_material
+            JOIN
+                size si ON si.id = pd.id_size
+            Where p.id = :#{#request.idProduct}
+            AND c.id = :#{#request.idColor}
+            AND ca.id = :#{#request.idCategory}
+            AND b.id = :#{#request.idBrand}
+            AND s.id = :#{#request.idSole}
+            AND m.id = :#{#request.idMaterial}
+            AND si.id = :#{#request.idSize}
+            AND pd.id <> :#{#request.id}
+    """, nativeQuery = true)
+    String filterUpdate(FilterUpdateResquest request);
 }

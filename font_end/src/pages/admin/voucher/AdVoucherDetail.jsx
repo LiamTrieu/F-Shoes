@@ -34,6 +34,7 @@ import '../../../assets/styles/admin.css'
 import './voucher.css'
 import { AiOutlineDollar, AiOutlineNumber, AiOutlinePercentage } from 'react-icons/ai'
 import { formatCurrency } from '../../../services/common/formatCurrency '
+import useDebounce from '../../../services/hook/useDebounce'
 import SearchIcon from '@mui/icons-material/Search'
 
 const listBreadcrumbs = [{ name: 'Phiếu giảm giá', link: '/admin/voucher' }]
@@ -103,6 +104,18 @@ export default function AdVoucherDetail() {
   useEffect(() => {
     setVoucherDetail({ ...voucherDetail, listIdCustomer: selectedCustomerIds })
   }, [voucherDetail, selectedCustomerIds])
+
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFindCustomer({ ...findCustomer, textSearch: inputValue })
+  }, [debouncedValue])
 
   const fetchData = (id) => {
     voucherApi
@@ -251,7 +264,9 @@ export default function AdVoucherDetail() {
       } else if (!Number.isInteger(parseInt(voucherDetail.value))) {
         errors.value = 'giá trị chỉ được nhập số nguyên'
       } else if (voucherDetail.value < 1) {
-        errors.value = 'giá trị tối thiểu 1 VNĐ'
+        errors.value = 'giá trị tối thiểu 1 ₫'
+      } else if (voucherDetail.value > 50000000) {
+        errors.value = 'giá trị tối thiểu tối đa  50,000,000 ₫'
       }
     }
 
@@ -260,7 +275,9 @@ export default function AdVoucherDetail() {
     } else if (!Number.isInteger(parseInt(voucherDetail.maximumValue))) {
       errors.maximumValue = 'giá trị tối đa chỉ được nhập số nguyên'
     } else if (voucherDetail.maximumValue < 1) {
-      errors.maximumValue = 'giá trị tối đa tối thiểu 1 (vnđ)'
+      errors.maximumValue = 'giá trị tối đa tối thiểu 1 ₫'
+    } else if (voucherDetail.maximumValue > 50000000) {
+      errors.maximumValue = 'giá trị tối đa tối đa 50,000,000 ₫'
     }
 
     if (voucherDetail.quantity === null) {
@@ -275,8 +292,10 @@ export default function AdVoucherDetail() {
       errors.minimumAmount = 'Điều kiện không được để trống'
     } else if (!Number.isInteger(parseInt(voucherDetail.minimumAmount))) {
       errors.minimumAmount = 'Điều kiện chỉ được nhập số nguyên'
-    } else if (voucherDetail.minimumAmount < 0) {
-      errors.minimumAmount = 'Điều kiện tối thiểu 0 (vnđ)'
+    } else if (voucherDetail.minimumAmount < 1) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 1 ₫'
+    } else if (voucherDetail.minimumAmount > 50000000) {
+      errors.minimumAmount = 'Điều kiện tối thiểu 50,000,000 ₫'
     }
 
     if (voucherDetail.startDate.trim() === '') {
@@ -604,8 +623,7 @@ export default function AdVoucherDetail() {
                   // minDateTime={dayjs()}
                   slotProps={{
                     actionBar: {
-                      actions: ['clear'],
-                      onClick: () => setVoucherDetail({ ...voucherDetail, startDate: '' }),
+                      actions: ['clear', 'today'],
                     },
                   }}
                   label="Từ ngày"
@@ -632,8 +650,7 @@ export default function AdVoucherDetail() {
                   // minDateTime={dayjs()}
                   slotProps={{
                     actionBar: {
-                      actions: ['clear'],
-                      onClick: () => setVoucherDetail({ ...voucherDetail, endDate: '' }),
+                      actions: ['clear', 'today'],
                     },
                   }}
                   label="Đến ngày"
@@ -680,9 +697,18 @@ export default function AdVoucherDetail() {
               type="text"
               size="small"
               fullWidth
-              onChange={(e) =>
-                setFindCustomer({ ...findCustomer, textSearch: e.target.value, page: 1 })
-              }
+              // onChange={(e) => {
+              //   setInputValue(e.target.value)
+              // }}
+              onChange={(e) => {
+                const valueNhap = e.target.value
+                if (validateSearchInput(valueNhap)) {
+                  setInputValue(valueNhap)
+                } else {
+                  setInputValue('')
+                  toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                }
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

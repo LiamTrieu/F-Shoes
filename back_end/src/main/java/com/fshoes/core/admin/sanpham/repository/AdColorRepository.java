@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 public interface AdColorRepository extends ColorRepository {
-    List<Color> findAllByDeleted(Status status);
+    List<Color> findAllByDeletedOrderByCreatedAtAsc(Status status);
 
     @Query(value = """
             SELECT id, code, name, deleted, created_at as createdAt

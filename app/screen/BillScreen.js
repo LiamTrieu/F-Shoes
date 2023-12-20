@@ -36,6 +36,7 @@ import {
   selectOrderDetailSlice,
   setOrderDetailSlice,
 } from "../service/slices/orderDetailSlice";
+import InputCart from "../layout/InputCart";
 
 export default function BillScreen({ navigation }) {
   const orderCode = useSelector(GetCode);
@@ -84,37 +85,42 @@ export default function BillScreen({ navigation }) {
     }
   };
 
-  const decreaseQuantityBillDetail = async (
+  const inputQuantityBillDetail = (
     idBillDetail,
     idPrDetail,
-    currentQuantity
+    quantity,
+    cart
   ) => {
-    try {
-      const updatedQuantity = Math.max(currentQuantity - 1, 1);
-      const response = await clientApi.decreaseQuantityBillDetail(
-        idBillDetail,
-        idPrDetail,
-        updatedQuantity
-      );
-      if (response.status === 200) {
-        let dataUpdate = null;
-        dispatch(
-          setOrderDetailSlice(
-            listProductDetailBill.map((e) => {
-              if (e.idBillDetail === idBillDetail) {
-                dataUpdate = { ...e, quantity: "" + updatedQuantity };
-                return dataUpdate;
-              }
-              return e;
-            })
-          )
-        );
-        if (dataUpdate) {
-          updateWeb({ method: "PUT", data: dataUpdate });
-        }
-      }
-    } catch (error) {
-      console.error(error);
+    let sum = 0;
+    if (cart.value) {
+      sum = calculateDiscountedPrice(cart.price, cart.value) * quantity;
+    } else {
+      sum = cart.price * quantity;
+    }
+    if (Number(sum) < 500000000) {
+      clientApi
+        .inputQuantityBillDetail(idBillDetail, idPrDetail, quantity)
+        .then((response) => {
+          if (response.status === 200) {
+            let dataUpdate = null;
+            dispatch(
+              setOrderDetailSlice(
+                listProductDetailBill.map((e) => {
+                  if (e.idBillDetail === idBillDetail) {
+                    dataUpdate = { ...e, quantity: "" + quantity };
+                    return dataUpdate;
+                  }
+                  return e;
+                })
+              )
+            );
+            if (dataUpdate) {
+              updateWeb({ method: "PUT", data: dataUpdate });
+            }
+          }
+        });
+    } else {
+      toastError("Vượt quá số lượng cho phép");
     }
   };
 
@@ -164,6 +170,18 @@ export default function BillScreen({ navigation }) {
   }, [idBill, refreshing]);
 
   const toast = useToast();
+
+  function toastError(mess) {
+    toast.show({
+      render: () => {
+        return (
+          <Box bg="red.600" px="2" py="1" rounded="sm" mb={5}>
+            <Text color={"white"}>{mess}</Text>
+          </Box>
+        );
+      },
+    });
+  }
 
   const handlePress = async () => {
     try {
@@ -457,35 +475,11 @@ export default function BillScreen({ navigation }) {
                             </Text>
                           )}
                         </View>
-                        <HStack style={{ height: 25, marginTop: 3 }}>
-                          <TouchableOpacity
-                            style={styles.button}
-                            onPress={() => {
-                              decreaseQuantityBillDetail(
-                                cart.idBillDetail,
-                                cart.id,
-                                cart.quantity
-                              );
-                            }}>
-                            <Text style={styles.buttonText}>-</Text>
-                          </TouchableOpacity>
-                          <TextInput
-                            value={cart.quantity}
-                            style={styles.input}
-                            keyboardType="numeric"
-                          />
-                          <TouchableOpacity
-                            style={styles.button}
-                            onPress={() => {
-                              increaseQuantityBillDetail(
-                                cart.idBillDetail,
-                                cart.id,
-                                cart.quantity
-                              );
-                            }}>
-                            <Text style={styles.buttonText}>+</Text>
-                          </TouchableOpacity>
-                        </HStack>
+                        <InputCart
+                          totalSum={totalSum}
+                          cart={cart}
+                          inputQuantityBillDetail={inputQuantityBillDetail}
+                        />
                       </VStack>
                       <VStack p={3} style={{ flex: 1, alignItems: "flex-end" }}>
                         <View style={{ height: 25, marginTop: -3 }}>
@@ -611,25 +605,12 @@ export default function BillScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "#f2741f",
-    padding: 8,
-    paddingTop: 5,
-    paddingBottom: 5,
-    borderRadius: 5,
-  },
   buttonText: {
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
   },
-  input: {
-    borderRadius: 5,
-    width: 50,
-    fontSize: 20,
-    textAlign: "center",
-    fontWeight: "bold",
-  },
+
   container: {
     alignItems: "center",
     padding: 8,

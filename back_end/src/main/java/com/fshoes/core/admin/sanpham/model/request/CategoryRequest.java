@@ -11,7 +11,7 @@ public class CategoryRequest {
     private String name;
 
     public Category tranCategory(Category category) {
-        category.setName(this.name);
+        category.setName(this.name.trim());
         return category;
     }
 }

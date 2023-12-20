@@ -18,7 +18,7 @@ import Paper from '@mui/material/Paper'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import PaidRoundedIcon from '@mui/icons-material/PaidRounded'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { OrderCartFotter } from '../../layout/client/cartpage/OrderCart'
 import { NoBoder } from '../../styles/TableStyle'
 import './Cart.css'
@@ -34,6 +34,7 @@ import { socketUrl } from '../../services/url'
 import confirmSatus from '../../components/comfirmSwal'
 import { toast } from 'react-toastify'
 import ModalVoucher from './ModalVoucher'
+import checkStartApi from '../../api/checkStartApi'
 
 var stompClient = null
 export default function Cart() {
@@ -156,6 +157,9 @@ export default function Cart() {
 
     setProductSelect(preProductSelect)
   }
+  const reloadTotalAndSelected = (updatedProductArray) => {
+    setProductSelect(updatedProductArray)
+  }
 
   const getPromotionProductDetails = (id) => {
     clientCartApi.getPromotionByProductDetail(id).then((response) => {
@@ -163,13 +167,30 @@ export default function Cart() {
     })
   }
 
+  const [listCheck, setListCheck] = useState([])
+
   useEffect(() => {
     if (amountProduct > 0) {
       getPromotionProductDetails(productIds)
     }
+    check()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  async function check() {
+    const list = []
+    if (product) {
+      for (const e of product) {
+        const check = (await checkStartApi.checkQuantiy(e.id, e.soLuong)).data
+        if (!check) {
+          list.push(e.id)
+        }
+      }
+      setListCheck(list)
+    }
+  }
+
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const [sizes, setSizes] = useState([])
   function getListSize(cart) {
@@ -348,18 +369,41 @@ export default function Cart() {
                 {amountProduct > 0 ? (
                   <TableBody>
                     {product.map((cart) => (
-                      <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                        <TableCell>
+                      <TableRow
+                        sx={{
+                          backgroundColor: '#F9F9F9',
+                          '&:last-child td, &:last-child th': { border: 0 },
+                        }}>
+                        <TableCell
+                          onClick={() => {
+                            if (listCheck.includes(cart.id)) {
+                              toast.warning('Số lượng sản phẩm trong cửa hàng không còn đủ!')
+                            }
+                          }}>
                           <Checkbox
+                            disabled={listCheck.includes(cart.id)}
                             checked={productSelect.findIndex((e) => e.id === cart.id) >= 0}
                             size="small"
-                            onClick={(e) => onChangeCheck(cart, e.target.checked)}
+                            onClick={(e) => {
+                              if (listCheck.includes(cart.id)) {
+                                toast.warning('Số lượng sản phẩm trong cửa hàng không còn đủ!')
+                              } else {
+                                onChangeCheck(cart, e.target.checked)
+                              }
+                            }}
                           />
                         </TableCell>
 
                         <TableCell>
                           <div style={{ position: 'relative', display: 'inline-block' }}>
-                            <img src={cart.image[0]} alt={cart.name} width={70} />
+                            <img
+                              src={cart.image[0]}
+                              alt={cart.name}
+                              width={70}
+                              onClick={() => {
+                                navigate('/product/' + cart.id)
+                              }}
+                            />
                             <div
                               className="delete-product-cart"
                               onClick={() => {
@@ -367,6 +411,7 @@ export default function Cart() {
                                 setVoucherCart(null)
                                 const updatedProduct = product.filter((item) => item.id !== cart.id)
                                 dispatch(setCart(updatedProduct))
+                                reloadTotalAndSelected(updatedProduct)
                               }}>
                               xóa
                             </div>
@@ -567,10 +612,26 @@ export default function Cart() {
                 .Bạn cũng có thể nhập phiếu giảm giá ở trang thanh toán.
               </Typography>
               <Button
-                component={Link}
-                to="/checkout"
-                onClick={() => {
-                  dispatch(setCheckout(productSelect))
+                onClick={async () => {
+                  if (productSelect) {
+                    let allProductsAvailable = true
+
+                    for (const e of productSelect) {
+                      const check = (await checkStartApi.checkQuantiy(e.id, e.soLuong)).data
+
+                      if (!check) {
+                        allProductsAvailable = false
+                        break
+                      }
+                    }
+
+                    if (allProductsAvailable) {
+                      dispatch(setCheckout(productSelect))
+                      navigate('/checkout')
+                    } else {
+                      toast.warning('Có sản phẩm đã hết hàng, vui lòng load lại trang!')
+                    }
+                  }
                 }}
                 size="sm"
                 variant="contained"

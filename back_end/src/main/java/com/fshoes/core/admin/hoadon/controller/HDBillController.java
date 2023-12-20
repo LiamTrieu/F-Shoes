@@ -5,15 +5,9 @@ import com.fshoes.core.admin.hoadon.service.HDBillService;
 import com.fshoes.core.common.ObjectRespone;
 import com.fshoes.core.common.PageReponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.List;
 
@@ -81,7 +75,8 @@ public class HDBillController {
 
     @PostMapping("/print-bill/{id}")
     public ObjectRespone inHoaDon(@PathVariable("id") String id) {
-        return new ObjectRespone(hdBillService.xuatHoaDon(id));
+        File file = hdBillService.xuatHoaDon(id);
+        return new ObjectRespone(file);
     }
 
     @PutMapping("/return-stt/{id}")
@@ -99,4 +94,13 @@ public class HDBillController {
         return new ObjectRespone(hdBillService.themNhanVienTiepNhan(idBill, idAcc));
     }
 
+    @PutMapping("/capNhatPhiShip/{idBill}")
+    public ObjectRespone capNhatPhiShip(@PathVariable("idBill") String idBill, @RequestParam String phiShip) {
+        return new ObjectRespone(hdBillService.capNhatPhiShip(idBill, phiShip));
+    }
+
+    @PutMapping("/change-money-bill/{idBill}")
+    public ObjectRespone changeMoneyBill(@PathVariable String idBill, @RequestBody HdBillChangeMoneyResquest resquest) {
+        return new ObjectRespone(hdBillService.changeMoneyBill(idBill, resquest));
+    }
 }

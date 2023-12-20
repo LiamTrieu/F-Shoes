@@ -34,6 +34,7 @@ import colorApi from '../../../api/admin/sanpham/colorApi'
 import soleApi from '../../../api/admin/sanpham/soleApi'
 import categoryApi from '../../../api/admin/sanpham/categoryApi'
 import sizeApi from '../../../api/admin/sanpham/sizeApi'
+import useDebounce from '../../../services/hook/useDebounce'
 const listBreadcrumbs = [{ name: 'Đợt giảm giá', link: '/admin/promotion' }]
 
 export default function AdPromotionDetail() {
@@ -181,6 +182,28 @@ export default function AdPromotionDetail() {
   useEffect(() => {
     getProductDetailById(filterProductDetail, selectedProductIds)
   }, [filterProductDetail, selectedProductIds])
+
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, nameProduct: inputValue })
+  }, [debouncedValue])
+
+  const [inputValue1, setInputValue1] = useState('')
+  const debouncedValue1 = useDebounce(inputValue1, 1000)
+
+  useEffect(() => {
+    setFilterProductDetail({
+      ...filterProductDetail,
+      nameProduct: inputValue1,
+    })
+  }, [debouncedValue1])
 
   const validate = () => {
     const timeStart = dayjs(updatePromotion.timeStart, 'DD/MM/YYYY')
@@ -331,6 +354,14 @@ export default function AdPromotionDetail() {
     getAllProduct(filter)
   }, [filter])
 
+  const handleTodayClick = () => {
+    const currentDateTime = new Date()
+    setUpdatePromotion({
+      ...updatePromotion,
+      timeStart: dayjs(currentDateTime).format('DD-MM-YYYY HH:mm:ss'),
+    })
+    settimeStart('')
+  }
   return (
     <>
       <div className="promotionUpdate">
@@ -401,6 +432,18 @@ export default function AdPromotionDetail() {
                         })
                         settimeStart('')
                       }}
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear', 'today'],
+                          onClick: (action) => {
+                            if (action === 'clear') {
+                              setUpdatePromotion({ ...updatePromotion, timeStart: '' })
+                            } else if (action === 'today') {
+                              handleTodayClick()
+                            }
+                          },
+                        },
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -427,6 +470,11 @@ export default function AdPromotionDetail() {
                           timeEnd: dayjs(e).format('DD-MM-YYYY HH:mm:ss'),
                         })
                         setTimeend('')
+                      }}
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear', 'today'],
+                        },
                       }}
                     />
                   </DemoContainer>
@@ -455,7 +503,18 @@ export default function AdPromotionDetail() {
                     label="Tìm tên sản phẩm"
                     variant="outlined"
                     size="small"
-                    onChange={(e) => setFilter({ ...filter, nameProduct: e.target.value })}
+                    // onChange={(e) => {
+                    //   setInputValue(e.target.value)
+                    // }}
+                    onChange={(e) => {
+                      const valueNhap = e.target.value
+                      if (validateSearchInput(valueNhap)) {
+                        setInputValue(valueNhap)
+                      } else {
+                        setInputValue('')
+                        toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                      }
+                    }}
                   />
                 </div>
                 <Table sx={{ minWidth: '100%' }} aria-label="simple table" className="tableCss">
@@ -556,11 +615,17 @@ export default function AdPromotionDetail() {
                     variant="outlined"
                     placeholder="Tên sản phẩm, thể loại, thương hiệu, chất liệu, màu sắc"
                     className="text-field-css"
+                    // onChange={(e) => {
+                    //   setInputValue1(e.target.value)
+                    // }}
                     onChange={(e) => {
-                      setFilterProductDetail({
-                        ...filterProductDetail,
-                        nameProduct: e.target.value,
-                      })
+                      const valueNhap = e.target.value
+                      if (validateSearchInput(valueNhap)) {
+                        setInputValue1(valueNhap)
+                      } else {
+                        setInputValue1('')
+                        toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                      }
                     }}
                   />
                 </Box>
@@ -751,7 +816,11 @@ export default function AdPromotionDetail() {
                         <TableCell>
                           <Checkbox
                             key={row.productDetailCB}
-                            checked={selectedRows.indexOf(row.productDetailCB) !== -1}
+                            checked={
+                              selectAll
+                                ? selectedRows.indexOf(row.productDetail) !== -1
+                                : selectedRows.indexOf(row.productDetailCB) !== -1
+                            }
                             onChange={(event) =>
                               handleRowCheckboxChange(event, row.productDetailCB)
                             }

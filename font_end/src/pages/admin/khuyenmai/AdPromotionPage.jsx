@@ -38,6 +38,7 @@ import { Stomp } from '@stomp/stompjs'
 import BreadcrumbsCustom from '../../../components/BreadcrumbsCustom'
 import { socketUrl } from '../../../services/url'
 import * as ExcelJS from 'exceljs'
+import useDebounce from '../../../services/hook/useDebounce'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 
 var stompClient = null
@@ -148,14 +149,17 @@ export default function AdPromotionPage() {
       setListKhuyenMaiEx(response.data.data)
     })
   }
-
-  const handleInputChange = (e) => {
-    const inputValue = e.target.value
-    setFilter((prevFilter) => ({
-      ...prevFilter,
-      name: inputValue.replace(/^\s+/g, ''), // Remove leading whitespaces
-    }))
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
   }
+
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, name: inputValue })
+  }, [debouncedValue])
 
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook()
@@ -228,11 +232,18 @@ export default function AdPromotionPage() {
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <TextField
                 sx={{ width: '48%' }}
-                value={filter.name}
                 placeholder="Tìm kiếm theo tên đợt giảm giá"
                 className="text-field-css"
                 size="small"
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const valueNhap = e.target.value
+                  if (validateSearchInput(valueNhap)) {
+                    setInputValue(valueNhap)
+                  } else {
+                    setInputValue('')
+                    toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+                  }
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -294,8 +305,7 @@ export default function AdPromotionPage() {
                     }
                     slotProps={{
                       actionBar: {
-                        actions: ['clear'],
-                        onClick: () => setFilter({ ...filter, timeStart: '' }),
+                        actions: ['clear', 'today'],
                       },
                     }}
                     label="Ngày bắt đầu"
@@ -315,8 +325,7 @@ export default function AdPromotionPage() {
                     }
                     slotProps={{
                       actionBar: {
-                        actions: ['clear'],
-                        onClick: () => setFilter({ ...filter, timeEnd: '' }),
+                        actions: ['clear', 'today'],
                       },
                     }}
                     label="Ngày kết thúc"

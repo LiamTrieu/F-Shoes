@@ -56,6 +56,10 @@ const clientApi = {
     const url = `/check-start`;
     return axiosApi.get(url);
   },
+  checkQuantiy: (id, quantity) => {
+    const url = `/check-start/check-quantity`;
+    return axiosApi.get(url, { params: { id: id, quantity: quantity } });
+  },
   getColors: (request) => {
     const url = `/client/product/color`;
     return axiosApi.get(url, { params: request });
@@ -90,6 +94,10 @@ const clientApi = {
   },
   rollBackQuantityProductDetail: (idBill, idPrDetail) => {
     const url = `/app/roll-back-quantity-product-detail?idBill=${idBill}&idPrDetail=${idPrDetail}`;
+    return axiosApi.put(url);
+  },
+  inputQuantityBillDetail: (idBillDetail, idPrDetail, quantity) => {
+    const url = `/app/input-quantity-bill-detail?idBillDetail=${idBillDetail}&idPrDetail=${idPrDetail}&quantity=${quantity}`;
     return axiosApi.put(url);
   },
   addBillDetail: (billDetail, id) => {

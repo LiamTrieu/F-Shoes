@@ -24,6 +24,8 @@ import { getStatusProfile } from '../../../services/constants/statusHoaDonProfil
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
 import { socketUrl } from '../../../services/url'
+import useDebounce from '../../../services/hook/useDebounce'
+import { toast } from 'react-toastify'
 
 var stompClient = null
 export default function Order() {
@@ -107,7 +109,17 @@ export default function Order() {
       setGetBillTable(preBill)
     }
   }
+  const validateSearchInput = (value) => {
+    const specialCharsRegex = /[!@#\$%\^&*\(\),.?":{}|<>[\]]/
+    return !specialCharsRegex.test(value)
+  }
 
+  const [inputValue, setInputValue] = useState('')
+  const debouncedValue = useDebounce(inputValue, 1000)
+
+  useEffect(() => {
+    setFilter({ ...filter, code: inputValue })
+  }, [debouncedValue])
   return (
     <>
       <div className="order">
@@ -137,7 +149,18 @@ export default function Order() {
           }}
           placeholder="Tìm kiếm theo mã hóa đơn"
           size="small"
-          onChange={(e) => setFilter({ ...filter, code: e.target.value })}
+          // onChange={(e) => {
+          //   setFilter({ ...filter, code: e.target.value })
+          // }}
+          onChange={(e) => {
+            const valueNhap = e.target.value
+            if (validateSearchInput(valueNhap)) {
+              setInputValue(valueNhap)
+            } else {
+              setInputValue('')
+              toast.warning('Tìm kiếm không được có kí tự đặc biệt')
+            }
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
