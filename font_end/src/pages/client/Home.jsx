@@ -202,13 +202,13 @@ export default function Home() {
           <Box>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                {/* <video
+                <video
                   ref={videoRef}
                   autoPlay
                   muted
                   onEnded={handleVideoEnded}
                   style={{ width: '100%', height: '100%' }}
-                  src="https://brand.assets.adidas.com/video/upload/if_w_gt_1920,w_1920/running_fw23_adizero_boston12_launch_hp_masthead_d_dcb43d7604.mp4"></video> */}
+                  src="https://brand.assets.adidas.com/video/upload/if_w_gt_1920,w_1920/running_fw23_adizero_boston12_launch_hp_masthead_d_dcb43d7604.mp4"></video>
                 <img
                   src={require('../../assets/image/TinTuc/image_baner_home.webp')}
                   alt=""
@@ -218,16 +218,16 @@ export default function Home() {
             </Grid>
           </Box>
           <Container maxWidth="xl">
-            {/* <Typography className="title-banner">RUN YOUR RUN</Typography>
+            <Typography className="title-banner">RUN YOUR RUN</Typography>
             <Typography className="title-banner-child">
               Follow the feeling that keeps you running your best in the city
             </Typography>
             <div className="btn-div-product">
               <Button className="btn-product">Shop Apparel</Button>
               <Button className="btn-product">Shop Apparel</Button>
-            </div> */}
+            </div>
 
-            {/* <Box>
+            <Box>
               <Grid container spacing={12}>
                 <Grid item xs={12}>
                   <img
@@ -237,7 +237,7 @@ export default function Home() {
                   />
                 </Grid>
               </Grid>
-            </Box> */}
+            </Box>
             <Box className="new-product">
               {saleProducts.length > 0 && (
                 <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
