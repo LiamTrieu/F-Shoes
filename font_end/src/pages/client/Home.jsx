@@ -214,7 +214,6 @@ export default function Home() {
                   style={{ width: '100%' }}
                 />
               </Grid>
-            </Grid>
           </Box>
           <Container maxWidth="xl">
             <Typography className="title-banner">RUN YOUR RUN</Typography>
