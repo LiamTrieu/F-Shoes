@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -256,12 +257,23 @@ public class HDBillServiceImpl implements HDBillService {
 
             //trừ số lượng sp + kiểm tra tổng tiền > 1tr => set moneyShip = 0
             BigDecimal tienDuocGiam = new BigDecimal(0);
+            List<ProductDetail> lstPrd = new ArrayList<>();
             billDetails.forEach(billDetail -> {
                 ProductDetail productDetail = billDetail.getProductDetail();
                 productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
-                productDetailRepository.save(productDetail);
+                if (productDetail.getAmount() < 0){
+                    throw new RestApiException("Số lượng sản phẩm không đủ");
+                }else{
+                    lstPrd.add(productDetail);
+                }
                 messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-admin-corfim-bill",
                         clientProductDetailRepository.updateRealTime(productDetail.getId()));
+
+            });
+            productDetailRepository.saveAll(lstPrd);
+            lstPrd.forEach(e -> {
+                messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-admin-corfim-bill",
+                        clientProductDetailRepository.updateRealTime(e.getId()));
 
             });
             System.out.println(tongTienHang);
@@ -472,54 +484,61 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Override
     public Boolean returnSttBill(String idBill, HDBillRequest hdBillRequest) {
-        List<BillHistory> billHistorys = hdBillHistoryRepository.getBillHistoryNew(idBill);
-        if (billHistorys.size() > 1) {
-            BillHistory billHistory1 = billHistorys.get(0); // history hiện tại
-            BillHistory billHistory2 = billHistorys.get(1); // history chứa sttBill sẽ quay lại
-            String note = userLogin.getUserLogin().getCode() + " đã chuyển trạng thái hoá đơn từ " + getTitleStatusBill(billHistory1.getStatusBill()) + " -> " + getTitleStatusBill(billHistory2.getStatusBill()) + "\n Lý do: ";
-            //set stt bill = trạng thái bill trước (billHistory2.getStatusBill())
-            Bill bill = billHistory1.getBill();
-            Integer sttBill = bill.getStatus();
-            bill.setStatus(billHistory2.getStatusBill());
-            hdBillRepository.save(bill);
-            if (billHistory1.getStatusBill() == 5) {
-                Integer resultDeleteTrans = transactionRepository.deleteTransactionByIdBill(idBill);
-            }
-            //set billHistory gần nhất là null để ẩn khoit timeline
-            billHistory1.setStatusBill(10);
-            hdBillHistoryRepository.save(billHistory1);
-            //thêm mới billHistory return stt bill
-            BillHistory billHistoryNew = new BillHistory();
 
-            billHistoryNew.setNote(note + "'" + hdBillRequest.getNoteBillHistory() + "'");
-            billHistoryNew.setBill(bill);
-            billHistoryNew.setAccount(userLogin.getUserLogin());
-            hdBillHistoryRepository.save(billHistoryNew);
-            // lấy list billDetail
-            List<BillDetail> billDetails = hdBillDetailRepository.getBillDetailByBillId(idBill);
-            //nếu quay lại trạng thái chờ xác nhận: rollback số lượng sp
-            if (bill.getStatus() == 1 && sttBill != 0) {
-                billDetails.forEach(billDetail -> {
-                    ProductDetail productDetail = billDetail.getProductDetail();
-                    productDetail.setAmount(productDetail.getAmount() + billDetail.getQuantity());
-                    productDetailRepository.save(productDetail);
-                    messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-roll-back-bill-status-comfirm",
-                            clientProductDetailRepository.updateRealTime(productDetail.getId()));
-                });
-            }
-            //nếu return từ trạng thái huỷ đơn về trạng thái trước: (!= chờ xác nhận): trừ số lượng sp
-            if (sttBill == 0 && billHistory2.getStatusBill() != 1) {
-                billDetails.forEach(billDetail -> {
-                    ProductDetail productDetail = billDetail.getProductDetail();
-                    productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
-                    productDetailRepository.save(productDetail);
-                    messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-roll-back-bill-status-cancel",
-                            clientProductDetailRepository.updateRealTime(productDetail.getId()));
-                });
-            }
+        if (hdBillRequest.getNoteBillHistory().trim().length() > 0) {
+            List<BillHistory> billHistorys = hdBillHistoryRepository.getBillHistoryNew(idBill);
+            if (billHistorys.size() > 1) {
+                BillHistory billHistory1 = billHistorys.get(0); // history hiện tại
+                BillHistory billHistory2 = billHistorys.get(1); // history chứa sttBill sẽ quay lại
+                String note = userLogin.getUserLogin().getCode() + " đã chuyển trạng thái hoá đơn từ " + getTitleStatusBill(billHistory1.getStatusBill()) + " -> " + getTitleStatusBill(billHistory2.getStatusBill()) + "\n Lý do: ";
+                //set stt bill = trạng thái bill trước (billHistory2.getStatusBill())
+                Bill bill = billHistory1.getBill();
+                Integer sttBill = bill.getStatus();
+                bill.setStatus(billHistory2.getStatusBill());
+                hdBillRepository.save(bill);
+                if (billHistory1.getStatusBill() == 5) {
+                    Integer resultDeleteTrans = transactionRepository.deleteTransactionByIdBill(idBill);
+                }
+//                //set status là status sẽ quay lại để hiển thị timeline
+//                billHistory1.setStatusBill(billHistory2.getStatusBill());
+                hdBillHistoryRepository.save(billHistory1);
+                //thêm mới billHistory return stt bill
+                BillHistory billHistoryNew = new BillHistory();
 
-            return true;
+                billHistoryNew.setNote(note + "'" + hdBillRequest.getNoteBillHistory() + "'");
+                billHistoryNew.setBill(bill);
+                billHistoryNew.setAccount(userLogin.getUserLogin());
+                billHistoryNew.setStatusBill(billHistory2.getStatusBill());
+                hdBillHistoryRepository.save(billHistoryNew);
+                // lấy list billDetail
+                List<BillDetail> billDetails = hdBillDetailRepository.getBillDetailByBillId(idBill);
+                //nếu quay lại trạng thái chờ xác nhận: rollback số lượng sp
+                if (bill.getStatus() == 1 && sttBill != 0) {
+                    billDetails.forEach(billDetail -> {
+                        ProductDetail productDetail = billDetail.getProductDetail();
+                        productDetail.setAmount(productDetail.getAmount() + billDetail.getQuantity());
+                        productDetailRepository.save(productDetail);
+                        messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-roll-back-bill-status-comfirm",
+                                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                    });
+                }
+                //nếu return từ trạng thái huỷ đơn về trạng thái trước: (!= chờ xác nhận): trừ số lượng sp
+                if (sttBill == 0 && billHistory2.getStatusBill() != 1) {
+                    billDetails.forEach(billDetail -> {
+                        ProductDetail productDetail = billDetail.getProductDetail();
+                        productDetail.setAmount(productDetail.getAmount() - billDetail.getQuantity());
+                        productDetailRepository.save(productDetail);
+                        messagingTemplate.convertAndSend("/topic/realtime-san-pham-detail-by-roll-back-bill-status-cancel",
+                                clientProductDetailRepository.updateRealTime(productDetail.getId()));
+                    });
+                }
+
+                return true;
+            } else {
+                return false;
+            }
         } else {
+            System.out.println("Note không đủ 50 ký tự");
             return false;
         }
 
@@ -581,7 +600,7 @@ public class HDBillServiceImpl implements HDBillService {
 
     @Override
     public Bill changeMoneyBill(String idBill, HdBillChangeMoneyResquest resquest) {
-       Bill bill = hdBillRepository.findById(idBill).orElse(null);
+        Bill bill = hdBillRepository.findById(idBill).orElse(null);
         if (bill != null && bill.getStatus() == 1) {
             if (bill.getVoucher() != null) {
                 Voucher voucher = adVoucherRepository.findById(bill.getVoucher().getId()).orElse(null);

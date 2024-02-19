@@ -2,6 +2,7 @@ import axios from 'axios'
 import { setLoading } from '../services/slices/loadingSlice'
 import store from '../services/store'
 import { getCookie, removeCookie } from '../services/cookie'
+import { toast } from 'react-toastify'
 
 const axiosAdmin = axios.create({
   baseURL: process.env.REACT_APP_API_ADMIN_URL,
@@ -22,7 +23,12 @@ export const axiosApi = axios.create({
     'content-type': 'application/json',
   },
 })
-
+export const axiosApiThongBao = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: {
+    'content-type': 'application/json',
+  },
+})
 export const axiosApiGhn = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   headers: {
@@ -107,6 +113,31 @@ axiosAdminHoaDon.interceptors.request.use(
 )
 
 axiosAdminHoaDon.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/not-authorization'
+    }
+    if (error.response && error.response.status === 400) {
+      // toast.error(error.response.data.message)
+    }
+  },
+)
+
+axiosApiThongBao.interceptors.request.use(
+  (config) => {
+    const token = getCookie('AdminToken')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  () => {},
+)
+
+axiosApiThongBao.interceptors.response.use(
   (response) => {
     return response
   },
