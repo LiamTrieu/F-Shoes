@@ -200,8 +200,7 @@ export default function Home() {
       <div className="home">
         <Fragment>
           <Box>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+            <Grid item xs={12}>
                 {/* <video
                   ref={videoRef}
                   autoPlay
@@ -215,19 +214,18 @@ export default function Home() {
                   style={{ width: '100%' }}
                 />
               </Grid>
-            </Grid>
           </Box>
           <Container maxWidth="xl">
-            {/* <Typography className="title-banner">RUN YOUR RUN</Typography>
+            <Typography className="title-banner">RUN YOUR RUN</Typography>
             <Typography className="title-banner-child">
               Follow the feeling that keeps you running your best in the city
             </Typography>
             <div className="btn-div-product">
               <Button className="btn-product">Shop Apparel</Button>
               <Button className="btn-product">Shop Apparel</Button>
-            </div> */}
+            </div>
 
-            {/* <Box>
+            <Box>
               <Grid container spacing={12}>
                 <Grid item xs={12}>
                   <img
@@ -237,7 +235,7 @@ export default function Home() {
                   />
                 </Grid>
               </Grid>
-            </Box> */}
+            </Box>
             <Box className="new-product">
               {saleProducts.length > 0 && (
                 <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
