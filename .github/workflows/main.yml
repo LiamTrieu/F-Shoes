@@ -33,4 +33,4 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./font_end/build/
-        server-dir: app.liamtrieu.id.vn/htdocs/
+        server-dir: domains/app.liam.id.vn/
